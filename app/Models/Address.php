@@ -39,4 +39,9 @@ class Address extends Model
     {
         return $this->belongsToMany(People::class, 'rl_address_people', 'address_id','person_id');
     }
+
+	public function tenders()
+	{
+		return $this->hasMany(Tender::class, 'address_id');
+	}
 }

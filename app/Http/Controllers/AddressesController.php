@@ -121,6 +121,8 @@ class AddressesController extends Controller
         $address->load('cluster.addresses');
         $address->load('people');
         $address->load('products');
+        $address->load('tenders');
+	    $address->load('tenders.purchase');
         return response()->json($address);
     }
 
