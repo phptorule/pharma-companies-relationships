@@ -9,12 +9,23 @@
                         <img :src="'/images/mask-0.png'" alt="">
                     </a>
                 </div>
-                <span class="prod-name">
-                            {{product.name? product.remark + ': ' + product.name : product.remark}}
-                        </span>
-                <small>
-                    {{product.total_price}}
-                </small>
+                <div class="prod-info">
+                    <p class="name">{{product.name? product.remark + ': ' + product.name : product.remark}}</p>
+                </div>
+                <div class="prod-graf">
+                    Graf
+                </div>
+                <div class="prod-info-tab">
+                    <div class="prod-cost">
+                        5456456
+                    </div>
+                    <div class="prod-cost">
+                        45645
+                    </div>
+                    <div class="prod-cost">
+                        {{product.total_price}}
+                    </div>
+                </div>
             </li>
             <li>
                 <a href="" class="show-all-link">Show all products</a>
