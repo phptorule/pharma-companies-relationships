@@ -1962,14 +1962,17 @@ ul.staff-list li .personal-info .name a:hover{
     padding: 25px;
 }
 
-.trand-list{
+.tender-list{
     list-style-type: none;
 }
-.trends{
+.tender{
     width: 30%;
     border: 1px solid black;
     float: left;
     font-size: 12px;
     margin: 4px !important;
     padding: 5px 10px;
+}
+.tender-cost{
+    font-size: 12px;
 }
