@@ -10,21 +10,11 @@
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name">{{product.name? product.remark + ': ' + product.name : product.remark}}</p>
+                    <p class="name">{{product.name}}</p>
+                    <p class="name" v-if="product.total_price">{{product.total_price}} | {{product.total_price}} | {{product.total_price}}</p>
                 </div>
                 <div class="prod-graf">
                     Graf
-                </div>
-                <div class="prod-info-tab">
-                    <div class="prod-cost">
-                        5456456
-                    </div>
-                    <div class="prod-cost">
-                        45645
-                    </div>
-                    <div class="prod-cost">
-                        {{product.total_price}}
-                    </div>
                 </div>
             </li>
             <li>
@@ -34,21 +24,21 @@
         <div class="header">
             <h3>Tenders
                 <ul v-if="productsData.tenders.length">
-                    <li v-if="i < productsData.tenders.length" v-for="(tender, i) in productsData.tenders">
+                    <li v-if="i < 1" v-for="(tender, i) in productsData.tenders" class="trand-list">
                         <div class="trends">
                             Last year:
-                            <small>
+                            <br><small>$
                             </small>
                         </div>
                         <div class="trends">
                             This year:
-                            <small>
+                            <br><small>$
                                 {{tender.actual_cost}}
                             </small>
                         </div>
                         <div class="trends">
                             Next year:
-                            <small>
+                            <br><small>$
                                 {{tender.budgeted_cost}}
                             </small>
                         </div>
@@ -96,9 +86,8 @@
                         this.Data.forEach(tender => {
                             let trends = tender.purchase;
                             this.product = trends.concat(this.product);
-                            this.product.push(data => tender.tender_date);
+                            this.productsData.tenders.push(tender);
                             this.productsData.budget = tender.budget;
-                            console.log(this.product);
                         });
                         this.productsData.product = this.product.sort(function (a, b) {
                             return b.total_price - a.total_price;

@@ -1943,3 +1943,33 @@ ul.staff-list li .personal-info .name a:hover{
     font-size: 14px;
     font-weight: 600;
 }
+
+.prod-info{
+    width: 70%;
+    margin-right: 30px;
+    margin-left: 10px;
+}
+.prod-info-tab{
+    clear: both;
+}
+
+.prod-name{
+    width: 70%;
+}
+.prod-graf{
+    float: right;
+    background-color: #e8e7e7;
+    padding: 25px;
+}
+
+.trand-list{
+    list-style-type: none;
+}
+.trends{
+    width: 30%;
+    border: 1px solid black;
+    float: left;
+    font-size: 12px;
+    margin: 4px !important;
+    padding: 5px 10px;
+}
