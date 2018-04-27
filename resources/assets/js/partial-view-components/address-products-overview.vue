@@ -23,23 +23,29 @@
         </ul>
         <div class="header">
             <h3>Tenders
-                <ul v-if="productsData.tenders.length">
-                    <li v-if="i < 1" v-for="(tender, i) in productsData.tenders" class="trand-list">
-                        <div class="trends">
+                <ul>
+                    <li v-if="actual_cost && budgeted_cost" class="tender-list">
+                        <div class="tender">
                             Last year:
-                            <br><small>$
+                            <br><small class="tender-cost">$
+                            </small><br>
+                            <small class="tender-cost">(+%)
                             </small>
                         </div>
-                        <div class="trends">
+                        <div class="tender">
                             This year:
-                            <br><small>$
-                                {{tender.actual_cost}}
+                            <br><small class="tender-cost">$
+                                {{actual_cost}}
+                            </small><br>
+                            <small class="tender-cost">(+%)
                             </small>
                         </div>
-                        <div class="trends">
+                        <div class="tender">
                             Next year:
-                            <br><small>$
-                                {{tender.budgeted_cost}}
+                            <br><small class="tender-cost">$
+                                {{budgeted_cost}}
+                            </small><br>
+                            <small class="tender-cost">(+%)
                             </small>
                         </div>
                     </li>
@@ -66,6 +72,8 @@
                     budget: [],
                 },
                 product: [],
+                actual_cost: null,
+                budgeted_cost: null,
                 Data: {
                     budget: [],
                     purchase: [],
@@ -80,7 +88,6 @@
             loadProductsDetails: function () {
                 this.httpGet('/api/products-details/' + this.addressId)
                     .then(data => {
-                        // console.log(data);
                         this.Data = data;
                         this.product = [];
                         this.Data.forEach(tender => {
@@ -92,7 +99,11 @@
                         this.productsData.product = this.product.sort(function (a, b) {
                             return b.total_price - a.total_price;
                         });
-                        console.log(this.productsData);
+                        for(let i=0; i< this.productsData.tenders.length; i++){
+                            this.actual_cost += Number(this.productsData.tenders[i].actual_cost);
+                            this.budgeted_cost += Number(this.productsData.tenders[i].budgeted_cost);
+
+                        }
                     });
             },
 
