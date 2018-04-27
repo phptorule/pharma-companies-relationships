@@ -114,31 +114,11 @@
 
                     <p v-if="!addressData.products.length" class="empty-data-p">There are no used products</p>
 
-                    <!--<ul class="used-products-list" v-if="addressData.products.length">
-                        <li v-if="i < 3" v-for="(product, i) in addressData.products"
-                            :title="product.name? product.company + ': ' + product.name : product.company">
-                            <span class="image"></span>
-                            <span class="prod-name">
-                            {{product.name? product.company + ': ' + product.name : product.company}}
-                        </span>
-                        </li>
-                        <li>
-                            <a href="" class="show-all-link">Show all products</a>
-                        </li>
-                    </ul>-->
-
-                    <ul class="used-products-list" v-if="addressData.product.length">
-                        <li v-if="i < 3" v-for="(product, i) in addressData.product"
-                            :title="product.name? product.remark + ': ' + product.name : product.remark">
-                            <span class="image"></span>
-                            <span class="prod-name">
-                            {{product.name? product.remark + ': ' + product.name : product.remark}}
-                        </span>
-                        </li>
-                        <li>
-                            <a href="" class="show-all-link">Show all products</a>
-                        </li>
-                    </ul>
+                    <div v-if="addressId">
+                        <address-products-overview
+                                :addressId="addressId">
+                        </address-products-overview>
+                    </div>
                 </div>
 
                 <div class="lab-chain-members-overview address-box">
@@ -211,8 +191,6 @@
                     },
                     people: [],
                     products: [],
-                    tenders: [],
-                    product:[]
                 },
                 customerStatusList: [],
                 isExpanded: false,
@@ -233,17 +211,6 @@
                 this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
                         this.addressData = data;
-                        this.addressData.product = [];
-                        this.addressData.tenders.forEach(trend => {
-                            let trends = trend;
-                            let products = trends.purchase.sort(function(a, b) {
-                                return b.total_price - a.total_price;
-                            });
-                            this.addressData.product =  products.concat(this.addressData.product);
-                        });
-                        this.addressData.product = this.addressData.product.sort(function(a, b) {
-                            return b.total_price - a.total_price;
-                        });
                     });
             },
             loadCustomerStatusList: function () {

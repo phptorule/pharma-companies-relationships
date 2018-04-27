@@ -10,6 +10,11 @@ class Tender extends Model
 
 	public function purchase()
 	{
-		return $this->hasMany(TenderPurchase::class);
+		return $this->hasMany(TenderPurchase::class)->orderBy('total_price', 'desc');
+	}
+
+	public function budget()
+	{
+		return $this->hasOne(TenderBudget::class);
 	}
 }
