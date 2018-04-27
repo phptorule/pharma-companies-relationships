@@ -1,45 +1,50 @@
 <template>
     <div>
-    <ul class="used-products-list" v-if="productsData.product.length">
-        <li v-if="i < 3" v-for="(product, i) in productsData.product"
-            :title="product.name? product.remark + ': ' + product.name : product.remark">
-            <span class="image"></span>
-            <span class="prod-name">
+        <ul class="staff-list">
+            <li v-if="i < 3" v-for="(product, i) in productsData.product"
+                :title="product.name? product.remark + ': ' + product.name : product.remark">
+                <div class="image">
+                    <a href="javascript:void(0)">
+                        <span class="person-initials">P{{i+1}}</span>
+                        <img :src="'/images/mask-0.png'" alt="">
+                    </a>
+                </div>
+                <span class="prod-name">
                             {{product.name? product.remark + ': ' + product.name : product.remark}}
                         </span>
-            <small>
-                {{product.total_price}}
-            </small>
-        </li>
-        <li>
-            <a href="" class="show-all-link">Show all products</a>
-        </li>
-    </ul>
-    <div class="header">
-        <h3>Tenders
-            <ul v-if="productsData.tenders.length">
-                <li v-if="i < productsData.tenders.length" v-for="(tender, i) in productsData.tenders">
-                    <div class="trends">
-                        Last year:
-                        <small>
-                        </small>
-                    </div>
-                    <div class="trends">
-                        This year:
-                        <small>
-                            {{tender.actual_cost}}
-                        </small>
-                    </div>
-                    <div class="trends">
-                        Next year:
-                        <small>
-                            {{tender.budgeted_cost}}
-                        </small>
-                    </div>
-                </li>
-            </ul>
-        </h3>
-    </div>
+                <small>
+                    {{product.total_price}}
+                </small>
+            </li>
+            <li>
+                <a href="" class="show-all-link">Show all products</a>
+            </li>
+        </ul>
+        <div class="header">
+            <h3>Tenders
+                <ul v-if="productsData.tenders.length">
+                    <li v-if="i < productsData.tenders.length" v-for="(tender, i) in productsData.tenders">
+                        <div class="trends">
+                            Last year:
+                            <small>
+                            </small>
+                        </div>
+                        <div class="trends">
+                            This year:
+                            <small>
+                                {{tender.actual_cost}}
+                            </small>
+                        </div>
+                        <div class="trends">
+                            Next year:
+                            <small>
+                                {{tender.budgeted_cost}}
+                            </small>
+                        </div>
+                    </li>
+                </ul>
+            </h3>
+        </div>
     </div>
 </template>
 
@@ -54,19 +59,19 @@
 
         data: function () {
             return {
-                productsData:{
-                    budgeted_cost: '',
-                    actual_cost: '',
-                    url: '',
-                    tender_date: '',
-                    cluster: {
-                        addresses: []
-                    },
-                    people: [],
+                productsData: {
+                    product: [],
+                    tenders: [],
+                    budget: [],
+                },
+                product: [],
+                Data: {
+                    budget: [],
+                    purchase: [],
                     products: [],
                     tenders: [],
                     product: []
-                },
+                }
             }
         },
 
@@ -74,26 +79,39 @@
             loadProductsDetails: function () {
                 this.httpGet('/api/products-details/' + this.addressId)
                     .then(data => {
-                        this.productsData = data;
-                        console.log(data);
-                        this.productsData.product = {};
-                        this.productsData.tenders.forEach(trend => {
-                            let products = trend.purchase.sort(function (a, b) {
-                                return b.total_price - a.total_price;
-                            });
-                            this.productsData.product = products.concat(this.productsData.product);
+                        // console.log(data);
+                        this.Data = data;
+                        this.product = [];
+                        this.Data.forEach(tender => {
+                            let trends = tender.purchase;
+                            this.product = trends.concat(this.product);
+                            this.product.push(data => tender.tender_date);
+                            this.productsData.budget = tender.budget;
+                            console.log(this.product);
                         });
-                        this.productsData.product = this.productsData.product.sort(function (a, b) {
+                        this.productsData.product = this.product.sort(function (a, b) {
                             return b.total_price - a.total_price;
                         });
-
                         console.log(this.productsData);
                     });
             },
+
+            //     this.productsData = data;
+            //     // console.log(data);
+            //     this.product = {};
+            //     this.productsData.forEach(products => {
+            //         this.product = products.purchase.concat(this.product);
+            //         console.log(this.product);
+            //     });
+            //     // this.productsData.product = this.productsData.product.sort(function (a, b) {
+            //     //     return b.total_price - a.total_price;
+            //     // });
+            //     // console.log(this.productsData);
+            // });
         },
         props: ['addressId'],
         mounted: function () {
-            if(this.addressId) {
+            if (this.addressId) {
                 this.loadProductsDetails();
             }
         },
