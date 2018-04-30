@@ -62,4 +62,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/product-by-purchase/{id}', 'ProductsController@productByPurchase')->name('products.productByPurchase');
 
+	Route::get('/purchase-by-tenders/{id}', 'ProductsController@purchaseByTenders')->name('products.purchaseByTenders');
+
 });
