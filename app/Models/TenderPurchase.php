@@ -12,4 +12,10 @@ class TenderPurchase extends Model
 	{
 		return $this->belongsTo(Tender::class);
 	}
+
+	function products()
+	{
+		return $this->belongsToMany(Product::class, 'rl_address_tenders_purchase_products', 'purchase_id', 'product_id');
+	}
+
 }

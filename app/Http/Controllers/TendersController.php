@@ -11,11 +11,11 @@ class TendersController extends Controller
 	function getTendersByAddress($id)
 	{
 		$tenders = Tender::where('address_id', $id)
-		                 ->with(['purchase' => function ($q){
+		                ->with(['purchase' => function ($q){
 			                 $q->orderBy('total_price', 'desc')->take(3);
-		                 }])
-		                 ->with('budget')
-		                 ->get();
+		                }])
+						->with('budget')
+		                ->get();
 
 		return response()->json($tenders);
 	}

@@ -8,6 +8,7 @@ use App\Models\CustomerType;
 use App\Models\People;
 use App\Models\Product;
 use App\Models\Tag;
+use App\Models\Tender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -122,6 +123,11 @@ class AddressesController extends Controller
         $address->load('people');
         $address->load('products');
 	    $address->load('tenders.purchase');
+
+	    $address = $address->toArray();
+
+	    $address['tenders'] = Tender::where('address_id', $address['id'])->threeProductsWithMostBudgetSpent()->get();
+
         return response()->json($address);
     }
 

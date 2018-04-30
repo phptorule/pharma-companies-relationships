@@ -17,4 +17,13 @@ class Tender extends Model
 	{
 		return $this->hasOne(TenderBudget::class);
 	}
+
+	public function scopeThreeProductsWithMostBudgetSpent ($q)
+	{
+		return $q->with(['purchase' => function ($query){
+				$query->orderBy('total_price', 'desc')->take(3);
+				$query->with('products');
+			}])
+			->with('budget');
+	}
 }

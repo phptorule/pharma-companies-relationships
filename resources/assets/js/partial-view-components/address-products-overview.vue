@@ -1,19 +1,19 @@
 <template>
     <div>
         <ul class="staff-list">
-            <li v-if="i < 3" v-for="(product, i) in productsData.items"
-                :title="product.name? product.remark + ': ' + product.name : product.remark">
+            <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases"
+                :title="purchase.products[0].name? purchase.products[0].company + ': ' + purchase.products[0].name : purchase.products[0].company">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressData, addressData)">
+                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id)">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="'/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name">{{product.name}}</p>
-                    <p class="name" v-if="product.total_price">{{Math.ceil(product.total_price)}} |
-                        {{Math.ceil(product.total_price)}} |
-                        {{Math.ceil(product.total_price)}}</p>
+                    <p class="name">{{purchase.products[0].name? purchase.products[0].company + ': ' + purchase.products[0].name : purchase.products[0].company}}</p>
+                    <p class="name" v-if="purchase.total_price">{{Math.ceil(purchase.total_price)}} |
+                        {{Math.ceil(purchase.total_price)}} |
+                        {{Math.ceil(purchase.total_price)}}</p>
                 </div>
                 <div class="prod-graf" v-bind:id="i" style="width: 75px; height: 50px">
                 </div>
@@ -25,7 +25,7 @@
         <div class="header">
             <h3>Tenders
                 <ul>
-                    <li v-if="actual_cost && budgeted_cost" class="tender-list">
+                    <li v-if="productsData.actual_cost && productsData.budgeted_cost" class="tender-list">
                         <div class="tender">
                             Last year:
                             <br>
@@ -39,7 +39,7 @@
                             This year:
                             <br>
                             <small class="tender-cost">$
-                                {{Math.ceil(actual_cost)}}
+                                {{productsData.actual_cost}}
                             </small>
                             <br>
                             <small class="tender-cost">(+%)
@@ -49,7 +49,7 @@
                             Next year:
                             <br>
                             <small class="tender-cost">$
-                                {{Math.ceil(budgeted_cost)}}
+                                {{productsData.budgeted_cost}}
                             </small>
                             <br>
                             <small class="tender-cost">(+%)
@@ -76,44 +76,39 @@
         data: function () {
             return {
                 productsData: {
-                    items: [],
+                    purchases: [],
                     tenders: [],
                     budget: [],
+                    actual_cost: null,
+                    budgeted_cost: null,
+                    tender_date: null,
+                    uri: null
                 },
                 product: [],
-                actual_cost: null,
-                budgeted_cost: null,
+
                 graf: '',
-                Data: {
-                    budget: [],
-                    purchase: [],
-                    products: [],
-                    tenders: [],
-                    product: []
-                }
             }
         }
         ,
 
         methods: {
             loadProductsDetails: function () {
-                this.httpGet('/api/tenders-by-address/' + this.addressId)
+                this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
-                        this.Data = data;
-                        this.product = [];
-                        this.Data.forEach(tender => {
-                            let tenders = tender.purchase;
-                            this.product = tenders.concat(this.product);
-                            this.productsData.tenders.push(tender);
+                        data.tenders.forEach(tender => {
+                            this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
+                            this.productsData.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
                             this.productsData.budget = tender.budget;
+                            tender.purchase.forEach(purchase => {
+                                if(purchase.products.length > 0){
+                                    this.productsData.purchases.push(purchase);
+                                }
+                            });
+                            this.productsData.purchases = this.productsData.purchases.sort(function (a, b) {
+                                return b.total_price - a.total_price;
+                            });
                         });
-                        this.productsData.items = this.product.sort(function (a, b) {
-                            return b.total_price - a.total_price;
-                        });
-                        for (let i = 0; i < this.productsData.tenders.length; i++) {
-                            this.actual_cost += Number(this.productsData.tenders[i].actual_cost);
-                            this.budgeted_cost += Number(this.productsData.tenders[i].budgeted_cost);
-                        }
+                        console.log(this.productsData.purchases);
                     });
                 GoogleCharts.load(drawChart);
 
