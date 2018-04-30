@@ -1,18 +1,13 @@
-const employeeModal = {
+const ProductsModal = {
 
     methods: {
-        showEmployeeDetailsModal: function (personId, addressId, address) {
+        showProductsDetailsModal: function () {
 
-            let data = {
-                personId: personId,
-                addressId: addressId,
-                address: address
-            };
 
-            this.$eventGlobal.$emit('showModalEmployeeDetails', data);
+            this.$eventGlobal.$emit('showModalProductsDetails');
         }
     }
 
 };
 
-export default employeeModal;
+export default ProductsModal;

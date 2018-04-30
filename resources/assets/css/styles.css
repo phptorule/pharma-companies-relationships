@@ -1954,12 +1954,14 @@ ul.staff-list li .personal-info .name a:hover{
 }
 
 .prod-name{
-    width: 70%;
+    width: 270%;
 }
 .prod-graf{
     float: right;
     background-color: #e8e7e7;
-    padding: 25px;
+    /*padding: 25px;*/
+    width: 150px;
+    height: 150px;
 }
 
 .tender-list{

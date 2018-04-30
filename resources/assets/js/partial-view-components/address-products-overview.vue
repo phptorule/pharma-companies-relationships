@@ -4,17 +4,18 @@
             <li v-if="i < 3" v-for="(product, i) in productsData.product"
                 :title="product.name? product.remark + ': ' + product.name : product.remark">
                 <div class="image">
-                    <a href="javascript:void(0)">
+                    <a href="javascript:void(0)" @click="showProductsDetailsModal()">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="'/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">
                     <p class="name">{{product.name}}</p>
-                    <p class="name" v-if="product.total_price">{{product.total_price}} | {{product.total_price}} | {{product.total_price}}</p>
+                    <p class="name" v-if="product.total_price">{{Math.ceil(product.total_price)}} |
+                        {{Math.ceil(product.total_price)}} |
+                        {{Math.ceil(product.total_price)}}</p>
                 </div>
-                <div class="prod-graf">
-                    Graf
+                <div class="prod-graf" v-bind:id="i" style="width: 75px; height: 50px">
                 </div>
             </li>
             <li>
@@ -27,24 +28,30 @@
                     <li v-if="actual_cost && budgeted_cost" class="tender-list">
                         <div class="tender">
                             Last year:
-                            <br><small class="tender-cost">$
-                            </small><br>
+                            <br>
+                            <small class="tender-cost">$
+                            </small>
+                            <br>
                             <small class="tender-cost">(+%)
                             </small>
                         </div>
                         <div class="tender">
                             This year:
-                            <br><small class="tender-cost">$
-                                {{actual_cost}}
-                            </small><br>
+                            <br>
+                            <small class="tender-cost">$
+                                {{Math.ceil(actual_cost)}}
+                            </small>
+                            <br>
                             <small class="tender-cost">(+%)
                             </small>
                         </div>
                         <div class="tender">
                             Next year:
-                            <br><small class="tender-cost">$
-                                {{budgeted_cost}}
-                            </small><br>
+                            <br>
+                            <small class="tender-cost">$
+                                {{Math.ceil(budgeted_cost)}}
+                            </small>
+                            <br>
                             <small class="tender-cost">(+%)
                             </small>
                         </div>
@@ -58,11 +65,13 @@
 <script>
 
     import http from '../mixins/http';
-    import employeeModal from '../mixins/show-employee-details-modal';
+    import ProductsModal from '../mixins/show-products-details-modal';
     import getPersonInitials from '../mixins/get-person-initials';
+    import {GoogleCharts} from 'google-charts';
 
     export default {
-        mixins: [http, employeeModal, getPersonInitials],
+        mixins: [http, ProductsModal, getPersonInitials],
+
 
         data: function () {
             return {
@@ -74,6 +83,7 @@
                 product: [],
                 actual_cost: null,
                 budgeted_cost: null,
+                graf: '',
                 Data: {
                     budget: [],
                     purchase: [],
@@ -82,7 +92,8 @@
                     product: []
                 }
             }
-        },
+        }
+        ,
 
         methods: {
             loadProductsDetails: function () {
@@ -99,33 +110,42 @@
                         this.productsData.product = this.product.sort(function (a, b) {
                             return b.total_price - a.total_price;
                         });
-                        for(let i=0; i< this.productsData.tenders.length; i++){
+                        for (let i = 0; i < this.productsData.tenders.length; i++) {
                             this.actual_cost += Number(this.productsData.tenders[i].actual_cost);
                             this.budgeted_cost += Number(this.productsData.tenders[i].budgeted_cost);
-
                         }
                     });
+                GoogleCharts.load(drawChart);
+
+                function drawChart() {
+                    const data = google.visualization.arrayToDataTable([
+                        ['Year', 'Sales'],
+                        ['2004', 1000],
+                        ['2005', 1170],
+                        ['2006', 660],
+                        ['2007', 1030]
+                    ]);
+
+                    let options = {
+                        title: 'Company Performance',
+                        curveType: 'function',
+                    };
+                    for(let i = 0; i<3; i++) {
+                        const pie_1_chart = new GoogleCharts.api.visualization.LineChart(document.getElementById(i));
+                        pie_1_chart.draw(data);
+                    }
+                }
             },
 
-            //     this.productsData = data;
-            //     // console.log(data);
-            //     this.product = {};
-            //     this.productsData.forEach(products => {
-            //         this.product = products.purchase.concat(this.product);
-            //         console.log(this.product);
-            //     });
-            //     // this.productsData.product = this.productsData.product.sort(function (a, b) {
-            //     //     return b.total_price - a.total_price;
-            //     // });
-            //     // console.log(this.productsData);
-            // });
-        },
+        }
+        ,
         props: ['addressId'],
-        mounted: function () {
-            if (this.addressId) {
-                this.loadProductsDetails();
+        mounted:
+            function () {
+                if (this.addressId) {
+                    this.loadProductsDetails();
+                }
             }
-        },
 
     }
 </script>
