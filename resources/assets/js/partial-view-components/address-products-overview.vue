@@ -1,16 +1,15 @@
 <template>
     <div>
         <ul class="staff-list">
-            <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases"
-                :title="purchase.products[0].name? purchase.products[0].company + ': ' + purchase.products[0].name : purchase.products[0].company">
+            <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id)">
+                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="'/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name">{{purchase.products[0].name? purchase.products[0].company + ': ' + purchase.products[0].name : purchase.products[0].company}}</p>
+                    <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name}}</p>
                     <p class="name" v-if="purchase.total_price">{{Math.ceil(purchase.total_price)}} |
                         {{Math.ceil(purchase.total_price)}} |
                         {{Math.ceil(purchase.total_price)}}</p>
@@ -81,7 +80,10 @@
                     budget: [],
                     actual_cost: null,
                     budgeted_cost: null,
+                    tender_date: null,
+                    uri: null
                 },
+                addressData:{},
                 graf: '',
             }
         },
@@ -90,6 +92,7 @@
             loadProductsDetails: function () {
                 this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
+                        this.addressData = data;
                         data.tenders.forEach(tender => {
                             this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
                             this.productsData.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));

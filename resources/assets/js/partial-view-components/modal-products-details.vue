@@ -12,27 +12,25 @@
 
                         <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 
-                        <h4 class="modal-title">{{productData.name? productData.company + ': ' + productData.name : productData.company}} <a href="#"><i class="fa fa-pencil"></i></a></h4>
+                        <h4 class="modal-title">
+                            {{productsData.name}}
+                            <a href="#"><i class="fa fa-pencil"></i></a>
+                        </h4>
 
-                        <p class="occupation">{{productData.description}}</p>
+                        <p class="occupation">{{productsData.description}}</p>
 
-                            <ul class="social-icons">
-                            <li><a href=""><i class="fa fa-linkedin"></i></a></li>
-                            <li><a href=""><i class="fa fa-twitter"></i></a></li>
-                            <li><a href=""><i class="fa fa-facebook"></i></a></li>
-                            <li><a href=""><i class="fa fa-instagram"></i></a></li>
-                        </ul>
+                        <p class="place-of-work">
+                            at <a href="#">{{currentAddress.name}}</a>
+                        </p>
 
-                        <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)">View Contact Chain</a>
-                        </div>
+
+                        <p class="occupation" v-if="tenderOld">{{tenderOld.tender_date}}</p>
+                        <p class="occupation" v-if="budgeted_cost">{{budgeted_cost}}</p>
+                        <p class="occupation">{{productsData.description}}</p>
                     </div>
                     <div class="modal-body">
                         <div>
                             <ul class="nav nav-tabs person-tabs">
-                                <li :class="{'active': activeTab == 'productInfo'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('productInfo')" data-toggle="tab"
-                                       aria-expanded="true">Product info</a></li>
                                 <li :class="{'active': activeTab == 'chart'}">
                                     <a href="javascript:void(0)" @click="setTabActive('chart')" data-toggle="tab"
                                        aria-expanded="false">Chart</a></li>
@@ -43,12 +41,8 @@
 
                             <div class="tab-content">
 
-                                <div v-if="activeTab == 'productInfo'">
-                                    productInfo
-                                </div>
-
-                                <div v-if="activeTab == 'chart'">
-                                    chart
+                                <div v-if="activeTab == 'chart'" @click="viewTendersChart()">
+                                    <div id="tender-charts"></div>
                                 </div>
 
                                 <div v-if="activeTab == 'tender'">
@@ -69,6 +63,7 @@
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import ProductsModal from '../mixins/show-products-details-modal';
+    import {GoogleCharts} from 'google-charts';
 
     export default {
         mixins: [http, getPersonInitials, ProductsModal],
@@ -78,9 +73,15 @@
                 addressId: null,
                 purchaseId: null,
                 currentAddress: {},
-                productData: {},
-                activeTab: 'productInfo',
-                connectionTypes: []
+                productsData: {},
+                tendersData: {},
+                activeTab: '',
+                connectionTypes: [],
+                tenderOld:{
+                    tender_date: '',
+                },
+                actual_cost: null,
+                budgeted_cost: null,
             }
         },
 
@@ -89,28 +90,74 @@
         },
 
         methods: {
-            init: function (addressId, purchaseId) {
+            init: function (addressId, purchaseId, address) {
                 $('#product-modal').modal('show');
 
                 this.addressId = addressId;
                 this.purchaseId = purchaseId;
-                // this.currentAddress = address;
+                this.currentAddress = address;
 
-                this.httpGet('/api/product-by-purchase/'+purchaseId)
+                this.httpGet('/api/product-by-purchase/' + purchaseId)
                     .then(data => {
-                        this.productData = data;
-                        console.log(this.productData);
-                    })
+                        data.forEach(product => {
+                            this.productsData = product;
+                            this.getTendersByProduct(this.productsData.product_id)
+                        })
+                    });
+
+            },
+
+            getTendersByProduct: function (product_id) {
+            this.httpGet('/api/purchase-by-tenders/' + product_id)
+                .then(data => {
+                    data.forEach(tender => {
+                    // console.log(tender)
+                    this.actual_cost += Math.ceil(Number(tender.actual_cost));
+                    this.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
+                     })
+                    let date = [];
+                        date = data.sort(function (a, b) {
+                            return b.tender_date - a.tender_date;
+                        });
+                        this.tenderOld = date.shift();
+                });
             },
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+            },
+
+            viewTendersChart: function(){
+                GoogleCharts.load(drawChart);
+
+                function drawChart() {
+                    var data = google.visualization.arrayToDataTable([
+                        ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
+                        ['2004/05',  165,      938,         522,             998,           450,      614.6],
+                        ['2005/06',  135,      1120,        599,             1268,          288,      682],
+                        ['2006/07',  157,      1167,        587,             807,           397,      623],
+                        ['2007/08',  139,      1110,        615,             968,           215,      609.4],
+                        ['2008/09',  136,      691,         629,             1026,          366,      569.6]
+                    ]);
+
+                    var options = {
+                        title : 'Monthly Coffee Production by Country',
+                        vAxis: {title: 'Cups'},
+                        hAxis: {title: 'Month'},
+                        seriesType: 'bars',
+                        series: {5: {type: 'line'}}
+                    };
+                        const pie_1_chart = new GoogleCharts.api.visualization.ComboChart(document.getElementById('tender-charts'));
+                        pie_1_chart.draw(data);
+                }
             }
+
         },
 
         mounted: function () {
             this.$eventGlobal.$on('showModalProductsDetails', (data) => {
-                this.init(data.addressId, data.purchaseId);
+                this.init(data.addressId, data.purchaseId, data.address);
             });
+            this.getTendersByProduct();
         }
     }
 </script>

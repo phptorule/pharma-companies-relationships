@@ -1,11 +1,11 @@
 const ProductsModal = {
 
     methods: {
-        showProductsDetailsModal: function (addressId, purchaseId) {
+        showProductsDetailsModal: function (addressId, purchaseId, addressData) {
             let data = {
                 addressId: addressId,
                 purchaseId: purchaseId,
-                // address: addressData
+                 address: addressData
             };
 
             this.$eventGlobal.$emit('showModalProductsDetails', data);
