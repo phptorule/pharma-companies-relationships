@@ -120,10 +120,9 @@
                 function drawChart() {
                     const data = google.visualization.arrayToDataTable([
                         ['Year', 'Sales'],
-                        ['2004', 1000],
-                        ['2005', 1170],
-                        ['2006', 660],
-                        ['2007', 1030]
+                        ['2017', 1914410],
+                        ['2018', 4204305],
+                        ['2019', 3144601]
                     ]);
 
                     let options = {
