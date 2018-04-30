@@ -58,6 +58,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
     Route::get('/connection-types', 'PeopleController@getConnectionTypes')->name('people.getConnectionTypes');
 
-	Route::get('/products-details/{id}', 'ProductController@show')->name('product.show');
+	Route::get('/tenders-by-address/{id}', 'TendersController@getTendersByAddress')->name('tenders.getTendersByAddress');
 
 });

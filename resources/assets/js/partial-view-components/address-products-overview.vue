@@ -1,10 +1,10 @@
 <template>
     <div>
         <ul class="staff-list">
-            <li v-if="i < 3" v-for="(product, i) in productsData.product"
+            <li v-if="i < 3" v-for="(product, i) in productsData.items"
                 :title="product.name? product.remark + ': ' + product.name : product.remark">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductsDetailsModal()">
+                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressData, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="'/images/mask-0.png'" alt="">
                     </a>
@@ -76,7 +76,7 @@
         data: function () {
             return {
                 productsData: {
-                    product: [],
+                    items: [],
                     tenders: [],
                     budget: [],
                 },
@@ -97,17 +97,17 @@
 
         methods: {
             loadProductsDetails: function () {
-                this.httpGet('/api/products-details/' + this.addressId)
+                this.httpGet('/api/tenders-by-address/' + this.addressId)
                     .then(data => {
                         this.Data = data;
                         this.product = [];
                         this.Data.forEach(tender => {
-                            let trends = tender.purchase;
-                            this.product = trends.concat(this.product);
+                            let tenders = tender.purchase;
+                            this.product = tenders.concat(this.product);
                             this.productsData.tenders.push(tender);
                             this.productsData.budget = tender.budget;
                         });
-                        this.productsData.product = this.product.sort(function (a, b) {
+                        this.productsData.items = this.product.sort(function (a, b) {
                             return b.total_price - a.total_price;
                         });
                         for (let i = 0; i < this.productsData.tenders.length; i++) {
