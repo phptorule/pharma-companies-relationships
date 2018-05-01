@@ -55,8 +55,6 @@ class ProductsController extends Controller
 	function composeConditions($query, $requestParams)
 	{
 
-//		$query->orderBy('tender_date','desc');
-
 		if (isset($requestParams['sort-by'])) {
 
 			$field = explode('-',$requestParams['sort-by'])[0];
@@ -75,15 +73,9 @@ class ProductsController extends Controller
 			$query->orderBy($field,$direction);
 		}
 
-//		if (isset($requestParams['tag-ids'])) {
-//			$query->whereHas('tags', function ($q) use ($requestParams) {
-//				$q->whereIn('id', $requestParams['tag-ids']);
-//			});
-//		}
-//		if (isset($requestParams['global-search'])) {
-//			$query->where('rl_addresses.name', 'LIKE', '%'.$requestParams['global-search'].'%');
-//		}
-
+		if (isset($requestParams['global-search'])) {
+			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['global-search'].'%');
+		}
 
 		return $query;
 	}
