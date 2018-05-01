@@ -47,7 +47,44 @@ class ProductsController extends Controller
 		           ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
 		           ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id');
 
+		$query = $this->composeConditions($query, request()->all());
+
 		return $query;
 	}
 
+	function composeConditions($query, $requestParams)
+	{
+
+//		$query->orderBy('tender_date','desc');
+
+		if (isset($requestParams['sort-by'])) {
+
+			$field = explode('-',$requestParams['sort-by'])[0];
+			$direction = explode('-',$requestParams['sort-by'])[1];
+
+			if($field == 'budget') {
+				$field = 'budgeted_cost';
+			}
+			else if($field == 'date') {
+				$field = 'tender_date';
+			}
+			else if($field == 'tenders') {
+				$field = 'rl_address_tenders.id';
+			}
+
+			$query->orderBy($field,$direction);
+		}
+
+//		if (isset($requestParams['tag-ids'])) {
+//			$query->whereHas('tags', function ($q) use ($requestParams) {
+//				$q->whereIn('id', $requestParams['tag-ids']);
+//			});
+//		}
+//		if (isset($requestParams['global-search'])) {
+//			$query->where('rl_addresses.name', 'LIKE', '%'.$requestParams['global-search'].'%');
+//		}
+
+
+		return $query;
+	}
 }

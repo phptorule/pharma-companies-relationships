@@ -58,8 +58,8 @@
                                     <div id="tender-charts"></div>
                                 </div>
 
-                                <div v-if="activeTab == 'tender'">
-                                    <div class="tender-query">
+                                <div class="row" v-if="activeTab == 'tender'">
+                                    <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
                                             <input placeholder="Search">
@@ -72,7 +72,10 @@
                                                 <input class="max-value" v-model="tendersCost.value[1]">
                                             </div>
                                             <div class="col-md-12">
-                                                <vue-slider v-bind="tendersCost" v-model="tendersCost.value"></vue-slider>
+                                                <vue-slider v-bind="tendersCost"
+                                                            v-model="tendersCost.value">
+
+                                                </vue-slider>
                                             </div>
                                         </div>
                                         <div class="col-md-4 filter-tag-query-tender" >
@@ -88,16 +91,17 @@
                                             <div class="col-md-6">
                                                 <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
                                                     <option selected class="hidden" value="">Sort By</option>
-                                                    <option value="tender-budget">Budget</option>
-                                                    <option value="tender-date">Date</option>
-                                                    <option value="tender-asc">Ascending &uarr;</option>
-                                                    <option value="tender-desc">Descen &darr;</option>
-                                                    <option value="tender-ding">Ding</option>
+                                                    <option value="budget-asc">Budget &uarr;</option>
+                                                    <option value="budget-desc">Budget &darr;</option>
+                                                    <option value="date-asc">Date &uarr;</option>
+                                                    <option value="date-desc">Date &darr;</option>
+                                                    <option value="tenders-asc">Ascending &uarr;</option>
+                                                    <option value="tenders-desc">Descen &darr;</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tender-data">
+                                    <div class="col-md-12 tender-data">
                                         <ul class="tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
@@ -162,13 +166,10 @@
                     tag_list: []
                 },
                 appliedFilters: {
-                    usedProducts: this.$route.query['used-product-ids[]'] || [],
                     tags: this.$route.query['tag-ids[]'] || [],
-                    type:  this.$route.query['type-id'] || '',
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
                     globalSearch: this.$route.query['global-search'] || '',
-                    addressIds: this.$route.query['address-ids'] || ''
                 },
                 pagination: {
                     currentPage: 1
@@ -205,10 +206,9 @@
 
         watch: {
             $route: function (to) {
-                // this.initFilters();
-                //
-                // this.composeQueryUrl();
+                this.initFilters();
 
+                this.composeQueryUrl();
                 this.$refs.paginationDirective.setPage(1);
 
             }
@@ -270,21 +270,63 @@
                     .then(data => {
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
-                        console.log(this.tendersList);
                     });
             },
 
             applyFilters: function (isOnlySortingChanged) {
 
-                console.log(isOnlySortingChanged);
+                this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
+
+
+                this.composeQueryUrl();
+
+                this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
             },
 
             applyTagsFilter: function (data) {
-                this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
-
-                console.log(data);
                 this.appliedFilters.tags = data;
                 this.applyFilters();
+            },
+
+            pageChanged: function (pageNumber) {
+                this.pagination.currentPage = pageNumber;
+                this.getTendersPaginate(this.productId);
+            },
+
+            composeQueryUrl: function () {
+                let queryStr = '';
+
+                if (this.appliedFilters.globalSearch) {
+                    queryStr += '&global-search=' + this.appliedFilters.globalSearch;
+                    this.$router.push('/address-details/'+this.addressId+'?global-search=' + this.appliedFilters.globalSearch);
+                }
+
+                if (this.appliedFilters.tags.length) {
+                    this.appliedFilters.tags.forEach(id => {
+                        queryStr += '&tag-ids[]=' + id;
+                    });
+                }
+
+                if (this.appliedFilters.sortBy) {
+                    queryStr += '&sort-by=' + this.appliedFilters.sortBy;
+                }
+
+                this.queryUrl = queryStr;
+
+                return queryStr;
+            },
+
+            initFilters: function () {
+
+                this.appliedFilters.tags = this.$route.query['tag-ids[]'] || [];
+
+                if(typeof this.appliedFilters.tags === 'string') {
+                    this.appliedFilters.tags = [this.appliedFilters.tags ];
+                }
+
+                this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
+                this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
+
             },
 
             viewTendersChart: function(){
@@ -307,14 +349,9 @@
                         seriesType: 'bars',
                         series: {5: {type: 'line'}}
                     };
-                        const pie_1_chart = new GoogleCharts.api.visualization.ComboChart(document.getElementById('tender-charts'));
-                        pie_1_chart.draw(data);
+                    const pie_1_chart = new GoogleCharts.api.visualization.ComboChart(document.getElementById('tender-charts'));
+                    pie_1_chart.draw(data);
                 }
-            },
-
-            pageChanged: function (pageNumber) {
-                this.pagination.currentPage = pageNumber;
-                this.getTendersPaginate(this.productId);
             },
 
         },
