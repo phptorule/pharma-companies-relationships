@@ -2305,3 +2305,69 @@ ul.staff-list li .personal-info .name a:hover{
     width: 100%;
     panding: 250px;
 }
+
+#product-modal .filter-tag-query-tender{
+    margin-top: 28px;
+}
+
+ul.tenders-list{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 200px;
+    overflow-y: auto;
+}
+
+ul.tenders-list li{
+
+}
+
+ul.tenders-list > li:hover{
+    box-shadow: 0 0 50px rgba(0,0,0,.15);
+}
+
+ul.tenders-list li:first-child .item{
+    padding-top: 0px;
+}
+
+ul.tenders-list li h3{
+    display: flex;
+    align-items: center;
+    font-family: Montserrat;
+    font-size: 18px;
+    line-height: 1.39em;
+    font-weight: 600;
+    margin: 0;
+    padding-top: 5px;
+}
+
+.sidebar ul.tenders-list li h3 a{
+    color: #333333;
+    transition: color 0.1s linear;
+}
+
+.sidebar ul.tenders-list li h3 a:hover{
+    color: #4a90e2;
+}
+
+ul.tenders-list li h3 .oval{
+    margin-left: 10px;
+}
+
+ul.tenders-list li .item{
+    margin-left: 50px;
+    margin-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: solid 1px #f7f7f7;;
+}
+
+ul.tenders-list li .item p{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    text-align: left;
+    color: #3a444f;
+    margin-top: 10px;
+}

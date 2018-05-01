@@ -75,33 +75,45 @@
                                                 <vue-slider v-bind="tendersCost" v-model="tendersCost.value"></vue-slider>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 filter-tag-query-tender" >
                                             <div class="col-md-6">
-                                            <multiple-dropdown-select
-                                                    class="form-control select-filter tags-filter"
-                                                    :name="'Tags'"
-                                                    :options="tagOptionsForDropDown"
-                                                    @changed="applyTagsFilter"
-                                                    ref="tagMultipleDropdownSelect"
-                                            ></multiple-dropdown-select>
+                                                <multiple-dropdown-select
+                                                        class="form-control select-filter tags-filter"
+                                                        :name="'Tags'"
+                                                        :options="tagOptionsForDropDown"
+                                                        @changed="applyTagsFilter"
+                                                        ref="tagMultipleDropdownSelect"
+                                                ></multiple-dropdown-select>
                                             </div>
                                             <div class="col-md-6">
-                                            <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
-                                                <option selected class="hidden" value="">Sort By</option>
-                                                <option value="tender-budget">Budget</option>
-                                                <option value="tender-date">Date</option>
-                                                <option value="tender-asc">Ascending &uarr;</option>
-                                                <option value="tender-desc">Descen &darr;</option>
-                                                <option value="tender-ding">Ding</option>
-                                            </select>
+                                                <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
+                                                    <option selected class="hidden" value="">Sort By</option>
+                                                    <option value="tender-budget">Budget</option>
+                                                    <option value="tender-date">Date</option>
+                                                    <option value="tender-asc">Ascending &uarr;</option>
+                                                    <option value="tender-desc">Descen &darr;</option>
+                                                    <option value="tender-ding">Ding</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="tender-data">
+                                        <ul class="tenders-list">
+                                            <li v-for="(tender, i) in tendersList">
+                                                <div class="item">
+                                                    <h3 v-if="tender.remark">{{i+1}}. {{tender.remark}}</h3>
 
+                                                    <p class="tender-winner" v-if="tender.winner">{{tender.winner}}</p>
+
+                                                    <p class="tender-reward" v-if="tender.reward">{{tender.reward}}</p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="pagination-box">
+                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="2" @paginate="pageChanged"></pagination>
+                                        </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -137,6 +149,7 @@
                     },
                 },
                 addressId: null,
+                productId: null,
                 purchaseId: null,
                 currentAddress: {},
                 productsData: {},
@@ -160,9 +173,11 @@
                 pagination: {
                     currentPage: 1
                 },
+                queryUrl: '',
                 tenderOld:{
                     tender_date: '',
                 },
+                tendersList: [],
                 actual_cost: null,
                 budgeted_cost: null,
                 actual_year: (new Date()).getFullYear(),
@@ -188,6 +203,17 @@
             vueSlider
         },
 
+        watch: {
+            $route: function (to) {
+                // this.initFilters();
+                //
+                // this.composeQueryUrl();
+
+                this.$refs.paginationDirective.setPage(1);
+
+            }
+        },
+
         methods: {
             init: function (addressId, purchaseId, address) {
                 $('#product-modal').modal('show');
@@ -200,14 +226,16 @@
                     .then(data => {
                         data.forEach(product => {
                             this.productsData = product;
-                            this.getTendersByProduct(this.productsData.product_id)
+                            this.productId = this.productsData.product_id;
+                            this.getTendersByProduct(this.productId);
+                            this.getTendersPaginate(this.productId);
                         })
                     });
 
             },
 
             getTendersByProduct: function (product_id) {
-            this.httpGet('/api/purchase-by-tenders/' + product_id)
+            this.httpGet('/api/product-by-tenders/' + product_id)
                 .then(data => {
                     this.tendersData = data;
                     data.forEach(tender => {
@@ -234,6 +262,16 @@
 
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+            },
+
+            getTendersPaginate: function (product_id) {
+                let url = '/api/product-by-tenders-paginated/' + product_id +'?page=' + this.pagination.currentPage + this.queryUrl;
+                this.httpGet(url)
+                    .then(data => {
+                        this.tendersTotal = data.total;
+                        this.tendersList = data.data;
+                        console.log(this.tendersList);
+                    });
             },
 
             applyFilters: function (isOnlySortingChanged) {
@@ -272,7 +310,12 @@
                         const pie_1_chart = new GoogleCharts.api.visualization.ComboChart(document.getElementById('tender-charts'));
                         pie_1_chart.draw(data);
                 }
-            }
+            },
+
+            pageChanged: function (pageNumber) {
+                this.pagination.currentPage = pageNumber;
+                this.getTendersPaginate(this.productId);
+            },
 
         },
 
@@ -280,7 +323,6 @@
             this.$eventGlobal.$on('showModalProductsDetails', (data) => {
                 this.init(data.addressId, data.purchaseId, data.address);
             });
-            this.getTendersByProduct();
         }
     }
 </script>
