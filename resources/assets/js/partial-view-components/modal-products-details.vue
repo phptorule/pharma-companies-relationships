@@ -59,7 +59,47 @@
                                 </div>
 
                                 <div v-if="activeTab == 'tender'">
-                                    tender
+                                    <div class="tender-query">
+                                        <div class="col-md-4 tender-search">
+                                            <img src="/images/ic-search.png" alt="">
+                                            <input placeholder="Search">
+                                        </div>
+                                        <div class="col-md-4 filter-cost-tender">
+                                            <div class="col-md-6">
+                                                <input class="min-value" v-model="tendersCost.value[0]">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input class="max-value" v-model="tendersCost.value[1]">
+                                            </div>
+                                            <div class="col-md-12">
+                                                <vue-slider v-bind="tendersCost" v-model="tendersCost.value"></vue-slider>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="col-md-6">
+                                            <multiple-dropdown-select
+                                                    class="form-control select-filter tags-filter"
+                                                    :name="'Tags'"
+                                                    :options="tagOptionsForDropDown"
+                                                    @changed="applyTagsFilter"
+                                                    ref="tagMultipleDropdownSelect"
+                                            ></multiple-dropdown-select>
+                                            </div>
+                                            <div class="col-md-6">
+                                            <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
+                                                <option selected class="hidden" value="">Sort By</option>
+                                                <option value="tender-budget">Budget</option>
+                                                <option value="tender-date">Date</option>
+                                                <option value="tender-asc">Ascending &uarr;</option>
+                                                <option value="tender-desc">Descen &darr;</option>
+                                                <option value="tender-ding">Ding</option>
+                                            </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tender-data">
+
+                                    </div>
                                 </div>
 
                             </div>
@@ -77,12 +117,25 @@
     import getPersonInitials from '../mixins/get-person-initials';
     import ProductsModal from '../mixins/show-products-details-modal';
     import {GoogleCharts} from 'google-charts';
+    import vueSlider from 'vue-slider-component';
 
     export default {
         mixins: [http, getPersonInitials, ProductsModal],
-
         data: function () {
+
             return {
+                tendersCost: {
+                    value: [],
+                    min: null,
+                    max: null,
+                    disabled: false,
+                    show: true,
+                    tooltip: 'always',
+                    formatter: '',
+                    tooltipStyle: {
+                        display: 'none',
+                    },
+                },
                 addressId: null,
                 purchaseId: null,
                 currentAddress: {},
@@ -90,6 +143,23 @@
                 tendersData: {},
                 activeTab: '',
                 connectionTypes: [],
+                tendersTotal: 0,
+                filterObject: {
+                    used_product_list: [],
+                    tag_list: []
+                },
+                appliedFilters: {
+                    usedProducts: this.$route.query['used-product-ids[]'] || [],
+                    tags: this.$route.query['tag-ids[]'] || [],
+                    type:  this.$route.query['type-id'] || '',
+                    sortBy: this.$route.query['sort-by'] || '',
+                    isOnlySortingChanged: false,
+                    globalSearch: this.$route.query['global-search'] || '',
+                    addressIds: this.$route.query['address-ids'] || ''
+                },
+                pagination: {
+                    currentPage: 1
+                },
                 tenderOld:{
                     tender_date: '',
                 },
@@ -103,7 +173,19 @@
         },
 
         computed: {
+            tagOptionsForDropDown: function () {
+                return this.filterObject.tag_list.map(tag => {
+                    return {
+                        label: 'dsfsd',
+                        value: '435'
+                    }
+                })
+            }
 
+        },
+
+        components: {
+            vueSlider
         },
 
         methods: {
@@ -137,13 +219,34 @@
                         if((this.actual_year-1) == Number(tender.delivery_year)){
                             this.old_year_cost += Math.ceil(Number(tender.delivery_year));
                         }
+
                     })
                     this.spending_cost = Math.ceil(((this.actual_year_cost-this.old_year_cost)/this.old_year_cost)*100);
                     this.tenderOld = this.tendersData[0];
+
+                    data = data.sort(function (a, b) {
+                        return b.budgeted_cost - a.budgeted_cost;
+                    });
+                    this.tendersCost.min = this.tendersCost.value[0] = Math.ceil(data[data.length - 1].budgeted_cost);
+                    this.tendersCost.max = this.tendersCost.value[1] = Math.ceil(data[0].budgeted_cost);
                 });
             },
+
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+            },
+
+            applyFilters: function (isOnlySortingChanged) {
+
+                console.log(isOnlySortingChanged);
+            },
+
+            applyTagsFilter: function (data) {
+                this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
+
+                console.log(data);
+                this.appliedFilters.tags = data;
+                this.applyFilters();
             },
 
             viewTendersChart: function(){

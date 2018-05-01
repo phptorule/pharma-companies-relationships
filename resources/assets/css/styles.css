@@ -2260,3 +2260,48 @@ ul.staff-list li .personal-info .name a:hover{
     color: #fff;
     text-shadow: 1px 1px 9px rgba(0,0,0,.3);
 }
+
+#product-modal .tender-old{
+    float: left;
+    margin-left: 15%;
+}
+
+#product-modal .tender-budget{
+    margin-left: 25%;
+    float: left;
+}
+
+#product-modal .tender-spending{
+    float: right;
+    margin-right: 15%;
+}
+
+#product-modal .tender-query{
+    padding-bottom: 80px;
+}
+
+#product-modal .tender-search{
+    float: left;
+    width: 200px;
+}
+
+#product-modal .filter-cost-tender{
+    width: 200px;
+    float: left;
+    margin-top: 28px;
+}
+
+#product-modal .min-value{
+    width: 65px;
+    float: left;
+}
+
+#product-modal .max-value{
+    width: 65px;
+    float: right;
+}
+
+#product-modal .tender-data{
+    width: 100%;
+    panding: 250px;
+}
