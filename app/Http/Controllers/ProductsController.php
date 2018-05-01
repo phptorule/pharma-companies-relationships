@@ -23,6 +23,8 @@ class ProductsController extends Controller
 		             ->where('rl_address_tenders_purchase_products.product_id',$id)
 		             ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.purchase_id', '=', 'rl_address_tenders_purchase.id')
 		             ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
+		             ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id')
+					 ->orderBy('tender_date', 'asc')
 		             ->get();
 		return response()->json($product);
 	}
