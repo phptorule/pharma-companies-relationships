@@ -2289,6 +2289,7 @@ ul.staff-list li .personal-info .name a:hover{
     width: 200px;
     float: left;
     margin-top: 28px;
+    margin-left: 40px;
 }
 
 #product-modal .min-value{
@@ -2314,7 +2315,6 @@ ul.tenders-list{
     list-style-type: none;
     padding: 0;
     margin: 0;
-    height: 200px;
     overflow-y: auto;
 }
 

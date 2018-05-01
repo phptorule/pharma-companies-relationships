@@ -62,7 +62,10 @@
                                     <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
-                                            <input placeholder="Search">
+                                            <input
+                                                    v-model="appliedFilters.tendersSearchInput"
+                                                    @keyup="makeTendersSearch()"
+                                                    placeholder="Search tenders">
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
                                             <div class="col-md-6">
@@ -78,7 +81,7 @@
                                                 </vue-slider>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 filter-tag-query-tender" >
+                                        <div class="col-md-6 filter-tag-query-tender" >
                                             <div class="col-md-6">
                                                 <multiple-dropdown-select
                                                         class="form-control select-filter tags-filter"
@@ -105,7 +108,7 @@
                                         <ul class="tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
-                                                    <h3 v-if="tender.remark">{{i+1}}. {{tender.remark}}</h3>
+                                                    <h3 v-if="tender.name">{{i+1}}. {{tender.name}}</h3>
 
                                                     <p class="tender-winner" v-if="tender.winner">{{tender.winner}}</p>
 
@@ -114,7 +117,7 @@
                                             </li>
                                         </ul>
                                         <div class="pagination-box">
-                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="2" @paginate="pageChanged"></pagination>
+                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="5" @paginate="pageChanged"></pagination>
                                         </div>
                                     </div>
                                 </div>
@@ -169,7 +172,7 @@
                     tags: this.$route.query['tag-ids[]'] || [],
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
-                    globalSearch: this.$route.query['global-search'] || '',
+                    tendersSearchInput: this.$route.query['tenders-search'] || '',
                 },
                 pagination: {
                     currentPage: 1
@@ -192,8 +195,8 @@
             tagOptionsForDropDown: function () {
                 return this.filterObject.tag_list.map(tag => {
                     return {
-                        label: 'dsfsd',
-                        value: '435'
+                        label: tag.name,
+                        value: tag.id,
                     }
                 })
             }
@@ -296,9 +299,9 @@
             composeQueryUrl: function () {
                 let queryStr = '';
 
-                if (this.appliedFilters.globalSearch) {
-                    queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                    this.$router.push('/address-details/'+this.addressId+'?global-search=' + this.appliedFilters.globalSearch);
+                if (this.appliedFilters.tendersSearchInput) {
+                    queryStr += '&tenders-search=' + this.appliedFilters.tendersSearchInput;
+                    this.$router.push('/address-details/'+this.addressId+'?tenders-search=' + this.appliedFilters.tendersSearchInput);
                 }
 
                 if (this.appliedFilters.tags.length) {
@@ -318,17 +321,41 @@
 
             initFilters: function () {
 
-                this.appliedFilters.tags = this.$route.query['tag-ids[]'] || [];
+                this.appliedFilters.tags = this.$route.query['tag-tenders[]'] || [];
 
                 if(typeof this.appliedFilters.tags === 'string') {
                     this.appliedFilters.tags = [this.appliedFilters.tags ];
                 }
 
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
-                this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
+                this.appliedFilters.tendersSearchInput = this.$route.query['tenders-search'] || '';
 
             },
 
+            makeTendersSearch: function () {
+                if(this.timeOutId){
+                    clearTimeout(this.timeOutId)
+                }
+
+                this.timeOutId = setTimeout(()=>{
+
+                    if(this.$route.path != '/address-details/'+this.addressId) {
+                        this.$router.push('/address-details/'+this.addressId+'?tenders-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
+                    }
+                    else{
+                        this.$router.push('/address-details/'+this.addressId+'?global-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
+                    }
+
+                    if(this.appliedFilters.tendersSearchInput == '') {
+                        this.$router.push('/address-details/'+this.addressId);
+                    }
+
+                    this.composeQueryUrl();
+
+                    this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
+
+                },1000)
+            },
             viewTendersChart: function(){
                 GoogleCharts.load(drawChart);
 

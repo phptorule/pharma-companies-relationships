@@ -19,40 +19,31 @@ class ProductsController extends Controller
 
 	public function productByTenders($id)
 	{
-		$tenders = DB::table('rl_address_tenders_purchase')
-		             ->where('rl_address_tenders_purchase_products.product_id',$id)
-		             ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.purchase_id', '=', 'rl_address_tenders_purchase.id')
-		             ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
-		             ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id')
-					 ->orderBy('tender_date', 'asc')
-		             ->get();
+		$query = $this->getTenders($id);
+		$tenders = $query->orderBy('tender_date', 'asc')->get();
 		return response()->json($tenders);
 	}
 
-	function getProductByTendersPaginated($id)
+	public function getProductByTendersPaginated($id)
 	{
 		$query = $this->prepareTendersQuery($id);
 
-		$tenders = $query->paginate(2);
+		$tenders = $query->paginate(5);
 
 		return response()->json($tenders);
 	}
 
-	function prepareTendersQuery($id)
+	public function prepareTendersQuery($id)
 	{
 
-		$query = DB::table('rl_address_tenders_purchase')
-		           ->where('rl_address_tenders_purchase_products.product_id',$id)
-		           ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.purchase_id', '=', 'rl_address_tenders_purchase.id')
-		           ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
-		           ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id');
+		$query = $this->getTenders($id);
 
 		$query = $this->composeConditions($query, request()->all());
 
 		return $query;
 	}
 
-	function composeConditions($query, $requestParams)
+	public function composeConditions($query, $requestParams)
 	{
 
 		if (isset($requestParams['sort-by'])) {
@@ -73,10 +64,20 @@ class ProductsController extends Controller
 			$query->orderBy($field,$direction);
 		}
 
-		if (isset($requestParams['global-search'])) {
-			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['global-search'].'%');
+		if (isset($requestParams['tenders-search'])) {
+			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['tenders-search'].'%');
 		}
 
+		return $query;
+	}
+
+	public function getTenders($id)
+	{
+		$query = DB::table('rl_address_tenders_purchase')
+		           ->where('rl_address_tenders_purchase_products.product_id',$id)
+		           ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.purchase_id', '=', 'rl_address_tenders_purchase.id')
+		           ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
+		           ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id');
 		return $query;
 	}
 }
