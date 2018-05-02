@@ -10,8 +10,6 @@
                             <img src="/images/mask-0.png" alt="">
                         </div>
 
-                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-
                         <h4 class="modal-title">
                             {{productsData.name}}
                             <a href="#"><i class="fa fa-pencil"></i></a>
@@ -25,18 +23,18 @@
 
                         <div class="row person-experience">
                             <div class="col-md-4">
-                                <p class="number" v-if="tenderOld">
-                                    {{tenderOld.tender_date}}
+                                <p class="number" v-if="usedYears">
+                                    Used for > {{usedYears}} years
                                 </p>
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="budgeted_cost">
-                                    $ {{budgeted_cost}}
+                                    Tot $ {{budgeted_cost}} spent
                                 </p>
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="spending_cost">
-                                    {{spending_cost}} %
+                                    {{spending_cost}} % Projected spending {{actual_year+1}}
                                 </p>
                             </div>
                         </div>
@@ -63,6 +61,7 @@
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
                                             <input
+                                                    class="tender-search-input"
                                                     v-model="appliedFilters.tendersSearchInput"
                                                     @keyup="makeTendersSearch()"
                                                     placeholder="Search tenders">
@@ -105,19 +104,22 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12 tender-data">
-                                        <ul class="tenders-list">
+                                        <ul class="col-md-12 tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
                                                     <h3 v-if="tender.name">{{i+1}}. {{tender.name}}</h3>
 
-                                                    <p class="tender-winner" v-if="tender.winner">{{tender.winner}}</p>
+                                                    <p class="tender-winner" v-if="tender.name">Winner of most money {{tender.winner}}</p>
 
-                                                    <p class="tender-reward" v-if="tender.reward">{{tender.reward}}</p>
+                                                    <p class="tender-reward" v-if="tender.name">Reward type {{tender.reward}}</p>
                                                 </div>
                                             </li>
                                         </ul>
-                                        <div class="pagination-box">
-                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="5" @paginate="pageChanged"></pagination>
+                                        <div class="col-md-10 pagination-box">
+                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="2" @paginate="pageChanged"></pagination>
+                                        </div>
+                                        <div class="col-md-2 export-excel">
+                                            <button class="btn btn-primary">export-excel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -162,10 +164,7 @@
                 productsData: {},
                 tendersData: {},
                 activeTab: '',
-                connectionTypes: [],
-                tendersTotal: 0,
                 filterObject: {
-                    used_product_list: [],
                     tag_list: []
                 },
                 appliedFilters: {
@@ -174,6 +173,7 @@
                     isOnlySortingChanged: false,
                     tendersSearchInput: this.$route.query['tenders-search'] || '',
                 },
+                tendersTotal: 0,
                 pagination: {
                     currentPage: 1
                 },
@@ -187,7 +187,8 @@
                 actual_year: (new Date()).getFullYear(),
                 actual_year_cost: null,
                 old_year_cost: null,
-                spending_cost: null
+                spending_cost: null,
+                usedYears: null
             }
         },
 
@@ -260,6 +261,10 @@
                     });
                     this.tendersCost.min = this.tendersCost.value[0] = Math.ceil(data[data.length - 1].budgeted_cost);
                     this.tendersCost.max = this.tendersCost.value[1] = Math.ceil(data[0].budgeted_cost);
+                    data = data.sort(function (a, b) {
+                        return b.delivery_year - a.delivery_year;
+                    });
+                    this.usedYears = this.actual_year - Math.ceil(data[data.length - 1].delivery_year);
                 });
             },
 

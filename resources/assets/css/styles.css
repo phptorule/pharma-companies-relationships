@@ -2087,12 +2087,12 @@ ul.staff-list li .personal-info .name a:hover{
 
 #product-modal .person-experience .number{
     font-family: Montserrat;
-    font-size: 30px;
+    font-size: 20px;
     height: 40px;
     color: #3a444f;
     line-height: 1em;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2285,21 +2285,35 @@ ul.staff-list li .personal-info .name a:hover{
     width: 200px;
 }
 
+#product-modal .tender-search-input{
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
+}
+
+
+
 #product-modal .filter-cost-tender{
-    width: 200px;
+    width: 220px;
     float: left;
     margin-top: 28px;
     margin-left: 40px;
 }
 
 #product-modal .min-value{
-    width: 65px;
+    width: 70px;
     float: left;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
 }
 
 #product-modal .max-value{
-    width: 65px;
+    width: 70px;
     float: right;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
 }
 
 #product-modal .tender-data{
@@ -2364,8 +2378,8 @@ ul.tenders-list li .item{
 
 ul.tenders-list li .item p{
     font-family: Montserrat;
-    font-size: 14px;
-    font-weight: 300;
+    font-size: 20px;
+    font-weight: 400;
     line-height: 1.5;
     text-align: left;
     color: #3a444f;

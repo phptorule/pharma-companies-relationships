@@ -28,7 +28,7 @@ class ProductsController extends Controller
 	{
 		$query = $this->prepareTendersQuery($id);
 
-		$tenders = $query->paginate(5);
+		$tenders = $query->paginate(2);
 
 		return response()->json($tenders);
 	}
