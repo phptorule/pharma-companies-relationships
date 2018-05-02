@@ -59,7 +59,7 @@ class ProductsController extends Controller
 				$field = 'tender_date';
 			}
 			else if($field == 'tenders') {
-				$field = 'rl_address_tenders.id';
+				$field = 'at.id';
 			}
 
 			$query->orderBy($field,$direction);
@@ -73,7 +73,11 @@ class ProductsController extends Controller
 		}
 
 		if (isset($requestParams['tenders-search'])) {
-			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['tenders-search'].'%');
+			$query->where('atp.name', 'LIKE', '%'.$requestParams['tenders-search'].'%');
+		}
+
+		if (isset($requestParams['tag-cons'])) {
+			$query->whereIn('consumable_id', $requestParams['tag-cons']);
 		}
 
 		return $query;
@@ -81,11 +85,13 @@ class ProductsController extends Controller
 
 	public function getTenders($id)
 	{
-		$query = DB::table('rl_address_tenders_purchase')
-		           ->where('rl_address_tenders_purchase_products.product_id',$id)
-		           ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.purchase_id', '=', 'rl_address_tenders_purchase.id')
-		           ->join('rl_address_tenders', 'rl_address_tenders.id', '=', 'rl_address_tenders_purchase.tender_id')
-		           ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id');
+		$query = DB::table('rl_address_tenders_purchase AS atp')
+					->select(DB::raw('atp.*, atpp.*, atp.*, at.*, pc.name as tag_name, pc.id as tag_id, atb.*'))
+		           ->where('atpp.product_id',$id)
+		           ->leftJoin('rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id')
+		           ->leftJoin('rl_address_tenders AS at', 'at.id', '=', 'atp.tender_id')
+		           ->leftJoin('rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id')
+		           ->leftJoin('rl_address_tenders_budgets AS atb', 'atb.id', '=', 'atp.tender_id');
 		return $query;
 	}
 

@@ -24,7 +24,7 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number" v-if="usedYears">
-                                    Used for > {{usedYears}} years
+                                    Used for <i class="fas fa-arrow-circle-up"></i> {{usedYears}} years
                                 </p>
                             </div>
                             <div class="col-md-4">
@@ -221,10 +221,18 @@
                 deep: true
             },
             $route: function (to) {
-                this.initFilters();
 
-                this.composeQueryUrl();
-                this.$refs.paginationDirective.setPage(1);
+                if($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
+
+
+                    this.initFilters();
+
+                    this.composeQueryUrl();
+
+                    console.log('here');
+
+                    this.$refs.paginationDirective.setPage(1);
+                }
 
             }
         },
@@ -270,7 +278,7 @@
                     data = data.sort(function (a, b) {
                         return b.budgeted_cost - a.budgeted_cost;
                     });
-                    this.tendersCost.min = this.tendersCost.value[0] = Math.ceil(data[data.length - 1].budgeted_cost);
+                    this.tendersCost.min = this.tendersCost.value[0] = 0;
                     this.tendersCost.max = this.tendersCost.value[1] = Math.ceil(data[0].budgeted_cost);
                     data = data.sort(function (a, b) {
                         return b.delivery_year - a.delivery_year;
@@ -284,7 +292,7 @@
             },
 
             getTendersPaginate: function (product_id) {
-                let url = '/api/product-by-tenders-paginated/' + product_id +'?page=' + this.pagination.currentPage + this.queryUrl;
+                let url = '/api/product-by-tenders-paginated/' + product_id +'?page=' + this.pagination.currentPage + this.composeQueryUrl();
                 console.log(url);
                 this.httpGet(url)
                     .then(data => {
@@ -300,12 +308,13 @@
 
                 this.composeQueryUrl();
 
-                this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
+                // this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
+                this.$refs.paginationDirective.setPage(1);
             },
 
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
-                this.applyFilters();
+                this.applyFilters(true);
             },
 
             pageChanged: function (pageNumber) {
@@ -318,13 +327,20 @@
 
                 if (this.appliedFilters.tendersSearchInput) {
                     queryStr += '&tenders-search=' + this.appliedFilters.tendersSearchInput;
-                    this.$router.push('/address-details/'+this.addressId+'?tenders-search=' + this.appliedFilters.tendersSearchInput);
+
                 }
 
                 if (this.appliedFilters.tags.length) {
-                    this.appliedFilters.tags.forEach(id => {
-                        queryStr += '&tag-cons[]=' + id;
-                    });
+
+                    if(typeof this.appliedFilters.tags === 'string') {
+                        queryStr += '&tag-cons[]=' + this.appliedFilters.tags;
+                    }
+                    else {
+                        this.appliedFilters.tags.forEach(id => {
+                            queryStr += '&tag-cons[]=' + id;
+                            console.log(queryStr);
+                        });
+                    }
                 }
 
                 if (this.appliedFilters.sortBy) {
@@ -336,7 +352,7 @@
                 }
 
                 this.queryUrl = queryStr;
-
+                console.log(' this.queryUrl' , this.queryUrl);
                 return queryStr;
             },
 
