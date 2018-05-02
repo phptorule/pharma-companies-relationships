@@ -135,10 +135,19 @@
 
 <script>
 
+    var DATA = [
+        ['Month', 'Bolivia'],
+        ['2004/05',  165],
+        ['2005/06',  135],
+        ['2006/07',  157],
+        ['2007/08',  139],
+        ['2008/09',  136]
+    ];
+
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import ProductsModal from '../mixins/show-products-details-modal';
-    import {GoogleCharts} from 'google-charts';
+    // import {GoogleCharts} from 'google-charts';
     import vueSlider from 'vue-slider-component';
 
     export default {
@@ -164,7 +173,7 @@
                 currentAddress: {},
                 productsData: {},
                 tendersData: {},
-                activeTab: '',
+                activeTab: 'chart',
                 tag_list: [],
                 appliedFilters: {
                     tags: this.$route.query['tag-cons[]'] || [],
@@ -188,7 +197,8 @@
                 actual_year_cost: null,
                 old_year_cost: null,
                 spending_cost: null,
-                usedYears: null
+                usedYears: null,
+                isGoogleChartCoreLoaded: false,
             }
         },
 
@@ -234,6 +244,12 @@
                     this.$refs.paginationDirective.setPage(1);
                 }
 
+            },
+
+            isGoogleChartCoreLoaded: function(newVal){
+                if($('#product-modal').hasClass('in') && newVal && this.activeTab == 'chart') {
+                    this.viewTendersChart(DATA);
+                }
             }
         },
 
@@ -252,6 +268,8 @@
                             this.productId = this.productsData.product_id;
                             this.getTendersByProduct(this.productId);
                             this.getTendersPaginate(this.productId);
+
+
                         })
                     });
 
@@ -284,6 +302,10 @@
                         return b.delivery_year - a.delivery_year;
                     });
                     this.usedYears = this.actual_year - Math.ceil(data[data.length - 1].delivery_year);
+
+                    setTimeout(()=>{
+                        this.viewTendersChart(DATA);
+                    })
                 });
             },
 
@@ -415,30 +437,31 @@
                     })
             },
 
-            viewTendersChart: function(){
-                GoogleCharts.load(drawChart);
+            viewTendersChart: function(data){
 
-                function drawChart() {
-                    var data = google.visualization.arrayToDataTable([
-                        ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
-                        ['2004/05',  165,      938,         522,             998,           450,      614.6],
-                        ['2005/06',  135,      1120,        599,             1268,          288,      682],
-                        ['2006/07',  157,      1167,        587,             807,           397,      623],
-                        ['2007/08',  139,      1110,        615,             968,           215,      609.4],
-                        ['2008/09',  136,      691,         629,             1026,          366,      569.6]
-                    ]);
+                $('#tender-charts').html('');
 
-                    var options = {
-                        title : 'Monthly Coffee Production by Country',
-                        vAxis: {title: 'Cups'},
-                        hAxis: {title: 'Month'},
-                        seriesType: 'bars',
-                        series: {5: {type: 'line'}}
-                    };
-                    const pie_1_chart = new GoogleCharts.api.visualization.ComboChart(document.getElementById('tender-charts'));
-                    pie_1_chart.draw(data);
-                }
+                var data = google.visualization.arrayToDataTable(data);
+
+                var options = {
+                    title : 'Monthly Coffee Production by Country',
+                    vAxis: {title: 'Cups'},
+                    hAxis: {title: 'Month'},
+                    seriesType: 'bars',
+                    series: {5: {type: 'line'}}
+                };
+
+                var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
+                chart.draw(data, options);
+
             },
+
+            loadGoogleChart: function () {
+                return  google.charts.load('current', {'packages':['corechart']})
+                    .then(()=>{
+                        this.isGoogleChartCoreLoaded = true;
+                    })
+            }
 
         },
 
@@ -446,6 +469,14 @@
             this.$eventGlobal.$on('showModalProductsDetails', (data) => {
                 this.init(data.addressId, data.purchaseId, data.address);
             });
+
+            this.loadGoogleChart();
+
+            // $('#product-modal').on('shown.bs.modal', () => {
+            //     if(this.isGoogleChartCoreLoaded){
+            //         this.viewTendersChart(DATA);
+            //     }
+            // })
         }
     }
 </script>

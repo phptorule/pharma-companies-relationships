@@ -109,7 +109,7 @@
                         });
                     });
 
-                GoogleCharts.load(drawChart);
+                // GoogleCharts.load(drawChart);
 
                 function drawChart() {
                     const data = google.visualization.arrayToDataTable([
