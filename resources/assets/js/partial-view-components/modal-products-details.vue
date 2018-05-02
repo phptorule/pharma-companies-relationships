@@ -135,15 +135,6 @@
 
 <script>
 
-    var DATA = [
-        ['Month', 'Bolivia'],
-        ['2004/05',  165],
-        ['2005/06',  135],
-        ['2006/07',  157],
-        ['2007/08',  139],
-        ['2008/09',  136]
-    ];
-
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import ProductsModal from '../mixins/show-products-details-modal';
@@ -278,6 +269,9 @@
             getTendersByProduct: function (product_id) {
             this.httpGet('/api/product-by-tenders/' + product_id)
                 .then(data => {
+                    var DATA = [
+                        ['Month', 'Product'],
+                    ];
                     this.tendersData = data;
                     data.forEach(tender => {
                         this.actual_cost += Math.ceil(Number(tender.actual_cost));
@@ -288,7 +282,7 @@
                         if((this.actual_year-1) == Number(tender.delivery_year)){
                             this.old_year_cost += Math.ceil(Number(tender.delivery_year));
                         }
-
+                        DATA.push([String(tender.tender_date),  Math.ceil(Number(tender.budgeted_cost))]);
                     })
                     this.spending_cost = Math.ceil(((this.actual_year_cost-this.old_year_cost)/this.old_year_cost)*100);
                     this.tenderOld = this.tendersData[0];
@@ -303,9 +297,10 @@
                     });
                     this.usedYears = this.actual_year - Math.ceil(data[data.length - 1].delivery_year);
 
+
                     setTimeout(()=>{
                         this.viewTendersChart(DATA);
-                    })
+                    },0)
                 });
             },
 
@@ -444,7 +439,7 @@
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title : 'Monthly Coffee Production by Country',
+                    title : 'Sales',
                     vAxis: {title: 'Cups'},
                     hAxis: {title: 'Month'},
                     seriesType: 'bars',

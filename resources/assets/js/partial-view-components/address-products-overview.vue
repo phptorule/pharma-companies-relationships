@@ -14,8 +14,7 @@
                         {{Math.ceil(purchase.total_price)}} |
                         {{Math.ceil(purchase.total_price)}}</p>
                 </div>
-                <div class="prod-graf" v-bind:id="i" style="width: 75px; height: 50px">
-                </div>
+                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
             <li>
                 <a href="" class="show-all-link">Show all products</a>
@@ -66,7 +65,7 @@
     import http from '../mixins/http';
     import ProductsModal from '../mixins/show-products-details-modal';
     import getPersonInitials from '../mixins/get-person-initials';
-    import {GoogleCharts} from 'google-charts';
+    // import {GoogleCharts} from 'google-charts';
 
     export default {
         mixins: [http, ProductsModal, getPersonInitials],
@@ -85,6 +84,7 @@
                 },
                 addressData:{},
                 graf: '',
+                isGoogleChartCoreLoaded: false,
             }
         },
 
@@ -92,8 +92,11 @@
             loadProductsDetails: function () {
                 this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
+
+                        var DATA_PRODUCT = [];
+
                         this.addressData = data;
-                        data.tenders.forEach(tender => {
+                        data.tenders.forEach((tender, i) => {
                             this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
                             this.productsData.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
                             this.productsData.tenders.push(tender);
@@ -106,37 +109,83 @@
                             this.productsData.purchases = this.productsData.purchases.sort(function (a, b) {
                                 return b.total_price - a.total_price;
                             });
-                        });
+
+                            DATA_PRODUCT[i] = [['Year', 'Sales']];
+
+                            DATA_PRODUCT[i].push([String(tender.tender_date),  Math.ceil(Number(tender.budgeted_cost))]);
+                       });
+
+
+                        this.productsData.purchases.forEach((purchase, i) => {
+
+                            if(i >= 3) {
+                                return;
+                            }
+
+                            setTimeout(()=>{
+                                this.viewTendersChart(DATA_PRODUCT[i], 'graph-container-'+i);
+                            },0)
+                        })
                     });
+
 
                 // GoogleCharts.load(drawChart);
 
-                function drawChart() {
-                    const data = google.visualization.arrayToDataTable([
-                        ['Year', 'Sales'],
-                        ['2017', 1914410],
-                        ['2018', 4204305],
-                        ['2019', 3144601]
-                    ]);
+                // function drawChart() {
+                //     const data = google.visualization.arrayToDataTable([
+                //         ['Year', 'Sales'],
+                //         ['2017', 1914410],
+                //         ['2018', 4204305],
+                //         ['2019', 3144601]
+                //     ]);
+                //
+                //     let options = {
+                //         title: 'Company Performance',
+                //         curveType: 'function',
+                //     };
+                //     for(let i = 0; i<3; i++) {
+                //         const pie_1_chart = new GoogleCharts.api.visualization.LineChart(document.getElementById(i));
+                //         pie_1_chart.draw(data);
+                //     }
+                // }
 
-                    let options = {
-                        title: 'Company Performance',
-                        curveType: 'function',
-                    };
-                    for(let i = 0; i<3; i++) {
-                        const pie_1_chart = new GoogleCharts.api.visualization.LineChart(document.getElementById(i));
-                        pie_1_chart.draw(data);
-                    }
-                }
             },
 
+            viewTendersChart: function(data, element_id){
+
+                $('#'+element_id).html('');
+
+                var data = google.visualization.arrayToDataTable(data);
+
+                var options = {
+                    title : 'Sales',
+                    vAxis: {title: 'Cups'},
+                    hAxis: {title: 'Month'},
+                    seriesType: 'bars',
+                    series: {5: {type: 'line'}}
+                };
+
+                var chart = new google.visualization.ComboChart(document.getElementById(element_id));
+                chart.draw(data, options);
+
+            },
+
+            loadGoogleChart: function () {
+                return  google.charts.load('current', {'packages':['corechart']})
+                    .then(()=>{
+                        this.isGoogleChartCoreLoaded = true;
+                    })
+            }
         }
         ,
         props: ['addressId'],
         mounted:
             function () {
                 if (this.addressId) {
-                    this.loadProductsDetails();
+                    this.loadGoogleChart()
+                        .then(()=>{
+                            this.loadProductsDetails();
+                        });
                 }
             }
 
