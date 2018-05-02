@@ -52,11 +52,11 @@
 
                             <div class="tab-content">
 
-                                <div v-if="activeTab == 'chart'" @click="viewTendersChart()">
+                                <div :class="{hidden: activeTab !== 'chart'}" @click="viewTendersChart()">
                                     <div id="tender-charts"></div>
                                 </div>
 
-                                <div class="row" v-if="activeTab == 'tender'">
+                                <div class="row" :class="{hidden: activeTab !== 'tender'}">
                                     <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
