@@ -167,7 +167,7 @@
                 activeTab: '',
                 tag_list: [],
                 appliedFilters: {
-                    tags: this.$route.query['tag-ids[]'] || [],
+                    tags: this.$route.query['tag-cons[]'] || [],
                     sortCost: this.$route.query['min-max[]'] || [],
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
@@ -202,6 +202,11 @@
                 })
             }
 
+        },
+
+        created: function () {
+
+            this.loadTagsFilter();
         },
 
         components: {
@@ -318,7 +323,7 @@
 
                 if (this.appliedFilters.tags.length) {
                     this.appliedFilters.tags.forEach(id => {
-                        queryStr += '&tag-ids[]=' + id;
+                        queryStr += '&tag-cons[]=' + id;
                     });
                 }
 
@@ -385,6 +390,13 @@
                     this.applyFilters(true);
                 },1000)
 
+            },
+
+            loadTagsFilter: function() {
+                return this.httpGet('/api/product-load-tags')
+                    .then(data => {
+                        this.tag_list = data;
+                    })
             },
 
             viewTendersChart: function(){

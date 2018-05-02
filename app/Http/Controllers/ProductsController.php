@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductTag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -70,6 +71,7 @@ class ProductsController extends Controller
 				$q->where( 'budgeted_cost', '<=', $requestParams['max'] );
 			});
 		}
+
 		if (isset($requestParams['tenders-search'])) {
 			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['tenders-search'].'%');
 		}
@@ -87,18 +89,11 @@ class ProductsController extends Controller
 		return $query;
 	}
 
-	function loadTagsValues($id)
+	public function loadTagsValues()
 	{
 
-		$tags = DB::table('rl_product_consumables')
-		           ->where('rl_address_tenders_purchase_products.purchase_id',$id)
-		           ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.consumable_id', '=', 'rl_product_consumables.id')
-		           ->get(['rl_product_consumables.id', 'rl_product_consumables.name']);
+		$tags = ProductTag::get(['id', 'name']);
 
-		$filters = [
-			'tag_list' => $tags
-		];
-
-		return response()->json($filters);
+		return response()->json($tags);
 	}
 }
