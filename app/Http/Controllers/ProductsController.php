@@ -86,4 +86,19 @@ class ProductsController extends Controller
 		           ->join('rl_address_tenders_budgets', 'rl_address_tenders_budgets.id', '=', 'rl_address_tenders_purchase.tender_id');
 		return $query;
 	}
+
+	function loadTagsValues($id)
+	{
+
+		$tags = DB::table('rl_product_consumables')
+		           ->where('rl_address_tenders_purchase_products.purchase_id',$id)
+		           ->join('rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.consumable_id', '=', 'rl_product_consumables.id')
+		           ->get(['rl_product_consumables.id', 'rl_product_consumables.name']);
+
+		$filters = [
+			'tag_list' => $tags
+		];
+
+		return response()->json($filters);
+	}
 }

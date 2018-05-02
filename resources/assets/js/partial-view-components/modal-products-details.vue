@@ -165,9 +165,7 @@
                 productsData: {},
                 tendersData: {},
                 activeTab: '',
-                filterObject: {
-                    tag_list: []
-                },
+                tag_list: [],
                 appliedFilters: {
                     tags: this.$route.query['tag-ids[]'] || [],
                     sortCost: this.$route.query['min-max[]'] || [],
@@ -196,7 +194,7 @@
 
         computed: {
             tagOptionsForDropDown: function () {
-                return this.filterObject.tag_list.map(tag => {
+                return this.tag_list.map(tag => {
                     return {
                         label: tag.name,
                         value: tag.id,
