@@ -33,27 +33,26 @@
 
                 <div class="address-overview">
 
+                    <customer-status-select
+                            :options="customerStatusList"
+                            :selected="addressData.customer_status"
+                            :addressId="addressId"
+                            @customerStatusUpdated="updateCustomerStatus"
+                    ></customer-status-select>
+
                     <h2>
                         <span>{{addressData.name}}</span>
                         <a href="#"><i class="fa fa-pencil"></i></a>
 
-                        <a href="javascript:void(0)" title="Show on Map" @click="showOnMap()"><i
-                                class="fa fa-map-marker"></i></a>
+                        <a href="javascript:void(0)" title="Show on Map" @click="showOnMap()"><i class="fa fa-map-marker"></i></a>
                     </h2>
-
-
-                    <select class="customer-status-select-box" @change="updateCustomerStatus()"
-                            v-model="addressData.customer_status">
-                        <option :value="null" hidden disabled="disabled" class="hidden">Customer Status</option>
-                        <option v-for="cs in customerStatusList" :value="cs.id">{{cs.name}}</option>
-                    </select>
 
                     <div style="clear: both"></div>
 
                     <p class="lab-chain">
                         <span class="current-chain-name">{{addressData.cluster.name}}</span>
 
-                        <br/>
+                        <br />
 
                         <span class="lab-chain-text">Lab Chain:</span>
                         <a href="#" class="add-to-chain-link">Add to Chain</a>
@@ -68,7 +67,7 @@
                     </p>
 
                     <p class="link-and-phone">
-                        <a :href="addressData.url" target="_blank">{{addressData.url.replace('https://','').replace('http://', '')}}</a>
+                        <a :href="addressData.url" target="_blank">{{addressData.url.replace('https://', '').replace('http://', '')}}</a>
                         <span class="pone-number">{{addressData.phone}}</span>
                     </p>
                 </div>
@@ -76,8 +75,7 @@
                 <div class="staff-overview address-box">
                     <div class="header">
                         <h3>Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
-                        <a href="javascript:void(0)" @click="showContactsChain(addressData)"
-                           class="view-contacts-chain">View Relationship Graph</a>
+                        <a href="javascript:void(0)" @click="showContactsChain(addressData)" class="view-contacts-chain">View Relationship Graph</a>
                     </div>
 
                     <p v-if="!addressData.people.length" class="empty-data-p">There are no employees yet.</p>
@@ -85,16 +83,13 @@
                     <ul class="staff-list">
                         <li v-if="i < 3" v-for="(person, i) in addressData.people">
                             <div class="image">
-                                <a href="javascript:void(0)"
-                                   @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">
+                                <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">
                                     <span class="person-initials">{{getPersonInitials(person.name)}}</span>
                                     <img :src="'/images/mask-'+i+'.png'" alt="">
                                 </a>
                             </div>
                             <div class="personal-info">
-                                <p class="name"><a href="javascript:void(0)"
-                                                   @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">{{person.name}}</a>
-                                </p>
+                                <p class="name"><a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">{{person.name}}</a></p>
                                 <p class="occupation">{{person.description}}</p>
                             </div>
                         </li>
@@ -102,8 +97,13 @@
 
                     <div style="clear: both"></div>
 
-                    <a href="javascript:void(0)" @click="showSlidedBox('all-employee')"
-                       class="address-box-show-more-link">Show all Employees</a>
+                    <a href="javascript:void(0)"
+                       v-if="addressData.people && addressData.people.length > 3"
+                       @click="showSlidedBox('all-employee')"
+                       class="address-box-show-more-link show-all-employees-link"
+                    >
+                        Show all Employees
+                    </a>
                 </div>
 
                 <div class="used-products-overview address-box">
@@ -122,28 +122,19 @@
 
                 <div class="lab-chain-members-overview address-box">
                     <div class="header">
-                        <h3>Lab Chain Members
-                            <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">
-                                ({{addressData.cluster.addresses.length}})
-                            </small>
-                        </h3>
+                        <h3>Lab Chain Members <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">({{addressData.cluster.addresses.length}})</small></h3>
                     </div>
 
-                    <p v-if="addressData.cluster.addresses.length === 1" class="empty-data-p">Current address is the
-                        only member in this chain</p>
+                    <p v-if="addressData.cluster.addresses.length === 1" class="empty-data-p">Current address is the only member in this chain</p>
 
                     <ul class="lab-chain-member-list">
                         <li v-if="c.id != addressData.id && i < 3" v-for="(c,i) in addressData.cluster.addresses">
-                            <h4>
-                                <router-link :to="'/address-details/'+c.id">{{c.name}}</router-link>
-                            </h4>
+                            <h4><router-link :to="'/address-details/'+c.id">{{c.name}}</router-link></h4>
                             <p>{{c.address}}</p>
                         </li>
                     </ul>
 
-                    <a href="javascript:void(0)" @click="showSlidedBox('lab-chain-details')"
-                       v-if="addressData.cluster.addresses.length > 1" class="address-box-show-more-link">Show all lab
-                        chain members</a>
+                    <a href="javascript:void(0)" @click="showSlidedBox('lab-chain-details')" v-if="addressData.cluster.addresses.length > 1" class="address-box-show-more-link">Lab Chain Details</a>
                 </div>
 
                 <div class="lab-news-overview address-box">
@@ -193,7 +184,8 @@
                 },
                 customerStatusList: [],
                 isExpanded: false,
-                sideComponentToDisplay: ''
+                sideComponentToDisplay: '',
+                isFirstLoad: true,
             }
         },
 
@@ -201,16 +193,22 @@
             $route: function (to) {
                 this.addressId = this.$route.params['id'];
                 this.loadAddressDetails();
+
+                if(!this.isFirstLoad) {
+                    this.showModalIfPersonHashDetected();
+                }
             }
         },
 
         methods: {
             loadAddressDetails: function () {
 
-                this.httpGet('/api/address-details/' + this.addressId)
+                return this.httpGet('/api/address-details/'+this.addressId)
                     .then(data => {
                         this.addressData = data;
-                    });
+                        document.title = this.addressData.name;
+                    })
+
             },
             loadCustomerStatusList: function () {
                 this.httpGet('/api/customer-statuses')
@@ -218,9 +216,10 @@
                         this.customerStatusList = data;
                     })
             },
-            updateCustomerStatus: function () {
-                this.httpPut('/api/address-details/' + this.addressId + '/update-status', {status: this.addressData.customer_status})
+            updateCustomerStatus: function (status) {
+                this.httpPut('/api/address-details/'+this.addressId+'/update-status', {status: status})
                     .then(data => {
+                        this.addressData.customer_status = data.customer_status;
                         alertify.notify('Status has been updated.', 'success', 3);
                     })
             },
@@ -241,6 +240,15 @@
 
             showOnMap: function () {
                 this.$eventGlobal.$emit('showSpecificItem', [this.addressData])
+            },
+
+            showModalIfPersonHashDetected: function () {
+                if(this.$route.hash.indexOf('#person-') !== -1) {
+
+                    let personId = this.$route.hash.replace('#person-','');
+
+                    this.showEmployeeDetailsModal(personId, this.addressId, this.addressData);
+                }
             }
         },
 
@@ -251,12 +259,18 @@
 
             this.addressId = this.$route.params.id;
 
-            this.loadAddressDetails();
+            this.loadAddressDetails()
+                .then(()=>{
+                    this.showModalIfPersonHashDetected();
+                    this.isFirstLoad = false;
+                });
+
             this.loadCustomerStatusList();
-            if (this.$route.query['all-employees']) {
-                setTimeout(() => {
+
+            if(this.$route.query['all-employees']){
+                setTimeout(()=>{
                     this.showSlidedBox('all-employee');
-                }, 0)
+                },0)
             }
         }
     }

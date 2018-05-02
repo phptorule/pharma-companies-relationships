@@ -17,7 +17,9 @@
         data: function () {
             return {
                 map: null,
-                FeatureCollection: {},
+                FeatureCollection: {
+                    features: []
+                },
                 isFirstLoad: true,
                 isGlobalSearchInitator: false,
                 cluster: {},
@@ -28,7 +30,30 @@
                 mapZoom: null,
                 mapCenterLng: null,
                 mapCenterLat: null,
-                moveendId: null
+                moveendId: null,
+                isMapMovedBecauseOfSearch: true,
+                isMapMovedBecauseOfFitMapContent: true
+            }
+        },
+
+        watch: {
+            $route: function (to) {
+
+                let zoom = this.$route.query['zoom'];
+                let centerLng = this.$route.query['center-lng'];
+                let centerLat = this.$route.query['center-lat'];
+
+                if(!zoom && !centerLng && !centerLat && this.$route.path == '/dashboard' && this.FeatureCollection.features.length) {
+                    this.fitMapBounds();
+                    return;
+                }
+                else if (!zoom || !centerLng || !centerLat) {
+                    return;
+                }
+
+                if (zoom != this.mapZoom || centerLng != this.mapCenterLng || centerLat != this.mapCenterLat) {
+                    this.map.flyTo({center: [centerLng, centerLat], zoom: zoom});
+                }
             }
         },
 
@@ -157,6 +182,7 @@
             },
 
             fitMapBounds: function () {
+                this.isMapMovedBecauseOfFitMapContent = true;
                 this.map.fitBounds(geojsonExtent(this.FeatureCollection), {maxZoom: 12, padding: 50});
             },
 
@@ -330,7 +356,71 @@
                 });
             },
 
-            detectMapChanges: function () {
+            updateAddressBarWithMapCoords: function () {
+                this.mapZoom = this.map.getZoom();
+                this.mapCenterLng = this.map.getCenter().lng;
+                this.mapCenterLat = this.map.getCenter().lat;
+
+                let fullUrl = this.$route.fullPath;
+                let hash = this.$route.hash;
+
+                if (fullUrl.indexOf('?') === -1) {
+                    fullUrl += '?';
+                }
+                else {
+                    fullUrl += '&';
+                }
+
+                if(fullUrl.indexOf('zoom') === -1) {
+                    fullUrl += 'zoom='+this.mapZoom + '&center-lng=' + this.mapCenterLng + '&center-lat=' + this.mapCenterLat;
+                }
+                else {
+                    // debugger;
+
+                    let arr;
+
+                    if (fullUrl.indexOf('?') === -1){
+                        arr = fullUrl.split('&');
+                    }
+                    else {
+                        arr = fullUrl.split('?');
+                        arr = arr[1].split('&');
+                    }
+
+                    let zoom, centerLng, centerLat;
+
+                    arr = arr.filter(el => {
+                        if(el.indexOf('zoom') !== -1) {
+                            zoom = 'zoom='+this.mapZoom;
+                            return false;
+                        }
+                        if(el.indexOf('center-lng') !== -1) {
+                            centerLng = '&center-lng='+this.mapCenterLng;
+                            return false;
+                        }
+                        if(el.indexOf('center-lat') !== -1) {
+                            centerLat = '&center-lat='+this.mapCenterLat;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    if(arr.length) {
+                        fullUrl = this.$route.path + '?'+ arr.join('&') + '&' + zoom + centerLng + centerLat;
+                    }
+                    else {
+                        fullUrl = this.$route.path + '?' + zoom + centerLng + centerLat;
+                    }
+                }
+
+                if(hash) {
+                    fullUrl += hash;
+                }
+
+                this.$router.push(fullUrl);
+            },
+
+            detectMapMoveEnds: function () {
                 this.map.on('moveend', (e)=>{
 
                     if(this.moveendId) {
@@ -339,65 +429,23 @@
 
                     this.moveendId = setTimeout(()=>{
 
-                        this.mapZoom = this.map.getZoom();
-                        this.mapCenterLng = this.map.getCenter().lng;
-                        this.mapCenterLat = this.map.getCenter().lat;
+                        if(this.isMapMovedBecauseOfSearch) {
 
-                        let fullUrl = this.$route.fullPath;
-
-                        if (fullUrl.indexOf('?') === -1) {
-                            fullUrl += '?';
-                        }
-                        else {
-                            fullUrl += '&';
+                            this.isMapMovedBecauseOfSearch = false;
+                            this.isMapMovedBecauseOfFitMapContent = false;
+                            return;
                         }
 
-                        if(fullUrl.indexOf('zoom') === -1) {
-                            fullUrl += 'zoom='+this.mapZoom + '&center-lng=' + this.mapCenterLng + '&center-lat=' + this.mapCenterLat;
-                        }
-                        else {
-                            // debugger;
+                        if(this.isMapMovedBecauseOfFitMapContent) {
 
-                            let arr;
-
-                            if (fullUrl.indexOf('?') === -1){
-                                arr = fullUrl.split('&');
-                            }
-                            else {
-                                arr = fullUrl.split('?');
-                                arr = arr[1].split('&');
-                            }
-
-                            let zoom, centerLng, centerLat;
-
-                            arr = arr.filter(el => {
-                                if(el.indexOf('zoom') !== -1) {
-                                    zoom = 'zoom='+this.mapZoom;
-                                    return false;
-                                }
-                                if(el.indexOf('center-lng') !== -1) {
-                                    centerLng = '&center-lng='+this.mapCenterLng;
-                                    return false;
-                                }
-                                if(el.indexOf('center-lat') !== -1) {
-                                    centerLat = '&center-lat='+this.mapCenterLat;
-                                    return false;
-                                }
-                                return true;
-                            });
-
-                            if(arr.length) {
-                                fullUrl = this.$route.path + '?'+ arr.join('&') + '&' + zoom + centerLng + centerLat;
-                            }
-                            else {
-                                fullUrl = this.$route.path + '?' + zoom + centerLng + centerLat;
-                            }
+                            this.isMapMovedBecauseOfFitMapContent = false;
+                            this.isMapMovedBecauseOfSearch = false;
+                            return;
                         }
 
+                        this.updateAddressBarWithMapCoords();
 
-                        this.$router.push(fullUrl);
-
-                    },1000);
+                    },2000);
 
                 })
             }
@@ -430,12 +478,14 @@
 
                             this.listenToMarkerClicks();
 
-                            this.detectMapChanges();
+                            this.detectMapMoveEnds();
 
                         });
                 });
 
                 this.$eventGlobal.$on('filtersHaveBeenApplied', (queryStr) => {
+
+                    this.isMapMovedBecauseOfSearch = true;
 
                     this.loadAddresses(queryStr)
                         .then((data) => {
@@ -444,6 +494,9 @@
                 });
 
                 this.$eventGlobal.$on('showSpecificItem', (data)=>{
+
+                    this.isMapMovedBecauseOfSearch = true;
+
                     this.updateMapLayers(data);
                 });
 

@@ -7,14 +7,15 @@
             <div class="sidebar-form">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group">
-                            <select v-model="appliedFilters.type" @change="applyFilters()" class="form-control select-filter type-filter">
-                                <option selected class="hidden" value="">Type</option>
-                                <option value="">All</option>
-                                <option v-for="type in filterObject.customer_types" :value="type.id">
-                                    {{type.name}}
-                                </option>
-                            </select>
+                        <div class="form-group filter-panel">
+
+                            <single-dropdown-select
+                                    class="form-control select-filter type-filter"
+                                    :options="customerTypesForFilter"
+                                    @changed="applyTypeFilter"
+                                    :name="'Type'"
+                                    ref="typeSingleDropdownSelect"
+                            ></single-dropdown-select>
 
                             <multiple-dropdown-select
                                     class="form-control select-filter used-products-filter"
@@ -32,15 +33,14 @@
                                     ref="tagMultipleDropdownSelect"
                             ></multiple-dropdown-select>
 
-                            <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
-                                <option selected class="hidden" value="">Sort By</option>
-                                <option value="name-asc">Name &uarr;</option>
-                                <option value="name-desc">Name &darr;</option>
-                                <option value="people-asc">Employee &uarr;</option>
-                                <option value="people-desc">Employee &darr;</option>
-                                <option value="products-asc">Products &uarr;</option>
-                                <option value="products-desc">Products &darr;</option>
-                            </select>
+                            <single-dropdown-select
+                                    class="form-control select-filter type-filter"
+                                    :options="sortByOptionsForFilter"
+                                    :isHiddenEmptyOption="true"
+                                    @changed="applySortByFilter"
+                                    :name="'Sort By'"
+                                    ref="sortBySingleDropdownSelect"
+                            ></single-dropdown-select>
 
                             <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
                                 <i class="fa fa-remove"></i>
@@ -161,7 +161,8 @@
                 addressesTotal: 0,
                 filterObject: {
                     used_product_list: [],
-                    tag_list: []
+                    tag_list: [],
+                    customer_types: []
                 },
                 appliedFilters: {
                     usedProducts: this.$route.query['used-product-ids[]'] || [],
@@ -177,25 +178,21 @@
                 },
                 totalPointsInCurrentMap: 0,
                 multipleDropdownSelects: [],
-                queryUrl: ''
+                queryUrl: '',
+                oldQueryUrl: ''
             }
         },
 
         watch: {
             $route: function (to) {
-                // if(this.$route.query['address-ids']){
-                //     this.loadAddressesPaginated(true);
-                // }
-
-                // console.log('this.$route.query', this.$route.query);
-
-                if(this.$route.query.hasOwnProperty('zoom')) {
-                    return;
-                }
 
                 this.initFilters();
 
                 this.composeQueryUrl();
+
+                if(this.oldQueryUrl == this.queryUrl) {
+                    return;
+                }
 
                 this.$refs.paginationDirective.setPage(1);
 
@@ -203,6 +200,24 @@
         },
 
         computed: {
+
+            sortByOptionsForFilter: function () {
+                return [
+                    {value: 'name-asc', label: 'Name &uarr;'},
+                    {value: 'name-desc', label: 'Name &darr;'},
+                    {value: 'people-asc', label: 'Employee &uarr;'},
+                    {value: 'people-desc', label: 'Employee &darr;'},
+                    {value: 'products-asc', label: 'Products &uarr;'},
+                    {value: 'products-desc', label: 'Products &darr;'},
+                ]
+            },
+
+            customerTypesForFilter: function () {
+                return this.filterObject.customer_types.map(el => {
+                    return {label: el.name, value: el.id};
+                })
+            },
+
             usedProductOptionsForDropDown: function () {
                 return this.filterObject.used_product_list.map(product => {
                     return {
@@ -234,6 +249,8 @@
 
         mounted: function () {
 
+            document.title = 'Labscape';
+
             $('ul.sidebar-list').height(window.innerHeight - 325);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
@@ -262,6 +279,11 @@
 
             },
 
+            applyTypeFilter: function (data) {
+                this.appliedFilters.type = data;
+                this.applyFilters();
+            },
+
             applyUsedProductsFilter: function (data) {
                 this.appliedFilters.usedProducts = data;
                 this.applyFilters();
@@ -270,6 +292,11 @@
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
                 this.applyFilters();
+            },
+
+            applySortByFilter: function (data) {
+                this.appliedFilters.sortBy = data;
+                this.applyFilters(true);
             },
 
             listenToTotalPointsDisplayedOnMapChanged: function () {
@@ -331,6 +358,8 @@
                         }
 
                         this.isFirstLoad = false;
+
+                        this.oldQueryUrl = this.queryUrl;
                     })
 
             },
@@ -363,8 +392,10 @@
 
             resetFilters: function () {
 
+                this.$refs.typeSingleDropdownSelect.resetSelectedValues();
                 this.$refs.productsMultipleDropdownSelect.resetSelectedValues();
                 this.$refs.tagMultipleDropdownSelect.resetSelectedValues();
+                this.$refs.sortBySingleDropdownSelect.resetSelectedValues();
 
                 this.appliedFilters = {
                     usedProducts: [],
