@@ -64,6 +64,12 @@ class ProductsController extends Controller
 			$query->orderBy($field,$direction);
 		}
 
+		if (isset($requestParams['min'])&&isset($requestParams['max'])) {
+			$query->where('budgeted_cost','>=',$requestParams['min'])
+			->where(function ($q) use ($requestParams) {
+				$q->where( 'budgeted_cost', '<=', $requestParams['max'] );
+			});
+		}
 		if (isset($requestParams['tenders-search'])) {
 			$query->where('rl_address_tenders_purchase.name', 'LIKE', '%'.$requestParams['tenders-search'].'%');
 		}

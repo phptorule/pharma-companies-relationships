@@ -74,7 +74,8 @@
                                                 <input class="max-value" v-model="tendersCost.value[1]">
                                             </div>
                                             <div class="col-md-12">
-                                                <vue-slider v-bind="tendersCost"
+                                                <vue-slider ref="sortCost"
+                                                            v-bind="tendersCost"
                                                             v-model="tendersCost.value">
 
                                                 </vue-slider>
@@ -169,6 +170,7 @@
                 },
                 appliedFilters: {
                     tags: this.$route.query['tag-ids[]'] || [],
+                    sortCost: this.$route.query['min-max[]'] || [],
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
                     tendersSearchInput: this.$route.query['tenders-search'] || '',
@@ -209,6 +211,12 @@
         },
 
         watch: {
+            tendersCost: {
+                handler: function() {
+                    this.filterCost();
+                },
+                deep: true
+            },
             $route: function (to) {
                 this.initFilters();
 
@@ -274,6 +282,7 @@
 
             getTendersPaginate: function (product_id) {
                 let url = '/api/product-by-tenders-paginated/' + product_id +'?page=' + this.pagination.currentPage + this.queryUrl;
+                console.log(url);
                 this.httpGet(url)
                     .then(data => {
                         this.tendersTotal = data.total;
@@ -319,6 +328,10 @@
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
                 }
 
+                if (this.appliedFilters.sortCost.length) {
+                    queryStr += '&min=' + this.appliedFilters.sortCost[0]+'&max=' + this.appliedFilters.sortCost[1];
+                }
+
                 this.queryUrl = queryStr;
 
                 return queryStr;
@@ -361,6 +374,21 @@
 
                 },1000)
             },
+
+            filterCost: function () {
+
+                if(this.timeOutId){
+                    clearTimeout(this.timeOutId)
+                }
+
+                this.timeOutId = setTimeout(()=>{
+                    this.appliedFilters.sortCost[0] = this.tendersCost.value[0];
+                    this.appliedFilters.sortCost[1] = this.tendersCost.value[1];
+                    this.applyFilters(true);
+                },1000)
+
+            },
+
             viewTendersChart: function(){
                 GoogleCharts.load(drawChart);
 
