@@ -199,6 +199,7 @@
                 spending_cost: null,
                 usedYears: null,
                 isGoogleChartCoreLoaded: false,
+                graphLoadedModal: false,
             }
         },
 
@@ -458,6 +459,9 @@
 
             viewTendersChart: function(data){
 
+                if(this.graphLoadedModal){
+                    return;
+                }
                 $('#tender-charts').html('');
 
                 var data = google.visualization.arrayToDataTable(data);
@@ -472,6 +476,7 @@
 
                 var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
                 chart.draw(data, options);
+                this.graphLoadedModal = true;
 
             },
 
