@@ -135,9 +135,9 @@
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title : 'Sales',
-                    vAxis: {title: 'Cups'},
-                    hAxis: {title: 'Month'},
+                    title : '',
+                    vAxis: {title: ''},
+                    hAxis: {title: ''},
                     seriesType: 'bars',
                     tooltip: {trigger: 'none'},
                     legend: {position: 'none'},

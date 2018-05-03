@@ -27,15 +27,15 @@
                                     {{usedYears}}
                                 </p>
                                 <p class="text">
-                                    <span><i class="fa fa-arrow-circle-up"></i></span> Used for years
+                                    <span><i class="fa fa-calendar"></i></span> Used for years
                                 </p>
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="budgeted_cost">
-                                    {{budgeted_cost | currency }}  <span> <i class="fa fa-ruble"></i></span>
+                                    {{budgeted_cost | currency }}
                                 </p>
                                 <p class="text">
-                                    Tot spent
+                                    <span> <i class="fa fa-ruble"></i></span> Tot spent
                                 </p>
                             </div>
                             <div class="col-md-4">
@@ -46,7 +46,7 @@
                                     0 %
                                 </p>
                                 <p class="text">
-                                    <span><i class="fa fa-calendar-check"></i></span> Projected spending {{actual_year+1}}
+                                    <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending {{actual_year+1}}
                                 </p>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                     <div id="tender-charts"></div>
                                 </div>
 
-                                <div class="row" :class="{hidden: activeTab !== 'tender'}">
+                                <div class="row" :class="{hidden: activeTab !== 'tender'}" >
                                     <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
@@ -88,8 +88,9 @@
                                             <div class="col-md-12">
                                                 <vue-slider ref="sortCost"
                                                             v-bind="tendersCost"
-                                                            v-model="tendersCost.value">
-
+                                                            v-model="tendersCost.value"
+                                                            :show="showTenderCost"
+                                                >
                                                 </vue-slider>
                                             </div>
                                         </div>
@@ -150,8 +151,8 @@
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import ProductsModal from '../mixins/show-products-details-modal';
-    // import {GoogleCharts} from 'google-charts';
     import vueSlider from 'vue-slider-component';
+
 
     export default {
         mixins: [http, getPersonInitials, ProductsModal],
@@ -160,8 +161,9 @@
             return {
                 tendersCost: {
                     value: [],
-                    min: null,
-                    max: null,
+                    min: 0,
+                    width: '100%',
+                    max: 100,
                     disabled: false,
                     show: true,
                     tooltip: 'always',
@@ -203,6 +205,7 @@
                 usedYears: null,
                 isGoogleChartCoreLoaded: false,
                 graphLoadedModal: false,
+                showTenderCost: false,
             }
         },
 
@@ -236,12 +239,19 @@
         },
 
         watch: {
+            show (val) {
+                if (val) {
+                    this.$nextTick(() => this.$refs.sortCost.refresh());
+                }
+            },
+
             tendersCost: {
                 handler: function() {
                     this.filterCost();
                 },
                 deep: true
             },
+
             $route: function (to) {
 
                 if($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
@@ -250,8 +260,6 @@
                     this.initFilters();
 
                     this.composeQueryUrl();
-
-                    console.log('here');
 
                     this.$refs.paginationDirective.setPage(1);
                 }
@@ -291,14 +299,24 @@
 
             },
 
+            test: function () {
+                console.log('test');
+            },
+
             getTendersByProduct: function (product_id) {
             this.httpGet('/api/product-by-tenders/' + product_id)
                 .then(data => {
                     var DATA = [
                         ['Month', 'Sales'],
                     ];
-                    // this.tendersData = '';
+                    this.tendersData = '';
                     this.tendersData = data;
+                    this.tendersCost.min = 0;
+                    this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
+                    this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
+
+                    console.log(this.tendersCost.value);
+
                     let tenderData = '';
                     let tenderBudget = null;
                     data.forEach(tender => {
@@ -327,8 +345,8 @@
                     data = data.sort(function (a, b) {
                         return b.budgeted_cost - a.budgeted_cost;
                     });
-                    this.tendersCost.min = this.tendersCost.value[0] = 0;
-                    this.tendersCost.max = this.tendersCost.value[1] = Math.ceil(data[0].budgeted_cost);
+
+
                     data = data.sort(function (a, b) {
                         return b.delivery_year - a.delivery_year;
                     });
@@ -346,6 +364,12 @@
 
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+                if(tabName == 'tender'){
+                    this.showTenderCost = true;
+                }else{
+                    this.showTenderCost = false;
+                }
+
             },
 
             getTendersPaginate: function (product_id) {

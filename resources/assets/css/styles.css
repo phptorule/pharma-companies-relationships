@@ -2753,7 +2753,7 @@ ul.tenders-list li{
 }
 
 ul.tenders-list > li:hover{
-    box-shadow: 0 0 50px rgba(0,0,0,.15);
+    /*box-shadow: 0 0 50px rgba(0,0,0,.15);*/
 }
 
 ul.tenders-list li:first-child .item{
@@ -2800,4 +2800,33 @@ ul.tenders-list li .item p{
     text-align: left;
     color: #3a444f;
     margin-top: 10px;
+}
+
+ul.tenders-list li .item h3{
+    background-color: #ffffff;
+}
+
+ul.tenders-list .item p.tender-winner{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: left;
+    color: #3a444f;
+}
+
+ul.tenders-list .item p.tender-reward{
+    opacity: 0.5;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.64;
+    letter-spacing: normal;
+    text-align: left;
+    color: #3a444f;
 }
