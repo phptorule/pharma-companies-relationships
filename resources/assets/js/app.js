@@ -3,6 +3,7 @@ import router from './routes';
 import VueRouter from 'vue-router';
 import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
+import JsonExcel from 'vue-json-excel'
 
 window.Vue = require('vue');
 
@@ -28,6 +29,7 @@ Vue.component('lab-chain-details', require('./partial-view-components/lab-chain-
 Vue.component('customer-status-select', require('./partial-view-components/customer-status-select'));
 Vue.component('address-products-overview', require('./partial-view-components/address-products-overview'));
 Vue.component('modal-products-details', require('./partial-view-components/modal-products-details'));
+Vue.component('downloadExcel', JsonExcel);
 Vue.component('pagination', Pagination);
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus

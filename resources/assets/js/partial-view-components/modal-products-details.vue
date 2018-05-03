@@ -133,7 +133,16 @@
                                             <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="2" @paginate="pageChanged"></pagination>
                                         </div>
                                         <div class="col-md-2 export-excel">
-                                            <button class="btn btn-primary">export-excel</button>
+                                            <download-excel
+                                                    class="btn btn-primary"
+                                                    :data="tendersExport.json_data"
+                                                    :fields="tendersExport.json_fields"
+                                                    name="tenders.xls"
+                                                    @click="exportToExel(productId)"
+                                            >
+                                                export-excel
+                                            </download-excel>
+                                            <!--<button class="btn btn-primary">export-excel</button>-->
                                         </div>
                                     </div>
                                 </div>
@@ -206,6 +215,18 @@
                 isGoogleChartCoreLoaded: false,
                 graphLoadedModal: false,
                 showTenderCost: false,
+                tendersExport: {
+                    json_fields: {
+                        'Tender name': 'name',
+                        'Total price': 'total_price',
+                        'Quantity': 'quantity',
+                    },
+                    json_data: [],
+                    json_meta: [[{
+                                'key': 'charset',
+                                'value': 'utf-8'
+                            }]],
+                }
             }
         },
 
@@ -299,10 +320,6 @@
 
             },
 
-            test: function () {
-                console.log('test');
-            },
-
             getTendersByProduct: function (product_id) {
             this.httpGet('/api/product-by-tenders/' + product_id)
                 .then(data => {
@@ -380,6 +397,7 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
+                this.exportToExel(product_id);
             },
 
             applyFilters: function (isOnlySortingChanged) {
@@ -494,6 +512,19 @@
                     .then(data => {
                         this.tag_list = data;
                     })
+            },
+
+            exportToExel: function(product_id) {
+
+                console.log(product_id);
+
+                let url = '/api/product-by-tenders-to-exel/' + product_id +'?' + this.composeQueryUrl();
+                console.log(url);
+                this.httpGet(url)
+                    .then(data => {
+                        this.tendersExport.json_data = data;
+                        console.log(data);
+                    });
             },
 
             viewTendersChart: function(data){

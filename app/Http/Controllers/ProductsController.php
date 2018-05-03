@@ -34,6 +34,15 @@ class ProductsController extends Controller
 		return response()->json($tenders);
 	}
 
+	public function getProductByTendersToExel($id)
+	{
+		$query = $this->prepareTendersQuery($id);
+
+		$tenders = $query->get();
+
+		return response()->json($tenders);
+	}
+
 	public function prepareTendersQuery($id)
 	{
 

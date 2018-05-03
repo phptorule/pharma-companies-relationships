@@ -25,6 +25,7 @@
         "jquery-ui": "^1.12.1",
         "mapbox-gl": "^0.44.2",
         "vue-for-range": "^1.0.2",
+        "vue-json-excel": "^0.2.5",
         "vue-pagination-2": "^1.6.1",
         "vue-range-slider": "^0.6.0",
         "vue-router": "^3.0.1",
