@@ -24,17 +24,26 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number" v-if="usedYears">
-                                    Used for <i class="fas fa-arrow-circle-up"></i> {{usedYears}} years
+                                    {{usedYears}}
+                                </p>
+                                <p class="text">
+                                    <span><i class="fa fa-arrow-circle-up"></i></span> Used for years
                                 </p>
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="budgeted_cost">
-                                    Tot $ {{budgeted_cost}} spent
+                                    {{budgeted_cost | currency }}  <span> <i class="fa fa-ruble"></i></span>
+                                </p>
+                                <p class="text">
+                                    Tot spent
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number" v-if="spending_cost">
-                                    {{spending_cost}} % Projected spending {{actual_year+1}}
+                                <p class="number" v-if="spending_cost != 'Infinity'">
+                                    {{spending_cost}} %
+                                </p>
+                                <p class="text">
+                                    <span><i class="fa fa-calendar-check"></i></span> Projected spending {{actual_year+1}}
                                 </p>
                             </div>
                         </div>
@@ -194,6 +203,7 @@
         },
 
         computed: {
+
             tagOptionsForDropDown: function () {
                 return this.tag_list.map(tag => {
                     return {
@@ -203,6 +213,13 @@
                 })
             }
 
+        },
+
+        filters: {
+            currency: function(value) {
+                value = String(value);
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
+            },
         },
 
         created: function () {
@@ -247,7 +264,12 @@
         methods: {
             init: function (addressId, purchaseId, address) {
                 $('#product-modal').modal('show');
-
+                this.tendersData = null;
+                this.actual_cost = null;
+                this.budgeted_cost = null;
+                this.spending_cost = null;
+                this.actual_year_cost = null;
+                this.old_year_cost = null;
                 this.addressId = addressId;
                 this.purchaseId = purchaseId;
                 this.currentAddress = address;
@@ -259,8 +281,6 @@
                             this.productId = this.productsData.product_id;
                             this.getTendersByProduct(this.productId);
                             this.getTendersPaginate(this.productId);
-
-
                         })
                     });
 
@@ -270,8 +290,9 @@
             this.httpGet('/api/product-by-tenders/' + product_id)
                 .then(data => {
                     var DATA = [
-                        ['Month', 'Product'],
+                        ['Month', 'Sales'],
                     ];
+                    // this.tendersData = '';
                     this.tendersData = data;
                     data.forEach(tender => {
                         this.actual_cost += Math.ceil(Number(tender.actual_cost));
@@ -295,9 +316,12 @@
                     data = data.sort(function (a, b) {
                         return b.delivery_year - a.delivery_year;
                     });
-                    this.usedYears = this.actual_year - Math.ceil(data[data.length - 1].delivery_year);
-
-
+                    let delivery_year = Math.ceil(data[data.length - 1].delivery_year);
+                    if(this.actual_year > delivery_year && delivery_year != 0){
+                        this.usedYears = this.actual_year - delivery_year +1;
+                    }else{
+                        this.usedYears = 1;
+                    }
                     setTimeout(()=>{
                         this.viewTendersChart(DATA);
                     },0)
@@ -440,7 +464,7 @@
 
                 var options = {
                     title : 'Sales',
-                    vAxis: {title: 'Cups'},
+                    vAxis: {title: 'Budget'},
                     hAxis: {title: 'Month'},
                     seriesType: 'bars',
                     series: {5: {type: 'line'}}
@@ -466,12 +490,6 @@
             });
 
             this.loadGoogleChart();
-
-            // $('#product-modal').on('shown.bs.modal', () => {
-            //     if(this.isGoogleChartCoreLoaded){
-            //         this.viewTendersChart(DATA);
-            //     }
-            // })
         }
     }
 </script>

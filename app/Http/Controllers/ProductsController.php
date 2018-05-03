@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductTag;
+use App\Models\ProductConsumable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -98,7 +98,7 @@ class ProductsController extends Controller
 	public function loadTagsValues()
 	{
 
-		$tags = ProductTag::get(['id', 'name']);
+		$tags = ProductConsumable::get(['id', 'name']);
 
 		return response()->json($tags);
 	}
