@@ -299,6 +299,8 @@
                     ];
                     // this.tendersData = '';
                     this.tendersData = data;
+                    let tenderData = '';
+                    let tenderBudget = null;
                     data.forEach(tender => {
                         this.actual_cost += Math.ceil(Number(tender.actual_cost));
                         this.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
@@ -308,7 +310,16 @@
                         if((this.actual_year-1) == Number(tender.delivery_year)){
                             this.old_year_cost += Math.ceil(Number(tender.delivery_year));
                         }
-                        DATA.push([String(tender.tender_date),  Math.ceil(Number(tender.budgeted_cost))]);
+
+                        let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
+
+                        if(String(date_tender) != tenderData){
+                            tenderBudget += Math.ceil(Number(tender.budgeted_cost));
+                            tenderData = String(date_tender);
+                            DATA.push([String(date_tender),  tenderBudget]);
+                        }else{
+                            tenderBudget += Math.ceil(Number(tender.budgeted_cost));
+                        }
                     })
                     this.spending_cost = Math.ceil(((this.actual_year_cost-this.old_year_cost)/this.old_year_cost)*100);
                     this.tenderOld = this.tendersData[0];
@@ -329,7 +340,7 @@
                     }
                     setTimeout(()=>{
                         this.viewTendersChart(DATA);
-                    },0)
+                    },100)
                 });
             },
 
@@ -398,7 +409,7 @@
                 }
 
                 this.queryUrl = queryStr;
-                console.log(' this.queryUrl' , this.queryUrl);
+                // console.log(' this.queryUrl' , this.queryUrl);
                 return queryStr;
             },
 
@@ -473,8 +484,9 @@
                 var options = {
                     title : 'Sales',
                     vAxis: {title: 'Budget'},
-                    hAxis: {title: 'Month'},
+                    hAxis: {baselineColor: 'none',ticks: []},
                     seriesType: 'bars',
+                    legend: 'none',
                     series: {5: {type: 'line'}}
                 };
 
