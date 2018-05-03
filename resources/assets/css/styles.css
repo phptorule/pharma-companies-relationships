@@ -2358,6 +2358,38 @@ ul.staff-list li .personal-info .name a:hover{
     font-size: 12px;
 }
 
+a.tender-cost{
+    color: #fff;
+}
+
+p.tender-year{
+    text-align: left;
+    margin: 0px 8px 3px;
+}
+
+p.tender-year-center{
+    text-align: left;
+    margin: 0px 5px 3px;
+}
+p.tender-percent{
+    text-align: right;
+    margin: 0 0 3px;
+}
+
+a.tender-amount-btn{
+    background: #4a90e3;
+    color: #fff;
+    display: block;
+    float: right;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Montserrat;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: left;
+    margin: 0;
+    transition: background-color 0.1s
+}
 
 #product-modal .modal-header{
     background: #f7f7f7;

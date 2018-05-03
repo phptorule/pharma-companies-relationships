@@ -25,33 +25,19 @@
                 <ul>
                     <li v-if="productsData.actual_cost && productsData.budgeted_cost" class="tender-list">
                         <div class="tender">
-                            Last year:
-                            <br>
-                            <small class="tender-cost">
-                            </small>
-                            <br>
-                            <small class="tender-cost">(+%)
-                            </small>
+                            <p class="tender-year">Last year:</p>
+                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
+                            <p class="tender-percent">(+%)</p>
                         </div>
                         <div class="tender">
-                            This year:
-                            <br>
-                            <small class="tender-cost">
-                                {{productsData.actual_cost  | currency}}
-                            </small>
-                            <br>
-                            <small class="tender-cost">(+%)
-                            </small>
+                            <p class="tender-year-center">This year:</p>
+                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost  | currency}}</a>
+                            <p class="tender-percent">(+%)</p>
                         </div>
                         <div class="tender">
-                            Next year:
-                            <br>
-                            <small class="tender-cost">
-                                {{productsData.budgeted_cost  | currency}}
-                            </small>
-                            <br>
-                            <small class="tender-cost">(+%)
-                            </small>
+                            <p class="tender-year">Next year:</p>
+                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
+                            <p class="tender-percent">(+%)</p>
                         </div>
                     </li>
                 </ul>
