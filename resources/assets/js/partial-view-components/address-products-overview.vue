@@ -10,9 +10,9 @@
                 </div>
                 <div class="prod-info">
                     <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name}}</p>
-                    <p class="name" v-if="purchase.total_price">{{Math.ceil(purchase.total_price)}} |
-                        {{Math.ceil(purchase.total_price)}} |
-                        {{Math.ceil(purchase.total_price)}}</p>
+                    <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
+                        {{Math.ceil(purchase.total_price)  | currency}} |
+                        {{Math.ceil(purchase.total_price)  | currency}}</p>
                 </div>
                 <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
@@ -27,7 +27,7 @@
                         <div class="tender">
                             Last year:
                             <br>
-                            <small class="tender-cost">$
+                            <small class="tender-cost">
                             </small>
                             <br>
                             <small class="tender-cost">(+%)
@@ -36,8 +36,8 @@
                         <div class="tender">
                             This year:
                             <br>
-                            <small class="tender-cost">$
-                                {{productsData.actual_cost}}
+                            <small class="tender-cost">
+                                {{productsData.actual_cost  | currency}}
                             </small>
                             <br>
                             <small class="tender-cost">(+%)
@@ -46,8 +46,8 @@
                         <div class="tender">
                             Next year:
                             <br>
-                            <small class="tender-cost">$
-                                {{productsData.budgeted_cost}}
+                            <small class="tender-cost">
+                                {{productsData.budgeted_cost  | currency}}
                             </small>
                             <br>
                             <small class="tender-cost">(+%)
@@ -65,7 +65,6 @@
     import http from '../mixins/http';
     import ProductsModal from '../mixins/show-products-details-modal';
     import getPersonInitials from '../mixins/get-person-initials';
-    // import {GoogleCharts} from 'google-charts';
 
     export default {
         mixins: [http, ProductsModal, getPersonInitials],
@@ -86,6 +85,13 @@
                 graf: '',
                 isGoogleChartCoreLoaded: false,
             }
+        },
+
+        filters: {
+            currency: function(value) {
+                    value = String(value);
+                    return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')+ ' Rub';
+                },
         },
 
         methods: {
@@ -127,28 +133,6 @@
                             },0)
                         })
                     });
-
-
-                // GoogleCharts.load(drawChart);
-
-                // function drawChart() {
-                //     const data = google.visualization.arrayToDataTable([
-                //         ['Year', 'Sales'],
-                //         ['2017', 1914410],
-                //         ['2018', 4204305],
-                //         ['2019', 3144601]
-                //     ]);
-                //
-                //     let options = {
-                //         title: 'Company Performance',
-                //         curveType: 'function',
-                //     };
-                //     for(let i = 0; i<3; i++) {
-                //         const pie_1_chart = new GoogleCharts.api.visualization.LineChart(document.getElementById(i));
-                //         pie_1_chart.draw(data);
-                //     }
-                // }
-
             },
 
             viewTendersChart: function(data, element_id){
