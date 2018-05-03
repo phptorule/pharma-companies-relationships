@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ul class="staff-list">
+        <ul class="staff-list" v-if="productsData.purchases.length">
             <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id, addressData)">
@@ -20,28 +20,35 @@
                 <a href="" class="show-all-link">Show all products</a>
             </li>
         </ul>
+        <ul class="staff-list" v-else>
+            <li>Products is empty
+            </li>
+        </ul>
         <div class="header">
-            <h3>Tenders
-                <ul>
-                    <li v-if="productsData.actual_cost && productsData.budgeted_cost" class="tender-list">
-                        <div class="tender">
+            <h3>Tenders</h3>
+                <ul v-if="productsData.actual_cost && productsData.budgeted_cost">
+                    <li class="tender-list">
+                        <div class="tender" v-if="productsData.budgeted_cost">
                             <p class="tender-year">Last year:</p>
                             <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
                             <p class="tender-percent">(+%)</p>
                         </div>
-                        <div class="tender">
+                        <div class="tender" v-if="productsData.actual_cost">
                             <p class="tender-year-center">This year:</p>
                             <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost  | currency}}</a>
                             <p class="tender-percent">(+%)</p>
                         </div>
-                        <div class="tender">
+                        <div class="tender" v-if="productsData.budgeted_cost">
                             <p class="tender-year">Next year:</p>
                             <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
                             <p class="tender-percent">(+%)</p>
                         </div>
                     </li>
                 </ul>
-            </h3>
+                <ul class="staff-list" v-else>
+                    <li>Tenders is empty
+                    </li>
+                </ul>
         </div>
     </div>
 </template>
@@ -132,6 +139,8 @@
                     vAxis: {title: 'Cups'},
                     hAxis: {title: 'Month'},
                     seriesType: 'bars',
+                    tooltip: {trigger: 'none'},
+                    legend: {position: 'none'},
                     series: {5: {type: 'line'}}
                 };
 

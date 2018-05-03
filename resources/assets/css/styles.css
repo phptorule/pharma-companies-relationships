@@ -2376,7 +2376,7 @@ p.tender-percent{
     margin: 0 0 3px;
 }
 
-a.tender-amount-btn{
+.tender-list .tender a.tender-amount-btn{
     background: #4a90e3;
     color: #fff;
     display: block;
@@ -2389,6 +2389,10 @@ a.tender-amount-btn{
     text-align: left;
     margin: 0;
     transition: background-color 0.1s
+}
+
+.tender-list .tender a.tender-amount-btn:hover{
+    background: #5ba3f4;
 }
 
 #product-modal .modal-header{
