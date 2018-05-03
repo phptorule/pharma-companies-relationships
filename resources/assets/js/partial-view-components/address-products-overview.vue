@@ -28,9 +28,9 @@
             <h3>Tenders</h3>
                 <ul v-if="productsData.actual_cost && productsData.budgeted_cost">
                     <li class="tender-list">
-                        <div class="tender" v-if="productsData.budgeted_cost">
+                        <div class="tender" v-if="productsData.actual_cost">
                             <p class="tender-year">Last year:</p>
-                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
+                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost  | currency}}</a>
                             <p class="tender-percent">(+%)</p>
                         </div>
                         <div class="tender" v-if="productsData.actual_cost">

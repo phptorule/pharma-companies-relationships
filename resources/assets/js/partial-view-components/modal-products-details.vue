@@ -42,6 +42,9 @@
                                 <p class="number" v-if="spending_cost != 'Infinity'">
                                     {{spending_cost}} %
                                 </p>
+                                <p class="number" v-else>
+                                    0 %
+                                </p>
                                 <p class="text">
                                     <span><i class="fa fa-calendar-check"></i></span> Projected spending {{actual_year+1}}
                                 </p>
@@ -265,6 +268,7 @@
         methods: {
             init: function (addressId, purchaseId, address) {
                 $('#product-modal').modal('show');
+                this.graphLoadedModal = false;
                 this.tendersData = null;
                 this.actual_cost = null;
                 this.budgeted_cost = null;
