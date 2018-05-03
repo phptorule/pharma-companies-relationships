@@ -206,7 +206,12 @@
                 return this.httpGet('/api/address-details/'+this.addressId)
                     .then(data => {
                         this.addressData = data;
-                        document.title = this.addressData.name;
+
+                        if(!this.addressData.cluster){
+                            this.addressData.cluster = {addresses: []};
+                        }
+
+                            document.title = this.addressData.name;
                     })
 
             },
