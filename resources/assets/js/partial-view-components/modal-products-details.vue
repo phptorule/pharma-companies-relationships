@@ -533,6 +533,7 @@
             this.$eventGlobal.$on('showModalProductsDetails', (data) => {
                 this.init(data.addressId, data.purchaseId, data.address);
             });
+            this.activeTab ='chart';
 
             this.loadGoogleChart();
         }
