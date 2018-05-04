@@ -46,7 +46,8 @@
                                     0 %
                                 </p>
                                 <p class="text">
-                                    <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending {{actual_year+1}}
+                                    <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending
+                                    {{actual_year+1}}
                                 </p>
                             </div>
                         </div>
@@ -64,11 +65,18 @@
 
                             <div class="tab-content">
 
-                                <div :class="{hidden: activeTab !== 'chart'}" @click="viewTendersChart()">
-                                    <div id="tender-charts"></div>
+                                <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
+                                     @click="viewTendersChart()">
+                                    <div class="tender-chart" id="tender-charts"></div>
+                                    <div class="tag-list">
+                                        <div v-for="tag in tag_list">
+                                            <input type="checkbox" v-if="" v-bind:value="tag" v-model="selectedTags">
+                                            <label>{{tag.name}}</label><br>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="row" :class="{hidden: activeTab !== 'tender'}" >
+                                <div class="row" :class="{hidden: activeTab !== 'tender'}">
                                     <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
                                             <img src="/images/ic-search.png" alt="">
@@ -94,7 +102,7 @@
                                                 </vue-slider>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 filter-tag-query-tender" >
+                                        <div class="col-md-6 filter-tag-query-tender">
                                             <div class="col-md-6">
                                                 <multiple-dropdown-select
                                                         class="form-control select-filter tags-filter"
@@ -105,7 +113,8 @@
                                                 ></multiple-dropdown-select>
                                             </div>
                                             <div class="col-md-6">
-                                                <select v-model="appliedFilters.sortBy" @change="applyFilters(true)" class="form-control select-filter sort-by-filter">
+                                                <select v-model="appliedFilters.sortBy" @change="applyFilters(true)"
+                                                        class="form-control select-filter sort-by-filter">
                                                     <option selected class="hidden" value="">Sort By</option>
                                                     <option value="budget-asc">Budget &uarr;</option>
                                                     <option value="budget-desc">Budget &darr;</option>
@@ -123,14 +132,18 @@
                                                 <div class="item">
                                                     <h3 v-if="tender.name">{{i+1}}. {{tender.name}}</h3>
 
-                                                    <p class="tender-winner" v-if="tender.name">Winner of most money {{tender.winner}}</p>
+                                                    <p class="tender-winner" v-if="tender.name">Winner of most money
+                                                        {{tender.winner}}</p>
 
-                                                    <p class="tender-reward" v-if="tender.name">Reward type {{tender.reward}}</p>
+                                                    <p class="tender-reward" v-if="tender.name">Reward type
+                                                        {{tender.reward}}</p>
                                                 </div>
                                             </li>
                                         </ul>
                                         <div class="col-md-10 pagination-box">
-                                            <pagination :records="tendersTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="2" @paginate="pageChanged"></pagination>
+                                            <pagination :records="tendersTotal" ref="paginationDirective"
+                                                        :class="'pagination pagination-sm no-margin pull-right'"
+                                                        :per-page="2" @paginate="pageChanged"></pagination>
                                         </div>
                                         <div class="col-md-2 export-excel">
                                             <download-excel
@@ -166,7 +179,6 @@
     export default {
         mixins: [http, getPersonInitials, ProductsModal],
         data: function () {
-
             return {
                 tendersCost: {
                     value: [],
@@ -186,9 +198,9 @@
                 purchaseId: null,
                 currentAddress: {},
                 productsData: {},
-                tendersData: {},
                 activeTab: 'chart',
                 tag_list: [],
+                selectedTags: [],
                 appliedFilters: {
                     tags: this.$route.query['tag-cons[]'] || [],
                     sortCost: this.$route.query['min-max[]'] || [],
@@ -201,7 +213,7 @@
                     currentPage: 1
                 },
                 queryUrl: '',
-                tenderOld:{
+                tenderOld: {
                     tender_date: '',
                 },
                 tendersList: [],
@@ -223,9 +235,9 @@
                     },
                     json_data: [],
                     json_meta: [[{
-                                'key': 'charset',
-                                'value': 'utf-8'
-                            }]],
+                        'key': 'charset',
+                        'value': 'utf-8'
+                    }]],
                 }
             }
         },
@@ -244,7 +256,7 @@
         },
 
         filters: {
-            currency: function(value) {
+            currency: function (value) {
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
             },
@@ -260,14 +272,20 @@
         },
 
         watch: {
-            show (val) {
+
+            selectedTags(tagVal) {
+                this.graphLoadedModal = false;
+                this.filterTagToChart();
+            },
+
+            show(val) {
                 if (val) {
                     this.$nextTick(() => this.$refs.sortCost.refresh());
                 }
             },
 
             tendersCost: {
-                handler: function() {
+                handler: function () {
                     this.filterCost();
                 },
                 deep: true
@@ -275,7 +293,7 @@
 
             $route: function (to) {
 
-                if($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
+                if ($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
 
 
                     this.initFilters();
@@ -287,8 +305,8 @@
 
             },
 
-            isGoogleChartCoreLoaded: function(newVal){
-                if($('#product-modal').hasClass('in') && newVal && this.activeTab == 'chart') {
+            isGoogleChartCoreLoaded: function (newVal) {
+                if ($('#product-modal').hasClass('in') && newVal && this.activeTab == 'chart') {
                     this.viewTendersChart(DATA);
                 }
             }
@@ -298,7 +316,6 @@
             init: function (addressId, purchaseId, address) {
                 $('#product-modal').modal('show');
                 this.graphLoadedModal = false;
-                this.tendersData = null;
                 this.actual_cost = null;
                 this.budgeted_cost = null;
                 this.spending_cost = null;
@@ -315,82 +332,110 @@
                             this.productId = this.productsData.product_id;
                             this.getTendersByProduct(this.productId);
                             this.getTendersPaginate(this.productId);
+                            this.filterTagToChart()
                         })
                     });
 
             },
 
             getTendersByProduct: function (product_id) {
-            this.httpGet('/api/product-by-tenders/' + product_id)
-                .then(data => {
-                    var DATA = [
-                        ['Month', 'Sales'],
-                    ];
-                    this.tendersData = '';
-                    this.tendersData = data;
-                    this.tendersCost.min = 0;
-                    this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
-                    this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
+                this.httpGet('/api/product-by-tenders/' + product_id)
+                    .then(data => {
 
-                    console.log(this.tendersCost.value);
+                        this.tenderOld = data[0];
+                        this.tendersCost.min = 0;
+                        this.selectedTags = []
+                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
+                        this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
-                    let tenderData = '';
-                    let tenderBudget = null;
-                    data.forEach(tender => {
-                        this.actual_cost += Math.ceil(Number(tender.actual_cost));
-                        this.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
-                        if(this.actual_year == Number(tender.delivery_year)){
-                            this.actual_year_cost += Math.ceil(Number(tender.delivery_year));
+                        data.forEach((tender, i) => {
+
+                            let tag_load_checker = true;
+                            if(this.selectedTags.length != 0){
+                                for (let j = 0; j < this.selectedTags.length; j++) {
+
+                                    if (this.selectedTags[j].id == tender.tag_id) {
+
+                                        tag_load_checker = false;
+                                        break;
+                                    }
+
+                                }
+                            }else {
+                                this.selectedTags[this.selectedTags.length] = {
+
+                                    id: tender.tag_id,
+
+                                    name: tender.tag_name
+
+                                };
+                            }
+
+
+                            if (tag_load_checker) {
+
+                                this.selectedTags[this.selectedTags.length] = {
+
+                                    id: tender.tag_id,
+
+                                    name: tender.tag_name
+
+                                };
+                            }
+
+                            this.actual_cost += Math.ceil(Number(tender.actual_cost));
+
+                            this.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
+
+                            if (this.actual_year == Number(tender.delivery_year)) {
+
+                                this.actual_year_cost += Math.ceil(Number(tender.delivery_year));
+
+                            }
+
+                            if ((this.actual_year - 1) == Number(tender.delivery_year)) {
+
+                                this.old_year_cost += Math.ceil(Number(tender.delivery_year));
+
+                            }
+
+                        })
+
+                        this.spending_cost = Math.ceil(((this.actual_year_cost - this.old_year_cost) / this.old_year_cost) * 100);
+
+                        data = data.sort(function (a, b) {
+
+                            return b.delivery_year - a.delivery_year;
+
+                        });
+                        let delivery_year = Math.ceil(data[data.length - 1].delivery_year);
+
+                        if (this.actual_year > delivery_year && delivery_year != 0) {
+
+                            this.usedYears = this.actual_year - delivery_year + 1;
+
+                        } else {
+
+                            this.usedYears = 1;
+
                         }
-                        if((this.actual_year-1) == Number(tender.delivery_year)){
-                            this.old_year_cost += Math.ceil(Number(tender.delivery_year));
-                        }
 
-                        let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
-
-                        if(String(date_tender) != tenderData){
-                            tenderBudget += Math.ceil(Number(tender.budgeted_cost));
-                            tenderData = String(date_tender);
-                            DATA.push([String(date_tender),  tenderBudget]);
-                        }else{
-                            tenderBudget += Math.ceil(Number(tender.budgeted_cost));
-                        }
-                    })
-                    this.spending_cost = Math.ceil(((this.actual_year_cost-this.old_year_cost)/this.old_year_cost)*100);
-                    this.tenderOld = this.tendersData[0];
-
-                    data = data.sort(function (a, b) {
-                        return b.budgeted_cost - a.budgeted_cost;
+                        this.filterTagToChart()
                     });
-
-
-                    data = data.sort(function (a, b) {
-                        return b.delivery_year - a.delivery_year;
-                    });
-                    let delivery_year = Math.ceil(data[data.length - 1].delivery_year);
-                    if(this.actual_year > delivery_year && delivery_year != 0){
-                        this.usedYears = this.actual_year - delivery_year +1;
-                    }else{
-                        this.usedYears = 1;
-                    }
-                    setTimeout(()=>{
-                        this.viewTendersChart(DATA);
-                    },100)
-                });
             },
 
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
-                if(tabName == 'tender'){
+                if (tabName == 'tender') {
                     this.showTenderCost = true;
-                }else{
+                } else {
                     this.showTenderCost = false;
                 }
 
             },
 
             getTendersPaginate: function (product_id) {
-                let url = '/api/product-by-tenders-paginated/' + product_id +'?page=' + this.pagination.currentPage + this.composeQueryUrl();
+                let url = '/api/product-by-tenders-paginated/' + product_id + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
                 console.log(url);
                 this.httpGet(url)
                     .then(data => {
@@ -431,7 +476,7 @@
 
                 if (this.appliedFilters.tags.length) {
 
-                    if(typeof this.appliedFilters.tags === 'string') {
+                    if (typeof this.appliedFilters.tags === 'string') {
                         queryStr += '&tag-cons[]=' + this.appliedFilters.tags;
                     }
                     else {
@@ -447,7 +492,7 @@
                 }
 
                 if (this.appliedFilters.sortCost.length) {
-                    queryStr += '&min=' + this.appliedFilters.sortCost[0]+'&max=' + this.appliedFilters.sortCost[1];
+                    queryStr += '&min=' + this.appliedFilters.sortCost[0] + '&max=' + this.appliedFilters.sortCost[1];
                 }
 
                 this.queryUrl = queryStr;
@@ -459,8 +504,8 @@
 
                 this.appliedFilters.tags = this.$route.query['tag-tenders[]'] || [];
 
-                if(typeof this.appliedFilters.tags === 'string') {
-                    this.appliedFilters.tags = [this.appliedFilters.tags ];
+                if (typeof this.appliedFilters.tags === 'string') {
+                    this.appliedFilters.tags = [this.appliedFilters.tags];
                 }
 
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
@@ -469,67 +514,189 @@
             },
 
             makeTendersSearch: function () {
-                if(this.timeOutId){
+                if (this.timeOutId) {
                     clearTimeout(this.timeOutId)
                 }
 
-                this.timeOutId = setTimeout(()=>{
+                this.timeOutId = setTimeout(() => {
 
-                    if(this.$route.path != '/address-details/'+this.addressId) {
-                        this.$router.push('/address-details/'+this.addressId+'?tenders-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
+                    if (this.$route.path != '/address-details/' + this.addressId) {
+                        this.$router.push('/address-details/' + this.addressId + '?tenders-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
                     }
-                    else{
-                        this.$router.push('/address-details/'+this.addressId+'?global-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
+                    else {
+                        this.$router.push('/address-details/' + this.addressId + '?global-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
                     }
 
-                    if(this.appliedFilters.tendersSearchInput == '') {
-                        this.$router.push('/address-details/'+this.addressId);
+                    if (this.appliedFilters.tendersSearchInput == '') {
+                        this.$router.push('/address-details/' + this.addressId);
                     }
 
                     this.composeQueryUrl();
 
-                    this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
+                    this.$router.push('/address-details/' + this.addressId + '?' + this.queryUrl);
 
-                },1000)
+                }, 1000)
             },
 
             filterCost: function () {
 
-                if(this.timeOutId){
+                if (this.timeOutId) {
                     clearTimeout(this.timeOutId)
                 }
 
-                this.timeOutId = setTimeout(()=>{
+                this.timeOutId = setTimeout(() => {
                     this.appliedFilters.sortCost[0] = this.tendersCost.value[0];
                     this.appliedFilters.sortCost[1] = this.tendersCost.value[1];
                     this.applyFilters(true);
-                },1000)
+                }, 1000)
 
             },
 
-            loadTagsFilter: function() {
+            loadTagsFilter: function () {
                 return this.httpGet('/api/product-load-tags')
                     .then(data => {
                         this.tag_list = data;
                     })
             },
 
-            exportToExel: function(product_id) {
+            exportToExel: function (product_id) {
 
-                console.log(product_id);
-
-                let url = '/api/product-by-tenders-to-exel/' + product_id +'?' + this.composeQueryUrl();
-                console.log(url);
+                let url = '/api/product-by-tenders-to-exel/' + product_id + '?' + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
                         this.tendersExport.json_data = data;
-                        console.log(data);
                     });
             },
 
-            viewTendersChart: function(data){
+            filterTagToChart: function () {
+                this.httpGet('/api/product-by-tenders/' + this.productId)
+                    .then(data => {
 
-                if(this.graphLoadedModal){
+                            var DATA = [[]];
+                            if (data.length != 0) {
+
+                                let graf_data = {
+                                    title: []
+                                };
+                                graf_data.title.push('Month')
+                                graf_data.title.push('Total')
+
+                                for (let j = 0; j < this.selectedTags.length; j++) {
+
+                                    if (String(this.selectedTags[j].name) != 'null') {
+
+                                        let tags = String(this.selectedTags[j].name);
+
+                                        graf_data.title.push(tags);
+
+                                    }
+                                }
+
+                                let k = 0;
+
+                                data.forEach((tender, i) => {
+
+                                    let isTagId = false;
+
+                                    let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
+
+                                    let tag = String(tender.tag_name);
+
+                                    if (typeof graf_data[date_tender] == "undefined") {
+                                        graf_data[date_tender] = [];
+                                    }
+
+                                    for (let j = 0; j < this.selectedTags.length; j++) {
+
+                                        k = 0;
+
+                                        if (String(this.selectedTags[j].name) != 'null') {
+
+                                            if (this.selectedTags[j].id == tender.tag_id) {
+
+                                                isTagId = true;
+
+                                                graf_data[date_tender].push({[tag]: tender.budgeted_cost});
+
+                                                k++;
+                                            }
+                                        }
+                                    }
+
+                                });
+
+                                for (let i = 0; i < graf_data.title.length; i++) {
+
+                                    DATA[0].push(graf_data.title[i]);
+                                }
+
+
+                                let key_graf = 1;
+                                let tagsum = [];
+                                let total = 0;
+                                for (var key in graf_data) {
+
+                                    if (key != 'title' && graf_data[key].length != 0) {
+
+                                        DATA.push([key]);
+
+                                        for (let i = 2; i < graf_data.title.length; i++) {
+
+                                            let tagsum_tmp = 0;
+
+                                            for (let j = 0; j < graf_data[key].length; j++) {
+
+                                                if (typeof graf_data[key][j][graf_data.title[i]] != "undefined") {
+
+                                                    total += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
+
+                                                    tagsum_tmp += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
+
+                                                } else {
+
+                                                    tagsum_tmp += 0;
+
+                                                }
+
+                                            }
+
+                                            tagsum.push(tagsum_tmp);
+                                            tagsum_tmp = 0;
+
+                                        }
+                                        DATA[key_graf].push(total);
+                                        for (let s = 0; s < tagsum.length; s++) {
+                                            DATA[key_graf].push(tagsum[s]);
+                                        }
+                                        tagsum = [];
+                                        total = 0;
+                                        key_graf++;
+                                    }
+
+                                }
+                                setTimeout(() => {
+                                    console.log(DATA);
+                                    if (typeof DATA[1] != "undefined") {
+                                        setTimeout(() => {
+                                            this.viewTendersChart(DATA);
+                                        }, 100)
+                                    } else {
+                                        DATA[0] = ['Month', 'Total'];
+                                        DATA[1] = ['Yan-97', 0];
+                                        setTimeout(() => {
+                                            this.viewTendersChart(DATA);
+                                        }, 100)
+                                    }
+                                }, 300)
+                            }
+
+                        }
+                    );
+            },
+
+            viewTendersChart: function (data) {
+
+                if (this.graphLoadedModal) {
                     return;
                 }
                 $('#tender-charts').html('');
@@ -537,12 +704,12 @@
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title : 'Sales',
+                    title: 'Sales',
                     vAxis: {title: 'Budget'},
-                    hAxis: {baselineColor: 'none',ticks: []},
+                    hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
-                    series: {5: {type: 'line'}}
+                    series: {0: {type: 'line'}}
                 };
 
                 var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
@@ -552,8 +719,8 @@
             },
 
             loadGoogleChart: function () {
-                return  google.charts.load('current', {'packages':['corechart']})
-                    .then(()=>{
+                return google.charts.load('current', {'packages': ['corechart']})
+                    .then(() => {
                         this.isGoogleChartCoreLoaded = true;
                     })
             }
@@ -563,8 +730,9 @@
         mounted: function () {
             this.$eventGlobal.$on('showModalProductsDetails', (data) => {
                 this.init(data.addressId, data.purchaseId, data.address);
+                this.activeTab = 'chart';
+                this.tendersCost.value = [];
             });
-            this.activeTab ='chart';
 
             this.loadGoogleChart();
         }

@@ -2830,3 +2830,17 @@ ul.tenders-list .item p.tender-reward{
     text-align: left;
     color: #3a444f;
 }
+
+.tender-chart-container{
+    height: 300px;
+}
+
+.tender-chart{
+    width: 80%;
+    float: left;
+}
+
+.tag-list{
+    width: 20%;
+    float: right;
+}
