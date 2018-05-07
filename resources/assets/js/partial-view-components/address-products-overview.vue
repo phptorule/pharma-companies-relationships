@@ -9,7 +9,6 @@
                              alt="">
                     </a>
                 </div>
-                {{purchase.id}}
                 <div class="prod-info">
                     <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name?
                         purchase.products[0].name : 'Product name' + i}}</p>
@@ -21,7 +20,7 @@
             </li>
             <li>
                 <a href="javascript:void(0)"
-                   v-if="productsData.purchases && productsData.purchases.length >= 3"
+                   v-if="addressData.products && addressData.products.length >= 3"
                    @click="showSlidedBox('all-products')"
                    class="address-box-show-more-link show-all-employees-link"
                 >
@@ -31,6 +30,15 @@
         </ul>
         <ul class="staff-list" v-else>
             <li>Products is empty
+            </li>
+            <li>
+                <a href="javascript:void(0)"
+                   v-if="addressData.products && addressData.products.length >= 3"
+                   @click="showSlidedBox('all-products')"
+                   class="address-box-show-more-link show-all-employees-link"
+                >
+                    Show all products
+                </a>
             </li>
         </ul>
         <div class="header">
