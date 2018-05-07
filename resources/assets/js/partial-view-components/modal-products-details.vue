@@ -345,8 +345,7 @@
                         this.tenderOld = data[0];
                         this.tendersCost.min = 0;
                         this.selectedTags = []
-                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
-                        this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
+
 
                         data.forEach((tender, i) => {
 
@@ -369,6 +368,7 @@
                                     name: tender.tag_name
 
                                 };
+                                tag_load_checker = false;
                             }
 
 
@@ -402,6 +402,13 @@
                         })
 
                         this.spending_cost = Math.ceil(((this.actual_year_cost - this.old_year_cost) / this.old_year_cost) * 100);
+
+                        data = data.sort(function (a, b) {
+                            return b.budgeted_cost - a.budgeted_cost;
+                        });
+
+                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
+                        this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
                         data = data.sort(function (a, b) {
 
