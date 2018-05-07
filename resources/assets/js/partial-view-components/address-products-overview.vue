@@ -5,14 +5,16 @@
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
-                        <img :src="purchase.products[0].image? purchase.products[0].image : '/images/mask-0.png'" alt="">
+                        <img :src="purchase.products[0].image? purchase.products[0].image : '/images/mask-0.png'"
+                             alt="">
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name? purchase.products[0].name : 'Product name' + i}}</p>
+                    <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name?
+                        purchase.products[0].name : 'Product name' + i}}</p>
                     <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
-                        {{Math.ceil(purchase.total_price)  | currency}} |
-                        {{Math.ceil(purchase.total_price)  | currency}}</p>
+                        {{Math.ceil(purchase.total_price) | currency}} |
+                        {{Math.ceil(purchase.total_price) | currency}}</p>
                 </div>
                 <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
@@ -26,29 +28,27 @@
         </ul>
         <div class="header">
             <h3>Tenders</h3>
-                <ul v-if="productsData.actual_cost && productsData.budgeted_cost">
-                    <li class="tender-list">
-                        <div class="tender" v-if="productsData.actual_cost">
-                            <p class="tender-year">Last year:</p>
-                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost  | currency}}</a>
-                            <p class="tender-percent">(+%)</p>
-                        </div>
-                        <div class="tender" v-if="productsData.actual_cost">
-                            <p class="tender-year-center">This year:</p>
-                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost  | currency}}</a>
-                            <p class="tender-percent">(+%)</p>
-                        </div>
-                        <div class="tender" v-if="productsData.budgeted_cost">
-                            <p class="tender-year">Next year:</p>
-                            <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost  | currency}}</a>
-                            <p class="tender-percent">(+%)</p>
-                        </div>
-                    </li>
-                </ul>
-                <ul class="staff-list" v-else>
-                    <li>Tenders is empty
-                    </li>
-                </ul>
+            <div class="col-md-12 tender-list" v-if="productsData.actual_cost && productsData.budgeted_cost">
+                <div class="col-md-4 tender" v-if="productsData.actual_cost">
+                    <p class="tender-year">Last year:</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost |
+                        currency}}</a>
+                    <p class="tender-percent">(+%)</p>
+                </div>
+                <div class="col-md-4 tender" v-if="productsData.actual_cost">
+                    <p class="tender-year-center">This year:</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost |
+                        currency}}</a>
+                    <p class="tender-percent">(+%)</p>
+                </div>
+                <div class="col-md-4 tender" v-if="productsData.budgeted_cost">
+                    <p class="tender-year">Next year:</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost |
+                        currency}}</a>
+                    <p class="tender-percent">(+%)</p>
+                </div>
+            </div>
+            <div class="col-md-12 staff-list" v-else>Tenders is empty</div>
         </div>
     </div>
 </template>
@@ -74,17 +74,17 @@
                     tender_date: null,
                     uri: null
                 },
-                addressData:{},
+                addressData: {},
                 graf: '',
                 isGoogleChartCoreLoaded: false,
             }
         },
 
         filters: {
-            currency: function(value) {
-                    value = String(value);
-                    return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')+ ' Rub';
-                },
+            currency: function (value) {
+                value = String(value);
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' Rub';
+            },
         },
 
         methods: {
@@ -101,7 +101,7 @@
                             this.productsData.tenders.push(tender);
                             this.productsData.budget = tender.budget;
                             tender.purchase.forEach(purchase => {
-                                if(purchase.products.length > 0){
+                                if (purchase.products.length > 0) {
                                     this.productsData.purchases.push(purchase);
                                 }
                             });
@@ -111,31 +111,31 @@
 
                             DATA_PRODUCT[i] = [['Year', 'Sales']];
 
-                            DATA_PRODUCT[i].push([String(tender.tender_date),  Math.ceil(Number(tender.budgeted_cost))]);
-                       });
+                            DATA_PRODUCT[i].push([String(tender.tender_date), Math.ceil(Number(tender.budgeted_cost))]);
+                        });
 
 
                         this.productsData.purchases.forEach((purchase, i) => {
 
-                            if(i >= 3) {
+                            if (i >= 3) {
                                 return;
                             }
 
-                            setTimeout(()=>{
-                                this.viewTendersChart(DATA_PRODUCT[i], 'graph-container-'+i);
-                            },0)
+                            setTimeout(() => {
+                                this.viewTendersChart(DATA_PRODUCT[i], 'graph-container-' + i);
+                            }, 0)
                         })
                     });
             },
 
-            viewTendersChart: function(data, element_id){
+            viewTendersChart: function (data, element_id) {
 
-                $('#'+element_id).html('');
+                $('#' + element_id).html('');
 
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title : '',
+                    title: '',
                     vAxis: {title: ''},
                     hAxis: {title: ''},
                     seriesType: 'bars',
@@ -150,8 +150,8 @@
             },
 
             loadGoogleChart: function () {
-                return  google.charts.load('current', {'packages':['corechart']})
-                    .then(()=>{
+                return google.charts.load('current', {'packages': ['corechart']})
+                    .then(() => {
                         this.isGoogleChartCoreLoaded = true;
                     })
             }
@@ -162,7 +162,7 @@
             function () {
                 if (this.addressId) {
                     this.loadGoogleChart()
-                        .then(()=>{
+                        .then(() => {
                             this.loadProductsDetails();
                         });
                 }

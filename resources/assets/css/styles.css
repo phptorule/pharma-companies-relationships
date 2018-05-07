@@ -2339,12 +2339,8 @@ ul.staff-list li .personal-info .name a:hover{
     list-style-type: none;
 }
 .tender{
-    width: 30%;
-    /*border: 1px solid black;*/
     float: left;
     font-size: 12px;
-    margin: 4px !important;
-    padding: 5px 10px;
 }
 .tender-cost{
     font-size: 12px;
@@ -2369,22 +2365,32 @@ p.tender-percent{
 }
 
 .tender-list .tender a.tender-amount-btn{
-    background: #4a90e3;
-    color: #fff;
     display: block;
-    float: right;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 4px 11px;
     font-family: Montserrat;
-    font-size: 11px;
-    font-weight: 600;
-    text-align: left;
-    margin: 0;
-    transition: background-color 0.1s
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+    border-radius: 6px;
+    border: solid 1px #eaeff4;
+    transition: background-color 100ms linear;
+    /*background: #4a90e3;*/
+    /*color: #fff;*/
+    /*display: block;*/
+    /*float: right;*/
+    /*padding: 10px 15px;*/
+    /*border-radius: 5px;*/
+    /*font-family: Montserrat;*/
+    /*font-size: 11px;*/
+    /*font-weight: 600;*/
+    /*text-align: left;*/
+    /*margin: 0;*/
+    /*transition: background-color 0.1s*/
 }
 
 .tender-list .tender a.tender-amount-btn:hover{
-    background: #5ba3f4;
+    /*background: #5ba3f4;*/
+    background-color: #eaeff4;
 }
 
 #product-modal .modal-header{
