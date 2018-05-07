@@ -28,24 +28,24 @@
         </ul>
         <div class="header">
             <h3>Tenders</h3>
-            <div class="col-md-12 tender-list" v-if="productsData.actual_cost && productsData.budgeted_cost">
-                <div class="col-md-4 tender" v-if="productsData.actual_cost">
+            <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
+                <div class="col-md-4 tender" v-if="amount_old_year">
                     <p class="tender-year">Last year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost |
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_old_year |
                         currency}}</a>
-                    <p class="tender-percent">(+%)</p>
+                    <p class="tender-percent">({{rate_old_year}} %)</p>
                 </div>
-                <div class="col-md-4 tender" v-if="productsData.actual_cost">
+                <div class="col-md-4 tender" v-if="amount_actual_year">
                     <p class="tender-year-center">This year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.actual_cost |
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_actual_year |
                         currency}}</a>
-                    <p class="tender-percent">(+%)</p>
+                    <p class="tender-percent">({{rate_actual_year}}%)</p>
                 </div>
-                <div class="col-md-4 tender" v-if="productsData.budgeted_cost">
+                <div class="col-md-4 tender" v-if="amount_next_year">
                     <p class="tender-year">Next year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{productsData.budgeted_cost |
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_next_year |
                         currency}}</a>
-                    <p class="tender-percent">(+%)</p>
+                    <p class="tender-percent">({{rate_next_year}}%)</p>
                 </div>
             </div>
             <div class="col-md-12 staff-list" v-else>Tenders is empty</div>
@@ -74,8 +74,14 @@
                     tender_date: null,
                     uri: null
                 },
+                actual_year: (new Date()).getFullYear(),
+                amount_old_year: null,
+                amount_actual_year: null,
+                amount_next_year: null,
+                rate_old_year: null,
+                rate_actual_year: null,
+                rate_next_year: null,
                 addressData: {},
-                graf: '',
                 isGoogleChartCoreLoaded: false,
             }
         },
@@ -114,6 +120,7 @@
                             DATA_PRODUCT[i].push([String(tender.tender_date), Math.ceil(Number(tender.budgeted_cost))]);
                         });
 
+                        this.getTendersData();
 
                         this.productsData.purchases.forEach((purchase, i) => {
 
@@ -125,6 +132,63 @@
                                 this.viewTendersChart(DATA_PRODUCT[i], 'graph-container-' + i);
                             }, 0)
                         })
+                    });
+
+            },
+
+            getTendersData: function () {
+                this.httpGet('/api/tenders-by-address/' + this.addressId)
+                    .then(data => {
+                        data.forEach(tender => {
+
+                            if (tender.budget != null) {
+                                if (this.actual_year > Math.ceil(tender.budget.delivery_year)) {
+
+                                    this.amount_old_year += Math.ceil(Number(tender.budgeted_cost));
+
+                                } else if (this.actual_year == Math.ceil(tender.budget.delivery_year)) {
+
+                                    this.amount_actual_year += Math.ceil(Number(tender.budgeted_cost));
+
+                                } else if (this.actual_year < Math.ceil(tender.budget.delivery_year)) {
+
+                                    this.amount_next_year += Math.ceil(Number(tender.budgeted_cost));
+
+                                }
+                            }
+
+                        });
+
+                        if (this.amount_actual_year < this.amount_old_year) {
+
+                            this.rate_old_year = Math.ceil((this.amount_actual_year / this.amount_old_year) * 100);
+
+                        }else if (this.amount_actual_year > this.amount_old_year) {
+
+                            this.rate_old_year = Math.ceil((this.amount_old_year / this.amount_actual_year) * 100);
+
+                        }
+
+                        if (this.amount_actual_year <= this.amount_next_year) {
+
+                            this.rate_actual_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
+
+                        }else if (this.amount_actual_year >= this.amount_next_year) {
+
+                            this.rate_actual_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
+
+                        }
+
+                        if (this.amount_old_year < this.amount_next_year) {
+
+                            this.rate_next_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
+
+                        }else if (this.amount_old_year > this.amount_next_year) {
+
+                            this.rate_next_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
+
+                        }
+
                     });
             },
 

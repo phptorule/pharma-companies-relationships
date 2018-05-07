@@ -143,7 +143,7 @@
                                                         {{tender.purchase_name}}</h3>
 
                                                     <p class="tender-winner" v-if="tender.budget">Winner of most money
-                                                        {{tender.budget}}</p>
+                                                        {{Math.ceil(Number(tender.budget)) | currency }}</p>
 
                                                     <p class="tender-reward" v-if="tender.product_name">Reward type
                                                         {{tender.product_name}}</p>
