@@ -2393,7 +2393,7 @@ p.tender-percent{
 
 #product-modal .modal-dialog{
     margin-top: 130px;
-    width: 1200px;
+    width: 1120px;
 }
 
 #product-modal .person-profile-picture {
@@ -2771,18 +2771,17 @@ p.tender-percent{
 }
 
 #product-modal .tender-chart-container{
-    width: 1000px;
     margin-top: 10px;
 }
 
 #product-modal .tender-chart{
-    width: 80%;
+    width: 700px;
     float: left;
+    margin-left: 10px;
 }
 
 #product-modal .tag-list{
-    width: 20%;
-    float: right;
+    float: left;
 }
 
 #product-modal .pagination-box{

@@ -130,7 +130,7 @@
                                                     name="tenders.xls"
                                                     @click="exportToExel(productId)"
                                             >
-                                                <i class="fa fa-file-excel-o fa-2x"></i>
+                                                <i class="fa fa-file-excel-o fa-2x" title="Export to excel"></i>
                                             </download-excel>
                                         </div>
                                     </div>
