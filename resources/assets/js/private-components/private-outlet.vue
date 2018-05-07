@@ -13,7 +13,7 @@
 
                 <modal-employee-details></modal-employee-details>
 
-                <modal-products-details></modal-products-details>
+                <modal-product-details></modal-product-details>
 
                 <modal-contacts-chain></modal-contacts-chain>
 

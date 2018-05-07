@@ -7,7 +7,7 @@
 
                         <div class="person-profile-picture">
                             <span class="person-initials">{{getPersonInitials('p')}}</span>
-                            <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
+                                <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
 
                         <h4 class="modal-title">
@@ -170,12 +170,12 @@
 
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
-    import ProductsModal from '../mixins/show-products-details-modal';
+    import ProductModal from '../mixins/show-product-details-modal';
     import vueSlider from 'vue-slider-component';
 
 
     export default {
-        mixins: [http, getPersonInitials, ProductsModal],
+        mixins: [http, getPersonInitials, ProductModal],
         data: function () {
             return {
                 tendersCost: {
@@ -751,7 +751,7 @@
         },
 
         mounted: function () {
-            this.$eventGlobal.$on('showModalProductsDetails', (data) => {
+            this.$eventGlobal.$on('showModalProductDetails', (data) => {
                 this.init(data.addressId, data.purchaseId, data.address);
                 this.activeTab = 'chart';
                 this.tendersCost.value = [];

@@ -3,12 +3,13 @@
         <ul class="staff-list" v-if="productsData.purchases.length">
             <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id, addressData)">
+                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="purchase.products[0].image? purchase.products[0].image : '/images/mask-0.png'"
                              alt="">
                     </a>
                 </div>
+                {{purchase.id}}
                 <div class="prod-info">
                     <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name?
                         purchase.products[0].name : 'Product name' + i}}</p>
@@ -19,7 +20,13 @@
                 <div class="prod-graf" :id="'graph-container-'+purchase.products[0].id" style="width: 75px; height: 50px"></div>
             </li>
             <li>
-                <a href="" class="show-all-link">Show all products</a>
+                <a href="javascript:void(0)"
+                   v-if="productsData.purchases && productsData.purchases.length >= 3"
+                   @click="showSlidedBox('all-products')"
+                   class="address-box-show-more-link show-all-employees-link"
+                >
+                    Show all products
+                </a>
             </li>
         </ul>
         <ul class="staff-list" v-else>
@@ -56,11 +63,11 @@
 <script>
 
     import http from '../mixins/http';
-    import ProductsModal from '../mixins/show-products-details-modal';
+    import ProductModal from '../mixins/show-product-details-modal';
     import getPersonInitials from '../mixins/get-person-initials';
 
     export default {
-        mixins: [http, ProductsModal, getPersonInitials],
+        mixins: [http, ProductModal, getPersonInitials],
 
 
         data: function () {
@@ -199,6 +206,12 @@
                     });
             },
 
+            showSlidedBox: function (componentToDisplay) {
+
+                this.$parent.$emit('all-products-view', componentToDisplay);
+
+            },
+
             dataCreateToChart: function (productId) {
                 setTimeout(() => {
                 this.httpGet('/api/product-by-tenders/' + productId)
@@ -276,8 +289,7 @@
                 var chart = new google.visualization.ComboChart(document.getElementById(element_id));
                 chart.draw(data, options);
 
-            }
-            ,
+            },
 
             loadGoogleChart: function () {
                 return google.charts.load('current', {'packages': ['corechart']})

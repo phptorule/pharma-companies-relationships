@@ -72,4 +72,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/product-load-tags', 'ProductsController@loadTagsValues')->name('products.loadTagsValues');
 
+	Route::get('/product-by-address/{address}', 'ProductsController@productByAddressPaginated')->name('products.productByAddressPaginated');
+
 });

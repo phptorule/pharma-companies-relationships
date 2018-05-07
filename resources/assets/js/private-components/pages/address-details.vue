@@ -23,6 +23,16 @@
                     ></lab-chain-details>
                 </div>
 
+                <div v-if="sideComponentToDisplay == 'all-products'">
+                    <all-products-list
+                            :addressId="addressId"
+                            :purchaseId="174"
+                            :addressData="addressData"
+                            :isActive="isExpanded && sideComponentToDisplay == 'all-products'"
+                            @closeSlidedBox="isExpanded = false"
+                    ></all-products-list>
+                </div>
+
             </div>
 
             <div class="address-details-fixed-height">
@@ -165,10 +175,12 @@
 
     import http from '../../mixins/http';
     import employeeModal from '../../mixins/show-employee-details-modal';
+    // import productsModal from '../../mixins/show-products-all-modal';
     import getPersonInitials from '../../mixins/get-person-initials';
 
     export default {
         mixins: [http, employeeModal, getPersonInitials],
+        // mixins: [http, employeeModal, productsModal, getPersonInitials],
 
         data: function () {
             return {
@@ -254,7 +266,11 @@
 
                     this.showEmployeeDetailsModal(personId, this.addressId, this.addressData);
                 }
-            }
+            },
+
+            showModalIfProductsAll: function () {
+                this.$eventGlobal.$emit('showAllProductItem', [this.addressData])
+            },
         },
 
         mounted: function () {
@@ -263,6 +279,12 @@
             $('.slided-box').height(window.innerHeight - 70 - 51);
 
             this.addressId = this.$route.params.id;
+
+            this.$on('all-products-view', function (componentToDisplay) {
+
+                this.showSlidedBox(componentToDisplay);
+
+            })
 
             this.loadAddressDetails()
                 .then(()=>{

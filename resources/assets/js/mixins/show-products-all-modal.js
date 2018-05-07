@@ -1,11 +1,11 @@
-const ProductsModal = {
+const productsModal = {
 
     methods: {
         showProductsDetailsModal: function (addressId, purchaseId, addressData) {
             let data = {
                 addressId: addressId,
                 purchaseId: purchaseId,
-                 address: addressData
+                address: addressData
             };
 
             this.$eventGlobal.$emit('showModalProductsDetails', data);
@@ -14,4 +14,4 @@ const ProductsModal = {
 
 };
 
-export default ProductsModal;
+export default productsModal;

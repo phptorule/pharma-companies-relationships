@@ -28,7 +28,8 @@ Vue.component('modal-contacts-chain', require('./partial-view-components/modal-c
 Vue.component('lab-chain-details', require('./partial-view-components/lab-chain-details'));
 Vue.component('customer-status-select', require('./partial-view-components/customer-status-select'));
 Vue.component('address-products-overview', require('./partial-view-components/address-products-overview'));
-Vue.component('modal-products-details', require('./partial-view-components/modal-products-details'));
+Vue.component('modal-product-details', require('./partial-view-components/modal-product-details'));
+Vue.component('all-products-list', require('./partial-view-components/all-products-list'));
 Vue.component('downloadExcel', JsonExcel);
 Vue.component('pagination', Pagination);
 
