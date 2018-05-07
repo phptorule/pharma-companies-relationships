@@ -76,10 +76,9 @@
                                     </div>
                                 </div>
 
-                                <div class="row" :class="{hidden: activeTab !== 'tender'}">
+                                <div :class="{hidden: activeTab !== 'tender'}">
                                     <div class="col-md-12 tender-query">
                                         <div class="col-md-4 tender-search">
-                                            <img src="/images/ic-search.png" alt="">
                                             <input
                                                     class="tender-search-input"
                                                     v-model="appliedFilters.tendersSearchInput"
@@ -87,13 +86,13 @@
                                                     placeholder="Search tenders">
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
-                                            <div class="col-md-6">
-                                                <input class="min-value" v-model="tendersCost.value[0]">
+                                            <div class="col-md-6 min-value">
+                                                <input class="min-value-input" v-model="tendersCost.value[0]">
                                             </div>
-                                            <div class="col-md-6">
-                                                <input class="max-value" v-model="tendersCost.value[1]">
+                                            <div class="col-md-6 max-value">
+                                                <input class="max-value-input" v-model="tendersCost.value[1]">
                                             </div>
-                                            <div class="col-md-12">
+                                            <div class="col-md-12 min-max">
                                                 <vue-slider ref="sortCost"
                                                             v-bind="tendersCost"
                                                             v-model="tendersCost.value"
@@ -102,7 +101,7 @@
                                                 </vue-slider>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 filter-tag-query-tender">
+                                        <div class="col-md-4 filter-tag-query-tender">
                                             <div class="col-md-6">
                                                 <multiple-dropdown-select
                                                         class="form-control select-filter tags-filter"
@@ -113,49 +112,47 @@
                                                 ></multiple-dropdown-select>
                                             </div>
                                             <div class="col-md-6">
-                                                <select v-model="appliedFilters.sortBy" @change="applyFilters(true)"
-                                                        class="form-control select-filter sort-by-filter">
-                                                    <option selected class="hidden" value="">Sort By</option>
-                                                    <option value="budget-asc">Budget &uarr;</option>
-                                                    <option value="budget-desc">Budget &darr;</option>
-                                                    <option value="date-asc">Date &uarr;</option>
-                                                    <option value="date-desc">Date &darr;</option>
-                                                    <option value="tenders-asc">Ascending &uarr;</option>
-                                                    <option value="tenders-desc">Descen &darr;</option>
-                                                </select>
+                                                <single-dropdown-select
+                                                        class="form-control select-filter tags-filter"
+                                                        :options="sortByOptionsForFilter"
+                                                        :isHiddenEmptyOption="true"
+                                                        @changed="applySortFilter"
+                                                        :name="'Sort By'"
+                                                        ref="sortBySingleDropdownSelect"
+                                                ></single-dropdown-select>
                                             </div>
+                                        </div>
+                                        <div class="col-md-1 export-excel">
+                                            <download-excel
+                                                    class=""
+                                                    :data="tendersExport.json_data"
+                                                    :fields="tendersExport.json_fields"
+                                                    name="tenders.xls"
+                                                    @click="exportToExel(productId)"
+                                            >
+                                                <i class="fa fa-file-excel-o fa-2x"></i>
+                                            </download-excel>
                                         </div>
                                     </div>
                                     <div class="col-md-12 tender-data">
                                         <ul class="col-md-12 tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
-                                                    <h3 v-if="tender.name">{{i+1}}. {{tender.name}}</h3>
+                                                    <h3 v-if="tender.purchase_name">{{i+1}}.
+                                                        {{tender.purchase_name}}</h3>
 
-                                                    <p class="tender-winner" v-if="tender.name">Winner of most money
-                                                        {{tender.winner}}</p>
+                                                    <p class="tender-winner" v-if="tender.budget">Winner of most money
+                                                        {{tender.budget}}</p>
 
-                                                    <p class="tender-reward" v-if="tender.name">Reward type
-                                                        {{tender.reward}}</p>
+                                                    <p class="tender-reward" v-if="tender.product_name">Reward type
+                                                        {{tender.product_name}}</p>
                                                 </div>
                                             </li>
                                         </ul>
-                                        <div class="col-md-10 pagination-box">
+                                        <div class="col-md-12 pagination-box">
                                             <pagination :records="tendersTotal" ref="paginationDirective"
                                                         :class="'pagination pagination-sm no-margin pull-right'"
-                                                        :per-page="2" @paginate="pageChanged"></pagination>
-                                        </div>
-                                        <div class="col-md-2 export-excel">
-                                            <download-excel
-                                                    class="btn btn-primary"
-                                                    :data="tendersExport.json_data"
-                                                    :fields="tendersExport.json_fields"
-                                                    name="tenders.xls"
-                                                    @click="exportToExel(productId)"
-                                            >
-                                                export-excel
-                                            </download-excel>
-                                            <!--<button class="btn btn-primary">export-excel</button>-->
+                                                        :per-page="5" @paginate="pageChanged"></pagination>
                                         </div>
                                     </div>
                                 </div>
@@ -229,9 +226,13 @@
                 showTenderCost: false,
                 tendersExport: {
                     json_fields: {
-                        'Tender name': 'name',
-                        'Total price': 'total_price',
-                        'Quantity': 'quantity',
+                        'Tender name': 'purchase_name',
+                        'Description': 'purchase_remark',
+                        'Price': 'purchase_total_price',
+                        'Winner': 'purchase_quantity',
+                        'Product': 'product_name',
+                        'Consumables': 'tag_name',
+                        'Date': 'tender_date',
                     },
                     json_data: [],
                     json_meta: [[{
@@ -243,6 +244,17 @@
         },
 
         computed: {
+
+            sortByOptionsForFilter: function () {
+                return [
+                    {value: 'budget-asc', label: 'Budget &uarr;'},
+                    {value: 'budget-desc', label: 'Budget &darr;'},
+                    {value: 'date-asc', label: 'Date &uarr;'},
+                    {value: 'date-desc', label: 'Date &darr;'},
+                    {value: 'tenders-asc', label: 'Ascending &uarr;'},
+                    {value: 'tenders-desc', label: 'Descen &darr;'},
+                ]
+            },
 
             tagOptionsForDropDown: function () {
                 return this.tag_list.map(tag => {
@@ -346,11 +358,10 @@
                         this.tendersCost.min = 0;
                         this.selectedTags = []
 
-
                         data.forEach((tender, i) => {
 
                             let tag_load_checker = true;
-                            if(this.selectedTags.length != 0){
+                            if (this.selectedTags.length != 0) {
                                 for (let j = 0; j < this.selectedTags.length; j++) {
 
                                     if (this.selectedTags[j].id == tender.tag_id) {
@@ -358,9 +369,8 @@
                                         tag_load_checker = false;
                                         break;
                                     }
-
                                 }
-                            }else {
+                            } else {
                                 this.selectedTags[this.selectedTags.length] = {
 
                                     id: tender.tag_id,
@@ -370,7 +380,6 @@
                                 };
                                 tag_load_checker = false;
                             }
-
 
                             if (tag_load_checker) {
 
@@ -465,6 +474,11 @@
 
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
+                this.applyFilters(true);
+            },
+
+            applySortFilter: function (data) {
+                this.appliedFilters.sortBy = data;
                 this.applyFilters(true);
             },
 
@@ -568,7 +582,7 @@
 
             exportToExel: function (product_id) {
 
-                let url = '/api/product-by-tenders-to-exel/' + product_id + '?' + this.composeQueryUrl();
+                let url = '/api/product-by-tenders-to-excel/' + product_id + '?' + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
                         this.tendersExport.json_data = data;

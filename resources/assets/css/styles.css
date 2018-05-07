@@ -591,14 +591,6 @@ a{
     width: 30% !important;
 }
 
-.tags-filter{
-
-}
-
-.sort-by-filter{
-
-}
-
 .select-filter + .select-filter{
     float: left;
     width: calc(20.3333% - 4px);
@@ -2397,7 +2389,6 @@ p.tender-percent{
 
 #product-modal .modal-header{
     background: #f7f7f7;
-    height: 389px;
 }
 
 #product-modal .modal-dialog{
@@ -2466,34 +2457,8 @@ p.tender-percent{
     color: #5ba3f4;
 }
 
-#product-modal ul.social-icons{
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    list-style-type: none;
-}
-
-#product-modal ul.social-icons li + li{
-    margin-left: 15px;
-}
-
-#product-modal ul.social-icons li a{
-    border: solid 1px #dde3e8;
-    border-radius: 20px;
+#product-modal ul.tags-filter li a{
     color: #3a444f;
-    width: 35px;
-    height: 35px;
-    font-size: 21px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#product-modal ul.social-icons li a:hover{
-    /*color: #4a90e3;*/
-    background: #f5f9ff;
 }
 
 #product-modal .person-experience{
@@ -2546,7 +2511,6 @@ p.tender-percent{
 
 #product-modal .modal-body {
     position: initial;
-    padding-top: 50px;
     padding-left: 140px;
     padding-right: 140px;
     padding-bottom: 50px;
@@ -2591,7 +2555,8 @@ p.tender-percent{
 }
 
 #product-modal .tab-content{
-    padding-top: 45px;
+    display: table;
+    content: "";
 }
 
 
@@ -2693,52 +2658,135 @@ p.tender-percent{
 }
 
 #product-modal .tender-query{
-    padding-bottom: 80px;
+    padding-top: 10px;
+    padding-bottom: 15px;
 }
 
 #product-modal .tender-search{
+    width: 192px;
     float: left;
-    width: 200px;
+    height: 42px;
+    margin-left: 10px;
+    padding-left: 0px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
 }
 
 #product-modal .tender-search-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
     height: 40px;
+    width: 190px;
+    padding-left: 10px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
 }
 
-
-
 #product-modal .filter-cost-tender{
-    width: 220px;
     float: left;
-    margin-top: 28px;
-    margin-left: 40px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 #product-modal .min-value{
-    width: 70px;
+    width: 92px;
     float: left;
-    height: 40px;
+    height: 42px;
+    margin-left: 30px;
+    padding-left: 0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
 }
 
-#product-modal .max-value{
-    width: 70px;
-    float: right;
+#product-modal .min-value-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
+    width: 90px;
+    float: left;
     height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#product-modal .max-value{
+    width: 92px;
+    float: right;
+    height: 42px;
+    margin-right: 30px;
+    padding-right: 0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
+}
+
+#product-modal .max-value-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
+    width: 90px;
+    float: right;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#product-modal .min-max{
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 #product-modal .tender-data{
     width: 100%;
-    panding: 250px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 #product-modal .filter-tag-query-tender{
-    margin-top: 28px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#product-modal .export-excel .fa-file-excel-o{
+    color: #4a90e2;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+#product-modal .export-excel .fa-file-excel-o:hover{
+    background: #4a90e2;
+    color: #fff;
+}
+
+#product-modal .tender-chart-container{
+    width: 1000px;
+    margin-top: 10px;
+}
+
+#product-modal .tender-chart{
+    width: 80%;
+    float: left;
+}
+
+#product-modal .tag-list{
+    width: 20%;
+    float: right;
+}
+
+#product-modal .pagination-box{
+    margin-top: 5px;
 }
 
 ul.tenders-list{
@@ -2764,7 +2812,7 @@ ul.tenders-list li h3{
     display: flex;
     align-items: center;
     font-family: Montserrat;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.39em;
     font-weight: 600;
     margin: 0;
@@ -2785,10 +2833,9 @@ ul.tenders-list li h3 .oval{
 }
 
 ul.tenders-list li .item{
-    margin-left: 50px;
+    margin-left: 20px;
     margin-right: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    margin-top: 5px;
     border-bottom: solid 1px #f7f7f7;;
 }
 
@@ -2831,16 +2878,31 @@ ul.tenders-list .item p.tender-reward{
     color: #3a444f;
 }
 
-.tender-chart-container{
-    height: 300px;
+.filter-tag-query-tender ul.select-filter > li > a {
+    padding: 10px;
+    color: #555555;
+    background: transparent !important;
+    border: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0;
+    transition: color 0s linear;
 }
 
-.tender-chart{
-    width: 80%;
-    float: left;
+.filter-tag-query-tender ul.select-filter > li.open{
+    background: #4081df;
 }
 
-.tag-list{
-    width: 20%;
-    float: right;
+.filter-tag-query-tender ul.select-filter > li.open > a{
+    color: #ffffff;
+}
+
+ul.filter-tag-query-tender > li > ul > li:hover{
+    background: #edf5ff;
+    cursor: pointer;
+}
+
+#product-modal .filter-tag-query-tender ul.select-filter > li.open > a{
+    color: #ffffff;
 }

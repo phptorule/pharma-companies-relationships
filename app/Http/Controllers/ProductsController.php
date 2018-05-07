@@ -20,7 +20,14 @@ class ProductsController extends Controller
 
 	public function productByTenders($id)
 	{
-		$query = $this->getTenders($id);
+		$query = $this->getTendersByProduct($id);
+		$tenders = $query->orderBy('tender_date', 'asc')->get();
+		return response()->json($tenders);
+	}
+
+	public function addressByProducts($id)
+	{
+		$query = $this->getTendersByAddress($id);
 		$tenders = $query->orderBy('tender_date', 'asc')->get();
 		return response()->json($tenders);
 	}
@@ -29,12 +36,12 @@ class ProductsController extends Controller
 	{
 		$query = $this->prepareTendersQuery($id);
 
-		$tenders = $query->paginate(2);
+		$tenders = $query->paginate(5);
 
 		return response()->json($tenders);
 	}
 
-	public function getProductByTendersToExel($id)
+	public function getProductByTendersToExcel($id)
 	{
 		$query = $this->prepareTendersQuery($id);
 
@@ -46,7 +53,7 @@ class ProductsController extends Controller
 	public function prepareTendersQuery($id)
 	{
 
-		$query = $this->getTenders($id);
+		$query = $this->getTendersByProduct($id);
 
 		$query = $this->composeConditions($query, request()->all());
 
@@ -92,15 +99,41 @@ class ProductsController extends Controller
 		return $query;
 	}
 
-	public function getTenders($id)
+	public function getTendersByProduct($id)
 	{
-		$query = DB::table('rl_address_tenders_purchase AS atp')
-					->select(DB::raw('atp.*, atpp.*, atp.*, at.*, pc.name as tag_name, pc.id as tag_id, atb.*'))
-		           ->where('atpp.product_id',$id)
+		$query = DB::table('rl_address_tenders AS at')
+		           ->select(DB::raw('at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		           atpp.*,
+		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
+		           atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
+		           pc.name as tag_name, pc.id as tag_id, atb.*, 
+		           p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
+		           p.image as product_image'))
+		           ->where('p.id',$id)
+		           ->leftJoin('rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id')
+		           ->leftJoin('rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id')
 		           ->leftJoin('rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id')
-		           ->leftJoin('rl_address_tenders AS at', 'at.id', '=', 'atp.tender_id')
 		           ->leftJoin('rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id')
-		           ->leftJoin('rl_address_tenders_budgets AS atb', 'atb.id', '=', 'atp.tender_id');
+		           ->leftJoin('rl_products AS p', 'p.id', '=', 'atpp.product_id');
+		return $query;
+	}
+
+	public function getTendersByAddress($id)
+	{
+		$query = DB::table('rl_address_tenders AS at')
+		           ->select(DB::raw('at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		           atpp.*,
+		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
+		           atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
+		           pc.name as tag_name, pc.id as tag_id, atb.*, 
+		           p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
+		           p.image as product_image'))
+		           ->where('at.address_id',$id)
+		           ->leftJoin('rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id')
+		           ->leftJoin('rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id')
+		           ->leftJoin('rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id')
+		           ->leftJoin('rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id')
+		           ->leftJoin('rl_products AS p', 'p.id', '=', 'atpp.product_id');
 		return $query;
 	}
 
