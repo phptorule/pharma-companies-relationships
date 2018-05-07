@@ -5,7 +5,7 @@
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductsDetailsModal(addressId, purchase.id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
-                        <img :src="'/images/mask-0.png'" alt="">
+                        <img :src="purchase.products[0].image? purchase.products[0].image : '/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">

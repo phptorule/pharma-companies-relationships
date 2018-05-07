@@ -7,7 +7,7 @@
 
                         <div class="person-profile-picture">
                             <span class="person-initials">{{getPersonInitials('p')}}</span>
-                            <img src="/images/mask-0.png" alt="">
+                            <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
 
                         <h4 class="modal-title">
