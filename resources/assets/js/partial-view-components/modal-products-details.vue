@@ -452,8 +452,9 @@
             },
 
             getTendersPaginate: function (product_id) {
+
                 let url = '/api/product-by-tenders-paginated/' + product_id + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
-                console.log(url);
+
                 this.httpGet(url)
                     .then(data => {
                         this.tendersTotal = data.total;
@@ -697,7 +698,7 @@
 
                                 }
                                 setTimeout(() => {
-                                    console.log(DATA);
+
                                     if (typeof DATA[1] != "undefined") {
                                         setTimeout(() => {
                                             this.viewTendersChart(DATA);

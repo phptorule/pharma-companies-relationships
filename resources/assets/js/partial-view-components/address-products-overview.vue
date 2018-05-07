@@ -16,7 +16,7 @@
                         {{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}}</p>
                 </div>
-                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
+                <div class="prod-graf" :id="'graph-container-'+purchase.products[0].id" style="width: 75px; height: 50px"></div>
             </li>
             <li>
                 <a href="" class="show-all-link">Show all products</a>
@@ -98,39 +98,46 @@
                 this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
 
-                        var DATA_PRODUCT = [];
-
                         this.addressData = data;
+
                         data.tenders.forEach((tender, i) => {
+
                             this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
+
                             this.productsData.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
+
                             this.productsData.tenders.push(tender);
+
                             this.productsData.budget = tender.budget;
+
                             tender.purchase.forEach(purchase => {
+
                                 if (purchase.products.length > 0) {
+
                                     this.productsData.purchases.push(purchase);
+
                                 }
+
                             });
+
                             this.productsData.purchases = this.productsData.purchases.sort(function (a, b) {
+
                                 return b.total_price - a.total_price;
+
                             });
 
-                            DATA_PRODUCT[i] = [['Year', 'Sales']];
-
-                            DATA_PRODUCT[i].push([String(tender.tender_date), Math.ceil(Number(tender.budgeted_cost))]);
                         });
 
                         this.getTendersData();
 
                         this.productsData.purchases.forEach((purchase, i) => {
 
+                            this.dataCreateToChart(purchase.products[0].id)
+
                             if (i >= 3) {
                                 return;
                             }
 
-                            setTimeout(() => {
-                                this.viewTendersChart(DATA_PRODUCT[i], 'graph-container-' + i);
-                            }, 0)
                         })
                     });
 
@@ -163,7 +170,7 @@
 
                             this.rate_old_year = Math.ceil((this.amount_actual_year / this.amount_old_year) * 100);
 
-                        }else if (this.amount_actual_year > this.amount_old_year) {
+                        } else if (this.amount_actual_year > this.amount_old_year) {
 
                             this.rate_old_year = Math.ceil((this.amount_old_year / this.amount_actual_year) * 100);
 
@@ -173,7 +180,7 @@
 
                             this.rate_actual_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
 
-                        }else if (this.amount_actual_year >= this.amount_next_year) {
+                        } else if (this.amount_actual_year >= this.amount_next_year) {
 
                             this.rate_actual_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
 
@@ -183,13 +190,71 @@
 
                             this.rate_next_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
 
-                        }else if (this.amount_old_year > this.amount_next_year) {
+                        } else if (this.amount_old_year > this.amount_next_year) {
 
                             this.rate_next_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
 
                         }
 
                     });
+            },
+
+            dataCreateToChart: function (productId) {
+                setTimeout(() => {
+                this.httpGet('/api/product-by-tenders/' + productId)
+                    .then(data => {
+
+                            var DATA = [[]];
+                            if (data.length != 0) {
+
+                                let graf_data = {
+                                    title: []
+                                };
+                                graf_data.title.push('Month')
+                                graf_data.title.push('Total')
+
+                                data.forEach(tender => {
+
+                                    graf_data.productId = tender.product_id
+
+                                    let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
+
+                                    if (typeof graf_data[date_tender] == "undefined") {
+
+                                        graf_data[date_tender] = Math.ceil(Number(tender.budgeted_cost));
+                                    }
+
+                                });
+
+                                for (let i = 0; i < graf_data.title.length; i++) {
+
+                                    DATA[0].push(graf_data.title[i]);
+                                }
+
+                                for (var key in graf_data) {
+                                    if (key != 'title' && key != 'productId') {
+                                        DATA.push([key, graf_data[key]]);
+                                    }
+                                }
+
+                                setTimeout(() => {
+                                    if (typeof DATA[1] != "undefined") {
+                                        setTimeout(() => {
+                                            this.viewTendersChart(DATA, 'graph-container-' + graf_data.productId);
+                                        }, 100)
+                                    } else {
+                                        DATA[0] = ['Month', 'Total'];
+                                        DATA[1] = ['Yan-97', 0];
+                                        setTimeout(() => {
+                                            this.viewTendersChart(DATA, 'graph-container-' + graf_data.productId);
+                                        }, 100)
+                                    }
+                                }, 300)
+                            }
+
+                        }
+                    );
+                }, 500)
             },
 
             viewTendersChart: function (data, element_id) {
@@ -199,19 +264,20 @@
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title: '',
-                    vAxis: {title: ''},
-                    hAxis: {title: ''},
+                    title: 'Sales',
+                    vAxis: {title: 'Budget'},
+                    hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
+                    legend: 'none',
                     tooltip: {trigger: 'none'},
-                    legend: {position: 'none'},
-                    series: {5: {type: 'line'}}
+                    series: {0: {type: 'line'}}
                 };
 
                 var chart = new google.visualization.ComboChart(document.getElementById(element_id));
                 chart.draw(data, options);
 
-            },
+            }
+            ,
 
             loadGoogleChart: function () {
                 return google.charts.load('current', {'packages': ['corechart']})
@@ -223,6 +289,7 @@
         ,
         props: ['addressId'],
         mounted:
+
             function () {
                 if (this.addressId) {
                     this.loadGoogleChart()
