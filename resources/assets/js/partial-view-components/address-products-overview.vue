@@ -9,7 +9,7 @@
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name}}</p>
+                    <p class="name" v-if="purchase.products[0].name">{{purchase.products[0].name? purchase.products[0].name : 'Product name' + i}}</p>
                     <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price)  | currency}} |
                         {{Math.ceil(purchase.total_price)  | currency}}</p>

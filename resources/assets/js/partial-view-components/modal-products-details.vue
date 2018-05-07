@@ -11,7 +11,7 @@
                         </div>
 
                         <h4 class="modal-title">
-                            {{productsData.name}}
+                            {{productsData.name? productsData.name : 'Product name'}}
                             <a href="#"><i class="fa fa-pencil"></i></a>
                         </h4>
 
