@@ -26,6 +26,7 @@
                                 <p class="number" v-if="usedYears">
                                     {{usedYears}}
                                 </p>
+
                                 <p class="text">
                                     <span><i class="fa fa-calendar"></i></span> Used for years
                                 </p>
