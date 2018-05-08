@@ -284,8 +284,8 @@
                 var data = google.visualization.arrayToDataTable(data);
 
                 var options = {
-                    title: 'Sales',
-                    vAxis: {title: 'Budget'},
+                    title: '',
+                    vAxis: {title: '', gridlines: {color: '#fff', count: 0}},
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
