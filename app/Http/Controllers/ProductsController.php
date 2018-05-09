@@ -7,8 +7,10 @@ use App\Models\Product;
 use App\Models\ProductConsumable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProductsController extends Controller {
+
 	public function productByPurchase( $id ) {
 		$product = DB::table( 'rl_products' )
 		             ->where( 'rl_address_tenders_purchase_products.purchase_id', $id )
@@ -18,8 +20,19 @@ class ProductsController extends Controller {
 		return response()->json( $product );
 	}
 
-	public function productByTenders( $id ) {
-		$query   = $this->getTendersByProduct( $id );
+	public function productByTenders( $id) {
+
+		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		           atpp.product_id as product_id, atpp.consumable_id as tpp_consumable_id,
+		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.remark as purchase_remark,
+		           pc.name as tag_name, pc.id as tag_id,
+                   atb.budget, atb.delivery_year';
+
+		$query   = $this->getTendersByProduct( $id, $select);
+
+		Log::info("SQL productByTenders ---> \n" . print_r($query->orderBy( 'tender_date', 'asc' )->toSql(), 1));
+		Log::info("productByTenders COUNT ---> " . print_r($query->count(), 1));
+
 		$tenders = $query->orderBy( 'tender_date', 'asc' )->get();
 
 		return response()->json( $tenders );
@@ -33,7 +46,14 @@ class ProductsController extends Controller {
 	}
 
 	public function getProductByTendersPaginated( $id ) {
-		$query = $this->prepareTendersQuery( $id );
+		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
+		           pc.name as tag_name, pc.id as tag_id,
+                   atb.id as budget_id, atb.budget, atb.delivery_year,
+		           p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
+		           p.image as product_image';
+
+		$query = $this->prepareTendersQuery( $id, $select );
 
 		$tenders = $query->paginate( 5 );
 
@@ -52,16 +72,26 @@ class ProductsController extends Controller {
 	}
 
 	public function getProductByTendersToExcel( $id ) {
-		$query = $this->prepareTendersQuery( $id );
+
+		$select = 'at.budgeted_cost, at.tender_date,
+		           atpp.product_id as tpp_product_id, atpp.consumable_id as tpp_consumable_id,
+		           atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name,
+		           pc.name as tag_name, pc.id as tag_id,
+		           p.name as product_name';
+
+		$query = $this->prepareTendersQuery( $id, $select );
+
+//		Log::info("SQL getProductByTendersToExcel ---> \n" . print_r($query->toSql(), 1));
+//		Log::info("getProductByTendersToExcel COUNT ---> " . print_r($query->count(), 1));
 
 		$tenders = $query->get();
 
 		return response()->json( $tenders );
 	}
 
-	public function prepareTendersQuery( $id ) {
+	public function prepareTendersQuery( $id, $select ) {
 
-		$query = $this->getTendersByProduct( $id );
+		$query = $this->getTendersByProduct( $id, $select );
 
 		$query = $this->composeConditions( $query, request()->all() );
 
@@ -104,16 +134,12 @@ class ProductsController extends Controller {
 		return $query;
 	}
 
-	public function getTendersByProduct( $id ) {
+	public function getTendersByProduct( $id, $select ) {
 		$query = DB::table( 'rl_address_tenders AS at' )
-		           ->select( DB::raw( 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
-		           atpp.*,
-		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
-		           atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
-		           pc.name as tag_name, pc.id as tag_id, atb.*, 
-		           p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
-		           p.image as product_image' ) )
+		           ->select( DB::raw( $select ) )
 		           ->where( 'p.id', $id )
+		           ->whereNotNull('atp.tender_id')
+		           ->whereNotNull('atb.tender_id')
 		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )

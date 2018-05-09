@@ -15,7 +15,7 @@
                         {{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}}</p>
                 </div>
-                <div class="prod-graf" :id="'graph-container-'+purchase.products[0].id" style="width: 75px; height: 50px"></div>
+                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
             <li>
                 <a href="javascript:void(0)"
@@ -146,7 +146,7 @@
 
                         this.productsData.purchases.forEach((purchase, i) => {
 
-                            this.dataCreateToChart(purchase.products[0].id)
+                            this.dataCreateToChart(purchase.products[0].id, i)
 
                             if (i >= 3) {
                                 return;
@@ -219,7 +219,7 @@
 
             },
 
-            dataCreateToChart: function (productId) {
+            dataCreateToChart: function (productId, indexOrder) {
                 setTimeout(() => {
                 this.httpGet('/api/product-by-tenders/' + productId)
                     .then(data => {
@@ -235,7 +235,7 @@
 
                                 data.forEach(tender => {
 
-                                    graf_data.productId = tender.product_id
+                                    graf_data.productId = tender.product_id;
 
                                     let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
 
@@ -260,13 +260,13 @@
                                 setTimeout(() => {
                                     if (typeof DATA[1] != "undefined") {
                                         setTimeout(() => {
-                                            this.viewTendersChart(DATA, 'graph-container-' + graf_data.productId);
+                                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
                                         }, 100)
                                     } else {
                                         DATA[0] = ['Month', 'Total'];
                                         DATA[1] = ['Yan-97', 0];
                                         setTimeout(() => {
-                                            this.viewTendersChart(DATA, 'graph-container-' + graf_data.productId);
+                                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
                                         }, 100)
                                     }
                                 }, 300)
@@ -274,7 +274,7 @@
 
                         }
                     );
-                }, 500)
+                }, 1000)
             },
 
             viewTendersChart: function (data, element_id) {

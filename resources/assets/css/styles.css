@@ -2384,6 +2384,13 @@ p.tender-percent{
 
 #product-modal .modal-header{
     background: #f7f7f7;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    position: relative;
+}
+
+#product-modal .modal-content{
+    border-radius: 6px;
 }
 
 #product-modal .modal-dialog{
@@ -2684,13 +2691,14 @@ p.tender-percent{
     float: left;
     padding-left: 0px;
     padding-right: 0px;
+    position: relative;
 }
 
 #product-modal .min-value{
     width: 92px;
     float: left;
     height: 42px;
-    margin-left: 30px;
+    margin-left: 50px;
     padding-left: 0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
@@ -2713,10 +2721,9 @@ p.tender-percent{
 
 #product-modal .max-value{
     width: 92px;
-    float: right;
+    float: left;
+    margin-left: 30px;
     height: 42px;
-    margin-right: 30px;
-    padding-right: 0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
 }
@@ -2728,7 +2735,8 @@ p.tender-percent{
     color: #3a444f;
     line-height: 1.42857143;
     width: 90px;
-    float: right;
+    float: left;
+    margin-left: -15px;
     height: 40px;
     padding-left: 10px;
     padding-right: 10px;
@@ -2738,7 +2746,7 @@ p.tender-percent{
 
 #product-modal .min-max{
     padding-left: 30px;
-    padding-right: 30px;
+    padding-right: 0px;
 }
 
 #product-modal .tender-data{
@@ -2750,6 +2758,19 @@ p.tender-percent{
 #product-modal .filter-tag-query-tender{
     padding-left: 0px;
     padding-right: 0px;
+}
+
+#product-modal .export-excel{
+    padding: 0px;
+    width: 68px;
+}
+
+#product-modal .export-excel .export-to-excel{
+    float: left;
+}
+
+#product-modal .export-excel .export-to-csv{
+    float: left;
 }
 
 #product-modal .export-excel .fa-file-excel-o{
@@ -2770,13 +2791,14 @@ p.tender-percent{
 }
 
 #product-modal .tender-chart{
-    width: 700px;
+    width: 600px;
     float: left;
     margin-left: 10px;
 }
 
 #product-modal .tag-list{
     float: left;
+    width: 230px;
 }
 
 #product-modal .pagination-box{
@@ -2899,4 +2921,16 @@ ul.filter-tag-query-tender > li > ul > li:hover{
 
 #product-modal .filter-tag-query-tender ul.select-filter > li.open > a{
     color: #ffffff;
+}
+
+.slider-currency-i{
+    position: absolute;
+    left: 33px;
+    top: 15px;
+}
+
+.slider-dash{
+    position: absolute;
+    left: 155px;
+    top: 10px;
 }

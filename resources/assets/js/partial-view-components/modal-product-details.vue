@@ -7,7 +7,7 @@
 
                         <div class="person-profile-picture">
                             <span class="person-initials">{{getPersonInitials('p')}}</span>
-                                <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
+                            <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
 
                         <h4 class="modal-title">
@@ -87,9 +87,12 @@
                                                     placeholder="Search tenders">
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
+                                            <i class="fa fa-ruble slider-currency-i"></i>
                                             <div class="col-md-6 min-value">
                                                 <input class="min-value-input" v-model="tendersCost.value[0]">
                                             </div>
+                                            <div class="slider-dash">-</div>
+
                                             <div class="col-md-6 max-value">
                                                 <input class="max-value-input" v-model="tendersCost.value[1]">
                                             </div>
@@ -125,13 +128,23 @@
                                         </div>
                                         <div class="col-md-1 export-excel">
                                             <download-excel
-                                                    class=""
+                                                    class="export-to-excel"
                                                     :data="tendersExport.json_data"
                                                     :fields="tendersExport.json_fields"
                                                     name="tenders.xls"
-                                                    @click="exportToExel(productId)"
+                                                    @click="exportToExcel(productId)"
                                             >
                                                 <i class="fa fa-file-excel-o fa-2x" title="Export to excel"></i>
+                                            </download-excel>
+                                            <download-excel
+                                                    class="export-to-csv"
+                                                    :data="tendersExport.json_data"
+                                                    :fields="tendersExport.json_fields"
+                                                    type="csv"
+                                                    name="tenders.csv"
+                                                    @click="exportToExcel(productId)"
+                                            >
+                                                <i class="fa fa-file-excel-o fa-2x" title="Export to csv"></i>
                                             </download-excel>
                                         </div>
                                     </div>
@@ -190,6 +203,8 @@
                     tooltipStyle: {
                         display: 'none',
                     },
+                    interval: 1000,
+                    speed: 0.3,
                 },
                 addressId: null,
                 productId: null,
@@ -218,8 +233,9 @@
                 actual_cost: null,
                 budgeted_cost: null,
                 actual_year: (new Date()).getFullYear(),
-                actual_year_cost: null,
                 old_year_cost: null,
+                actual_year_cost: null,
+                next_year_cost: null,
                 spending_cost: null,
                 usedYears: null,
                 isGoogleChartCoreLoaded: false,
@@ -334,6 +350,7 @@
                 this.spending_cost = null;
                 this.actual_year_cost = null;
                 this.old_year_cost = null;
+                this.next_year_cost = null;
                 this.addressId = addressId;
                 this.purchaseId = purchaseId;
                 this.currentAddress = address;
@@ -354,7 +371,7 @@
             getTendersByProduct: function (product_id) {
                 this.httpGet('/api/product-by-tenders/' + product_id)
                     .then(data => {
-
+                        let dataproduct = data;
                         this.tenderOld = data[0];
                         this.tendersCost.min = 0;
                         this.selectedTags = []
@@ -399,25 +416,36 @@
 
                             if (this.actual_year == Number(tender.delivery_year)) {
 
-                                this.actual_year_cost += Math.ceil(Number(tender.delivery_year));
+                                this.actual_year_cost += Math.ceil(Number(tender.budgeted_cost));
 
                             }
 
                             if ((this.actual_year - 1) == Number(tender.delivery_year)) {
 
-                                this.old_year_cost += Math.ceil(Number(tender.delivery_year));
+                                this.old_year_cost += Math.ceil(Number(tender.budgeted_cost));
+
+                            }
+
+                            if ((this.actual_year + 1) == Number(tender.delivery_year)) {
+
+                                this.next_year_cost += Math.ceil(Number(tender.budgeted_cost));
 
                             }
 
                         })
 
-                        this.spending_cost = Math.ceil(((this.actual_year_cost - this.old_year_cost) / this.old_year_cost) * 100);
+
+
+                        this.spending_cost = Math.ceil(((this.next_year_cost/this.old_year_cost)-1) * 100);
+
+                        console.log('((',this.next_year_cost,'/',this.old_year_cost,')-1)*100 = ', this.spending_cost);
 
                         data = data.sort(function (a, b) {
                             return b.budgeted_cost - a.budgeted_cost;
                         });
 
-                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost);
+                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost/1000);
+                        this.tendersCost.min = Math.ceil(data[data.length - 1].budgeted_cost/1000);;
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
                         data = data.sort(function (a, b) {
@@ -437,7 +465,7 @@
 
                         }
 
-                        this.filterTagToChart()
+                        this.filterTagToChart();
                     });
             },
 
@@ -460,7 +488,7 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
-                this.exportToExel(product_id);
+                this.exportToExcel(product_id);
             },
 
             applyFilters: function (isOnlySortingChanged) {
@@ -515,7 +543,7 @@
                 }
 
                 if (this.appliedFilters.sortCost.length) {
-                    queryStr += '&min=' + this.appliedFilters.sortCost[0] + '&max=' + this.appliedFilters.sortCost[1];
+                    queryStr += '&min=' + (this.appliedFilters.sortCost[0]*1000) + '&max=' + (this.appliedFilters.sortCost[1]*1000);
                 }
 
                 this.queryUrl = queryStr;
@@ -582,7 +610,7 @@
                     })
             },
 
-            exportToExel: function (product_id) {
+            exportToExcel: function (product_id) {
 
                 let url = '/api/product-by-tenders-to-excel/' + product_id + '?' + this.composeQueryUrl();
                 this.httpGet(url)
@@ -595,126 +623,124 @@
                 this.httpGet('/api/product-by-tenders/' + this.productId)
                     .then(data => {
 
-                            var DATA = [[]];
-                            if (data.length != 0) {
+                        var DATA = [[]];
+                        if (data.length != 0) {
 
-                                let graf_data = {
-                                    title: []
-                                };
-                                graf_data.title.push('Month')
-                                graf_data.title.push('Total')
+                            let graf_data = {
+                                title: []
+                            };
+                            graf_data.title.push('Month')
+                            graf_data.title.push('Total')
+
+                            for (let j = 0; j < this.selectedTags.length; j++) {
+
+                                if (String(this.selectedTags[j].name) != 'null') {
+
+                                    let tags = String(this.selectedTags[j].name);
+
+                                    graf_data.title.push(tags);
+
+                                }
+                            }
+
+                            let k = 0;
+
+                            data.forEach((tender, i) => {
+
+                                let isTagId = false;
+
+                                let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
+
+                                let tag = String(tender.tag_name);
+
+                                if (typeof graf_data[date_tender] == "undefined") {
+                                    graf_data[date_tender] = [];
+                                }
 
                                 for (let j = 0; j < this.selectedTags.length; j++) {
 
+                                    k = 0;
+
                                     if (String(this.selectedTags[j].name) != 'null') {
 
-                                        let tags = String(this.selectedTags[j].name);
+                                        if (this.selectedTags[j].id == tender.tag_id) {
 
-                                        graf_data.title.push(tags);
+                                            isTagId = true;
 
+                                            graf_data[date_tender].push({[tag]: tender.budgeted_cost});
+
+                                            k++;
+                                        }
                                     }
                                 }
 
-                                let k = 0;
+                            });
 
-                                data.forEach((tender, i) => {
+                            for (let i = 0; i < graf_data.title.length; i++) {
 
-                                    let isTagId = false;
-
-                                    let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
-
-                                    let tag = String(tender.tag_name);
-
-                                    if (typeof graf_data[date_tender] == "undefined") {
-                                        graf_data[date_tender] = [];
-                                    }
-
-                                    for (let j = 0; j < this.selectedTags.length; j++) {
-
-                                        k = 0;
-
-                                        if (String(this.selectedTags[j].name) != 'null') {
-
-                                            if (this.selectedTags[j].id == tender.tag_id) {
-
-                                                isTagId = true;
-
-                                                graf_data[date_tender].push({[tag]: tender.budgeted_cost});
-
-                                                k++;
-                                            }
-                                        }
-                                    }
-
-                                });
-
-                                for (let i = 0; i < graf_data.title.length; i++) {
-
-                                    DATA[0].push(graf_data.title[i]);
-                                }
-
-
-                                let key_graf = 1;
-                                let tagsum = [];
-                                let total = 0;
-                                for (var key in graf_data) {
-
-                                    if (key != 'title' && graf_data[key].length != 0) {
-
-                                        DATA.push([key]);
-
-                                        for (let i = 2; i < graf_data.title.length; i++) {
-
-                                            let tagsum_tmp = 0;
-
-                                            for (let j = 0; j < graf_data[key].length; j++) {
-
-                                                if (typeof graf_data[key][j][graf_data.title[i]] != "undefined") {
-
-                                                    total += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
-
-                                                    tagsum_tmp += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
-
-                                                } else {
-
-                                                    tagsum_tmp += 0;
-
-                                                }
-
-                                            }
-
-                                            tagsum.push(tagsum_tmp);
-                                            tagsum_tmp = 0;
-
-                                        }
-                                        DATA[key_graf].push(total);
-                                        for (let s = 0; s < tagsum.length; s++) {
-                                            DATA[key_graf].push(tagsum[s]);
-                                        }
-                                        tagsum = [];
-                                        total = 0;
-                                        key_graf++;
-                                    }
-
-                                }
-                                setTimeout(() => {
-
-                                    if (typeof DATA[1] != "undefined") {
-                                        setTimeout(() => {
-                                            this.viewTendersChart(DATA);
-                                        }, 100)
-                                    } else {
-                                        DATA[0] = ['Month', 'Total'];
-                                        DATA[1] = ['Yan-97', 0];
-                                        setTimeout(() => {
-                                            this.viewTendersChart(DATA);
-                                        }, 100)
-                                    }
-                                }, 300)
+                                DATA[0].push(graf_data.title[i]);
                             }
 
+
+                            let key_graf = 1;
+                            let tagsum = [];
+                            let total = 0;
+                            for (var key in graf_data) {
+
+                                if (key != 'title' && graf_data[key].length != 0) {
+
+                                    DATA.push([key]);
+
+                                    for (let i = 2; i < graf_data.title.length; i++) {
+
+                                        let tagsum_tmp = 0;
+
+                                        for (let j = 0; j < graf_data[key].length; j++) {
+
+                                            if (typeof graf_data[key][j][graf_data.title[i]] != "undefined") {
+
+                                                total += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
+
+                                                tagsum_tmp += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
+
+                                            } else {
+
+                                                tagsum_tmp += 0;
+
+                                            }
+
+                                        }
+
+                                        tagsum.push(tagsum_tmp);
+                                        tagsum_tmp = 0;
+
+                                    }
+                                    DATA[key_graf].push(total);
+                                    for (let s = 0; s < tagsum.length; s++) {
+                                        DATA[key_graf].push(tagsum[s]);
+                                    }
+                                    tagsum = [];
+                                    total = 0;
+                                    key_graf++;
+                                }
+
+                            }
+                            setTimeout(() => {
+
+                                if (typeof DATA[1] != "undefined") {
+                                    setTimeout(() => {
+                                        this.viewTendersChart(DATA);
+                                    }, 100)
+                                } else {
+                                    DATA[0] = ['Month', 'Total'];
+                                    DATA[1] = ['Yan-97', 0];
+                                    setTimeout(() => {
+                                        this.viewTendersChart(DATA);
+                                    }, 100)
+                                }
+                            }, 300)
                         }
-                    );
+                    });
             },
 
             viewTendersChart: function (data) {
