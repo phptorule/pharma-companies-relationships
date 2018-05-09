@@ -84,7 +84,7 @@
 
                 <div class="staff-overview address-box">
                     <div class="header">
-                        <h3>Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                        <h3>Related People <a href="#"><i class="fa fa-pencil"></i></a></h3>
                         <a href="javascript:void(0)" @click="showContactsChain(addressData)" class="view-contacts-chain">View Relationship Graph</a>
                     </div>
 
@@ -111,17 +111,13 @@
                        v-if="addressData.people && addressData.people.length > 3"
                        @click="showSlidedBox('all-employee')"
                        class="address-box-show-more-link show-all-employees-link"
-                    >
-                        Show all Employees
-                    </a>
+                    >Show all Employees</a>
                 </div>
 
                 <div class="used-products-overview address-box">
                     <div class="header">
                         <h3>Used Products <a href="#"><i class="fa fa-pencil"></i></a></h3>
                     </div>
-
-                    <p v-if="!addressData.products.length" class="empty-data-p">There are no used products</p>
 
                     <div v-if="addressId">
                         <address-products-overview
