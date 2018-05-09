@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\Log;
 class AddressesController extends Controller
 {
 
+    private $MAX_ADDRESSES = 500;
 
     function index()
     {
-        $addresses = $this->prepareAddressesQuery()->get();
+        $addresses = $this->prepareAddressesQuery()->limit($this->MAX_ADDRESSES)->get();
 
         return response()->json($addresses);
     }
@@ -29,7 +30,7 @@ class AddressesController extends Controller
     {
         $query = $this->prepareAddressesQuery();
 
-        $addresses = $query->paginate(20);
+        $addresses = $query->limit($this->MAX_ADDRESSES)->paginate(20);
 
         return response()->json($addresses);
     }
