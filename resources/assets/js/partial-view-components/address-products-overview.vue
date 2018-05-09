@@ -10,7 +10,7 @@
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name">{{purchase.products[0].name? purchase.products[0].name : 'Product name' + i}}</p>
+                    <p class="name"><a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">{{purchase.products[0].name? purchase.products[0].name : "unspecified "+purchase.products[0].company+"-product"}}</a></p>
                     <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}}</p>
@@ -27,19 +27,7 @@
                 </a>
             </li>
         </ul>
-        <ul class="staff-list" v-else>
-            <li>Products is empty
-            </li>
-            <li>
-                <a href="javascript:void(0)"
-                   v-if="addressData.products && addressData.products.length >= 3"
-                   @click="showSlidedBox('all-products')"
-                   class="address-box-show-more-link show-all-employees-link"
-                >
-                    Show all products
-                </a>
-            </li>
-        </ul>
+        <p v-else class="empty-data-p">We don't know about any products</p>
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
@@ -62,7 +50,7 @@
                     <p class="tender-percent">({{rate_next_year}}%)</p>
                 </div>
             </div>
-            <div class="col-md-12 staff-list" v-else>Tenders is empty</div>
+            <p v-else class="empty-data-p">We don't know about any tenders</p>
         </div>
     </div>
 </template>

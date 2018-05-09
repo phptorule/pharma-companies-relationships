@@ -43,7 +43,7 @@
                 let centerLng = this.$route.query['center-lng'];
                 let centerLat = this.$route.query['center-lat'];
 
-                if(!zoom && !centerLng && !centerLat && this.$route.path == '/dashboard' && this.FeatureCollection.features.length) {
+                if (!zoom && !centerLng && !centerLat && this.$route.path == '/dashboard' && this.FeatureCollection.features.length) {
                     this.fitMapBounds();
                     return;
                 }
@@ -77,7 +77,7 @@
 
                 var mapData = [];
 
-                for(var i = 0; i < data.length; i++){
+                for (var i = 0; i < data.length; i++) {
 
                     var adr = data[i];
 
@@ -94,7 +94,7 @@
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [ adr.lon, adr.lat, 0.0 ]
+                            "coordinates": [adr.lon, adr.lat, 0.0]
                         }
                     };
                 }
@@ -108,7 +108,7 @@
 
                 this.FeatureCollection = {
                     "type": "FeatureCollection",
-                    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
                     "features": mapData
                 };
 
@@ -207,7 +207,7 @@
                         clearTimeout(timeoutId)
                     }
 
-                    timeoutId = setTimeout(()=>{
+                    timeoutId = setTimeout(() => {
 
                         let totalPointsDisplayed = 0;
 
@@ -218,8 +218,8 @@
                             layers: ['unclustered-point']
                         });
 
-                        for(let i=0; i < unclusteredFeatures.length; i++) {
-                            if(uniqueSingleFeatureIds.indexOf(unclusteredFeatures[i].properties.id) === -1) {
+                        for (let i = 0; i < unclusteredFeatures.length; i++) {
+                            if (uniqueSingleFeatureIds.indexOf(unclusteredFeatures[i].properties.id) === -1) {
                                 totalPointsDisplayed++;
                                 uniqueSingleFeatureIds.push(unclusteredFeatures[i].properties.id);
                             }
@@ -229,16 +229,16 @@
                             layers: ['clusters']
                         });
 
-                        for(let i=0; i < clusteredFeatures.length; i++) {
-                            if(uniqueClusterIds.indexOf(clusteredFeatures[i].properties.cluster_id) === -1) {
+                        for (let i = 0; i < clusteredFeatures.length; i++) {
+                            if (uniqueClusterIds.indexOf(clusteredFeatures[i].properties.cluster_id) === -1) {
                                 totalPointsDisplayed += clusteredFeatures[i].properties.point_count;
                                 uniqueClusterIds.push(clusteredFeatures[i].properties.cluster_id);
                             }
                         }
-                        
+
                         this.notifyTotalPointsDisplayedOnMapChanged(totalPointsDisplayed)
 
-                    },500)
+                    }, 500)
 
                 });
             },
@@ -253,7 +253,7 @@
                         layers: ['clusters']
                     });
 
-                    if(unclusteredFeatures.length || clusteredFeatures.length) {
+                    if (unclusteredFeatures.length || clusteredFeatures.length) {
                         this.map.getCanvas().style.cursor = 'pointer';
                     }
                     else {
@@ -264,10 +264,10 @@
                 });
             },
 
-            displayTooltip: function(unclusteredFeatures) {
-                if(unclusteredFeatures.length) {
+            displayTooltip: function (unclusteredFeatures) {
+                if (unclusteredFeatures.length) {
                     this.popup.setLngLat(unclusteredFeatures[0].geometry.coordinates)
-                        .setHTML('<h3 class="address-name-in-map-tooltip">'+unclusteredFeatures[0].properties.name+'</h3>')
+                        .setHTML('<h3 class="address-name-in-map-tooltip">' + unclusteredFeatures[0].properties.name + '</h3>')
                         .addTo(this.map)
                 }
                 else {
@@ -286,11 +286,11 @@
                         layers: ['clusters']
                     });
 
-                    if(unclusteredFeatures.length){
+                    if (unclusteredFeatures.length) {
                         let id = unclusteredFeatures[0].properties.id;
-                        this.$router.push('/address-details/'+id);
+                        this.$router.push('/address-details/' + id);
                     }
-                    else if(clusteredFeatures.length){
+                    else if (clusteredFeatures.length) {
 
                         let clusterId = clusteredFeatures[0].properties.cluster_id;
 
@@ -298,12 +298,12 @@
 
                         let ids = [];
 
-                        for(var i=0; i<allFeatures.length; ++i){
+                        for (var i = 0; i < allFeatures.length; ++i) {
                             ids.push(allFeatures[i].properties.id);
                         }
 
-                        if(ids.length){
-                            this.$router.push('/dashboard?address-ids='+ids.toString());
+                        if (ids.length) {
+                            this.$router.push('/dashboard?address-ids=' + ids.toString());
                         }
                     }
                 });
@@ -327,6 +327,9 @@
                     this.fitMapBounds();
 
                     this.countDisplayedMarkers();
+
+                    if (addressList.length > 499)
+                        alertify.notify('Too many addresses are satisfying your filter settings. Displaying first 500.', 'warning', 3);
                 }
                 else {
                     alertify.notify('No addresses have been found', 'warning', 3);
@@ -335,8 +338,8 @@
             },
 
             updateMapLayers: function (data) {
-                ['clusters','cluster-count','unclustered-point'].forEach(el => {
-                    if(this.map.getLayer(el)) this.map.removeLayer(el);
+                ['clusters', 'cluster-count', 'unclustered-point'].forEach(el => {
+                    if (this.map.getLayer(el)) this.map.removeLayer(el);
                 });
 
                 this.map.removeSource('earthquakes');
@@ -371,15 +374,15 @@
                     fullUrl += '&';
                 }
 
-                if(fullUrl.indexOf('zoom') === -1) {
-                    fullUrl += 'zoom='+this.mapZoom + '&center-lng=' + this.mapCenterLng + '&center-lat=' + this.mapCenterLat;
+                if (fullUrl.indexOf('zoom') === -1) {
+                    fullUrl += 'zoom=' + this.mapZoom + '&center-lng=' + this.mapCenterLng + '&center-lat=' + this.mapCenterLat;
                 }
                 else {
                     // debugger;
 
                     let arr;
 
-                    if (fullUrl.indexOf('?') === -1){
+                    if (fullUrl.indexOf('?') === -1) {
                         arr = fullUrl.split('&');
                     }
                     else {
@@ -390,30 +393,30 @@
                     let zoom, centerLng, centerLat;
 
                     arr = arr.filter(el => {
-                        if(el.indexOf('zoom') !== -1) {
-                            zoom = 'zoom='+this.mapZoom;
+                        if (el.indexOf('zoom') !== -1) {
+                            zoom = 'zoom=' + this.mapZoom;
                             return false;
                         }
-                        if(el.indexOf('center-lng') !== -1) {
-                            centerLng = '&center-lng='+this.mapCenterLng;
+                        if (el.indexOf('center-lng') !== -1) {
+                            centerLng = '&center-lng=' + this.mapCenterLng;
                             return false;
                         }
-                        if(el.indexOf('center-lat') !== -1) {
-                            centerLat = '&center-lat='+this.mapCenterLat;
+                        if (el.indexOf('center-lat') !== -1) {
+                            centerLat = '&center-lat=' + this.mapCenterLat;
                             return false;
                         }
                         return true;
                     });
 
-                    if(arr.length) {
-                        fullUrl = this.$route.path + '?'+ arr.join('&') + '&' + zoom + centerLng + centerLat;
+                    if (arr.length) {
+                        fullUrl = this.$route.path + '?' + arr.join('&') + '&' + zoom + centerLng + centerLat;
                     }
                     else {
                         fullUrl = this.$route.path + '?' + zoom + centerLng + centerLat;
                     }
                 }
 
-                if(hash) {
+                if (hash) {
                     fullUrl += hash;
                 }
 
@@ -421,22 +424,22 @@
             },
 
             detectMapMoveEnds: function () {
-                this.map.on('moveend', (e)=>{
+                this.map.on('moveend', (e) => {
 
-                    if(this.moveendId) {
+                    if (this.moveendId) {
                         clearTimeout(this.moveendId);
                     }
 
-                    this.moveendId = setTimeout(()=>{
+                    this.moveendId = setTimeout(() => {
 
-                        if(this.isMapMovedBecauseOfSearch) {
+                        if (this.isMapMovedBecauseOfSearch) {
 
                             this.isMapMovedBecauseOfSearch = false;
                             this.isMapMovedBecauseOfFitMapContent = false;
                             return;
                         }
 
-                        if(this.isMapMovedBecauseOfFitMapContent) {
+                        if (this.isMapMovedBecauseOfFitMapContent) {
 
                             this.isMapMovedBecauseOfFitMapContent = false;
                             this.isMapMovedBecauseOfSearch = false;
@@ -445,7 +448,7 @@
 
                         this.updateAddressBarWithMapCoords();
 
-                    },2000);
+                    }, 2000);
 
                 })
             }
@@ -453,7 +456,7 @@
 
         mounted: function () {
 
-            setTimeout(()=>{
+            setTimeout(() => {
                 $('#map-element').height(window.innerHeight - 70 - 51);
                 this.initMap();
 
@@ -463,7 +466,7 @@
 
                     let queryUrl = '';
 
-                    if(this.$route.path == '/dashboard') {
+                    if (this.$route.path == '/dashboard') {
                         queryUrl = this.$route.fullPath.replace('/dashboard', '');
                     }
 
@@ -493,14 +496,14 @@
                         })
                 });
 
-                this.$eventGlobal.$on('showSpecificItem', (data)=>{
+                this.$eventGlobal.$on('showSpecificItem', (data) => {
 
                     this.isMapMovedBecauseOfSearch = true;
 
                     this.updateMapLayers(data);
                 });
 
-            },1000);
+            }, 1000);
         }
 
     }
