@@ -210,9 +210,22 @@ class ProductsController extends Controller {
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
 		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
 		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
-					->groupBy('month');
+					->groupBy('month')
+					->havingRaw('month IS NOT NULL');
 
-		return response()->json($query->get());
+		$result = $query->get();
+
+		$responsData = [];
+
+		foreach ($result as $i => $row){
+			$responsData[$i] = [];
+			foreach ($row as $j => $value){
+				$responsData[$i][] = $j == 0 ? (is_null($value)? '1970/1': $value) : intval($value);
+			}
+		}
+
+
+		return response()->json($responsData, 200, [], JSON_NUMERIC_CHECK);
 	}
 
 }

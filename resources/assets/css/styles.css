@@ -2806,14 +2806,14 @@ p.tender-percent{
 }
 
 #product-modal .tender-chart{
-    width: 600px;
+    width: 650px;
     float: left;
     margin-left: 10px;
 }
 
 #product-modal .tag-list{
     float: left;
-    width: 230px;
+    width: 170px;
 }
 
 #product-modal .pagination-box{

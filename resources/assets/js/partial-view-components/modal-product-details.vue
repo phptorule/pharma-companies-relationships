@@ -621,127 +621,19 @@
             },
 
             filterTagToChart: function () {
-                this.httpGet('/api/product-by-tenders/' + this.productId + '?chart=1')
+                this.httpGet('/api/tenders-by-product-chart/' + this.productId)
                     .then(data => {
 
-                        var DATA = [[]];
-                        if (data.length != 0) {
+                        var DATA = data;
 
-                            let graf_data = {
-                                title: []
-                            };
-                            graf_data.title.push('Month')
-                            graf_data.title.push('Total')
+                        DATA.unshift(['Month', 'Total']);
 
-                            for (let j = 0; j < this.selectedTags.length; j++) {
+                        console.log(DATA);
 
-                                if (String(this.selectedTags[j].name) != 'null') {
-
-                                    let tags = String(this.selectedTags[j].name);
-
-                                    graf_data.title.push(tags);
-
-                                }
-                            }
-
-                            let k = 0;
-
-                            data.forEach((tender, i) => {
-
-                                let isTagId = false;
-
-                                let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
-
-                                let tag = String(tender.tag_name);
-
-                                if (typeof graf_data[date_tender] == "undefined") {
-                                    graf_data[date_tender] = [];
-                                }
-
-                                for (let j = 0; j < this.selectedTags.length; j++) {
-
-                                    k = 0;
-
-                                    if (String(this.selectedTags[j].name) != 'null') {
-
-                                        if (this.selectedTags[j].id == tender.tag_id) {
-
-                                            isTagId = true;
-
-                                            graf_data[date_tender].push({[tag]: tender.budgeted_cost});
-
-                                            k++;
-                                        }
-                                    }
-                                }
-
-                            });
-
-                            for (let i = 0; i < graf_data.title.length; i++) {
-
-                                DATA[0].push(graf_data.title[i]);
-                            }
+                        this.viewTendersChart(DATA);
 
 
-                            let key_graf = 1;
-                            let tagsum = [];
-                            let total = 0;
-                            for (var key in graf_data) {
 
-                                if (key != 'title' && graf_data[key].length != 0) {
-
-                                    DATA.push([key]);
-
-                                    for (let i = 2; i < graf_data.title.length; i++) {
-
-                                        let tagsum_tmp = 0;
-
-                                        for (let j = 0; j < graf_data[key].length; j++) {
-
-                                            if (typeof graf_data[key][j][graf_data.title[i]] != "undefined") {
-
-                                                total += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
-
-                                                tagsum_tmp += Math.ceil(Number(graf_data[key][j][graf_data.title[i]]));
-
-                                            } else {
-
-                                                tagsum_tmp += 0;
-
-                                            }
-
-                                        }
-
-                                        tagsum.push(tagsum_tmp);
-                                        tagsum_tmp = 0;
-
-                                    }
-                                    DATA[key_graf].push(total);
-                                    for (let s = 0; s < tagsum.length; s++) {
-                                        DATA[key_graf].push(tagsum[s]);
-                                    }
-                                    tagsum = [];
-                                    total = 0;
-                                    key_graf++;
-                                }
-
-                            }
-                            setTimeout(() => {
-
-                                if (typeof DATA[1] != "undefined") {
-                                    setTimeout(() => {
-                                        console.log(DATA);
-                                        this.viewTendersChart(DATA);
-                                    }, 100)
-                                } else {
-                                    DATA[0] = ['Month', 'Total'];
-                                    DATA[1] = ['Yan-97', 0];
-                                    setTimeout(() => {
-                                        this.viewTendersChart(DATA);
-                                    }, 100)
-                                }
-                            }, 300)
-                        }
                     });
             },
 
@@ -760,7 +652,7 @@
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
-                    series: {0: {type: 'line'}}
+                    series: {0: {type: 'line'}},
                 };
 
                 var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
