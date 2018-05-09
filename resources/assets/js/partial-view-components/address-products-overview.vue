@@ -10,7 +10,7 @@
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name">{{purchase.products[0].name? purchase.products[0].name : 'Product name' + i}}</p>
+                    <p class="name"><a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">{{purchase.products[0].name? purchase.products[0].name : purchase.products[0].company+"-product"}}</a></p>
                     <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}} |
                         {{Math.ceil(purchase.total_price) | currency}}</p>
