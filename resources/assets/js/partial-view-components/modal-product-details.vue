@@ -144,7 +144,8 @@
                                                     name="tenders.csv"
                                                     @click="exportToExcel(productId)"
                                             >
-                                                <i class="fa fa-file-excel-o fa-2x" title="Export to csv"></i>
+                                                <img src="/images/csv.png" title="Export to csv">
+                                                <!--<i class="fa fa-file-excel-o fa-2x" title="Export to csv"></i>-->
                                             </download-excel>
                                         </div>
                                     </div>

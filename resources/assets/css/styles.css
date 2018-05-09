@@ -2778,10 +2778,25 @@ p.tender-percent{
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 24px;
 }
 
 
 #product-modal .export-excel .fa-file-excel-o:hover{
+    background: #4a90e2;
+    color: #fff;
+}
+
+#product-modal .export-excel img{
+    color: #4a90e2;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 34px;
+}
+
+
+#product-modal .export-excel img:hover{
     background: #4a90e2;
     color: #fff;
 }
