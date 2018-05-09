@@ -220,7 +220,7 @@ class ProductsController extends Controller {
 		foreach ($result as $i => $row){
 			$responsData[$i] = [];
 			foreach ($row as $j => $value){
-				$responsData[$i][] = $j == 0 ? (is_null($value)? '1970/1': $value) : intval($value);
+				$responsData[$i][] = $j == 0 ? (is_null($value)? 0 : $value) : intval($value);
 			}
 		}
 

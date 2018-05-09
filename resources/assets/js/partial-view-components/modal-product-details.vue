@@ -145,7 +145,6 @@
                                                     @click="exportToExcel(productId)"
                                             >
                                                 <img src="/images/csv.png" title="Export to csv">
-                                                <!--<i class="fa fa-file-excel-o fa-2x" title="Export to csv"></i>-->
                                             </download-excel>
                                         </div>
                                     </div>
@@ -204,7 +203,7 @@
                     tooltipStyle: {
                         display: 'none',
                     },
-                    interval: 1000,
+                    // interval: 1000,
                     speed: 0.3,
                 },
                 addressId: null,
@@ -257,7 +256,8 @@
                         'key': 'charset',
                         'value': 'utf-8'
                     }]],
-                }
+                },
+                chartQueryTag: '',
             }
         },
 
@@ -304,6 +304,24 @@
         watch: {
 
             selectedTags(tagVal) {
+
+                this.chartQueryTag = '';
+
+                if (tagVal.length) {
+
+                    tagVal.forEach(tag =>{
+
+                        if(tag.name != null){
+
+                            console.log('tag.name', tag.name);
+
+                            this.chartQueryTag += '&tags[]=' + tag.id;
+
+                        }
+
+                    })
+
+                    }
                 this.graphLoadedModal = false;
                 this.filterTagToChart();
             },
@@ -363,7 +381,7 @@
                             this.productId = this.productsData.product_id;
                             this.getTendersByProduct(this.productId);
                             this.getTendersPaginate(this.productId);
-                            this.filterTagToChart()
+                            // this.filterTagToChart()
                         })
                     });
 
@@ -466,7 +484,7 @@
 
                         }
 
-                        this.filterTagToChart();
+                        // this.filterTagToChart();
                     });
             },
 
@@ -534,7 +552,6 @@
                     else {
                         this.appliedFilters.tags.forEach(id => {
                             queryStr += '&tag-cons[]=' + id;
-                            console.log(queryStr);
                         });
                     }
                 }
@@ -548,7 +565,7 @@
                 }
 
                 this.queryUrl = queryStr;
-                // console.log(' this.queryUrl' , this.queryUrl);
+
                 return queryStr;
             },
 
@@ -607,7 +624,9 @@
             loadTagsFilter: function () {
                 return this.httpGet('/api/product-load-tags')
                     .then(data => {
+
                         this.tag_list = data;
+
                     })
             },
 
@@ -621,14 +640,34 @@
             },
 
             filterTagToChart: function () {
-                this.httpGet('/api/tenders-by-product-chart/' + this.productId)
+
+                var url = '/api/tenders-by-product-chart/' + this.productId + '?' + this.chartQueryTag;
+
+                this.httpGet(url)
                     .then(data => {
+
+                        var title = ['Month', 'Total']
+
+                        if(this.selectedTags.length > 0){
+
+                            this.tag_list.forEach(tag => {
+
+                                this.selectedTags.forEach(selectTag => {
+
+                                    if (tag.id == selectTag.id) {
+
+                                        title.push(tag.name);
+
+                                    }
+
+                                });
+
+                            });
+                        }
 
                         var DATA = data;
 
-                        DATA.unshift(['Month', 'Total']);
-
-                        console.log(DATA);
+                        DATA.unshift(title);
 
                         this.viewTendersChart(DATA);
 
