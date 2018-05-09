@@ -20,18 +20,22 @@ class ProductsController extends Controller {
 		return response()->json( $product );
 	}
 
-	public function productByTenders( $id) {
+	public function productByTenders( $id ) {
 
-		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		if ( isset( request()->chart ) ) {
+			$select = 'at.tender_date, pc.id as tag_id, at.budgeted_cost, pc.name as tag_name';
+		} else {
+			$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
 		           atpp.product_id as product_id, atpp.consumable_id as tpp_consumable_id,
 		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.remark as purchase_remark,
 		           pc.name as tag_name, pc.id as tag_id,
                    atb.budget, atb.delivery_year';
+		}
 
-		$query   = $this->getTendersByProduct( $id, $select);
+		$query = $this->getTendersByProduct( $id, $select );
 
-		Log::info("SQL productByTenders ---> \n" . print_r($query->orderBy( 'tender_date', 'asc' )->toSql(), 1));
-		Log::info("productByTenders COUNT ---> " . print_r($query->count(), 1));
+		/*		Log::info("SQL productByTenders ---> \n" . print_r($query->orderBy( 'tender_date', 'asc' )->toSql(), 1));
+				Log::info("productByTenders COUNT ---> " . print_r($query->count(), 1));*/
 
 		$tenders = $query->orderBy( 'tender_date', 'asc' )->get();
 
@@ -65,8 +69,8 @@ class ProductsController extends Controller {
 		$products = Product::with( 'addresses' )
 		                   ->whereHas( 'addresses', function ( $q ) use ( $address ) {
 			                   return $q->where( 'id', $address->id );
-		                   })->with( 'purchases' )
-		                   ->paginate(10);
+		                   } )->with( 'purchases' )
+		                   ->paginate( 10 );
 
 		return response()->json( $products );
 	}
@@ -138,8 +142,8 @@ class ProductsController extends Controller {
 		$query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
 		           ->where( 'p.id', $id )
-		           ->whereNotNull('atp.tender_id')
-		           ->whereNotNull('atb.tender_id')
+		           ->whereNotNull( 'atp.tender_id' )
+		           ->whereNotNull( 'atb.tender_id' )
 		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
@@ -174,4 +178,41 @@ class ProductsController extends Controller {
 
 		return response()->json( $tags );
 	}
+
+	public function TenderByProductChart( $id )
+	{
+		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(at.budgeted_cost) as total';
+
+		if(isset(request()->tags) && $tags = request()->tags){
+			foreach ($tags as $tag){
+				$select .= ", ( 
+
+						SELECT SUM(at$tag.budgeted_cost) 
+						FROM rl_address_tenders as at$tag
+						LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.tender_id = at$tag.id
+						LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.purchase_id = atp$tag.id
+						LEFT JOIN rl_product_consumables AS pc$tag ON atpp$tag.consumable_id = pc$tag.id
+						LEFT JOIN rl_products AS p$tag ON p$tag.id = atpp$tag.product_id
+						WHERE p$tag.id = $id
+						AND pc$tag.id = $tag
+						AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m')
+						GROUP BY month
+						
+						 ) as tag$tag";
+			}
+		}
+
+		$query = DB::table( 'rl_address_tenders AS at' )
+		           ->select( DB::raw( $select ) )
+		           ->where( 'p.id', $id )
+		           ->whereNotNull( 'atp.tender_id' )
+		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
+		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
+		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
+		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
+					->groupBy('month');
+
+		return response()->json($query->get());
+	}
+
 }

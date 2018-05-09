@@ -621,7 +621,7 @@
             },
 
             filterTagToChart: function () {
-                this.httpGet('/api/product-by-tenders/' + this.productId)
+                this.httpGet('/api/product-by-tenders/' + this.productId + '?chart=1')
                     .then(data => {
 
                         var DATA = [[]];
@@ -730,6 +730,7 @@
 
                                 if (typeof DATA[1] != "undefined") {
                                     setTimeout(() => {
+                                        console.log(DATA);
                                         this.viewTendersChart(DATA);
                                     }, 100)
                                 } else {
