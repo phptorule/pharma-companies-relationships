@@ -78,4 +78,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/tenders-by-product-chart/{id}', 'ProductsController@tenderByProductChart')->name('products.tenderByProductChart');
 
+	Route::get('/load-top-products', 'ProductsController@loadTopProducts')->name('products.loadTopProducts');
+
 });

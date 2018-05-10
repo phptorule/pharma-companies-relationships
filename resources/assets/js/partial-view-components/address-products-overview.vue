@@ -1,19 +1,23 @@
 <template>
     <div>
-        <ul class="staff-list" v-if="productsData.purchases.length">
-            <li v-if="i < 3" v-for="(purchase, i) in productsData.purchases">
+        <ul class="staff-list" v-if="topProducts.length">
+            <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">
+                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchase_id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
-                        <img :src="purchase.products[0].image? purchase.products[0].image : '/images/mask-0.png'"
-                             alt="">
+                        <img :src="product.product_image? product.product_image : '/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">
-                    <p class="name"><a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">{{purchase.products[0].name? purchase.products[0].name : "unspecified "+purchase.products[0].company+"-product"}}</a></p>
-                    <p class="amount" v-if="purchase.total_price">{{Math.ceil(purchase.total_price) | currency}} |
-                        {{Math.ceil(purchase.total_price) | currency}} |
-                        {{Math.ceil(purchase.total_price) | currency}}</p>
+                    <p class="name">
+                        <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">
+                            {{product.product_name? product.product_name : "unspecified "+product.product_company+"-product"}}
+                        </a>
+                    </p>
+                    <p class="amount">
+                        {{Math.ceil((product.purchase_total_price/product.purchase_quantity)) | currency}} |
+                        {{Math.ceil(product.purchase_total_price) | currency}} |
+                        {{product.tender_date ? product.tender_date : ''}}</p>
                 </div>
                 <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
@@ -84,6 +88,7 @@
                 rate_actual_year: null,
                 rate_next_year: null,
                 addressData: {},
+                topProducts: [],
                 isGoogleChartCoreLoaded: false,
             }
         },
@@ -101,6 +106,8 @@
                     .then(data => {
 
                         this.addressData = data;
+
+                        this.loadTopProduct();
 
                         data.tenders.forEach((tender, i) => {
 
@@ -143,6 +150,31 @@
                         })
                     });
 
+            },
+
+            loadTopProduct: function () {
+
+                let queryTopProductId = '';
+                if (this.addressData.products) {
+
+                    this.addressData.products.forEach(product => {
+
+                        if (product.id != null) {
+
+                            queryTopProductId += '&productId[]=' + product.id;
+
+                        }
+
+                    })
+
+                }
+
+                console.log(queryTopProductId);
+
+                this.httpGet('/api/load-top-products/?' + queryTopProductId)
+                    .then(data => {
+                        this.topProducts = data;
+                    })
             },
 
             getTendersData: function () {

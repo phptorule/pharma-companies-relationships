@@ -309,9 +309,9 @@
 
                 if (tagVal.length) {
 
-                    tagVal.forEach(tag =>{
+                    tagVal.forEach(tag => {
 
-                        if(tag.name != null){
+                        if (tag.name != null) {
 
                             console.log('tag.name', tag.name);
 
@@ -321,7 +321,7 @@
 
                     })
 
-                    }
+                }
                 this.graphLoadedModal = false;
                 this.filterTagToChart();
             },
@@ -454,17 +454,17 @@
                         })
 
 
+                        this.spending_cost = Math.ceil(((this.next_year_cost / this.old_year_cost) - 1) * 100);
 
-                        this.spending_cost = Math.ceil(((this.next_year_cost/this.old_year_cost)-1) * 100);
-
-                        console.log('((',this.next_year_cost,'/',this.old_year_cost,')-1)*100 = ', this.spending_cost);
+                        console.log('((', this.next_year_cost, '/', this.old_year_cost, ')-1)*100 = ', this.spending_cost);
 
                         data = data.sort(function (a, b) {
                             return b.budgeted_cost - a.budgeted_cost;
                         });
 
-                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost/1000);
-                        this.tendersCost.min = Math.ceil(data[data.length - 1].budgeted_cost/1000);;
+                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost / 1000);
+                        this.tendersCost.min = Math.ceil(data[data.length - 1].budgeted_cost / 1000);
+                        ;
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
                         data = data.sort(function (a, b) {
@@ -561,7 +561,7 @@
                 }
 
                 if (this.appliedFilters.sortCost.length) {
-                    queryStr += '&min=' + (this.appliedFilters.sortCost[0]*1000) + '&max=' + (this.appliedFilters.sortCost[1]*1000);
+                    queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
                 }
 
                 this.queryUrl = queryStr;
@@ -648,7 +648,7 @@
 
                         var title = ['Month', 'Total']
 
-                        if(this.selectedTags.length > 0){
+                        if (this.selectedTags.length > 0) {
 
                             this.tag_list.forEach(tag => {
 
@@ -670,7 +670,6 @@
                         DATA.unshift(title);
 
                         this.viewTendersChart(DATA);
-
 
 
                     });

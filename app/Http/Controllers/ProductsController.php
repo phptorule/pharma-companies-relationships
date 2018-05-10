@@ -49,6 +49,49 @@ class ProductsController extends Controller {
 		return response()->json( $tenders );
 	}
 
+	public function loadTopProducts() {
+
+		if ( isset( request()->productId ) && $products = request()->productId ) {
+
+			foreach ( $products as $productId ) {
+				$select = "SELECT atp$productId.id
+						FROM rl_address_tenders AS at$productId
+						LEFT JOIN rl_address_tenders_purchase AS atp$productId ON atp$productId.tender_id = at$productId.id
+						LEFT JOIN rl_address_tenders_purchase_products AS atpp$productId ON atpp$productId.purchase_id = atp$productId.id
+						LEFT JOIN rl_products AS p$productId ON p$productId.id = atpp$productId.product_id
+						WHERE p$productId.id = $productId
+				        GROUP BY atp$productId.id
+				        ORDER BY atp$productId.total_price DESC
+				        LIMIT 1";
+				$whereInProducts[] = DB::select(DB::raw($select));
+			}
+		}
+
+		foreach ($whereInProducts as $whereInProduct){
+
+			$whereProduct[] = $whereInProduct[0]->id;
+		}
+
+		$query = DB::table( 'rl_address_tenders AS at' )
+		           ->select( DB::raw( 'at.tender_date,
+						atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
+						p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
+						p.image as product_image' ) )
+		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
+		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
+		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
+		           ->whereIn( 'purchase_id', $whereProduct)
+		           ->whereIn( 'p.id', $products)
+		           ->whereNotNull( 'atp.tender_id' )
+		           ->whereNotNull( 'atpp.product_id' )
+		           ->orderBy( 'total_price', 'desc' )
+		           ->take(3);
+
+		$result = $query->get();
+
+		return response()->json( $result );
+	}
+
 	public function getProductByTendersPaginated( $id ) {
 		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
 		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
@@ -179,12 +222,11 @@ class ProductsController extends Controller {
 		return response()->json( $tags );
 	}
 
-	public function TenderByProductChart( $id )
-	{
+	public function TenderByProductChart( $id ) {
 		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(at.budgeted_cost) as total';
 
-		if(isset(request()->tags) && $tags = request()->tags){
-			foreach ($tags as $tag){
+		if ( isset( request()->tags ) && $tags = request()->tags ) {
+			foreach ( $tags as $tag ) {
 				$select .= ", ( 
 
 						SELECT SUM(at$tag.budgeted_cost) 
@@ -210,22 +252,22 @@ class ProductsController extends Controller {
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
 		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
 		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
-					->groupBy('month')
-					->havingRaw('month IS NOT NULL');
+		           ->groupBy( 'month' )
+		           ->havingRaw( 'month IS NOT NULL' );
 
 		$result = $query->get();
 
 		$responsData = [];
 
-		foreach ($result as $i => $row){
-			$responsData[$i] = [];
-			foreach ($row as $j => $value){
-				$responsData[$i][] = $j == 0 ? (is_null($value)? 0 : $value) : intval($value);
+		foreach ( $result as $i => $row ) {
+			$responsData[ $i ] = [];
+			foreach ( $row as $j => $value ) {
+				$responsData[ $i ][] = $j == 0 ? ( is_null( $value ) ? 0 : $value ) : intval( $value );
 			}
 		}
 
 
-		return response()->json($responsData, 200, [], JSON_NUMERIC_CHECK);
+		return response()->json( $responsData, 200, [], JSON_NUMERIC_CHECK );
 	}
 
 }
