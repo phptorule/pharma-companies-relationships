@@ -152,8 +152,8 @@
                                         <ul class="col-md-12 tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
-                                                    <h3 v-if="tender.purchase_name">{{i+1}}.
-                                                        {{tender.purchase_name}}</h3>
+                                                    <h3 v-if="tender.purchase_name" :title="tender.purchase_name">{{tender.tender_date}} -
+                                                        {{tender.purchase_name | tendername(70)}}</h3>
 
                                                     <p class="tender-winner" v-if="tender.budget">Winner of most money
                                                         {{Math.ceil(Number(tender.budget)) | currency }}</p>
@@ -289,6 +289,19 @@
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
             },
+
+            tendername: function (name, size) {
+
+                if(name.length > size){
+
+                    return name.slice(0, size) + ' ...';
+
+                }else{
+
+                    return name;
+
+                }
+            }
         },
 
         created: function () {
