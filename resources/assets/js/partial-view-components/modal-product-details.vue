@@ -132,9 +132,8 @@
                                                     :data="tendersExport.json_data"
                                                     :fields="tendersExport.json_fields"
                                                     name="tenders.xls"
-                                                    @click="exportToExcel(productId)"
                                             >
-                                                <i class="fa fa-file-excel-o fa-2x" title="Export to excel"></i>
+                                                <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)" title="Export to excel"></i>
                                             </download-excel>
                                             <download-excel
                                                     class="export-to-csv"
@@ -142,9 +141,8 @@
                                                     :fields="tendersExport.json_fields"
                                                     type="csv"
                                                     name="tenders.csv"
-                                                    @click="exportToExcel(productId)"
                                             >
-                                                <img src="/images/csv.png" title="Export to csv">
+                                                <img @click="exportToExcel(productId)" src="/images/csv.png" title="Export to csv">
                                             </download-excel>
                                         </div>
                                     </div>
@@ -358,7 +356,7 @@
         },
 
         methods: {
-            init: function (addressId, purchaseId, address) {
+            init: function (addressId, productId, address) {
                 $('#product-modal').modal('show');
                 this.graphLoadedModal = false;
                 this.actual_cost = null;
@@ -368,19 +366,14 @@
                 this.old_year_cost = null;
                 this.next_year_cost = null;
                 this.addressId = addressId;
-                this.purchaseId = purchaseId;
+                this.productId = productId;
                 this.currentAddress = address;
 
-                let url = '/api/product-by-purchase/' + purchaseId;
+                let url = '/api/product-by-id/' + productId;
                 this.httpGet(url)
                     .then(data => {
-                        console.log(data);
-                        data.forEach(product => {
-                            this.productsData = product;
-                            this.productId = this.productsData.product_id;
+                            this.productsData = data;
                             this.getTendersByProduct(this.productId);
-                            this.getTendersPaginate(this.productId);
-                        })
                     });
 
             },
@@ -454,8 +447,6 @@
 
                         this.spending_cost = Math.ceil(((this.next_year_cost / this.old_year_cost) - 1) * 100);
 
-                        console.log('((', this.next_year_cost, '/', this.old_year_cost, ')-1)*100 = ', this.spending_cost);
-
                         data = data.sort(function (a, b) {
                             return b.budgeted_cost - a.budgeted_cost;
                         });
@@ -482,7 +473,6 @@
 
                         }
 
-                        // this.filterTagToChart();
                     });
             },
 
@@ -555,9 +545,9 @@
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
                 }
 
-                if (this.appliedFilters.sortCost.length) {
-                    queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
-                }
+                // if (this.appliedFilters.sortCost.length) {
+                //     queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
+                // }
 
                 this.queryUrl = queryStr;
 

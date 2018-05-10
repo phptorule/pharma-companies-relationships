@@ -1,10 +1,10 @@
 const ProductModal = {
 
     methods: {
-        showProductDetailsModal: function (addressId, purchaseId, addressData) {
+        showProductDetailsModal: function (addressId, productId, addressData) {
             let data = {
                 addressId: addressId,
-                purchaseId: purchaseId,
+                purchaseId: productId,
                  address: addressData
             };
 

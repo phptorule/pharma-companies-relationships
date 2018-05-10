@@ -20,6 +20,13 @@ class ProductsController extends Controller {
 		return response()->json( $product );
 	}
 
+	public function productById( Product $product )
+	{
+
+		return response()->json( $product );
+
+	}
+
 	public function productByTenders( $id ) {
 
 		if ( isset( request()->chart ) ) {
@@ -50,27 +57,6 @@ class ProductsController extends Controller {
 	}
 
 	public function loadTopProducts($address) {
-
-//		if ( isset( request()->productId ) && $products = request()->productId ) {
-//
-//			foreach ( $products as $productId ) {
-//				$select = "SELECT atp$productId.id
-//						FROM rl_address_tenders AS at$productId
-//						LEFT JOIN rl_address_tenders_purchase AS atp$productId ON atp$productId.tender_id = at$productId.id
-//						LEFT JOIN rl_address_tenders_purchase_products AS atpp$productId ON atpp$productId.purchase_id = atp$productId.id
-//						LEFT JOIN rl_products AS p$productId ON p$productId.id = atpp$productId.product_id
-//						WHERE p$productId.id = $productId
-//				        GROUP BY atp$productId.id
-//				        ORDER BY atp$productId.total_price DESC
-//				        LIMIT 1";
-//				$whereInProducts[] = DB::select(DB::raw($select));
-//			}
-//		}
-//
-//		foreach ($whereInProducts as $whereInProduct){
-//
-//			$whereProduct[] = $whereInProduct[0]->id;
-//		}
 
 		$sql = "SELECT p.*, p.id as prod_id, 
 					SUM(atp.total_price) as total_spent, 
@@ -112,10 +98,9 @@ class ProductsController extends Controller {
 
 	public function productByAddressPaginated( Address $address ) {
 
-		$products = Product::with( 'addresses' )
-		                   ->whereHas( 'addresses', function ( $q ) use ( $address ) {
+		$products = Product::whereHas( 'addresses', function ( $q ) use ( $address ) {
 			                   return $q->where( 'id', $address->id );
-		                   } )->with( 'purchases' )
+		                   } )
 		                   ->paginate( 10 );
 
 		return response()->json( $products );

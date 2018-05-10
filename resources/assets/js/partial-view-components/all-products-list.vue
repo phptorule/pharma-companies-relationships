@@ -15,7 +15,7 @@
         <ul class="staff-list">
             <li v-for="(product, i) in products">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchases[0].id, addressData)">
+                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">{{getPersonInitials(product.name? product.name : 'Product name')}}</span>
                         <img :src="product.image? product.image : '/images/mask-'+i+'.png'" alt="">
                     </a>

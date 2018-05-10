@@ -3,7 +3,7 @@
         <ul class="staff-list" v-if="topProducts.length">
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchase_ids, addressData)">
+                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
                         <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
                     </a>

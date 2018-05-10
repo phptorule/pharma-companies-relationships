@@ -64,6 +64,8 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/tenders-by-address/{id}', 'TendersController@getTendersByAddress')->name('tenders.getTendersByAddress');
 
+	Route::get('/product-by-id/{product}', 'ProductsController@productById')->name('products.productById');
+
 	Route::get('/product-by-purchase/{id}', 'ProductsController@productByPurchase')->name('products.productByPurchase');
 
 	Route::get('/product-by-tenders/{id}', 'ProductsController@productByTenders')->name('products.productByTenders');
