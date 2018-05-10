@@ -7,7 +7,7 @@
 
                         <div class="person-profile-picture">
                             <span class="person-initials">{{getPersonInitials('p')}}</span>
-                            <img :src="productsData.image ? productsData.image : '/images/mask-0.png'" alt="">
+                            <img :src="productsData.image? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
                         <h4 class="modal-title">
                             {{productsData.name? productsData.name : "unspecified "+productsData.company+"-product"}}
@@ -23,7 +23,7 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number">
-                                    {{usedYears ? usedYears : ''}}
+                                    {{usedYears}}
                                 </p>
 
                                 <p class="text">
@@ -31,19 +31,16 @@
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number"  v-if="budgeted_cost">
-                                    {{budgeted_cost | currency}} <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
-                                </p>
-                                <p class="number" v-else>
-                                    0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
+                                <p class="number">
+                                    {{budgeted_cost | currency }}
                                 </p>
                                 <p class="text">
-                                     Tot spent
+                                    <span> <i class="fa fa-ruble"></i></span> Tot spent
                                 </p>
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="spending_cost != 'Infinity'">
-                                    {{spending_cost ? spending_cost : '' }} %
+                                    {{spending_cost}} %
                                 </p>
                                 <p class="number" v-else>
                                     0 %
