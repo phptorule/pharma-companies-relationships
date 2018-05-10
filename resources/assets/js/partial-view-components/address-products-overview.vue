@@ -37,20 +37,17 @@
             <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
                 <div class="col-md-4 tender" v-if="amount_old_year">
                     <p class="tender-year">Last year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_old_year |
-                        currency}}</a>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_old_year | currency('Rub')}}</a>
                     <p class="tender-percent">({{rate_old_year}} %)</p>
                 </div>
                 <div class="col-md-4 tender" v-if="amount_actual_year">
                     <p class="tender-year-center">This year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_actual_year |
-                        currency}}</a>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_actual_year | currency('Rub')}}</a>
                     <p class="tender-percent">({{rate_actual_year}}%)</p>
                 </div>
                 <div class="col-md-4 tender" v-if="amount_next_year">
                     <p class="tender-year">Next year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_next_year |
-                        currency}}</a>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_next_year | currency('Rub')}}</a>
                     <p class="tender-percent">({{rate_next_year}}%)</p>
                 </div>
             </div>
@@ -95,6 +92,9 @@
 
         filters: {
             currency: function (value, currency_type) {
+                if(!currency_type){
+                    currency_type = '';
+                }
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },

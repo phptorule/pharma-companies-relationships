@@ -2360,13 +2360,13 @@ p.tender-year-center{
     margin: 0px 5px 3px;
 }
 p.tender-percent{
-    text-align: right;
-    margin: 0 0 3px;
+    text-align: left;
+    margin: 0px 8px 3px;
 }
 
 .tender-list .tender a.tender-amount-btn{
     display: block;
-    padding: 4px 11px;
+    padding: 4px 7px;
     font-family: Montserrat;
     font-size: 12px;
     letter-spacing: 0.5px;
