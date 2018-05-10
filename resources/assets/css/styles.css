@@ -2812,7 +2812,6 @@ p.tender-percent{
 }
 
 #product-modal .tag-list{
-    float: left;
     width: 170px;
 }
 
@@ -2868,6 +2867,7 @@ ul.tenders-list li .item{
     margin-right: 20px;
     margin-top: 5px;
     border-bottom: solid 1px #f7f7f7;;
+    position: relative;
 }
 
 ul.tenders-list li .item p{
@@ -2948,4 +2948,28 @@ ul.filter-tag-query-tender > li > ul > li:hover{
     position: absolute;
     left: 155px;
     top: 10px;
+}
+
+ul.tenders-list li .item .tender-volume{
+    float: right;
+    position: absolute;
+    left: 85%;
+    top: 6px;
+}
+
+ul.tenders-list li .item .tag-list .tags{
+    display: block;
+    padding: 4px 7px;
+    font-family: Montserrat;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+    border-radius: 6px;
+    border: solid 1px #eaeff4;
+    transition: background-color 100ms linear;
+    cursor: default;
+}
+
+ul.tenders-list li .item .tag-list .tags:hover{
+    background-color: #eaeff4;
 }

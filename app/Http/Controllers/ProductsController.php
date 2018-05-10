@@ -71,11 +71,12 @@ class ProductsController extends Controller {
 
 	public function getProductByTendersPaginated( $id ) {
 		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
-		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.taxonomy as purchase_taxonomy, atp.remark as purchase_remark,
-		           pc.name as tag_name, pc.id as tag_id,
-                   atb.id as budget_id, atb.budget, atb.delivery_year,
-		           p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
-		           p.image as product_image';
+					atb.budget,
+					atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
+					atp.name as purchase_name,atp.remark as purchase_remark,
+					pc.name as tag_name, pc.id as tag_id,
+					ats.amount as suppliers_amount,
+					s.name as suppliers_name, s.address as suppliers_address';
 
 		$query = $this->prepareTendersQuery( $id, $select );
 
@@ -87,8 +88,8 @@ class ProductsController extends Controller {
 	public function productByAddressPaginated( Address $address ) {
 
 		$products = Product::whereHas( 'addresses', function ( $q ) use ( $address ) {
-			                   return $q->where( 'id', $address->id );
-		                   } )
+			return $q->where( 'id', $address->id );
+		} )
 		                   ->paginate( 10 );
 
 		return response()->json( $products );
@@ -164,6 +165,8 @@ class ProductsController extends Controller {
 		           ->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
 		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
+		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
+		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
 		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' );
 
 		return $query;

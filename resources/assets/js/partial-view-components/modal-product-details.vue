@@ -153,13 +153,16 @@
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
                                                     <h3 v-if="tender.purchase_name" :title="tender.purchase_name">{{tender.tender_date}} -
-                                                        {{tender.purchase_name | tendername(70)}}</h3>
+                                                        {{tender.purchase_name | tendername(55)}}</h3>
+                                                    <div class="tender-volume">{{Math.ceil(Number(tender.budget)) | currency('Rub') }}</div>
 
-                                                    <p class="tender-winner" v-if="tender.budget">Winner of most money
-                                                        {{Math.ceil(Number(tender.budget)) | currency }}</p>
+                                                    <ul class="tag-list">
+                                                        <li v-if="tender.tag_name"><a href="javascript:void(0)" class="tags">{{tender.tag_name}}</a></li>
+                                                    </ul>
 
-                                                    <p class="tender-reward" v-if="tender.product_name">Reward type
-                                                        {{tender.product_name}}</p>
+                                                    <p class="tender-winner" v-if="tender.budget">
+                                                        Winner {{tender.suppliers_name}} of most money {{tender.suppliers_amount | currency('Rub') }}
+                                                        </p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -285,9 +288,12 @@
         },
 
         filters: {
-            currency: function (value) {
+            currency: function (value, currency_type) {
+                if(!currency_type){
+                    currency_type = '';
+                }
                 value = String(value);
-                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },
 
             tendername: function (name, size) {
