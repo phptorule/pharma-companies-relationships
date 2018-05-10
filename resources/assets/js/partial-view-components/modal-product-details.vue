@@ -23,7 +23,7 @@
 
                         <div class="row person-experience">
                             <div class="col-md-4">
-                                <p class="number" v-if="usedYears">
+                                <p class="number">
                                     {{usedYears}}
                                 </p>
 
@@ -32,7 +32,7 @@
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number" v-if="budgeted_cost">
+                                <p class="number">
                                     {{budgeted_cost | currency }}
                                 </p>
                                 <p class="text">
