@@ -15,7 +15,7 @@
                         </a>
                     </p>
                     <p class="amount">
-                        {{product.volume  | currency('vol.')}} |
+                        {{product.volume  | currency }} |
                         {{Math.ceil(product.total_spent) | currency('Rub')}} |
                         {{product.last_tender_date ? product.last_tender_date : ''}}</p>
                 </div>

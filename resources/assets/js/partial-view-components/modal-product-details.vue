@@ -31,14 +31,15 @@
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number"  v-if="budgeted_cost">
-                                    {{budgeted_cost | currency}} <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
+                                <p class="number" v-if="budgeted_cost">
+                                    {{budgeted_cost | currency}} <span> <i class="fa fa-ruble"
+                                                                           title="Russian rubels"></i></span>
                                 </p>
                                 <p class="number" v-else>
                                     0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
                                 </p>
                                 <p class="text">
-                                     Tot spent
+                                    Tot spent
                                 </p>
                             </div>
                             <div class="col-md-4">
@@ -87,9 +88,10 @@
                                                     v-model="appliedFilters.tendersSearchInput"
                                                     @keyup="makeTendersSearch()"
                                                     placeholder="Search tenders">
+                                            <p class="tender-slider-amount-title">Tender Amount</p>
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
-                                            <i class="fa fa-ruble slider-currency-i"></i>
+                                            <i class="fa fa-ruble slider-currency-i"> (k)</i>
                                             <div class="col-md-6 min-value">
                                                 <input class="min-value-input" v-model="tendersCost.value[0]">
                                             </div>
@@ -135,7 +137,8 @@
                                                     :fields="tendersExport.json_fields"
                                                     name="tenders.xls"
                                             >
-                                                <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)" title="Export to excel"></i>
+                                                <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)"
+                                                   title="Export to excel"></i>
                                             </download-excel>
                                             <download-excel
                                                     class="export-to-csv"
@@ -144,7 +147,8 @@
                                                     type="csv"
                                                     name="tenders.csv"
                                             >
-                                                <img @click="exportToExcel(productId)" src="/images/csv.png" title="Export to csv">
+                                                <img @click="exportToExcel(productId)" src="/images/csv.png"
+                                                     title="Export to csv">
                                             </download-excel>
                                         </div>
                                     </div>
@@ -152,17 +156,23 @@
                                         <ul class="col-md-12 tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
-                                                    <h3 v-if="tender.purchase_name" :title="tender.purchase_name">{{tender.tender_date}} -
+                                                    <h3 v-if="tender.purchase_name" :title="tender.purchase_name">
+                                                        {{tender.tender_date}} -
                                                         {{tender.purchase_name | tendername(55)}}</h3>
-                                                    <div class="tender-volume">{{Math.ceil(Number(tender.budget)) | currency('Rub') }}</div>
+                                                    <div class="tender-volume">{{Math.ceil(Number(tender.budget)) |
+                                                        currency('Rub') }}
+                                                    </div>
 
                                                     <ul class="tag-list">
-                                                        <li v-if="tender.tag_name"><a href="javascript:void(0)" class="tags">{{tender.tag_name}}</a></li>
+                                                        <li v-if="tender.tag_name"><a href="javascript:void(0)"
+                                                                                      class="tags">{{tender.tag_name}}</a>
+                                                        </li>
                                                     </ul>
 
                                                     <p class="tender-winner" v-if="tender.budget">
-                                                        Winner {{tender.suppliers_name}} of most money {{tender.suppliers_amount | currency('Rub') }}
-                                                        </p>
+                                                        Winner {{tender.suppliers_name}} of most money
+                                                        {{tender.suppliers_amount | currency('Rub') }}
+                                                    </p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -289,7 +299,7 @@
 
         filters: {
             currency: function (value, currency_type) {
-                if(!currency_type){
+                if (!currency_type) {
                     currency_type = '';
                 }
                 value = String(value);
@@ -298,11 +308,11 @@
 
             tendername: function (name, size) {
 
-                if(name.length > size){
+                if (name.length > size) {
 
                     return name.slice(0, size) + ' ...';
 
-                }else{
+                } else {
 
                     return name;
 
@@ -393,8 +403,8 @@
                 let url = '/api/product-by-id/' + productId;
                 this.httpGet(url)
                     .then(data => {
-                            this.productsData = data;
-                            this.getTendersByProduct(this.productId);
+                        this.productsData = data;
+                        this.getTendersByProduct(this.productId);
                     });
 
             },
@@ -465,7 +475,6 @@
 
                         })
 
-
                         this.spending_cost = Math.ceil(((this.next_year_cost / this.old_year_cost) - 1) * 100);
 
                         data = data.sort(function (a, b) {
@@ -473,8 +482,9 @@
                         });
 
                         this.tendersCost.max = Math.ceil(data[0].budgeted_cost / 1000);
+
                         this.tendersCost.min = Math.ceil(data[data.length - 1].budgeted_cost / 1000);
-                        ;
+
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
                         data = data.sort(function (a, b) {

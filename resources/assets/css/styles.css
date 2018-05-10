@@ -2672,6 +2672,7 @@ p.tender-percent{
     padding-left: 0px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px 4px 4px 4px;
+    position: relative;
 }
 
 #product-modal .tender-search-input{
@@ -2940,7 +2941,7 @@ ul.filter-tag-query-tender > li > ul > li:hover{
 
 .slider-currency-i{
     position: absolute;
-    left: 33px;
+    left: 18px;
     top: 15px;
 }
 
@@ -2972,4 +2973,10 @@ ul.tenders-list li .item .tag-list .tags{
 
 ul.tenders-list li .item .tag-list .tags:hover{
     background-color: #eaeff4;
+}
+
+#product-modal .tender-slider-amount-title{
+    position: absolute;
+    right: 0px;
+    top: 42px;
 }
