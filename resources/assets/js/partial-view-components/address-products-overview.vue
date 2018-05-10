@@ -256,6 +256,7 @@
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
+                    enableInteractivity: false,
                     tooltip: {trigger: 'none'},
                     series: {0: {type: 'line'}}
                 };
