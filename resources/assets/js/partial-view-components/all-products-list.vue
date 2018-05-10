@@ -28,7 +28,7 @@
         </ul>
 
         <div class="pagination-box">
-            <pagination :records="peopleTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="pageChanged"></pagination>
+            <pagination :records="productTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="pageChanged"></pagination>
         </div>
 
     </div>
@@ -47,7 +47,7 @@
             return {
                 products: [],
                 isDataLoaded: false,
-                peopleTotal: 0
+                productTotal: 0
             }
         },
 
@@ -60,7 +60,7 @@
                     .then(data => {
                         this.products = data.data;
                         this.isDataLoaded = true;
-                        this.peopleTotal = data.total;
+                        this.productTotal = data.total;
                     })
             },
 

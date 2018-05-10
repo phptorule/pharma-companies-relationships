@@ -11,15 +11,6 @@ use Illuminate\Support\Facades\Log;
 
 class ProductsController extends Controller {
 
-	public function productByPurchase( $id ) {
-		$product = DB::table( 'rl_products' )
-		             ->where( 'rl_address_tenders_purchase_products.purchase_id', $id )
-		             ->join( 'rl_address_tenders_purchase_products', 'rl_address_tenders_purchase_products.product_id', '=', 'rl_products.id' )
-		             ->get();
-
-		return response()->json( $product );
-	}
-
 	public function productById( Product $product )
 	{
 
@@ -40,9 +31,6 @@ class ProductsController extends Controller {
 		}
 
 		$query = $this->getTendersByProduct( $id, $select );
-
-		/*		Log::info("SQL productByTenders ---> \n" . print_r($query->orderBy( 'tender_date', 'asc' )->toSql(), 1));
-				Log::info("productByTenders COUNT ---> " . print_r($query->count(), 1));*/
 
 		$tenders = $query->orderBy( 'tender_date', 'asc' )->get();
 
@@ -115,9 +103,6 @@ class ProductsController extends Controller {
 		           p.name as product_name';
 
 		$query = $this->prepareTendersQuery( $id, $select );
-
-//		Log::info("SQL getProductByTendersToExcel ---> \n" . print_r($query->toSql(), 1));
-//		Log::info("getProductByTendersToExcel COUNT ---> " . print_r($query->count(), 1));
 
 		$tenders = $query->get();
 
