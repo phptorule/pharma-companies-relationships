@@ -49,45 +49,48 @@ class ProductsController extends Controller {
 		return response()->json( $tenders );
 	}
 
-	public function loadTopProducts() {
+	public function loadTopProducts($address) {
 
-		if ( isset( request()->productId ) && $products = request()->productId ) {
+//		if ( isset( request()->productId ) && $products = request()->productId ) {
+//
+//			foreach ( $products as $productId ) {
+//				$select = "SELECT atp$productId.id
+//						FROM rl_address_tenders AS at$productId
+//						LEFT JOIN rl_address_tenders_purchase AS atp$productId ON atp$productId.tender_id = at$productId.id
+//						LEFT JOIN rl_address_tenders_purchase_products AS atpp$productId ON atpp$productId.purchase_id = atp$productId.id
+//						LEFT JOIN rl_products AS p$productId ON p$productId.id = atpp$productId.product_id
+//						WHERE p$productId.id = $productId
+//				        GROUP BY atp$productId.id
+//				        ORDER BY atp$productId.total_price DESC
+//				        LIMIT 1";
+//				$whereInProducts[] = DB::select(DB::raw($select));
+//			}
+//		}
+//
+//		foreach ($whereInProducts as $whereInProduct){
+//
+//			$whereProduct[] = $whereInProduct[0]->id;
+//		}
 
-			foreach ( $products as $productId ) {
-				$select = "SELECT atp$productId.id
-						FROM rl_address_tenders AS at$productId
-						LEFT JOIN rl_address_tenders_purchase AS atp$productId ON atp$productId.tender_id = at$productId.id
-						LEFT JOIN rl_address_tenders_purchase_products AS atpp$productId ON atpp$productId.purchase_id = atp$productId.id
-						LEFT JOIN rl_products AS p$productId ON p$productId.id = atpp$productId.product_id
-						WHERE p$productId.id = $productId
-				        GROUP BY atp$productId.id
-				        ORDER BY atp$productId.total_price DESC
-				        LIMIT 1";
-				$whereInProducts[] = DB::select(DB::raw($select));
-			}
-		}
+		$sql = "SELECT p.*, p.id as prod_id, 
+					SUM(atp.total_price) as total_spent, 
+					SUM(atp.quantity) as volume, 
+					GROUP_CONCAT(DISTINCT atp.id SEPARATOR ', ') as purchase_ids,
+					MAX(at.tender_date) as last_tender_date
+				
+				FROM rl_products as p
+				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
+				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
+				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
+				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
+				LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
+				WHERE a.id = $address
+				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
+				GROUP BY p.id
+				ORDER BY total_spent DESC
+				LIMIT 3";
 
-		foreach ($whereInProducts as $whereInProduct){
-
-			$whereProduct[] = $whereInProduct[0]->id;
-		}
-
-		$query = DB::table( 'rl_address_tenders AS at' )
-		           ->select( DB::raw( 'at.tender_date,
-						atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
-						p.id as product_id, p.name as product_name, p.company as product_company, p.description as product_description,
-						p.image as product_image' ) )
-		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
-		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
-		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
-		           ->whereIn( 'purchase_id', $whereProduct)
-		           ->whereIn( 'p.id', $products)
-		           ->whereNotNull( 'atp.tender_id' )
-		           ->whereNotNull( 'atpp.product_id' )
-		           ->orderBy( 'total_price', 'desc' )
-		           ->take(3);
-
-		$result = $query->get();
+		$result = DB::select(DB::raw($sql));
 
 		return response()->json( $result );
 	}

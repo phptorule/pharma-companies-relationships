@@ -11,7 +11,7 @@
                         </div>
 
                         <h4 class="modal-title">
-                            {{productsData.name? productsData.name : 'Product name'}}
+                            {{productsData.name? productsData.name : "unspecified "+productsData.company+"-product"}}
                             <a href="#"><i class="fa fa-pencil"></i></a>
                         </h4>
 
@@ -203,7 +203,6 @@
                     tooltipStyle: {
                         display: 'none',
                     },
-                    // interval: 1000,
                     speed: 0.3,
                 },
                 addressId: null,
@@ -313,8 +312,6 @@
 
                         if (tag.name != null) {
 
-                            console.log('tag.name', tag.name);
-
                             this.chartQueryTag += '&tags[]=' + tag.id;
 
                         }
@@ -374,14 +371,15 @@
                 this.purchaseId = purchaseId;
                 this.currentAddress = address;
 
-                this.httpGet('/api/product-by-purchase/' + purchaseId)
+                let url = '/api/product-by-purchase/' + purchaseId;
+                this.httpGet(url)
                     .then(data => {
+                        console.log(data);
                         data.forEach(product => {
                             this.productsData = product;
                             this.productId = this.productsData.product_id;
                             this.getTendersByProduct(this.productId);
                             this.getTendersPaginate(this.productId);
-                            // this.filterTagToChart()
                         })
                     });
 
@@ -513,10 +511,8 @@
 
                 this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
 
-
                 this.composeQueryUrl();
 
-                // this.$router.push('/address-details/'+this.addressId+'?'+this.queryUrl);
                 this.$refs.paginationDirective.setPage(1);
             },
 

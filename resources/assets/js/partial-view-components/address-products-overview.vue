@@ -3,21 +3,21 @@
         <ul class="staff-list" v-if="topProducts.length">
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchase_id, addressData)">
+                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchase_ids, addressData)">
                         <span class="person-initials">P{{i+1}}</span>
-                        <img :src="product.product_image? product.product_image : '/images/mask-0.png'" alt="">
+                        <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
                     </a>
                 </div>
                 <div class="prod-info">
                     <p class="name">
                         <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">
-                            {{product.product_name? product.product_name : "unspecified "+product.product_company+"-product"}}
+                            {{product.name? product.name : "unspecified "+product.company+"-product"}}
                         </a>
                     </p>
                     <p class="amount">
-                        {{Math.ceil((product.purchase_total_price/product.purchase_quantity)) | currency}} |
-                        {{Math.ceil(product.purchase_total_price) | currency}} |
-                        {{product.tender_date ? product.tender_date : ''}}</p>
+                        {{product.volume  | currency('vol.')}} |
+                        {{Math.ceil(product.total_spent) | currency('Rub')}} |
+                        {{product.last_tender_date ? product.last_tender_date : ''}}</p>
                 </div>
                 <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
             </li>
@@ -94,9 +94,9 @@
         },
 
         filters: {
-            currency: function (value) {
+            currency: function (value, currency_type) {
                 value = String(value);
-                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' Rub';
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },
         },
 
@@ -139,9 +139,9 @@
 
                         this.loadTopProduct()
                             .then(()=>{
-                                this.productsData.purchases.forEach((purchase, i) => {
+                                this.topProducts.forEach((product, i) => {
 
-                                    this.dataCreateToChart(purchase.products[0].id, i)
+                                    this.dataCreateToChart(product.prod_id, i)
 
                                     if (i >= 3) {
                                         return;
@@ -157,22 +157,7 @@
 
             loadTopProduct: function () {
 
-                let queryTopProductId = '';
-                if (this.addressData.products) {
-
-                    this.addressData.products.forEach(product => {
-
-                        if (product.id != null) {
-
-                            queryTopProductId += '&productId[]=' + product.id;
-
-                        }
-
-                    })
-
-                }
-
-                return this.httpGet('/api/load-top-products/?' + queryTopProductId)
+                return this.httpGet('/api/load-top-products/' + this.addressData.id)
                     .then(data => {
                         this.topProducts = data;
                     })
