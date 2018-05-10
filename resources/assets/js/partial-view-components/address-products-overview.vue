@@ -107,8 +107,6 @@
 
                         this.addressData = data;
 
-                        this.loadTopProduct();
-
                         data.tenders.forEach((tender, i) => {
 
                             this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
@@ -139,15 +137,20 @@
 
                         this.getTendersData();
 
-                        this.productsData.purchases.forEach((purchase, i) => {
+                        this.loadTopProduct()
+                            .then(()=>{
+                                this.productsData.purchases.forEach((purchase, i) => {
 
-                            this.dataCreateToChart(purchase.products[0].id, i)
+                                    this.dataCreateToChart(purchase.products[0].id, i)
 
-                            if (i >= 3) {
-                                return;
-                            }
+                                    if (i >= 3) {
+                                        return;
+                                    }
 
-                        })
+                                })
+                            });
+
+
                     });
 
             },
@@ -169,9 +172,7 @@
 
                 }
 
-                console.log(queryTopProductId);
-
-                this.httpGet('/api/load-top-products/?' + queryTopProductId)
+                return this.httpGet('/api/load-top-products/?' + queryTopProductId)
                     .then(data => {
                         this.topProducts = data;
                     })
@@ -241,59 +242,20 @@
 
             dataCreateToChart: function (productId, indexOrder) {
                 setTimeout(() => {
-                this.httpGet('/api/product-by-tenders/' + productId)
-                    .then(data => {
+                    var url = '/api/tenders-by-product-chart/' + productId;
 
-                            var DATA = [[]];
-                            if (data.length != 0) {
+                    this.httpGet(url)
+                        .then(data => {
 
-                                let graf_data = {
-                                    title: []
-                                };
-                                graf_data.title.push('Month')
-                                graf_data.title.push('Total')
+                            var title = ['Month', 'Total'];
 
-                                data.forEach(tender => {
+                            var DATA = data;
 
-                                    graf_data.productId = tender.product_id;
+                            DATA.unshift(title);
 
-                                    let date_tender = moment(new Date(tender.tender_date)).format('MMM-YY');
+                            this.viewTendersChart(DATA, 'graph-container-'+indexOrder);
 
-                                    if (typeof graf_data[date_tender] == "undefined") {
-
-                                        graf_data[date_tender] = Math.ceil(Number(tender.budgeted_cost));
-                                    }
-
-                                });
-
-                                for (let i = 0; i < graf_data.title.length; i++) {
-
-                                    DATA[0].push(graf_data.title[i]);
-                                }
-
-                                for (var key in graf_data) {
-                                    if (key != 'title' && key != 'productId') {
-                                        DATA.push([key, graf_data[key]]);
-                                    }
-                                }
-
-                                setTimeout(() => {
-                                    if (typeof DATA[1] != "undefined") {
-                                        setTimeout(() => {
-                                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
-                                        }, 100)
-                                    } else {
-                                        DATA[0] = ['Month', 'Total'];
-                                        DATA[1] = ['Yan-97', 0];
-                                        setTimeout(() => {
-                                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
-                                        }, 100)
-                                    }
-                                }, 300)
-                            }
-
-                        }
-                    );
+                        });
                 }, 1000)
             },
 

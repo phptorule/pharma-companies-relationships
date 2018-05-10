@@ -507,7 +507,6 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
-                this.exportToExcel(product_id);
             },
 
             applyFilters: function (isOnlySortingChanged) {
@@ -690,6 +689,7 @@
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
+                    animation: {startup: true},
                     series: {0: {type: 'line'}},
                 };
 
