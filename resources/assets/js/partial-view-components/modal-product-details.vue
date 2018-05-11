@@ -74,7 +74,7 @@
                                     <div class="tag-list">
                                         <div class="item-tag" v-for="tag in tag_list">
                                             <input type="checkbox" v-if="" v-bind:value="tag" v-model="selectedTags">
-                                            <label>{{tag.name}}</label>
+                                            <label :style="{color: tag.color}">{{tag.name}}</label>
                                         </div>
                                     </div>
                                     <div class="tender-chart" id="tender-charts"></div>
@@ -291,6 +291,7 @@
                     return {
                         label: tag.name,
                         value: tag.id,
+                        color: tag.color,
                     }
                 })
             }
@@ -664,6 +665,8 @@
 
                         var title = ['Month', 'Total']
 
+                        var colorPallette = [];
+
                         if (this.selectedTags.length > 0) {
 
                             this.tag_list.forEach(tag => {
@@ -674,6 +677,7 @@
 
                                         title.push(tag.name);
 
+                                        colorPallette.push(tag.color);
                                     }
 
                                 });
@@ -685,13 +689,12 @@
 
                         DATA.unshift(title);
 
-                        this.viewTendersChart(DATA);
-
+                        this.viewTendersChart(DATA, colorPallette);
 
                     });
             },
 
-            viewTendersChart: function (data) {
+            viewTendersChart: function (data, colorPallette) {
 
                 if (this.graphLoadedModal) {
                     return;
@@ -700,8 +703,11 @@
 
                 var data = google.visualization.arrayToDataTable(data);
 
+                colorPallette.unshift('#0099c6');
+
                 var options = {
                     title: 'Sales',
+                    colors: colorPallette,
                     vAxis: {title: 'Budget'},
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',

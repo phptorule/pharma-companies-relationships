@@ -195,7 +195,12 @@ class ProductsController extends Controller {
 
 		$tags = ProductConsumable::get( [ 'id', 'name' ] );
 
-		return response()->json( $tags );
+		foreach ($tags as $tag){
+			$tag->color = sprintf( '#%02X%02X%02X', rand(0, 255), rand(0, 255), rand(0, 255) );
+			$tagsColor[] = $tag;
+		}
+
+		return response()->json( $tagsColor );
 	}
 
 	public function TenderByProductChart( $id ) {
