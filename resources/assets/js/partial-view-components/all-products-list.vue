@@ -16,12 +16,16 @@
             <li v-for="(product, i) in products">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
-                        <span class="person-initials">{{getPersonInitials(product.name? product.name : 'Product name')}}</span>
+                        <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
                         <img :src="product.image? product.image : '/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
                 <div class="personal-info">
-                    <p class="name"><a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchases[0].id, addressData)">{{product.name? product.name : 'Product name'}}</a></p>
+                    <p class="name">
+                        <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchases[0].id, addressData)">
+                            {{product.name? product.name : product.company}}
+                        </a>
+                    </p>
                     <p class="occupation">{{product.description}}</p>
                 </div>
             </li>
@@ -38,10 +42,10 @@
 
     import http from '../mixins/http';
     import ProductModal from '../mixins/show-product-details-modal';
-    import getPersonInitials from '../mixins/get-person-initials';
+    import getProductName from '../mixins/get-product-name';
 
     export default {
-        mixins: [http, ProductModal, getPersonInitials],
+        mixins: [http, ProductModal, getProductName],
 
         data: function () {
             return {

@@ -6,7 +6,7 @@
                     <div class="modal-header">
 
                         <div class="person-profile-picture">
-                            <span class="person-initials">{{getPersonInitials('p')}}</span>
+                            <span class="person-initials">{{getProductName(productsData.name? productsData.name : productsData.company)}}</span>
                             <img :src="productsData.image ? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
                         <h4 class="modal-title">
@@ -195,13 +195,13 @@
 <script>
 
     import http from '../mixins/http';
-    import getPersonInitials from '../mixins/get-person-initials';
+    import getProductName from '../mixins/get-product-name';
     import ProductModal from '../mixins/show-product-details-modal';
     import vueSlider from 'vue-slider-component';
 
 
     export default {
-        mixins: [http, getPersonInitials, ProductModal],
+        mixins: [http, getProductName, ProductModal],
         data: function () {
             return {
                 tendersCost: {

@@ -4,7 +4,7 @@
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
-                        <span class="person-initials">P{{i+1}}</span>
+                        <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
                         <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
                     </a>
                 </div>
@@ -60,10 +60,10 @@
 
     import http from '../mixins/http';
     import ProductModal from '../mixins/show-product-details-modal';
-    import getPersonInitials from '../mixins/get-person-initials';
+    import getProductName from '../mixins/get-product-name';
 
     export default {
-        mixins: [http, ProductModal, getPersonInitials],
+        mixins: [http, ProductModal, getProductName],
 
 
         data: function () {
