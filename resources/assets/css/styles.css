@@ -3012,3 +3012,12 @@ ul.tenders-list li .item .tag-list .tags:hover{
     margin-left: calc(50% - 25px);
     background:url(../images/spinner1.gif) center center no-repeat;
 }
+
+.amount-title{
+    display: block;
+    padding: 4px 11px;
+    font-family: Montserrat;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+}

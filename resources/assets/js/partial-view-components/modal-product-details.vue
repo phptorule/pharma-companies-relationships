@@ -23,7 +23,7 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number">
-                                    {{usedYears ? usedYears : ''}}
+                                    {{tenderData.last_tender_date ? this.tenderData.last_tender_date : ''}}
                                 </p>
 
                                 <p class="text">
@@ -31,8 +31,8 @@
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number" v-if="budgeted_cost">
-                                    {{budgeted_cost | currency}} <span> <i class="fa fa-ruble"
+                                <p class="number" v-if="tenderData.total_budgeted">
+                                    {{tenderData.total_budgeted | currency}} <span> <i class="fa fa-ruble"
                                                                            title="Russian rubels"></i></span>
                                 </p>
                                 <p class="number" v-else>
@@ -73,7 +73,7 @@
                                      @click="viewTendersChart()">
                                     <div class="tag-list">
                                         <div class="item-tag" v-for="tag in tag_list">
-                                            <input type="checkbox" v-if="" v-bind:value="tag" v-model="selectedTags">
+                                            <input type="checkbox" id="checkbox"  v-bind:value="tag" v-model="selectedTags">
                                             <label :style="{color: tag.color}">{{tag.name}}</label>
                                         </div>
                                     </div>
@@ -238,18 +238,21 @@
                     currentPage: 1
                 },
                 queryUrl: '',
-                tenderOld: {
-                    tender_date: '',
+                tenderData: {
+                    last_tender_date: null,
+                    max_total_spent: null,
+                    min_total_spent: null,
+                    total_budgeted: null,
+                    last_budgeted_cost: null,
+                    first_budgeted_cost: null,
+                    tag_ids: '',
                 },
                 tendersList: [],
-                actual_cost: null,
-                budgeted_cost: null,
                 actual_year: (new Date()).getFullYear(),
                 old_year_cost: null,
                 actual_year_cost: null,
                 next_year_cost: null,
                 spending_cost: null,
-                usedYears: null,
                 isGoogleChartCoreLoaded: false,
                 graphLoadedModal: false,
                 showTenderCost: false,
@@ -270,6 +273,14 @@
                     }]],
                 },
                 chartQueryTag: '',
+
+                users:[
+                    {name:'Tom', age:22},
+                    {name:'Bob', age:25},
+                    {name:'Sam', age:28},
+                    {name:'Alice', age:26}
+                ],
+                selectedUsers:[],
             }
         },
 
@@ -392,12 +403,8 @@
                 $('#product-modal').modal('show');
                 this.showLoader();
                 this.graphLoadedModal = false;
-                this.actual_cost = null;
-                this.budgeted_cost = null;
                 this.spending_cost = null;
                 this.actual_year_cost = null;
-                this.old_year_cost = null;
-                this.next_year_cost = null;
                 this.addressId = addressId;
                 this.productId = productId;
                 this.currentAddress = address;
@@ -416,13 +423,29 @@
                 this.showLoader();
                 this.httpGet('/api/product-by-tenders/' + product_id)
                     .then(data => {
-                        this.tenderOld = data[0];
-                        this.tendersCost.min = 0;
-                        this.selectedTags = []
+                        this.tenderData = data;
 
-                        data.forEach((tender, i) => {
+                        this.selectedTags = [];
 
-                            let tag_load_checker = true;
+                        if(String(this.tenderData.tag_ids) != 'null') {
+
+                            let tenderTag = JSON.parse("[" + this.tenderData.tag_ids + "]");
+                            this.tag_list.forEach(tag =>{
+                                for (let i = 0; i < tenderTag.length; i++) {
+                                    if(tag.id == tenderTag[i]){
+                                        this.selectedTags[i] = {
+                                            id: tag.id,
+                                            color: tag.color,
+                                            name: tag.name,
+                                        };
+                                    }
+                                }
+                            });
+                        }
+
+/*                        let tag_load_checker = true;
+
+                        if (String(tender.tag_name) != 'null') {
                             if (this.selectedTags.length != 0) {
                                 for (let j = 0; j < this.selectedTags.length; j++) {
 
@@ -453,61 +476,15 @@
 
                                 };
                             }
+                        }*/
 
-                            this.actual_cost += Math.ceil(Number(tender.actual_cost));
+                        this.spending_cost = Math.ceil(((this.tenderData.first_budgeted_cost/ this.tenderData.last_budgeted_cost) - 1) * 100);
 
-                            this.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
+                        this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000);
 
-                            if (this.actual_year == Number(tender.delivery_year)) {
-
-                                this.actual_year_cost += Math.ceil(Number(tender.budgeted_cost));
-
-                            }
-
-                            if ((this.actual_year - 1) == Number(tender.delivery_year)) {
-
-                                this.old_year_cost += Math.ceil(Number(tender.budgeted_cost));
-
-                            }
-
-                            if ((this.actual_year + 1) == Number(tender.delivery_year)) {
-
-                                this.next_year_cost += Math.ceil(Number(tender.budgeted_cost));
-
-                            }
-
-
-
-                        })
-
-                        this.spending_cost = Math.ceil(((this.next_year_cost / this.old_year_cost) - 1) * 100);
-
-                        data = data.sort(function (a, b) {
-                            return b.budgeted_cost - a.budgeted_cost;
-                        });
-
-                        this.tendersCost.max = Math.ceil(data[0].budgeted_cost / 1000);
-
-                        this.tendersCost.min = Math.ceil(data[data.length - 1].budgeted_cost / 1000);
+                        this.tendersCost.min = Math.ceil(this.tenderData.min_total_spent / 1000);
 
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
-
-                        data = data.sort(function (a, b) {
-
-                            return b.delivery_year - a.delivery_year;
-
-                        });
-                        let delivery_year = Math.ceil(data[data.length - 1].delivery_year);
-
-                        if (this.actual_year > delivery_year && delivery_year != 0) {
-
-                            this.usedYears = this.actual_year - delivery_year + 1;
-
-                        } else {
-
-                            this.usedYears = 1;
-
-                        }
 
                         this.hideLoader();
 

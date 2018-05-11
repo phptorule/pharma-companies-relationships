@@ -20,21 +20,48 @@ class ProductsController extends Controller {
 
 	public function productByTenders( $id ) {
 
-		if ( isset( request()->chart ) ) {
-			$select = 'at.tender_date, pc.id as tag_id, at.budgeted_cost, pc.name as tag_name';
-		} else {
-			$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
-		           atpp.product_id as product_id, atpp.consumable_id as tpp_consumable_id,
-		           atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price, atp.name as purchase_name, atp.remark as purchase_remark,
-		           pc.name as tag_name, pc.id as tag_id,
-                   atb.budget, atb.delivery_year';
+		$joinTable = "LEFT JOIN rl_address_tenders_purchase AS atp ON atp.tender_id = at.id
+						LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.purchase_id = atp.id
+						LEFT JOIN rl_products AS p ON p.id = atpp.product_id";
+
+		$select = "SELECT
+						((YEAR(CURDATE()) - YEAR(MIN(at.tender_date))+1)) as last_tender_date,
+						MAX(at.budgeted_cost) as max_total_spent,
+						MIN(at.budgeted_cost) as min_total_spent,
+						SUM(at.budgeted_cost) as total_budgeted,
+						(SELECT 
+						SUM(at.budgeted_cost)
+						FROM rl_address_tenders as at
+						$joinTable
+						WHERE p.id = $id
+						AND YEAR(at.tender_date) <= YEAR(CURDATE())
+						) as last_budgeted_cost,
+						
+						(
+						SELECT SUM(at.budgeted_cost)
+						FROM rl_address_tenders as at
+						$joinTable
+						WHERE p.id = $id
+						AND YEAR(at.tender_date) >= YEAR(CURDATE())
+						) as first_budgeted_cost,
+						GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
+						
+						FROM rl_products as p
+						LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
+						LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
+						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
+						LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
+						WHERE p.id = $id
+						GROUP BY p.id";
+
+
+		$tenders = DB::select( DB::raw( $select ) );
+
+		foreach ($tenders as $tender){
+			$tenderdata = $tender;
 		}
 
-		$query = $this->getTendersByProduct( $id, $select );
-
-		$tenders = $query->orderBy( 'tender_date', 'asc' )->get();
-
-		return response()->json( $tenders );
+		return response()->json( $tenderdata );
 	}
 
 	public function addressByProducts( $id ) {
@@ -50,7 +77,7 @@ class ProductsController extends Controller {
 					SUM(atp.total_price) as total_spent, 
 					SUM(atp.quantity) as volume, 
 					GROUP_CONCAT(DISTINCT atp.id SEPARATOR ', ') as purchase_ids,
-					MAX(at.tender_date) as last_tender_date
+					DATE_FORMAT(MAX(at.tender_date), '%d-%m-%Y') as last_tender_date
 				
 				FROM rl_products as p
 				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id

@@ -19,6 +19,9 @@
                         {{product.volume  | currency }} |
                         {{Math.ceil(product.total_spent) | currency('Rub')}} |
                         {{product.last_tender_date ? product.last_tender_date : ''}}</p>
+                    <p class="amount-title">
+                        Est. Test Volume | 2y Spending | Last Tender
+                    </p>
                 </div>
                 <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"><div class="load-spinner-charts-product"></div></div>
             </li>
