@@ -35,7 +35,7 @@
                 </a>
             </li>
         </ul>
-        <ul v-else class="empty-data-p">We don't know about any products</ul>
+        <ul v-else class="empty-data-p hidden">We don't know about any products</ul>
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
@@ -55,7 +55,7 @@
                     <p class="tender-percent">({{rate_next_year}}%)</p>
                 </div>
             </div>
-            <p v-else class="empty-data-p">We don't know about any tenders</p>
+            <p v-else class="empty-data-p hidden">We don't know about any tenders</p>
         </div>
     </div>
 </template>
@@ -116,6 +116,7 @@
                         this.loadTopProduct()
                             .then(()=>{
                                 $('.load-spinner-product').addClass('hidden');
+                                $('.empty-data-p').removeClass('hidden');
                                 this.topProducts.forEach((product, i) => {
 
                                     this.dataCreateToChart(product.prod_id, i)
@@ -141,11 +142,14 @@
             },
 
             getTendersData: function () {
+
                 this.httpGet('/api/tenders-by-address/' + this.addressId)
                     .then(data => {
+
                         data.forEach(tender => {
 
                             if (tender.budget != null) {
+
                                 if (this.actual_year > Math.ceil(tender.budget.delivery_year)) {
 
                                     this.amount_old_year += Math.ceil(Number(tender.budgeted_cost));
@@ -193,6 +197,7 @@
 
                         }
 
+                        $('.empty-data-p').removeClass('hidden');
                     });
             },
 
