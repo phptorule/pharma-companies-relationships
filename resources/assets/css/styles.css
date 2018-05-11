@@ -2807,13 +2807,9 @@ p.tender-percent{
 }
 
 #product-modal .tender-chart{
-    width: 650px;
+    width: 830px;
     float: left;
     margin-left: 10px;
-}
-
-#product-modal .tag-list{
-    width: 170px;
 }
 
 #product-modal .pagination-box{
@@ -2979,4 +2975,14 @@ ul.tenders-list li .item .tag-list .tags:hover{
     position: absolute;
     right: 0px;
     top: 42px;
+}
+
+#product-modal .tender-chart-container .tag-list {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+#product-modal .tender-chart-container .tag-list .item-tag{
+    float: left;
+    padding-right: 10px;
 }

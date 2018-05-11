@@ -71,13 +71,13 @@
 
                                 <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
                                      @click="viewTendersChart()">
-                                    <div class="tender-chart" id="tender-charts"></div>
                                     <div class="tag-list">
-                                        <div v-for="tag in tag_list">
+                                        <div class="item-tag" v-for="tag in tag_list">
                                             <input type="checkbox" v-if="" v-bind:value="tag" v-model="selectedTags">
-                                            <label>{{tag.name}}</label><br>
+                                            <label>{{tag.name}}</label>
                                         </div>
                                     </div>
+                                    <div class="tender-chart" id="tender-charts"></div>
                                 </div>
 
                                 <div :class="{hidden: activeTab !== 'tender'}">
