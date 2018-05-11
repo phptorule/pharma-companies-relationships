@@ -68,7 +68,7 @@
                             </ul>
 
                             <div class="tab-content">
-
+                                <div class="loader-spinner hidden"></div>
                                 <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
                                      @click="viewTendersChart()">
                                     <div class="tag-list">
@@ -390,6 +390,7 @@
         methods: {
             init: function (addressId, productId, address) {
                 $('#product-modal').modal('show');
+                this.showLoader();
                 this.graphLoadedModal = false;
                 this.actual_cost = null;
                 this.budgeted_cost = null;
@@ -405,15 +406,16 @@
                 this.httpGet(url)
                     .then(data => {
                         this.productsData = data;
+                        this.hideLoader();
                         this.getTendersByProduct(this.productId);
                     });
 
             },
 
             getTendersByProduct: function (product_id) {
+                this.showLoader();
                 this.httpGet('/api/product-by-tenders/' + product_id)
                     .then(data => {
-                        let dataproduct = data;
                         this.tenderOld = data[0];
                         this.tendersCost.min = 0;
                         this.selectedTags = []
@@ -474,6 +476,8 @@
 
                             }
 
+
+
                         })
 
                         this.spending_cost = Math.ceil(((this.next_year_cost / this.old_year_cost) - 1) * 100);
@@ -505,6 +509,8 @@
 
                         }
 
+                        this.hideLoader();
+
                     });
             },
 
@@ -520,10 +526,13 @@
 
             getTendersPaginate: function (product_id) {
 
+                this.showLoader();
+
                 let url = '/api/product-by-tenders-paginated/' + product_id + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
 
                 this.httpGet(url)
                     .then(data => {
+                        this.hideLoader();
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
@@ -648,16 +657,17 @@
             },
 
             exportToExcel: function (product_id) {
-
+                this.showLoader();
                 let url = '/api/product-by-tenders-to-excel/' + product_id + '?' + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
+                        this.hideLoader();
                         this.tendersExport.json_data = data;
                     });
             },
 
             filterTagToChart: function () {
-
+                this.showLoader()
                 var url = '/api/tenders-by-product-chart/' + this.productId + '?' + this.chartQueryTag;
 
                 this.httpGet(url)
@@ -689,7 +699,17 @@
 
                         DATA.unshift(title);
 
-                        this.viewTendersChart(DATA, colorPallette);
+                        console.log(DATA);
+
+                        if (typeof DATA[1] != "undefined") {
+                            this.viewTendersChart(DATA, colorPallette);
+                            this.hideLoader();
+                        } else {
+                            DATA[0] = ['Month', 'Total'];
+                            DATA[1] = ['Yan-97', 0];
+                            this.viewTendersChart(DATA, colorPallette);
+                            this.hideLoader();
+                        }
 
                     });
             },
@@ -727,7 +747,15 @@
                     .then(() => {
                         this.isGoogleChartCoreLoaded = true;
                     })
-            }
+            },
+
+            showLoader: function () {
+                $('.loader-spinner').removeClass('hidden');
+            },
+
+            hideLoader: function () {
+                $('.loader-spinner').addClass('hidden');
+            },
 
         },
 

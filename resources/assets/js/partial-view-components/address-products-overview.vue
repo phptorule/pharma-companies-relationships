@@ -1,6 +1,7 @@
 <template>
     <div>
-        <ul class="staff-list" v-if="topProducts.length">
+        <ul class="staff-list" v-if="addressData.products">
+            <div class="load-spinner-product"></div>
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
@@ -19,7 +20,7 @@
                         {{Math.ceil(product.total_spent) | currency('Rub')}} |
                         {{product.last_tender_date ? product.last_tender_date : ''}}</p>
                 </div>
-                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"></div>
+                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"><div class="load-spinner-charts-product"></div></div>
             </li>
             <li>
                 <a href="javascript:void(0)"
@@ -31,7 +32,7 @@
                 </a>
             </li>
         </ul>
-        <p v-else class="empty-data-p">We don't know about any products</p>
+        <ul v-else class="empty-data-p">We don't know about any products</ul>
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
@@ -111,6 +112,7 @@
 
                         this.loadTopProduct()
                             .then(()=>{
+                                $('.load-spinner-product').addClass('hidden');
                                 this.topProducts.forEach((product, i) => {
 
                                     this.dataCreateToChart(product.prod_id, i)

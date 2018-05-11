@@ -2559,6 +2559,7 @@ p.tender-percent{
 #product-modal .tab-content{
     display: table;
     content: "";
+    position: relative;
 }
 
 
@@ -2985,4 +2986,29 @@ ul.tenders-list li .item .tag-list .tags:hover{
 #product-modal .tender-chart-container .tag-list .item-tag{
     float: left;
     padding-right: 10px;
+}
+
+.loader-spinner {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    left: calc(50% - 50px);
+    top: calc(50% - 50px);
+    z-index: 10;
+    background:url(../images/spinner.gif) center center no-repeat;
+}
+
+
+.load-spinner-charts-product {
+    height: 50px;
+    width: 50px;
+    margin-left: 9px;
+    background:url(../images/spinner1.gif) center center no-repeat;
+}
+
+.load-spinner-product{
+    height: 50px;
+    width: 50px;
+    margin-left: calc(50% - 25px);
+    background:url(../images/spinner1.gif) center center no-repeat;
 }
