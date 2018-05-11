@@ -107,34 +107,6 @@
 
                         this.addressData = data;
 
-                        data.tenders.forEach((tender, i) => {
-
-                            this.productsData.actual_cost += Math.ceil(Number(tender.actual_cost));
-
-                            this.productsData.budgeted_cost += Math.ceil(Number(tender.budgeted_cost));
-
-                            this.productsData.tenders.push(tender);
-
-                            this.productsData.budget = tender.budget;
-
-                            tender.purchase.forEach(purchase => {
-
-                                if (purchase.products.length > 0) {
-
-                                    this.productsData.purchases.push(purchase);
-
-                                }
-
-                            });
-
-                            this.productsData.purchases = this.productsData.purchases.sort(function (a, b) {
-
-                                return b.total_price - a.total_price;
-
-                            });
-
-                        });
-
                         this.getTendersData();
 
                         this.loadTopProduct()
