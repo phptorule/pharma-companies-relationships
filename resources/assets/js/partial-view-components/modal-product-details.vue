@@ -33,7 +33,7 @@
                             <div class="col-md-4">
                                 <p class="number" v-if="tenderData.total_budgeted">
                                     {{tenderData.total_budgeted | currency}} <span> <i class="fa fa-ruble"
-                                                                           title="Russian rubels"></i></span>
+                                                                           title="Russian rubels"> (K)</i></span>
                                 </p>
                                 <p class="number" v-else>
                                     0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
@@ -91,7 +91,7 @@
                                             <p class="tender-slider-amount-title">Tender Amount</p>
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
-                                            <i class="fa fa-ruble slider-currency-i"> (k)</i>
+                                            <i class="fa fa-ruble slider-currency-i"> (K)</i>
                                             <div class="col-md-6 min-value">
                                                 <input class="min-value-input" v-model="tendersCost.value[0]">
                                             </div>
@@ -424,7 +424,7 @@
                 this.httpGet('/api/product-by-tenders/' + product_id)
                     .then(data => {
                         this.tenderData = data;
-
+                        this.tenderData.total_budgeted = Math.ceil(this.tenderData.total_budgeted /1000);
                         this.selectedTags = [];
 
                         if(String(this.tenderData.tag_ids) != 'null') {

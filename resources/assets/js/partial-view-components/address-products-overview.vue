@@ -11,19 +11,37 @@
                 </div>
                 <div class="prod-info">
                     <p class="name">
-                        <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, purchase.id, addressData)">
+                        <a href="javascript:void(0)"
+                           @click="showProductDetailsModal(addressId, purchase.id, addressData)">
                             {{product.name? product.name : "unspecified "+product.company+"-product"}}
                         </a>
                     </p>
-                    <p class="amount">
-                        {{product.volume  | currency }} |
-                        {{Math.ceil(product.total_spent) | currency('Rub')}} |
-                        {{product.last_tender_date ? product.last_tender_date : ''}}</p>
-                    <p class="amount-title">
-                        Est. Test Volume | 2y Spending | Last Tender
-                    </p>
+                    <div class="amount">
+                        <div class="volume">
+                            <span class="volume-head">
+                                {{product.volume  | currency }}
+                                <span class="volume-title">Est. Test Volume</span>
+                            </span>
+                        </div>
+                        |
+                        <div class="spending">
+                            <span class="spending-head">
+                                {{Math.ceil(product.total_spent/1000) | currency('Rub')}} (K)
+                                <span class="spending-title">2y Spending</span>
+                            </span>
+                        </div>
+                        |
+                        <div class="last-tender">
+                                <span class="last-tender-head">
+                                    {{product.last_tender_date ? product.last_tender_date : ''}}
+                                <span class="last-tender-title">Last Tender</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px"><div class="load-spinner-charts-product"></div></div>
+                <div class="prod-graf" :id="'graph-container-'+i" style="width: 75px; height: 50px">
+                    <div class="load-spinner-charts-product"></div>
+                </div>
             </li>
             <li>
                 <a href="javascript:void(0)"
@@ -96,7 +114,7 @@
 
         filters: {
             currency: function (value, currency_type) {
-                if(!currency_type){
+                if (!currency_type) {
                     currency_type = '';
                 }
                 value = String(value);
@@ -114,7 +132,7 @@
                         this.getTendersData();
 
                         this.loadTopProduct()
-                            .then(()=>{
+                            .then(() => {
                                 $('.load-spinner-product').addClass('hidden');
                                 $('.empty-data-p').removeClass('hidden');
                                 this.topProducts.forEach((product, i) => {
@@ -220,7 +238,7 @@
 
                             DATA.unshift(title);
 
-                            this.viewTendersChart(DATA, 'graph-container-'+indexOrder);
+                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
 
                         });
                 }, 1000)
