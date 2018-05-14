@@ -19,7 +19,7 @@
                     <div class="amount">
                         <div class="volume">
                             <span class="volume-head">
-                                {{product.volume  | currency }}
+                                {{product.volume  | currency('pcs')}}
                                 <span class="volume-title">Est. Test Volume</span>
                             </span>
                         </div>
