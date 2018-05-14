@@ -19,7 +19,7 @@
                     <div class="amount">
                         <div class="volume">
                             <span class="volume-head">
-                                {{product.volume  | currency('pcs')}}
+                                {{product.volume  | currency('pcs.')}}
                                 <span class="volume-title">Est. Test Volume</span>
                             </span>
                         </div>
@@ -56,21 +56,21 @@
         <ul v-else class="empty-data-p hidden">We don't know about any products</ul>
         <div class="header">
             <h3>Tenders</h3>
-            <div class="col-md-12 tender-list" v-if="amount_old_year || amount_actual_year || amount_next_year">
-                <div class="col-md-4 tender" v-if="amount_old_year">
+            <div class="col-md-12 tender-list" v-if="tenderData">
+                <div class="col-md-4 tender" v-if="tenderData.amountOldYear">
                     <p class="tender-year">Last year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_old_year | currency('Rub')}}</a>
-                    <p class="tender-percent">({{rate_old_year}} %)</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountOldYear | currency('Rub (K)')}}</a>
+                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateOldYear))}} %)</p>
                 </div>
-                <div class="col-md-4 tender" v-if="amount_actual_year">
+                <div class="col-md-4 tender" v-if="tenderData.amountActualYear">
                     <p class="tender-year-center">This year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_actual_year | currency('Rub')}}</a>
-                    <p class="tender-percent">({{rate_actual_year}}%)</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountActualYear | currency('Rub (K)')}}</a>
+                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateActualYear))}}%)</p>
                 </div>
-                <div class="col-md-4 tender" v-if="amount_next_year">
+                <div class="col-md-4 tender" v-if="tenderData.amountNextYear">
                     <p class="tender-year">Next year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{amount_next_year | currency('Rub')}}</a>
-                    <p class="tender-percent">({{rate_next_year}}%)</p>
+                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountNextYear | currency('Rub (K)')}}</a>
+                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateNextYear))}}%)</p>
                 </div>
             </div>
             <p v-else class="empty-data-p hidden">We don't know about any tenders</p>
@@ -90,22 +90,14 @@
 
         data: function () {
             return {
-                productsData: {
-                    purchases: [],
-                    tenders: [],
-                    budget: [],
-                    actual_cost: null,
-                    budgeted_cost: null,
-                    tender_date: null,
-                    uri: null
+                tenderData: {
+                    amountOldYear: '',
+                    amountActualYear: '',
+                    amountNextYear: '',
+                    rateOldYear: '',
+                    rateActualYear: '',
+                    rateNextYear: ''
                 },
-                actual_year: (new Date()).getFullYear(),
-                amount_old_year: null,
-                amount_actual_year: null,
-                amount_next_year: null,
-                rate_old_year: null,
-                rate_actual_year: null,
-                rate_next_year: null,
                 addressData: {},
                 topProducts: [],
                 isGoogleChartCoreLoaded: false,
@@ -117,6 +109,7 @@
                 if (!currency_type) {
                     currency_type = '';
                 }
+                value = Math.ceil(Number(value)/1000);
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },
@@ -146,7 +139,6 @@
                                 })
                             });
 
-
                     });
 
             },
@@ -164,58 +156,9 @@
                 this.httpGet('/api/tenders-by-address/' + this.addressId)
                     .then(data => {
 
-                        data.forEach(tender => {
+                        this.tenderData = data;
 
-                            if (tender.budget != null) {
-
-                                if (this.actual_year > Math.ceil(tender.budget.delivery_year)) {
-
-                                    this.amount_old_year += Math.ceil(Number(tender.budgeted_cost));
-
-                                } else if (this.actual_year == Math.ceil(tender.budget.delivery_year)) {
-
-                                    this.amount_actual_year += Math.ceil(Number(tender.budgeted_cost));
-
-                                } else if (this.actual_year < Math.ceil(tender.budget.delivery_year)) {
-
-                                    this.amount_next_year += Math.ceil(Number(tender.budgeted_cost));
-
-                                }
-                            }
-
-                        });
-
-                        if (this.amount_actual_year < this.amount_old_year) {
-
-                            this.rate_old_year = Math.ceil((this.amount_actual_year / this.amount_old_year) * 100);
-
-                        } else if (this.amount_actual_year > this.amount_old_year) {
-
-                            this.rate_old_year = Math.ceil((this.amount_old_year / this.amount_actual_year) * 100);
-
-                        }
-
-                        if (this.amount_actual_year <= this.amount_next_year) {
-
-                            this.rate_actual_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
-
-                        } else if (this.amount_actual_year >= this.amount_next_year) {
-
-                            this.rate_actual_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
-
-                        }
-
-                        if (this.amount_old_year < this.amount_next_year) {
-
-                            this.rate_next_year = Math.ceil((this.amount_actual_year / this.amount_next_year) * 100);
-
-                        } else if (this.amount_old_year > this.amount_next_year) {
-
-                            this.rate_next_year = Math.ceil((this.amount_next_year / this.amount_actual_year) * 100);
-
-                        }
-
-                        $('.empty-data-p').removeClass('hidden');
+                      $('.empty-data-p').removeClass('hidden');
                     });
             },
 

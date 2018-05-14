@@ -15,7 +15,7 @@ class Tender extends Model
 
 	public function budget()
 	{
-		return $this->hasOne(TenderBudget::class);
+		return $this->hasMany(TenderBudget::class);
 	}
 
 	public function scopeThreeProductsWithMostBudgetSpent ($q)
