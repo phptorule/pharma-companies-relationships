@@ -40,7 +40,7 @@
                             @customerStatusUpdated="updateCustomerStatus"
                     ></customer-status-select>
 
-                    <div v-if="!isEditing">
+                    <div v-if=" ! isEditing">
                         <h2>
                             <span style="vertical-align: middle">{{addressData.name}}</span>
 
@@ -81,7 +81,10 @@
                         <form>
                             <div @click="toggleEditingInput('name')">
                                 <div class="name-block can-edit">
-                                    <div-editable :content.sync="addressData.name" :placeholder="'Name'"></div-editable>
+                                    <div-editable 
+                                        @update-address-details="updateAddress" 
+                                        :content.sync="addressData.name" 
+                                        :placeholder="'Name'"></div-editable>
                                 </div>
 
                                 <!--<a href="javascript:void(0)" @click="toggleEditing" :class="{'active': isEditing}">-->
@@ -131,16 +134,25 @@
                             ></v-select>
 
                             <p class="address-line can-edit" @click="toggleEditingInput('address')">
-                                <div-editable :content.sync="addressData.address" :placeholder="'Address'"></div-editable>
+                                <div-editable 
+                                    @update-address-details="updateAddress" 
+                                    :content.sync="addressData.address" 
+                                    :placeholder="'Address'"></div-editable>
                             </p>
 
                             <p class="address-line can-edit" @click="toggleEditingInput('url')">
-                                <div-editable :content.sync="addressData.url" :placeholder="'Url'"></div-editable>
+                                <div-editable 
+                                    @update-address-details="updateAddress" 
+                                    :content.sync="addressData.url" 
+                                    :placeholder="'Url'"></div-editable>
                             </p>
 
                             <p class="address-line can-edit" @click="toggleEditingInput('phone')">
                                 <!--<input type="text" v-model="addressData.phone" class="form-control edit-input" placeholder="Phone number">-->
-                                <div-editable :content.sync="addressData.phone" :placeholder="'Phone number'"></div-editable>
+                                <div-editable 
+                                    @update-address-details="updateAddress" 
+                                    :content.sync="addressData.phone" 
+                                    :placeholder="'Phone number'"></div-editable>
                             </p>
 
                             <div class="confirm-edit-block">
@@ -302,7 +314,7 @@
                 }
             },
             isEditing: function () {
-                if (!this.isEditing) {
+                if ( ! this.isEditing) {
                     this.editingInput = null;
                 }
             },
@@ -499,25 +511,27 @@
                 this.editingInput = input;
             },
             updateAddress: function () {
-                this.httpPut('/api/address-details/'+this.addressData.id+'/update-details', {
-                    name: this.addressData.name,
-                    address: this.addressData.address,
-                    url: this.addressData.url,
-                    phone: this.addressData.phone,
-                    tags: this.addressData.tags
-                })
-                    .then(data => {
-                        this.old.name = this.addressData.name;
-                        this.old.address = this.addressData.address;
-                        this.old.url = this.addressData.url;
-                        this.old.phone = this.addressData.phone;
-                        this.loadAllTags();
-                        this.loadSelectedTags();
-                        this.madeChanges = false;
-                        this.saveBtnDisabled = false;
-                        this.editingInput = null;
-                        alertify.notify('Address has been updated.', 'success', 3);
+                if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.httpPut('/api/address-details/'+this.addressData.id+'/update-details', {
+                        name: this.addressData.name,
+                        address: this.addressData.address,
+                        url: this.addressData.url,
+                        phone: this.addressData.phone,
+                        tags: this.addressData.tags
                     })
+                        .then(data => {
+                            this.old.name = this.addressData.name;
+                            this.old.address = this.addressData.address;
+                            this.old.url = this.addressData.url;
+                            this.old.phone = this.addressData.phone;
+                            this.loadAllTags();
+                            this.loadSelectedTags();
+                            this.madeChanges = false;
+                            this.saveBtnDisabled = false;
+                            this.editingInput = null;
+                            alertify.notify('Address has been updated.', 'success', 3);
+                        })
+                }  
             },
             removeSelectedTag: function (name) {
                 var tags = this.addressData.tags.filter(function(elem) {
@@ -535,6 +549,8 @@
         },
 
         mounted: function () {
+
+            // this.$eventGlobal.$on('update-address-details', console.log('update-address-details'));
 
             $('.address-details-fixed-height').height(window.innerHeight - 70 -51);
             $('.slided-box').height(window.innerHeight - 70 -51);
