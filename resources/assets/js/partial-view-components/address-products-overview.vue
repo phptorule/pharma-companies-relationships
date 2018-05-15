@@ -12,7 +12,7 @@
                 <div class="prod-info">
                     <p class="name">
                         <a href="javascript:void(0)"
-                           @click="showProductDetailsModal(addressId, purchase.id, addressData)">
+                           @click="showProductDetailsModal(addressId, product.id, addressData)">
                             {{product.name? product.name : "unspecified "+product.company+"-product"}}
                         </a>
                     </p>

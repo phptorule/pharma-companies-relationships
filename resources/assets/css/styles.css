@@ -2301,21 +2301,37 @@ ul.staff-list li .personal-info .name a:hover{
     cursor: pointer;
 }
 
-.prod-info{
+ul.staff-list li .prod-info{
     width: 70%;
     margin-right: 30px;
     margin-left: 10px;
     position: relative;
 }
-.prod-info p.name{
-    color: #3a444f;
+ul.staff-list li .prod-info .name{
     font-family: Montserrat;
     font-size: 16px;
     font-weight: 500;
     line-height: 1.5;
 }
 
-.prod-info div.amount{
+ul.staff-list li .prod-info .name a{
+    display: block;
+    padding: 4px 7px;
+    font-family: Montserrat;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+    border-radius: 6px;
+    transition: background-color 100ms linear;
+    cursor: pointer;
+}
+
+ul.staff-list li .prod-info .name a:hover{
+    background-color: #eaeff4;
+    color: #3a444f;
+}
+
+ul.staff-list li .prod-info .prod-info div.amount{
     color: #3a444f;
     font-family: Montserrat;
     font-size: 13px;
@@ -2328,7 +2344,7 @@ ul.staff-list li .personal-info .name a:hover{
 .prod-name{
     width: 270%;
 }
-.prod-graf{
+ul.staff-list li .prod-graf{
     float: right;
     background-color: #e8e7e7;
     /*padding: 25px;*/
