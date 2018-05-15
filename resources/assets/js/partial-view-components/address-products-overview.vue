@@ -175,9 +175,9 @@
                     this.httpGet(url)
                         .then(data => {
 
-                            var title = ['Month', 'Total'];
+                            var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
 
-                            var DATA = data;
+                            var DATA = data.chartsData;
 
                             DATA.unshift(title);
 

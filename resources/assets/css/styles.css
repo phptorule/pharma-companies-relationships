@@ -3035,3 +3035,12 @@ ul.tenders-list li .item .tag-list .tags:hover{
     display: inline-flex;
 }
 
+.tooltip-total{
+    font-family: Arial;
+    font-size: 13px;
+    color: rgb(0, 0, 0);
+    opacity: 1;
+    margin: 0px;
+    text-decoration: none;
+    font-weight: bold;
+}

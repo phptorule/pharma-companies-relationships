@@ -32,8 +32,8 @@
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="tenderData.total_budgeted">
-                                    {{tenderData.total_budgeted | currency}} &nbsp;<i class="fa fa-ruble"
-                                                                           title="Russian rubels"> </i>&nbsp;(K)
+                                    {{tenderData.total_budgeted | currency}}&nbsp;<i class="fa fa-ruble"
+                                                                           title="Russian rubels"></i>&nbsp;(K)
                                 </p>
                                 <p class="number" v-else>
                                     0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
@@ -615,7 +615,7 @@
                 this.httpGet(url)
                     .then(data => {
 
-                        var title = ['Month', 'Total']
+                        var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
 
                         var colorPallette = [];
 
@@ -637,24 +637,24 @@
                             });
                         }
 
-                        var DATA = data;
+                        var DATA = data.chartsData;
 
                         DATA.unshift(title);
 
                         if (typeof DATA[1] != "undefined") {
-                            this.viewTendersChart(DATA, colorPallette);
+                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey);
                             this.hideLoader();
                         } else {
                             DATA[0] = ['Month', 'Total'];
                             DATA[1] = ['Yan-97', 0];
-                            this.viewTendersChart(DATA, colorPallette);
+                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey);
                             this.hideLoader();
                         }
 
                     });
             },
 
-            viewTendersChart: function (data, colorPallette) {
+            viewTendersChart: function (data, colorPallette, delimetrKey) {
 
                 if (this.graphLoadedModal) {
                     return;
@@ -670,13 +670,15 @@
                     height: 200,
                     title: 'Sales',
                     colors: colorPallette,
-                    vAxis: {title: 'Budget'},
+                    tooltip: {isHtml: true},
+                    vAxis: {title: 'Budget', format: "###,###"+delimetrKey,},
                     hAxis: {baselineColor: 'none', ticks: []},
                     seriesType: 'bars',
                     legend: 'none',
                     animation: {startup: true},
                     series: {0: {type: 'line'}},
                 };
+
 
                 var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
                 chart.draw(data, options);

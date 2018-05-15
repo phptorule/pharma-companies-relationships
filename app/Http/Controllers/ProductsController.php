@@ -263,19 +263,60 @@ class ProductsController extends Controller {
 		           ->groupBy( 'month' )
 		           ->havingRaw( 'month IS NOT NULL' );
 
-		$result = $query->get();
+		$result = $query->get()->toArray();
 
 		$responsData = [];
 
+		$arrayTotal = array_column($result, 'total');
+
+		$minTotal = min($arrayTotal);
+
+		$delimetr = 1;
+		$delimetrKey = 'R';
+
+		$date = '';
+
+		if($minTotal < 1000000){
+
+			$delimetr = 1000;
+
+			$delimetrKey = 'K';
+
+		}elseif($minTotal < 1000000000){
+
+			$delimetr = 1000000;
+
+			$delimetrKey = 'M';
+		}
+
 		foreach ( $result as $i => $row ) {
+
 			$responsData[ $i ] = [];
+
 			foreach ( $row as $j => $value ) {
-				$responsData[ $i ][] = $j == 0 ? ( is_null( $value ) ? 0 : $value ) : intval( $value );
+
+				if($j == 'month'){
+
+					$date = $value;
+
+					$responsData[ $i ][] = $date;
+
+				}elseif($j == 'total'){
+
+					$total = intval( $value /$delimetr);
+
+					$responsData[ $i ][] = $total;
+
+					$responsData[ $i ][] = '<span class="tooltip-total">'.$date
+					                       .'<br>Total: '.$total.$delimetrKey.'</span>';
+				}else{
+
+					$responsData[ $i ][] = intval($value);
+				}
 			}
 		}
 
-
-		return response()->json( $responsData, 200, [], JSON_NUMERIC_CHECK );
+		return response()->json( ['chartsData' => $responsData, 200, [], JSON_NUMERIC_CHECK, 'delimetrKey' => $delimetrKey] );
 	}
 
 }
