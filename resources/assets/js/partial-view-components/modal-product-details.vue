@@ -32,8 +32,8 @@
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="tenderData.total_budgeted">
-                                    {{tenderData.total_budgeted | currency}} <span> <i class="fa fa-ruble"
-                                                                           title="Russian rubels"> (K)</i></span>
+                                    {{tenderData.total_budgeted | currency}} &nbsp;<i class="fa fa-ruble"
+                                                                           title="Russian rubels"> </i>&nbsp;(K)
                                 </p>
                                 <p class="number" v-else>
                                     0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
