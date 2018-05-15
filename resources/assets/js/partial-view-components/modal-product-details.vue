@@ -443,41 +443,6 @@
                             });
                         }
 
-/*                        let tag_load_checker = true;
-
-                        if (String(tender.tag_name) != 'null') {
-                            if (this.selectedTags.length != 0) {
-                                for (let j = 0; j < this.selectedTags.length; j++) {
-
-                                    if (this.selectedTags[j].id == tender.tag_id) {
-
-                                        tag_load_checker = false;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                this.selectedTags[this.selectedTags.length] = {
-
-                                    id: tender.tag_id,
-
-                                    name: tender.tag_name
-
-                                };
-                                tag_load_checker = false;
-                            }
-
-                            if (tag_load_checker) {
-
-                                this.selectedTags[this.selectedTags.length] = {
-
-                                    id: tender.tag_id,
-
-                                    name: tender.tag_name
-
-                                };
-                            }
-                        }*/
-
                         this.spending_cost = Math.ceil(((this.tenderData.first_budgeted_cost/ this.tenderData.last_budgeted_cost) - 1) * 100);
 
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000);
@@ -676,8 +641,6 @@
 
                         DATA.unshift(title);
 
-                        console.log(DATA);
-
                         if (typeof DATA[1] != "undefined") {
                             this.viewTendersChart(DATA, colorPallette);
                             this.hideLoader();
@@ -703,6 +666,8 @@
                 colorPallette.unshift('#0099c6');
 
                 var options = {
+                    width: 830,
+                    height: 200,
                     title: 'Sales',
                     colors: colorPallette,
                     vAxis: {title: 'Budget'},
