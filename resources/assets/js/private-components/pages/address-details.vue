@@ -84,7 +84,8 @@
                                     <div-editable 
                                         @update-address-details="updateAddress" 
                                         :content.sync="addressData.name" 
-                                        :placeholder="'Name'"></div-editable>
+                                        :placeholder="'Name'"
+                                    ></div-editable>
                                 </div>
 
                                 <!--<a href="javascript:void(0)" @click="toggleEditing" :class="{'active': isEditing}">-->
@@ -122,7 +123,8 @@
                                 </li>
                             </ul>
 
-                            <v-select v-show="editingInput === 'tags'"
+                            <v-select 
+                                    v-show="editingInput === 'tags'"
                                     v-model="addressData.tags"
                                     :options="allTags"
                                     :label="'name'"
@@ -137,14 +139,16 @@
                                 <div-editable 
                                     @update-address-details="updateAddress" 
                                     :content.sync="addressData.address" 
-                                    :placeholder="'Address'"></div-editable>
+                                    :placeholder="'Address'"
+                                ></div-editable>
                             </p>
 
                             <p class="address-line can-edit" @click="toggleEditingInput('url')">
                                 <div-editable 
                                     @update-address-details="updateAddress" 
                                     :content.sync="addressData.url" 
-                                    :placeholder="'Url'"></div-editable>
+                                    :placeholder="'Url'"
+                                ></div-editable>
                             </p>
 
                             <p class="address-line can-edit" @click="toggleEditingInput('phone')">
@@ -152,13 +156,34 @@
                                 <div-editable 
                                     @update-address-details="updateAddress" 
                                     :content.sync="addressData.phone" 
-                                    :placeholder="'Phone number'"></div-editable>
+                                    :placeholder="'Phone number'"
+                                ></div-editable>
                             </p>
 
                             <div class="confirm-edit-block">
-                                <button type="button" @click="toggleEditing" class="btn cancel-address-btn">Cancel</button>
-                                <button type="submit" v-if="!saveBtnDisabled && madeChanges" @click.prevent="updateAddress" class="btn save-address-btn">Suggest Edits</button>
-                                <button type="button" v-if="saveBtnDisabled || !madeChanges" disabled class="btn save-address-btn-disabled">Suggest Edits</button>
+                                <button 
+                                    type="button" 
+                                    @click="toggleEditing" 
+                                    class="btn cancel-address-btn"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    v-if=" ! saveBtnDisabled && madeChanges" 
+                                    @click.prevent="updateAddress" 
+                                    class="btn save-address-btn"
+                                >
+                                    Suggest Edits
+                                </button>
+                                <button 
+                                    type="button" 
+                                    v-if="saveBtnDisabled || ! madeChanges" 
+                                    disabled 
+                                    class="btn save-address-btn-disabled"
+                                >
+                                    Suggest Edits
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -309,7 +334,7 @@
                 this.addressId = this.$route.params['id'];
                 this.loadAddressDetails();
 
-                if(!this.isFirstLoad) {
+                if( ! this.isFirstLoad) {
                     this.showModalIfPersonHashDetected();
                 }
             },
@@ -496,7 +521,7 @@
 
                 this.isEditing = !this.isEditing;
 
-                if (!this.isEditing) {
+                if ( ! this.isEditing) {
                     this.addressData.name = this.old.name;
                     this.addressData.address = this.old.address;
                     this.addressData.url = this.old.url;
@@ -529,6 +554,7 @@
                             this.madeChanges = false;
                             this.saveBtnDisabled = false;
                             this.editingInput = null;
+                            this.isEditing = false;
                             alertify.notify('Address has been updated.', 'success', 3);
                         })
                 }  
