@@ -36,8 +36,8 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 						LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
 						LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
-						WHERE a.id = $address
-						AND p.id = $id
+						WHERE p.id = $id
+						AND at.address_id = $address
 						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
 						GROUP BY p.id
 						ORDER BY total_spent DESC
@@ -47,16 +47,15 @@ class ProductsController extends Controller {
 						FROM rl_address_tenders as at
 						$joinTable
 						WHERE p.id = $id
-						AND at.id = $address
+						AND at.address_id = $address
 						AND YEAR(at.tender_date) <= YEAR(CURDATE())
 						) as last_budgeted_cost,
 						
-						(
-						SELECT SUM(at.budgeted_cost)
+						(SELECT SUM(at.budgeted_cost)
 						FROM rl_address_tenders as at
 						$joinTable
 						WHERE p.id = $id
-						AND at.id = $address
+						AND at.address_id = $address
 						AND YEAR(at.tender_date) >= YEAR(CURDATE())
 						) as first_budgeted_cost,
 						
@@ -69,7 +68,7 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
 						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
 						WHERE p.id = $id
-						AND at.id = $address
+						AND at.address_id = $address
 						GROUP BY p.id";
 
 
@@ -116,7 +115,7 @@ class ProductsController extends Controller {
 				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
 				LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
-				WHERE a.id = $address
+				WHERE at.address_id = $address
 				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
 				GROUP BY p.id
 				ORDER BY total_spent DESC
@@ -309,13 +308,13 @@ class ProductsController extends Controller {
 
 		$date = '';
 
-		if ( $minTotal < 1000000 ) {
+		if ( $minTotal < 100000000 ) {
 
 			$delimetr = 1000;
 
 			$delimetrKey = 'K';
 
-		} elseif ( $minTotal < 1000000000 ) {
+		}elseif ( $minTotal < 100000000000 ) {
 
 			$delimetr = 1000000;
 
