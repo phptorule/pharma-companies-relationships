@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProductsController extends Controller {
 
-	public function productById( Product $product )
-	{
+	public function productById( Product $product ) {
 
 		return response()->json( $product );
 
@@ -76,11 +75,24 @@ class ProductsController extends Controller {
 
 		$tenders = DB::select( DB::raw( $select ) );
 
-		foreach ($tenders as $tender){
-			$tenderdata = $tender;
+		if ( $tenders ) {
+			foreach ( $tenders as $tender ) {
+				$tenderdata = $tender;
+			}
+
+			return response()->json( $tenderdata );
 		}
 
-		return response()->json( $tenderdata );
+		return response()->json( [
+			'last_tender_date'    => null,
+			'max_total_spent'     => null,
+			'min_total_spent'     => null,
+			'total_budgeted'      => null,
+			'last_budgeted_cost'  => null,
+			'first_budgeted_cost' => null,
+			'tag_ids'             => null
+		] );
+
 	}
 
 	public function addressByProducts( $id ) {
@@ -90,7 +102,7 @@ class ProductsController extends Controller {
 		return response()->json( $tenders );
 	}
 
-	public function loadTopProducts($address) {
+	public function loadTopProducts( $address ) {
 
 		$sql = "SELECT p.*, p.id as prod_id, 
 					SUM(atp.total_price) as total_spent, 
@@ -110,7 +122,7 @@ class ProductsController extends Controller {
 				ORDER BY total_spent DESC
 				LIMIT 3";
 
-		$result = DB::select(DB::raw($sql));
+		$result = DB::select( DB::raw( $sql ) );
 
 		return response()->json( $result );
 	}
@@ -241,15 +253,15 @@ class ProductsController extends Controller {
 
 		$tags = ProductConsumable::get( [ 'id', 'name' ] );
 
-		foreach ($tags as $tag){
-			$tag->color = sprintf( '#%02X%02X%02X', rand(0, 255), rand(0, 255), rand(0, 255) );
+		foreach ( $tags as $tag ) {
+			$tag->color  = sprintf( '#%02X%02X%02X', rand( 0, 255 ), rand( 0, 255 ), rand( 0, 255 ) );
 			$tagsColor[] = $tag;
 		}
 
 		return response()->json( $tagsColor );
 	}
 
-	public function TenderByProductChart( $id, $address) {
+	public function TenderByProductChart( $id, $address ) {
 		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(at.budgeted_cost) as total';
 
 		if ( isset( request()->tags ) && $tags = request()->tags ) {
@@ -288,22 +300,22 @@ class ProductsController extends Controller {
 
 		$responsData = [];
 
-		$arrayTotal = array_column($result, 'total');
+		$arrayTotal = array_column( $result, 'total' );
 
-		$minTotal = min($arrayTotal);
+		$minTotal = min( $arrayTotal );
 
-		$delimetr = 1;
+		$delimetr    = 1;
 		$delimetrKey = 'R';
 
 		$date = '';
 
-		if($minTotal < 1000000){
+		if ( $minTotal < 1000000 ) {
 
 			$delimetr = 1000;
 
 			$delimetrKey = 'K';
 
-		}elseif($minTotal < 1000000000){
+		} elseif ( $minTotal < 1000000000 ) {
 
 			$delimetr = 1000000;
 
@@ -316,28 +328,33 @@ class ProductsController extends Controller {
 
 			foreach ( $row as $j => $value ) {
 
-				if($j == 'month'){
+				if ( $j == 'month' ) {
 
 					$date = $value;
 
 					$responsData[ $i ][] = $date;
 
-				}elseif($j == 'total'){
+				} elseif ( $j == 'total' ) {
 
-					$total = intval( $value /$delimetr);
+					$total = intval( $value / $delimetr );
 
 					$responsData[ $i ][] = $total;
 
-					$responsData[ $i ][] = '<span class="tooltip-total">'.$date
-					                       .'<br>Total: '.$total.$delimetrKey.'</span>';
-				}else{
+					$responsData[ $i ][] = '<span class="tooltip-total">' . $date
+					                       . '<br>Total: ' . $total . $delimetrKey . '</span>';
+				} else {
 
-					$responsData[ $i ][] = intval($value);
+					$responsData[ $i ][] = intval( $value );
 				}
 			}
 		}
 
-		return response()->json( ['chartsData' => $responsData, 200, [], JSON_NUMERIC_CHECK, 'delimetrKey' => $delimetrKey] );
+		return response()->json( [ 'chartsData'  => $responsData,
+			200,
+			[],
+			JSON_NUMERIC_CHECK,
+			                       'delimetrKey' => $delimetrKey
+		] );
 	}
 
 }
