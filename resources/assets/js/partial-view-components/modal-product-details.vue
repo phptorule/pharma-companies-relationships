@@ -32,7 +32,7 @@
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="tenderData.total_budgeted">
-                                    {{tenderData.total_budgeted | currency}}&nbsp;<i class="fa fa-ruble"
+                                    {{Math.ceil(tenderData.total_budgeted/1000) | currency}}&nbsp;<i class="fa fa-ruble"
                                                                            title="Russian rubels"></i>&nbsp;(K)
                                 </p>
                                 <p class="number" v-else>
@@ -421,7 +421,7 @@
 
             getTendersByProduct: function (product_id) {
                 this.showLoader();
-                this.httpGet('/api/product-by-tenders/' + product_id)
+                this.httpGet('/api/product-by-tenders/' + product_id + '/' + this.addressId)
                     .then(data => {
                         this.tenderData = data;
                         this.tenderData.total_budgeted = Math.ceil(this.tenderData.total_budgeted /1000);
@@ -610,7 +610,7 @@
 
             filterTagToChart: function () {
                 this.showLoader()
-                var url = '/api/tenders-by-product-chart/' + this.productId + '?' + this.chartQueryTag;
+                var url = '/api/tenders-by-product-chart/' + this.productId + '/' + this.addressId + '?' + this.chartQueryTag;
 
                 this.httpGet(url)
                     .then(data => {

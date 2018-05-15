@@ -18,7 +18,7 @@ class ProductsController extends Controller {
 
 	}
 
-	public function productByTenders( $id ) {
+	public function productByTenders( $id, $address ) {
 
 		$joinTable = "LEFT JOIN rl_address_tenders_purchase AS atp ON atp.tender_id = at.id
 						LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.purchase_id = atp.id
@@ -28,12 +28,27 @@ class ProductsController extends Controller {
 						((YEAR(CURDATE()) - YEAR(MIN(at.tender_date))+1)) as last_tender_date,
 						MAX(at.budgeted_cost) as max_total_spent,
 						MIN(at.budgeted_cost) as min_total_spent,
-						SUM(at.budgeted_cost) as total_budgeted,
-						(SELECT 
-						SUM(at.budgeted_cost)
+						(
+						SELECT SUM(atp.total_price) as total_spent
+						
+						FROM rl_products as p
+						LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
+						LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
+						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
+						LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
+						LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
+						WHERE a.id = $address
+						AND p.id = $id
+						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
+						GROUP BY p.id
+						ORDER BY total_spent DESC
+						LIMIT 1) as total_budgeted,
+						
+						(SELECT SUM(at.budgeted_cost)
 						FROM rl_address_tenders as at
 						$joinTable
 						WHERE p.id = $id
+						AND at.id = $address
 						AND YEAR(at.tender_date) <= YEAR(CURDATE())
 						) as last_budgeted_cost,
 						
@@ -42,8 +57,10 @@ class ProductsController extends Controller {
 						FROM rl_address_tenders as at
 						$joinTable
 						WHERE p.id = $id
+						AND at.id = $address
 						AND YEAR(at.tender_date) >= YEAR(CURDATE())
 						) as first_budgeted_cost,
+						
 						GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
 						
 						FROM rl_products as p
@@ -51,7 +68,9 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
 						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 						LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
+						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
 						WHERE p.id = $id
+						AND at.id = $address
 						GROUP BY p.id";
 
 
@@ -230,7 +249,7 @@ class ProductsController extends Controller {
 		return response()->json( $tagsColor );
 	}
 
-	public function TenderByProductChart( $id ) {
+	public function TenderByProductChart( $id, $address) {
 		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(at.budgeted_cost) as total';
 
 		if ( isset( request()->tags ) && $tags = request()->tags ) {
@@ -245,6 +264,7 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_products AS p$tag ON p$tag.id = atpp$tag.product_id
 						WHERE p$tag.id = $id
 						AND pc$tag.id = $tag
+						AND at$tag.address_id = $address
 						AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m')
 						GROUP BY month
 						
@@ -255,6 +275,7 @@ class ProductsController extends Controller {
 		$query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
 		           ->where( 'p.id', $id )
+		           ->where( 'at.address_id', $address )
 		           ->whereNotNull( 'atp.tender_id' )
 		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )

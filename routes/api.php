@@ -66,7 +66,7 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/product-by-id/{product}', 'ProductsController@productById')->name('products.productById');
 
-	Route::get('/product-by-tenders/{id}', 'ProductsController@productByTenders')->name('products.productByTenders');
+	Route::get('/product-by-tenders/{id}/{address}', 'ProductsController@productByTenders')->name('products.productByTenders');
 
 	Route::get('/product-by-tenders-paginated/{id}', 'ProductsController@getProductByTendersPaginated')->name('products.getProductByTendersPaginated');
 
@@ -76,7 +76,7 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/product-by-address/{address}', 'ProductsController@productByAddressPaginated')->name('products.productByAddressPaginated');
 
-	Route::get('/tenders-by-product-chart/{id}', 'ProductsController@tenderByProductChart')->name('products.tenderByProductChart');
+	Route::get('/tenders-by-product-chart/{id}/{address}', 'ProductsController@tenderByProductChart')->name('products.tenderByProductChart');
 
 	Route::get('/load-top-products/{address}', 'ProductsController@loadTopProducts')->name('products.loadTopProducts');
 

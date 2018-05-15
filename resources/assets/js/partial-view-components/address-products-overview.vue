@@ -23,14 +23,12 @@
                                 <span class="volume-title">Est. Test Volume</span>
                             </span>
                         </div>
-                        |
                         <div class="spending">
                             <span class="spending-head">
                                 {{Math.ceil(product.total_spent/1000) | currency('Rub')}} (K)
                                 <span class="spending-title">2y Spending</span>
                             </span>
                         </div>
-                        |
                         <div class="last-tender">
                                 <span class="last-tender-head">
                                     {{product.last_tender_date ? product.last_tender_date : ''}}
@@ -58,12 +56,12 @@
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
                 <div class="col-md-4 tender" v-if="tenderData.amountOldYear">
-                    <p class="tender-year">Last year:</p>
+                    <p class="tender-last-year">Last year:</p>
                     <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountOldYear | currency('Rub (K)')}}</a>
                     <p class="tender-percent">({{Math.ceil(Number(tenderData.rateOldYear))}} %)</p>
                 </div>
                 <div class="col-md-4 tender" v-if="tenderData.amountActualYear">
-                    <p class="tender-year-center">This year:</p>
+                    <p class="tender-year">This year:</p>
                     <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountActualYear | currency('Rub (K)')}}</a>
                     <p class="tender-percent">({{Math.ceil(Number(tenderData.rateActualYear))}}%)</p>
                 </div>
@@ -170,7 +168,7 @@
 
             dataCreateToChart: function (productId, indexOrder) {
                 setTimeout(() => {
-                    var url = '/api/tenders-by-product-chart/' + productId;
+                    var url = '/api/tenders-by-product-chart/' + productId + '/' + this.addressData.id;
 
                     this.httpGet(url)
                         .then(data => {

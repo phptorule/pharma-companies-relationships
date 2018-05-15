@@ -3060,3 +3060,8 @@ ul.tenders-list li .item .tag-list .tags:hover{
     text-decoration: none;
     font-weight: bold;
 }
+
+.spending-head, .last-tender-head{
+    border-left: 2px solid #ccc;
+    padding-left: 5px;
+}
