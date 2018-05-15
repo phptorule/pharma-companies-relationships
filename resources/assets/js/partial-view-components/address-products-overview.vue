@@ -56,19 +56,20 @@
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
                 <div class="col-md-4 tender" v-if="tenderData.amountOldYear">
-                    <p class="tender-last-year">Last year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountOldYear | currency('Rub (K)')}}</a>
-                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateOldYear))}} %)</p>
+                        <span class="tender-year">{{tenderData.amountOldYear | currency('Rub (K)')}}
+                            <span class="tender-title">Last year</span>
+                        </span>
                 </div>
-                <div class="col-md-4 tender" v-if="tenderData.amountActualYear">
-                    <p class="tender-year">This year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountActualYear | currency('Rub (K)')}}</a>
-                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateActualYear))}}%)</p>
+
+                <div class="col-md-4 tender tender-head" v-if="tenderData.amountActualYear">
+                    <span class="tender-year">{{tenderData.amountActualYear | currency('Rub (K)')}}
+                        <span class="tender-title">This year</span>
+                        </span>
                 </div>
-                <div class="col-md-4 tender" v-if="tenderData.amountNextYear">
-                    <p class="tender-year">Next year:</p>
-                    <a class="tender-amount-btn" href="javascript:void(0)">{{tenderData.amountNextYear | currency('Rub (K)')}}</a>
-                    <p class="tender-percent">({{Math.ceil(Number(tenderData.rateNextYear))}}%)</p>
+                <div class="col-md-4 tender tender-head" v-if="tenderData.amountNextYear">
+                        <span class="tender-year">{{tenderData.amountNextYear | currency('Rub (K)')}}
+                            <span class="tender-title">Next year</span>
+                        </span>
                 </div>
             </div>
             <p v-else class="empty-data-p hidden">We don't know about any tenders</p>
@@ -107,7 +108,7 @@
                 if (!currency_type) {
                     currency_type = '';
                 }
-                value = Math.ceil(Number(value)/1000);
+                value = Math.ceil(Number(value) / 1000);
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },
@@ -156,7 +157,7 @@
 
                         this.tenderData = data;
 
-                      $('.empty-data-p').removeClass('hidden');
+                        $('.empty-data-p').removeClass('hidden');
                     });
             },
 
@@ -173,7 +174,7 @@
                     this.httpGet(url)
                         .then(data => {
 
-                            var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
+                            var title = ['Month', 'Total', {type: 'string', role: 'tooltip', 'p': {'html': true}}];
 
                             var DATA = data.chartsData;
 
