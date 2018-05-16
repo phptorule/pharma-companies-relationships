@@ -43,13 +43,6 @@
                             <div class="confirm-employe-edit-block">
                                 <button 
                                     type="button"
-                                    class="btn cancel-employe-btn" 
-                                    @click.prevent="toggleEditing"
-                                >
-                                    Cancel Editing
-                                </button>
-                                <button 
-                                    type="button"
                                     class="btn save-employe-btn"
                                     v-if=" ! saveBtnDisabled && madeChanges"
                                     @click.prevent="updateEmploye"
@@ -63,6 +56,13 @@
                                     class="btn save-employe-btn-disabled"
                                 >
                                     Suggest Edits
+                                </button>
+                                <button 
+                                    type="button"
+                                    class="btn cancel-employe-btn" 
+                                    @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
                                 </button>
                             </div>
                         </div>

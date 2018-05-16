@@ -158,13 +158,6 @@
 
                         <div class="confirm-edit-block">
                             <button 
-                                type="button" 
-                                @click="toggleEditing" 
-                                class="btn cancel-address-btn"
-                            >
-                                Cancel Editing
-                            </button>
-                            <button 
                                 type="submit" 
                                 v-if=" ! saveBtnDisabled && madeChanges" 
                                 @click.prevent="updateAddress" 
@@ -179,6 +172,13 @@
                                 class="btn save-address-btn-disabled"
                             >
                                 Suggest Edits
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="toggleEditing" 
+                                class="btn cancel-address-btn"
+                            >
+                                Cancel Editing
                             </button>
                         </div>
                     </div>
