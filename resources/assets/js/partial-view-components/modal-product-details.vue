@@ -72,7 +72,7 @@
                                 <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
                                      @click="viewTendersChart()">
                                     <div class="tag-list">
-                                        <div class="item-tag" v-for="tag in tag_list">
+                                        <div class="item-tag" v-for="tag in productTags">
                                             <input type="checkbox" id="checkbox"  v-bind:value="tag" v-model="selectedTags">
                                             <label :style="{color: tag.color}">{{tag.name}}</label>
                                         </div>
@@ -226,6 +226,7 @@
                 activeTab: 'chart',
                 tag_list: [],
                 selectedTags: [],
+                productTags: [],
                 appliedFilters: {
                     tags: this.$route.query['tag-cons[]'] || [],
                     sortCost: this.$route.query['min-max[]'] || [],
@@ -426,6 +427,7 @@
                         this.tenderData = data;
                         this.tenderData.total_budgeted = Math.ceil(this.tenderData.total_budgeted /1000);
                         this.selectedTags = [];
+                        this.productTags = [];
 
                         if(String(this.tenderData.tag_ids) != 'null') {
 
@@ -433,7 +435,7 @@
                             this.tag_list.forEach(tag =>{
                                 for (let i = 0; i < tenderTag.length; i++) {
                                     if(tag.id == tenderTag[i]){
-                                        this.selectedTags[i] = {
+                                        this.productTags[i] = this.selectedTags[i] = {
                                             id: tag.id,
                                             color: tag.color,
                                             name: tag.name,
