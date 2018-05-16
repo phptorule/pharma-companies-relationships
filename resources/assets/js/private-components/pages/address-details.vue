@@ -85,7 +85,7 @@
                         <div @click="toggleEditingInput('name')">
                             <div class="name-block can-edit">
                                 <div-editable 
-                                    @update-address-details="updateAddress" 
+                                    @updateEdit="updateAddress" 
                                     :content.sync="addressData.name" 
                                     :placeholder="'Name'"
                                 ></div-editable>
@@ -134,7 +134,7 @@
 
                         <p class="address-line can-edit" @click="toggleEditingInput('address')">
                             <div-editable 
-                                @update-address-details="updateAddress" 
+                                @updateEdit="updateAddress" 
                                 :content.sync="addressData.address" 
                                 :placeholder="'Address'"
                             ></div-editable>
@@ -142,7 +142,7 @@
 
                         <p class="address-line can-edit" @click="toggleEditingInput('url')">
                             <div-editable 
-                                @update-address-details="updateAddress" 
+                                @updateEdit="updateAddress" 
                                 :content.sync="addressData.url" 
                                 :placeholder="'URL'"
                             ></div-editable>
@@ -150,7 +150,7 @@
 
                         <p class="address-line can-edit" @click="toggleEditingInput('phone')">
                             <div-editable 
-                                @update-address-details="updateAddress" 
+                                @updateEdit="updateAddress" 
                                 :content.sync="addressData.phone" 
                                 :placeholder="'Phone Number'"
                             ></div-editable>

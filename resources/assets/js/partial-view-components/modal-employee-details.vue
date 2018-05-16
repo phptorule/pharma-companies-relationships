@@ -16,9 +16,56 @@
 
                         <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 
-                        <h4 class="modal-title">{{personData.name}} <a href="#"><i class="fa fa-pencil"></i></a></h4>
+                        <div v-if=" ! isEditing">
+                            <h4 class="modal-title">
+                                {{personData.name}}
+                                <a href="#" @click.prevent="toggleEditing"><i class="fa fa-pencil"></i></a>
+                            </h4>
 
-                        <p class="occupation">{{personData.description}}</p>
+                            <p class="occupation">{{personData.description}}</p>
+                        </div>
+
+                        <div v-else>
+                            <div class="employe-name-block can-edit">
+                                <div-editable
+                                    @updateEdit="updateEmploye"
+                                    :content.sync="personData.name"
+                                    :placeholder="'Name'"
+                                ></div-editable>
+                            </div>
+                            <div class="employe-description-block can-edit">
+                                <div-editable 
+                                    @updateEdit="updateEmploye"
+                                    :content.sync="personData.description"
+                                    :placeholder="'Position'"
+                                ></div-editable>
+                            </div>
+                            <div class="confirm-employe-edit-block">
+                                <button 
+                                    type="button"
+                                    class="btn cancel-employe-btn" 
+                                    @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button 
+                                    type="button"
+                                    class="btn save-employe-btn"
+                                    v-if=" ! saveBtnDisabled && madeChanges"
+                                    @click.prevent="updateEmploye"
+                                >
+                                    Suggest Edits
+                                </button>
+                                <button 
+                                    type="button" 
+                                    v-if="saveBtnDisabled || ! madeChanges" 
+                                    disabled 
+                                    class="btn save-employe-btn-disabled"
+                                >
+                                    Suggest Edits
+                                </button>
+                            </div>
+                        </div>
 
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
                             worked at
@@ -224,7 +271,14 @@
                 connectionTypes: [],
                 relationshipsCollapsed: true,
                 relationshipsCollapsedData: [],
-                relationshipsTotal: 0
+                relationshipsTotal: 0,
+                isEditing: false,
+                madeChanges: false,
+                saveBtnDisabled: true,
+                old: {
+                    name: '',
+                    description: ''
+                }
             }
         },
 
@@ -265,9 +319,27 @@
                 if(window.location.hash.indexOf('person-') === -1 && $('#personal-modal').hasClass('in')){
                     $('#personal-modal').modal('hide');
                 }
-            }
+            },
+            "personData.name": function() {
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.description": function() {
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
         },
 
+        beforeDestroy: function() {
+            this.isEditing = false;
+        },
+        destroyed: function() {
+            this.isEditing = false;
+        },
         methods: {
             connectionName: function (id) {
                 let connection = this.connectionTypes.find(el => el.id == id);
@@ -289,6 +361,8 @@
 
                 window.location.hash = 'person-' + personId;
 
+                this.isEditing = false;
+
                 $('#personal-modal').modal('show');
 
                 this.personId = personId;
@@ -299,6 +373,8 @@
                     .then(data => {
                         this.personData = data;
                         this.relationshipsCollapsedData = JSON.parse(JSON.stringify(this.personData.relationships));
+                        this.old.name = this.personData.name;
+                        this.old.description = this.personData.description;
                     });
 
                 $('#personal-modal').on('hidden.bs.modal', function (e) {
@@ -327,6 +403,53 @@
 
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+            },
+
+            toggleEditing: function() {
+                this.isEditing = !this.isEditing;
+
+                if ( ! this.isEditing) {
+                    this.personData.name = this.old.name;
+                    this.personData.description = this.old.description;
+                } else {
+                    this.checkIfChangesMade();
+                }
+            },
+            checkIfInputsEmpty: function() {
+                if (
+                    this.personData.name === '' ||
+                    this.personData.description === ''
+                ) {
+                    this.saveBtnDisabled = true;
+                } else {
+                    this.saveBtnDisabled = false;
+                }
+            },
+            checkIfChangesMade: function() {
+                if (
+                    this.personData.name !== this.old.name ||
+                    this.personData.description !== this.old.description
+                ) {
+                    this.madeChanges = true;
+                } else {
+                    this.madeChanges = false;
+                }
+            },
+            updateEmploye: function() {
+                if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.httpPut('/api/people/'+this.personId+'/update', {
+                        name: this.personData.name,
+                        description: this.personData.description,
+                    })
+                        .then(data => {
+                            this.old.name = data.name;
+                            this.old.description = data.description;
+                            this.madeChanges = false;
+                            this.saveBtnDisabled = false;
+                            this.isEditing = false;
+                            alertify.notify('Employe has been updated.', 'success', 3);
+                        })
+                }  
             }
         },
 
@@ -344,5 +467,93 @@
 </script>
 
 <style scoped>
+    .employe-name-block {
+        font-family: Montserrat;
+        font-size: 28px;
+        text-align: center;
+        color: #3a444f;
+        display: flex;
+        margin-top: 18px;
+        margin-bottom: 7px;
+        justify-content: center;
+        align-items: center;
+        font-weight: 400;
+        /* margin: 0; */
+        line-height: 1.42857143;
+        box-sizing: border-box;
+    }
 
+    .employe-description-block {
+        font-family: Montserrat;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.31;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #3a444f;
+    }
+
+    .confirm-employe-edit-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 18px;
+        margin-bottom: 18px;
+    }
+
+    .can-edit div {
+        border-bottom: 2px solid #d2d6de;
+    }
+
+    .cancel-employe-btn {
+        background: transparent;
+        font-family: Montserrat;
+        font-size: 13px;
+        margin-right: 10px;
+    }
+
+    .save-employe-btn {
+        width: 170px;
+        background: #4a90e3;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+        transition: background-color 0.1s linear;
+    }
+
+    .save-employe-btn-disabled {
+        width: 170px;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .save-employe-btn:focus,
+    .cancel-employe-btn:focus {
+        outline: none;
+    }
+
+    .save-employe-btn:active,
+    .cancel-employe-btn:active {
+        box-shadow: none;
+    }
+
+    .can-edit div:empty:not(:focus):before {
+        color: #b3b3b3;
+        content: attr(data-placeholder);
+    }
+
+    /* .can-edit div:empty:not(:focus):before { */
+        /* font-weight: 100; */
+    /* } */
 </style>

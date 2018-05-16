@@ -1,8 +1,10 @@
 <template>
-    <div @keydown.enter.prevent="updateAddress()"
-         contenteditable="true"
-         :data-placeholder="placeholder"
-         @input="$emit('update:content', $event.target.innerText)" class="address-name"></div>
+    <div 
+        @keydown.enter.prevent="updateEdit"
+        contenteditable="true"
+        :data-placeholder="placeholder"
+        @input="$emit('update:content', $event.target.innerText)" class="address-name"
+    ></div>
 </template>
 
 <script>
@@ -13,8 +15,8 @@
             this.$el.innerText = this.content;
         },
         methods: {
-            updateAddress: function () {
-                this.$emit('update-address-details');
+            updateEdit: function () {
+                this.$emit('updateEdit');
             }
         }
     }

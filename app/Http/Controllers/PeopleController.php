@@ -39,4 +39,12 @@ class PeopleController extends Controller
         return response()->json($relationships);
     }
 
+    function updateEmploye(People $person)
+    {
+        $person->name = request('name');
+        $person->description = request('description');
+        $person->save();
+        return response()->json($person);
+    }
+
 }

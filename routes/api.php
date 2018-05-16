@@ -64,6 +64,8 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
     Route::get('/people/{person}', 'PeopleController@show')->name('people.show');
 
+    Route::put('/people/{person}/update', 'PeopleController@updateEmploye')->name('people.updateEmploye');
+
     Route::get('/connection-types', 'PeopleController@getConnectionTypes')->name('people.getConnectionTypes');
 
     Route::get('/clusters', 'AddressesController@getClusters')->name('address.getClusters');
