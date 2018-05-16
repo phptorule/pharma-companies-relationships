@@ -2358,6 +2358,7 @@ ul.staff-list li .prod-graf{
 .tender{
     float: left;
     font-size: 12px;
+    width: auto;
 }
 .tender-cost{
     font-size: 12px;
