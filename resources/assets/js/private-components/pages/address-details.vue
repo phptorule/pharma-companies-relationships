@@ -64,7 +64,11 @@
                         </p>
 
                         <ul class="tag-list">
-                            <li v-for="tag in addressData.tags"><a href="#" @click.prevent>{{tag.name}}</a></li>
+                            <li v-for="tag in addressData.tags">
+                                <a href="#" @click.prevent>
+                                    {{tag.name}}
+                                </a>
+                            </li>
                         </ul>
 
                         <p class="address-line">
@@ -78,114 +82,105 @@
                     </div>
 
                     <div v-else>
-                        <form>
-                            <div @click="toggleEditingInput('name')">
-                                <div class="name-block can-edit">
-                                    <div-editable 
-                                        @update-address-details="updateAddress" 
-                                        :content.sync="addressData.name" 
-                                        :placeholder="'Name'"
-                                    ></div-editable>
-                                </div>
-
-                                <!--<a href="javascript:void(0)" @click="toggleEditing" :class="{'active': isEditing}">-->
-                                <!--<i class="fa fa-pencil"></i>-->
-                                <!--</a>-->
-
-                                <!--<a href="javascript:void(0)" title="Show on Map" @click="showOnMap()"><i class="fa fa-map-marker"></i></a>-->
+                        <div @click="toggleEditingInput('name')">
+                            <div class="name-block can-edit">
+                                <div-editable 
+                                    @update-address-details="updateAddress" 
+                                    :content.sync="addressData.name" 
+                                    :placeholder="'Name'"
+                                ></div-editable>
                             </div>
+                        </div>
 
-                            <div style="clear: both"></div>
+                        <div style="clear: both"></div>
 
-                            <p class="lab-chain">
-                                <span class="current-chain-name">{{addressData.cluster.name}}</span>
+                        <p class="lab-chain">
+                            <span class="current-chain-name">{{addressData.cluster.name}}</span>
 
-                                <br />
+                            <br />
 
-                                <span class="lab-chain-text">Lab Chain:</span>
-                                <autocompleteSelect v-if="chainSelect" :type="'clusters'" :selected="addressData.cluster" :close="closeChain" :choose="addChain" />
-                                <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
-                            </p>
+                            <span class="lab-chain-text">Lab Chain:</span>
+                            <autocompleteSelect v-if="chainSelect" :type="'clusters'" :selected="addressData.cluster" :close="closeChain" :choose="addChain" />
+                            <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
+                        </p>
 
-                            <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
-                                <li v-for="tag in addressData.tags">
-                                    <a href="#" @click.prevent>
-                                        {{tag.name}}
-                                        <button class="delete-tag" @click="removeSelectedTag(tag.name)">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" @click.prevent="toggleEditingInput('tags')" class="add-tag">
-                                        Add Tag
-                                    </a>
-                                </li>
-                            </ul>
+                        <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
+                            <li v-for="tag in addressData.tags">
+                                <a href="#" @click.prevent>
+                                    {{tag.name}}
+                                    <button class="delete-tag" @click="removeSelectedTag(tag.name)">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="toggleEditingInput('tags')" class="add-tag">
+                                    Add Tag
+                                </a>
+                            </li>
+                        </ul>
 
-                            <v-select 
-                                    v-show="editingInput === 'tags'"
-                                    v-model="addressData.tags"
-                                    :options="allTags"
-                                    :label="'name'"
-                                    :class="'tags-select'"
-                                    multiple
-                                    taggable
-                                    push-tags
-                                    :placeholder="'Select tags'"
-                            ></v-select>
+                        <v-select 
+                                v-show="editingInput === 'tags'"
+                                v-model="addressData.tags"
+                                :options="allTags"
+                                :label="'name'"
+                                :class="'tags-select'"
+                                multiple
+                                taggable
+                                push-tags
+                                :placeholder="'Select tags'"
+                        ></v-select>
 
-                            <p class="address-line can-edit" @click="toggleEditingInput('address')">
-                                <div-editable 
-                                    @update-address-details="updateAddress" 
-                                    :content.sync="addressData.address" 
-                                    :placeholder="'Address'"
-                                ></div-editable>
-                            </p>
+                        <p class="address-line can-edit" @click="toggleEditingInput('address')">
+                            <div-editable 
+                                @update-address-details="updateAddress" 
+                                :content.sync="addressData.address" 
+                                :placeholder="'Address'"
+                            ></div-editable>
+                        </p>
 
-                            <p class="address-line can-edit" @click="toggleEditingInput('url')">
-                                <div-editable 
-                                    @update-address-details="updateAddress" 
-                                    :content.sync="addressData.url" 
-                                    :placeholder="'Url'"
-                                ></div-editable>
-                            </p>
+                        <p class="address-line can-edit" @click="toggleEditingInput('url')">
+                            <div-editable 
+                                @update-address-details="updateAddress" 
+                                :content.sync="addressData.url" 
+                                :placeholder="'URL'"
+                            ></div-editable>
+                        </p>
 
-                            <p class="address-line can-edit" @click="toggleEditingInput('phone')">
-                                <!--<input type="text" v-model="addressData.phone" class="form-control edit-input" placeholder="Phone number">-->
-                                <div-editable 
-                                    @update-address-details="updateAddress" 
-                                    :content.sync="addressData.phone" 
-                                    :placeholder="'Phone number'"
-                                ></div-editable>
-                            </p>
+                        <p class="address-line can-edit" @click="toggleEditingInput('phone')">
+                            <div-editable 
+                                @update-address-details="updateAddress" 
+                                :content.sync="addressData.phone" 
+                                :placeholder="'Phone Number'"
+                            ></div-editable>
+                        </p>
 
-                            <div class="confirm-edit-block">
-                                <button 
-                                    type="button" 
-                                    @click="toggleEditing" 
-                                    class="btn cancel-address-btn"
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    v-if=" ! saveBtnDisabled && madeChanges" 
-                                    @click.prevent="updateAddress" 
-                                    class="btn save-address-btn"
-                                >
-                                    Suggest Edits
-                                </button>
-                                <button 
-                                    type="button" 
-                                    v-if="saveBtnDisabled || ! madeChanges" 
-                                    disabled 
-                                    class="btn save-address-btn-disabled"
-                                >
-                                    Suggest Edits
-                                </button>
-                            </div>
-                        </form>
+                        <div class="confirm-edit-block">
+                            <button 
+                                type="button" 
+                                @click="toggleEditing" 
+                                class="btn cancel-address-btn"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                type="submit" 
+                                v-if=" ! saveBtnDisabled && madeChanges" 
+                                @click.prevent="updateAddress" 
+                                class="btn save-address-btn"
+                            >
+                                Suggest Edits
+                            </button>
+                            <button 
+                                type="button" 
+                                v-if="saveBtnDisabled || ! madeChanges" 
+                                disabled 
+                                class="btn save-address-btn-disabled"
+                            >
+                                Suggest Edits
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -575,9 +570,6 @@
         },
 
         mounted: function () {
-
-            // this.$eventGlobal.$on('update-address-details', console.log('update-address-details'));
-
             $('.address-details-fixed-height').height(window.innerHeight - 70 -51);
             $('.slided-box').height(window.innerHeight - 70 -51);
 

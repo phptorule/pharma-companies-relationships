@@ -1121,7 +1121,7 @@ ul.tag-list li + li{
     vertical-align: middle;
 }
 
-/******************************/
+/********************************************************************/
 
 .sidebar .address-overview h2 a:hover{
     background: #4a90e3;
@@ -1137,13 +1137,12 @@ ul.tag-list li + li{
 
 .sidebar .address-overview .can-edit {
     /*color: #4a90e2;*/
-    /*border-bottom: 1px solid #d2d6de;*/
-    border-bottom: 2px solid #EAEFF4;
+    border-bottom: 2px solid #d2d6de;
+    /* border-bottom: 2px solid #EAEFF4; */
 }
 
 .sidebar .address-overview .can-edit:hover {
     cursor: pointer;
-    /*text-decoration: underline;*/
 }
 
 .sidebar .address-overview .confirm-edit-block {
@@ -1172,7 +1171,6 @@ ul.tag-list li + li{
     background: #fff;
     font-family: Montserrat;
     font-size: 13px;
-    /* font-weight: 600; */
     margin: 0;
 }
 .sidebar .address-overview .save-address-btn-disabled {
@@ -1182,7 +1180,7 @@ ul.tag-list li + li{
     border-radius: 5px;
     font-family: Montserrat;
     font-size: 13px;
-     font-weight: 600;
+    font-weight: 600;
     margin: 0;
     font-size: 13px;
 }
@@ -1201,10 +1199,6 @@ ul.tag-list li + li{
     box-shadow: none;
 }
 
-.sidebar .address-overview .can-edit-input {
-
-}
-
 .sidebar .address-overview ul.tags-edit li a {
     position: relative;
     display: block;
@@ -1220,11 +1214,8 @@ ul.tag-list li + li{
 
 .sidebar .address-overview ul.tags-edit li a .delete-tag {
     position: absolute;
-    /*left: 142px;*/
     right: 8px;
     top: -1px;
-    /* float: none; */
-    /* margin-right: 0; */
     font-size: 30px;
     padding: 0;
     cursor: pointer;
@@ -1232,8 +1223,6 @@ ul.tag-list li + li{
     border: 0;
     font-weight: 500;
     line-height: 1;
-    /* color: #000; */
-    /* text-shadow: 0 1px 0 #fff; */
     filter: alpha(opacity=20);
     opacity: 0.2;
 }
@@ -1248,9 +1237,14 @@ ul.tag-list li + li{
     padding: 4px 12px;
 }
 
-.sidebar .address-overview div.v-select.tags-select ul,
-.sidebar .address-overview div.v-select.tags-select div.dropdown-toggle {
-    /*border: none;*/
+.sidebar .address-overview div.v-select.tags-select ul.dropdown-menu li a {
+    font-family: Montserrat;
+    font-size: 13px;
+    color: #3a444f;
+}
+
+.sidebar .address-overview div.v-select.tags-select ul.dropdown-menu li:hover > a {
+    color: #fff;
 }
 
 .sidebar .address-overview div.v-select.tags-select .selected-tag {
@@ -1290,12 +1284,9 @@ ul.tag-list li {
     margin-bottom: 10px;
 }
 
-.sidebar .address-overview .address-line input {
-    /*border: noe*/
-}
-
 .sidebar .address-overview .can-edit div:empty:not(:focus):before {
-    content: attr(data-placeholder)
+    color: #b3b3b3;
+    content: attr(data-placeholder);
 }
 
 .sidebar .address-overview .name-block.can-edit div:empty:not(:focus):before {
@@ -1310,17 +1301,17 @@ ul.tag-list li {
     line-height: 1.39em;
     font-weight: 400;
     margin: 0;
-    float: left;
+    /* float: left; */
     width: calc(100% - 190px);
 }
 
-/************************/
+/**************************************************************/
 
 
 
-.customer-status-select-box {
+/* .customer-status-select-box { */
 
-}
+/* } */
 
 .address-overview {
     padding-right: 25px;

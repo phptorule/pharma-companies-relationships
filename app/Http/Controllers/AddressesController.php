@@ -266,7 +266,7 @@ class AddressesController extends Controller
         $ids = [];
 
         foreach ($tags as $tag) {
-            if (!Tag::whereName($tag['name'])->first()) {
+            if ( ! Tag::whereName($tag['name'])->first()) {
                 $newTag = new Tag();
                 $newTag->name = $tag['name'];
                 $newTag->save();
