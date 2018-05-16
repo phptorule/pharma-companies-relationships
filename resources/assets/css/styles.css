@@ -3052,6 +3052,14 @@ ul.tenders-list li .item .tag-list .tags:hover{
     display: inline-flex;
 }
 
+.volume{
+    width: 30%;
+}
+.spending{
+    width: 125px;
+
+}
+
 .tooltip-total{
     font-family: Arial;
     font-size: 13px;
@@ -3078,4 +3086,9 @@ ul.tenders-list li .item .tag-list .tags:hover{
 
 .tender-year{
     float: left;
+}
+
+.volume-head, .spending-head, .last-tender-head{
+    width: 100%;
+    text-align: center;
 }
