@@ -162,7 +162,7 @@
                                 @click="toggleEditing" 
                                 class="btn cancel-address-btn"
                             >
-                                Cancel
+                                Cancel Editing
                             </button>
                             <button 
                                 type="submit" 
