@@ -2331,12 +2331,6 @@ ul.staff-list li .prod-info .name a:hover{
     color: #3a444f;
 }
 
-ul.staff-list li .prod-info .prod-info div.amount{
-    color: #3a444f;
-    font-family: Montserrat;
-    font-size: 13px;
-}
-
 .prod-info-tab{
     clear: both;
 }
@@ -3091,4 +3085,17 @@ ul.tenders-list li .item .tag-list .tags:hover{
 .volume-head, .spending-head, .last-tender-head{
     width: 100%;
     text-align: center;
+}
+
+
+/*ul.staff-list li .prod-info .prod-info div.amount{
+    color: #3a444f;
+    font-family: Montserrat;
+    font-size: 13px;
+}*/
+
+ul.staff-list li .prod-info .amount{
+    color: #3a444f;
+    font-family: Montserrat;
+    font-size: 12px;
 }
