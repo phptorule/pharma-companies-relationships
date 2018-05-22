@@ -18,8 +18,8 @@
                     </p>
                     <div class="amount">
                         <div class="volume">
-                            <span class="volume-head">
-                                {{product.volume  | currency('pcs.')}}
+                            <span class="volume-head" :title="product.unit">
+                                {{product.volume  | volume(product.unit)}}
                                 <span class="volume-title">Est. Test Volume</span>
                             </span>
                         </div>
@@ -111,6 +111,43 @@
                 value = Math.ceil(Number(value) / 1000);
                 value = String(value);
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
+            },
+
+            volume: function (value, volume) {
+                if(!volume) {
+                    volume = '';
+                }
+
+                var volumeName = '';
+
+                let arr = volume.split(' ');
+                console.log(arr.length);
+                if(arr.length) {
+                    volumeName += arr[0].charAt(0).toUpperCase();
+                    volumeName += arr[0].charAt(1);
+                    volumeName += '.';
+                    if(arr[1]){
+                        volumeName += ' ' + arr[1].charAt(0).toUpperCase();
+                        volumeName += ' ' + arr[1].charAt(1);
+                        volumeName += '.';
+                    }
+                    if(arr[2]){
+                        volumeName += ' ' + arr[2].charAt(0).toUpperCase();
+                        volumeName += ' ' + arr[2].charAt(1);
+                        volumeName += '.';
+                    }
+                }
+
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + volumeName;
+
+
+
+                /*if (!volume) {
+                    volume = '';
+                }
+                value = Math.ceil(Number(value) / 1000);
+                value = String(value);
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + volume;*/
             },
         },
 

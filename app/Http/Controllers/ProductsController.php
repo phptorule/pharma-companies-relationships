@@ -103,23 +103,22 @@ class ProductsController extends Controller {
 
 	public function loadTopProducts( $address ) {
 
-		$sql = "SELECT p.*, p.id as prod_id, 
-					SUM(atp.total_price) as total_spent, 
-					SUM(atp.quantity) as volume, 
-					GROUP_CONCAT(DISTINCT atp.id SEPARATOR ', ') as purchase_ids,
-					DATE_FORMAT(MAX(at.tender_date), '%d-%m-%Y') as last_tender_date
-				
-				FROM rl_products as p
-				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
-				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
-				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
-				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
-				LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
-				WHERE at.address_id = $address
-				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
-				GROUP BY p.id
-				ORDER BY total_spent DESC
-				LIMIT 3";
+		$sql = "SELECT 
+				p.*, p.id as prod_id, 
+				SUM(atp.total_price) as total_spent, 
+				SUM(atp.quantity) as volume, GROUP_CONCAT(DISTINCT atp.id SEPARATOR ', ') as purchase_ids, 
+				MAX(atp.units) as unit, 
+				DATE_FORMAT(MAX(at.tender_date), '%d-%m-%Y') as last_tender_date 
+				FROM rl_products as p 
+				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id 
+				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id 
+				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id 
+				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id 
+				LEFT JOIN rl_addresses AS a ON ap.address_id = a.id 
+				WHERE at.address_id = $address 
+				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2 
+				GROUP BY p.id 
+				ORDER BY total_spent DESC LIMIT 3";
 
 		$result = DB::select( DB::raw( $sql ) );
 
