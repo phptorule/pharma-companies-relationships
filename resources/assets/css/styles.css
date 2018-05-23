@@ -1608,6 +1608,7 @@ ul.used-products-list li{
     float: left;
     width: 25%;
     align-items: center;
+    margin-bottom: 15px;
 }
 
 ul.used-products-list li span.image{
@@ -1639,7 +1640,7 @@ ul.used-products-list li a.show-all-link {
     line-height: 25px;
     display: block;
     width: 100px;
-    text-align: right;
+    /* text-align: right; */
 }
 
 ul.used-products-list li a.show-all-link:hover{

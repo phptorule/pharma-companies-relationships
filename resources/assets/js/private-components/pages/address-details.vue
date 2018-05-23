@@ -220,22 +220,41 @@
 
                 <div class="used-products-overview address-box">
                     <div class="header">
-                        <h3>Used Products <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                        <h3>Used Products <a href="#" @click.prevent="toggleProducts"><i class="fa fa-pencil"></i></a></h3>
                     </div>
 
                     <p v-if="!addressData.products.length" class="empty-data-p">There are no used products</p>
 
                     <ul class="used-products-list" v-if="addressData.products.length">
-                        <li v-if="i < 3" v-for="(product, i) in addressData.products" :title="product.name? product.company + ': ' + product.name : product.company">
+                        <li v-if="!showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
+                        :title="product.name? product.company + ': ' + product.name : product.company">
                             <span class="image"></span>
                             <span class="prod-name">
-                            {{product.name? product.company + ': ' + product.name : product.company}}
-                        </span>
+                                {{product.name ? product.company + ': ' + product.name : product.company}}
+                            </span>
                         </li>
-                        <li>
-                            <a href="" class="show-all-link">Show all</a>
+
+                        <li v-if="showAllProducts" v-for="(product, i) in addressData.products" 
+                        :title="product.name? product.company + ': ' + product.name : product.company">
+                            <span class="image"></span>
+                            <span class="prod-name">
+                                {{product.name ? product.company + ': ' + product.name : product.company}}
+                            </span>
+                        </li>
+                        
+                        <li v-if="addressData.products.length > 3">
+                            <a href="#" @click.prevent="toggleShowAllProducts" class="show-all-link prod-name">
+                                {{ showHideProducts }}
+                            </a>
                         </li>
                     </ul>
+                    <multiple-autocomplete-select 
+                            v-if="isProductsEditing"
+                            :selectedOptions="addressData.products"
+                            :type="'products'"
+                            :close="closeProducts"
+                            :update="updateProducts"
+                    ></multiple-autocomplete-select>
                 </div>
 
                 <div class="lab-chain-members-overview address-box">
@@ -285,11 +304,13 @@
     import employeeModal from '../../mixins/show-employee-details-modal';
     import getPersonInitials from '../../mixins/get-person-initials';
     import autocompleteSelect from '../../partial-view-components/autocomplete-select';
+    import multipleAutocompleteSelect from '../../partial-view-components/multiple-autocomplete-select';
 
     export default {
         mixins: [http, employeeModal, getPersonInitials],
         components: {
-            autocompleteSelect
+            autocompleteSelect,
+            multipleAutocompleteSelect
         },
         data: function () {
             return {
@@ -320,7 +341,10 @@
                     phone: '',
                     tags: []
                 },
-                allTags: []
+                allTags: [],
+
+                isProductsEditing: false,
+                showAllProducts: false,
             }
         },
 
@@ -367,7 +391,7 @@
                 if (this.isEditing) {
                     this.checkIfChangesMade();
                 }
-            },
+            }
         },
 
         methods: {
@@ -566,6 +590,32 @@
             },
             toggleChain: function () {
                 this.chainSelect = !this.chainSelect
+            },
+
+            closeProducts: function () {
+                this.isProductsEditing = false;
+            },
+            toggleProducts: function () {
+                this.isProductsEditing = !this.isProductsEditing;
+            },
+            updateProducts: function (selectedProducts) {
+                this.httpPut('/api/products/'+this.addressData.id, {
+                        selectedProducts: selectedProducts
+                    })
+                        .then(data => {
+                            console.log(data);
+                            this.addressData.products = [];
+                            this.addressData.products = data.products;
+                            alertify.notify('Used products has been updated.', 'success', 3);
+                        })
+            },
+            toggleShowAllProducts: function () {
+                this.showAllProducts = !this.showAllProducts;
+            }
+        },
+        computed: {
+            showHideProducts: function () {
+                return this.showAllProducts ? 'Hide' : 'Show all';
             }
         },
 

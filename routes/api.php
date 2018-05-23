@@ -71,4 +71,8 @@ Route::group(['middleware'=>['jwt.auth']],function (){
     Route::get('/clusters', 'AddressesController@getClusters')->name('address.getClusters');
 
     Route::put('/clusters/{address}', 'AddressesController@updateClusters')->name('address.updateClusters');
+
+    Route::get('/products', 'AddressesController@getProducts')->name('address.getProducts');
+
+    Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
 });

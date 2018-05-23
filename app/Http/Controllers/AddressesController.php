@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\AddressTag;
+use App\Models\AddressProduct;
 use App\Models\Cluster;
 use App\Models\CustomerType;
 use App\Models\People;
@@ -313,6 +314,32 @@ class AddressesController extends Controller
         $address->cluster_id = request()->get('cluster_id');
         $address->update();
         $address->load('cluster');
+        return response()->json($address);
+    }
+
+    public function getProducts()
+    {
+        $products = Product::get();
+        return response()->json($products);
+    }
+
+    public function updateProducts(Address $address)
+    {
+        $selectedProducts = request('selectedProducts');
+
+        AddressProduct::where('address_id', $address->id)->delete();
+
+        if (count($selectedProducts > 0)) {
+            foreach ($selectedProducts as $productId) {
+                $addressProduct = new AddressProduct();
+                $addressProduct->address_id = $address->id;
+                $addressProduct->product_id = $productId;
+                $addressProduct->save();
+            }
+        }
+
+        $address->load('products');
+
         return response()->json($address);
     }
 
