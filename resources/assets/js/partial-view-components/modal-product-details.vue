@@ -367,13 +367,16 @@
 
             show(val) {
                 if (val) {
+
                     this.$nextTick(() => this.$refs.sortCost.refresh());
                 }
             },
 
             tendersCost: {
                 handler: function () {
+
                     this.filterCost();
+
                 },
                 deep: true
             },
@@ -530,9 +533,9 @@
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
                 }
 
-                // if (this.appliedFilters.sortCost.length) {
-                //     queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
-                // }
+                if (this.appliedFilters.sortCost.length) {
+                    queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
+                }
 
                 this.queryUrl = queryStr;
 
