@@ -342,7 +342,11 @@ class AddressesController extends Controller
             }
         }
 
-        $address->load('products');
+        $address->load([
+            'products' => function ($query) {
+                $query->orderByRaw('company, name');
+            }
+        ]);
 
         return response()->json($address);
     }
