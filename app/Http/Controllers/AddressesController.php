@@ -122,7 +122,11 @@ class AddressesController extends Controller
         $address->load('cluster');
         $address->load('cluster.addresses');
         $address->load('people');
-        $address->load('products');
+        $address->load([
+            'products' => function ($query) {
+                $query->orderByRaw('company, name');
+            }
+        ]);
         return response()->json($address);
     }
 
@@ -319,7 +323,7 @@ class AddressesController extends Controller
 
     public function getProducts()
     {
-        $products = Product::get();
+        $products = Product::orderByRaw('company, name')->get();
         return response()->json($products);
     }
 
