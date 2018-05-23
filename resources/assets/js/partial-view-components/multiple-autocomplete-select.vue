@@ -65,7 +65,6 @@ import http from '../mixins/http';
                 });
             },
             closeSelf: function () {
-                // this.cluster.id = this.oldValue;
                 this.close();
             },
             addItem: function () {

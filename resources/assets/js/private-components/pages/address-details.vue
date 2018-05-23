@@ -603,10 +603,10 @@
                         selectedProducts: selectedProducts
                     })
                         .then(data => {
-                            console.log(data);
                             this.addressData.products = [];
                             this.addressData.products = data.products;
                             alertify.notify('Used products has been updated.', 'success', 3);
+                            this.closeProducts();
                         })
             },
             toggleShowAllProducts: function () {
