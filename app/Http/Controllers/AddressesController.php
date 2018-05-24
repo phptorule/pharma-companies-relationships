@@ -321,12 +321,18 @@ class AddressesController extends Controller
         return response()->json($address);
     }
 
+    /**
+     * get all products
+     */
     public function getProducts()
     {
         $products = Product::orderByRaw('company, name')->get();
         return response()->json($products);
     }
 
+    /**
+     * update used products for address
+     */
     public function updateProducts(Address $address)
     {
         $selectedProducts = request('selectedProducts');

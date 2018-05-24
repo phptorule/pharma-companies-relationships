@@ -6,20 +6,20 @@
 
                 <div v-if="sideComponentToDisplay == 'all-employee'">
                     <all-employee-list
-                            :addressId="addressId"
-                            :isActive="isExpanded && sideComponentToDisplay == 'all-employee'"
-                            :employeeList="addressData.people"
-                            :address="addressData"
-                            @closeSlidedBox="isExpanded = false"
+                        :addressId="addressId"
+                        :isActive="isExpanded && sideComponentToDisplay == 'all-employee'"
+                        :employeeList="addressData.people"
+                        :address="addressData"
+                        @closeSlidedBox="isExpanded = false"
                     ></all-employee-list>
                 </div>
 
                 <div v-if="sideComponentToDisplay == 'lab-chain-details'">
                     <lab-chain-details
-                            :isActive="isExpanded && sideComponentToDisplay == 'lab-chain-details'"
-                            :addressId="addressId"
-                            :addressData="addressData"
-                            @closeSlidedBox="isExpanded = false"
+                        :isActive="isExpanded && sideComponentToDisplay == 'lab-chain-details'"
+                        :addressId="addressId"
+                        :addressData="addressData"
+                        @closeSlidedBox="isExpanded = false"
                     ></lab-chain-details>
                 </div>
 
@@ -34,10 +34,10 @@
                 <div class="address-overview">
 
                     <customer-status-select
-                            :options="customerStatusList"
-                            :selected="addressData.customer_status"
-                            :addressId="addressId"
-                            @customerStatusUpdated="updateCustomerStatus"
+                        :options="customerStatusList"
+                        :selected="addressData.customer_status"
+                        :addressId="addressId"
+                        @customerStatusUpdated="updateCustomerStatus"
                     ></customer-status-select>
 
                     <div v-if=" ! isEditing">
@@ -59,14 +59,20 @@
                             <br />
 
                             <span class="lab-chain-text">Lab Chain:</span>
-                            <autocompleteSelect v-if="chainSelect" :type="'clusters'" :selected="addressData.cluster" :close="closeChain" :choose="addChain" />
+                            <autocompleteSelect 
+                                v-if="chainSelect" 
+                                :type="'clusters'" 
+                                :selected="addressData.cluster" 
+                                :close="closeChain" 
+                                :choose="addChain" 
+                            />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul class="tag-list">
                             <li v-for="tag in addressData.tags">
                                 <a href="#" @click.prevent>
-                                    {{tag.name}}
+                                    {{ tag.name }}
                                 </a>
                             </li>
                         </ul>
@@ -100,14 +106,20 @@
                             <br />
 
                             <span class="lab-chain-text">Lab Chain:</span>
-                            <autocompleteSelect v-if="chainSelect" :type="'clusters'" :selected="addressData.cluster" :close="closeChain" :choose="addChain" />
+                            <autocompleteSelect 
+                                v-if="chainSelect" 
+                                :type="'clusters'" 
+                                :selected="addressData.cluster" 
+                                :close="closeChain" 
+                                :choose="addChain"
+                            />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
                             <li v-for="tag in addressData.tags">
                                 <a href="#" @click.prevent>
-                                    {{tag.name}}
+                                    {{ tag.name }}
                                     <button class="delete-tag" @click="removeSelectedTag(tag.name)">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -227,18 +239,18 @@
 
                     <ul class="used-products-list" v-if="addressData.products.length">
                         <li v-if="!showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
-                        :title="product.name? product.company + ': ' + product.name : product.company">
+                        :title="productName(product.company, product.name)">
                             <span class="image"></span>
                             <span class="prod-name">
-                                {{product.name ? product.company + ': ' + product.name : product.company}}
+                                {{ productName(product.company, product.name) }}
                             </span>
                         </li>
 
                         <li v-if="showAllProducts" v-for="(product, i) in addressData.products" 
-                        :title="product.name? product.company + ': ' + product.name : product.company">
+                        :title="productName(product.company, product.name)">
                             <span class="image"></span>
                             <span class="prod-name">
-                                {{product.name ? product.company + ': ' + product.name : product.company}}
+                                {{ productName(product.company, product.name) }}
                             </span>
                         </li>
                         
@@ -249,11 +261,11 @@
                         </li>
                     </ul>
                     <multiple-autocomplete-select 
-                            v-if="isProductsEditing"
-                            :selectedOptions="addressData.products"
-                            :type="'products'"
-                            :close="closeProducts"
-                            :update="updateProducts"
+                        v-if="isProductsEditing"
+                        :selectedOptions="addressData.products"
+                        :type="'products'"
+                        :close="closeProducts"
+                        :update="updateProducts"
                     ></multiple-autocomplete-select>
                 </div>
 
@@ -602,15 +614,18 @@
                 this.httpPut('/api/products/'+this.addressData.id, {
                         selectedProducts: selectedProducts
                     })
-                        .then(data => {
-                            this.addressData.products = [];
-                            this.addressData.products = data.products;
-                            alertify.notify('Used products has been updated.', 'success', 3);
-                            this.closeProducts();
-                        })
+                    .then(data => {
+                        this.addressData.products = [];
+                        this.addressData.products = data.products;
+                        alertify.notify('Used products has been updated.', 'success', 3);
+                        this.closeProducts();
+                    })
             },
             toggleShowAllProducts: function () {
                 this.showAllProducts = !this.showAllProducts;
+            },
+            productName: function (company, name) {
+                return name ? company + ': ' + name : company;
             }
         },
         computed: {
@@ -628,10 +643,9 @@
             this.loadAllTags();
 
             this.loadAddressDetails()
-                .then(()=>{
+                .then(() => {
                     this.showModalIfPersonHashDetected();
                     this.isFirstLoad = false;
-
                     this.old.name = this.addressData.name;
                     this.old.address = this.addressData.address;
                     this.old.url = this.addressData.url;
@@ -641,10 +655,11 @@
                 });
 
             this.loadCustomerStatusList();
-            if(this.$route.query['all-employees']){
-                setTimeout(()=>{
+
+            if(this.$route.query['all-employees']) {
+                setTimeout(() => {
                     this.showSlidedBox('all-employee');
-                },0)
+                }, 0)
             }
         },
     }

@@ -11,7 +11,7 @@
             </div>
             <div class="list-block">
                 <label class="check-container" v-for="(item, i) in filtered">
-                    {{item.name ? item.company + ': ' + item.name : item.company}}
+                    {{ item.name ? item.company + ': ' + item.name : item.company }}
                     <input 
                         type="checkbox" 
                         :id="item.id" 
@@ -21,7 +21,7 @@
                     <span class="checkmark"></span>
                 </label>
                 <div v-if="this.filtered.length < 1">
-                    Sorry, no matches
+                    No matches
                 </div>
             </div>
             <div class="confirm-block text-right">
@@ -47,7 +47,16 @@ import http from '../mixins/http';
                 filtered: [],
                 selected: [],
                 query: '',
-                // oldValue: 0
+                addNewItem: false
+            }
+        },
+        watch: {
+            query: function () {
+                if (this.list.length > 0 && this.filtered.length < 1) {
+                    this.addNewItem = true;
+                } else {
+                    this.addNewItem = false;
+                }
             }
         },
         methods: {
@@ -58,10 +67,10 @@ import http from '../mixins/http';
                         this.filtered = this.list;
                     });
             },
-            
             handleSearch: function (e) {
                 this.filtered = this.list.filter((item) => {
-                    return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1 || item.company.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
+                    return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1 || 
+                    item.company.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
                 });
             },
             closeSelf: function () {
