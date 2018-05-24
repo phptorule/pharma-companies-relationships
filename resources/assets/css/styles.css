@@ -2950,8 +2950,16 @@ ul.filter-tag-query-tender > li > ul > li:hover{
 
 .slider-currency-i{
     position: absolute;
-    left: 18px;
+    left: 14px;
     top: 15px;
+}
+
+.slider-currency-k{
+    position: absolute;
+    left: 27px;
+    top: 12px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .slider-dash{
