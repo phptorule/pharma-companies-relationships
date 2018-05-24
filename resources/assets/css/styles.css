@@ -1183,6 +1183,8 @@ ul.tag-list li + li{
     font-weight: 600;
     margin: 0;
     font-size: 13px;
+    background-color: #000;
+    opacity: 0.2;
 }
 
 .sidebar .address-overview .save-address-btn:hover {

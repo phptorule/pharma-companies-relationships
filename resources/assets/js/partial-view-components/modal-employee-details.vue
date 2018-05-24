@@ -536,6 +536,8 @@
         font-weight: 600;
         margin: 0;
         font-size: 13px;
+        background-color: #000;
+        opacity: 0.2;
     }
 
     .save-employe-btn:focus,
