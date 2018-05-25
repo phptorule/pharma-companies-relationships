@@ -258,6 +258,9 @@ class AddressesController extends Controller
         return response()->json($products);
     }
 
+    /**
+     * update Address
+     */
     public function updateAddressDetails(Address $address)
     {
         $address->name = request()->get('name');
@@ -293,6 +296,9 @@ class AddressesController extends Controller
         return response()->json($address);
     }
 
+    /**
+     * get all tags
+     */
     public function loadAllTags(Address $address)
     {
         $tags = Tag::all();
@@ -300,6 +306,9 @@ class AddressesController extends Controller
         return response()->json($tags);
     }
 
+    /**
+     * get selected tags for address
+     */
     public function loadSelectedTags(Address $address)
     {
         $selectedTags = $address->load('tags')->tags;
@@ -307,12 +316,18 @@ class AddressesController extends Controller
         return response()->json($selectedTags);
     }
 
+    /**
+     * get all clusters
+     */
     public function getClusters()
     {
         $clusters = Cluster::get();
         return response()->json($clusters);
     }
 
+    /**
+     * update clusters
+     */
     public function updateClusters(Address $address)
     {
         $address->cluster_id = request()->get('cluster_id');

@@ -4,20 +4,22 @@
             <div class="search-block form-group">
                 <i class="fa fa-search icon" aria-hidden="true"></i>
                 <input @input="handleSearch" 
-                        id="product-search-input" 
-                        type="text" class="input" 
-                        v-model="query" 
-                        placeholder="Product name" />
+                    id="product-search-input" 
+                    type="text" 
+                    class="input" 
+                    v-model="query" 
+                    placeholder="Product name"
+                >
             </div>
             <div class="list-block">
-                <label class="check-container" v-for="(item, i) in filtered">
+                <label class="check-container" v-for="item in filtered" :key="item.id">
                     {{ item.name ? item.company + ': ' + item.name : item.company }}
                     <input 
                         type="checkbox" 
                         :id="item.id" 
                         :value="item.id"
                         v-model="selected" 
-                    />
+                    >
                     <span class="checkmark"></span>
                 </label>
                 <div v-if="this.filtered.length < 1">
@@ -47,17 +49,17 @@ import http from '../mixins/http';
                 filtered: [],
                 selected: [],
                 query: '',
-                addNewItem: false
+                // addNewItem: false
             }
         },
         watch: {
-            query: function () {
-                if (this.list.length > 0 && this.filtered.length < 1) {
-                    this.addNewItem = true;
-                } else {
-                    this.addNewItem = false;
-                }
-            }
+            // query: function () {
+            //     if (this.list.length > 0 && this.filtered.length < 1) {
+            //         this.addNewItem = true;
+            //     } else {
+            //         this.addNewItem = false;
+            //     }
+            // }
         },
         methods: {
             loadList: function () {
@@ -69,8 +71,12 @@ import http from '../mixins/http';
             },
             handleSearch: function (e) {
                 this.filtered = this.list.filter((item) => {
-                    return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1 || 
-                    item.company.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
+                    if (this.type === 'products') {
+                        return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1 || 
+                               item.company.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
+                    } else {
+                        return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
+                    }
                 });
             },
             closeSelf: function () {
@@ -81,8 +87,8 @@ import http from '../mixins/http';
             }
         },
         mounted: function () {
-            this.selectedOptions.forEach(element => {
-                this.selected.push(element.id);
+            this.selectedOptions.forEach(item => {
+                this.selected.push(item.id);
             });
             this.loadList();
         }
@@ -137,6 +143,7 @@ import http from '../mixins/http';
         margin: 0;
         transition: background-color 0.1s linear;
    }
+   
    .button:hover {
         background: #5ba3f4;
    }

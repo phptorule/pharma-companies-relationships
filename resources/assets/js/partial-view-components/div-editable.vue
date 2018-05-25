@@ -3,7 +3,8 @@
         @keydown.enter.prevent="updateEdit"
         contenteditable="true"
         :data-placeholder="placeholder"
-        @input="$emit('update:content', $event.target.innerText)" class="address-name"
+        @input="$emit('update:content', $event.target.innerText)" 
+        class="address-name"
     ></div>
 </template>
 

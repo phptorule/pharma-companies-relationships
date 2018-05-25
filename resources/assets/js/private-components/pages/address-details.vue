@@ -42,7 +42,7 @@
 
                     <div v-if=" ! isEditing">
                         <h2>
-                            <span style="vertical-align: middle">{{addressData.name}}</span>
+                            <span style="vertical-align: middle">{{ addressData.name }}</span>
 
                             <a href="javascript:void(0)" @click="toggleEditing" :class="{'active': isEditing}">
                                 <i class="fa fa-pencil"></i>
@@ -70,7 +70,7 @@
                         </p>
 
                         <ul class="tag-list">
-                            <li v-for="tag in addressData.tags">
+                            <li v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                 </a>
@@ -78,12 +78,14 @@
                         </ul>
 
                         <p class="address-line">
-                            {{addressData.address}}
+                            {{ addressData.address }}
                         </p>
 
                         <p class="link-and-phone">
-                            <a :href="addressData.url" target="_blank">{{addressData.url.replace('https://', '').replace('http://', '')}}</a>
-                            <span class="pone-number">{{addressData.phone}}</span>
+                            <a :href="addressData.url" target="_blank">
+                                {{ addressData.url.replace('https://', '').replace('http://', '') }}
+                            </a>
+                            <span class="pone-number">{{ addressData.phone }}</span>
                         </p>
                     </div>
 
@@ -117,7 +119,7 @@
                         </p>
 
                         <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
-                            <li v-for="tag in addressData.tags">
+                            <li v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                     <button class="delete-tag" @click="removeSelectedTag(tag.name)">
@@ -199,21 +201,34 @@
                 <div class="staff-overview address-box">
                     <div class="header">
                         <h3>Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
-                        <a href="javascript:void(0)" @click="showContactsChain(addressData)" class="view-contacts-chain">View Relationship Graph</a>
+                        <a href="javascript:void(0)" 
+                            @click="showContactsChain(addressData)" 
+                            class="view-contacts-chain"
+                        >
+                            View Relationship Graph
+                        </a>
                     </div>
 
                     <p v-if="!addressData.people.length" class="empty-data-p">There are no employees yet.</p>
 
                     <ul class="staff-list">
-                        <li v-if="i < 3" v-for="(person, i) in addressData.people">
+                        <li v-if="i < 3" v-for="(person, i) in addressData.people" :key="person.id">
                             <div class="image">
-                                <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">
-                                    <span class="person-initials">{{getPersonInitials(person.name)}}</span>
+                                <a href="javascript:void(0)" 
+                                    @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                                >
+                                    <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
                                     <img :src="'/images/mask-'+i+'.png'" alt="">
                                 </a>
                             </div>
                             <div class="personal-info">
-                                <p class="name"><a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">{{person.name}}</a></p>
+                                <p class="name">
+                                    <a href="javascript:void(0)" 
+                                        @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                                    >
+                                        {{ person.name }}
+                                    </a>
+                                </p>
                                 <p class="occupation">{{person.description}}</p>
                             </div>
                         </li>
@@ -232,22 +247,32 @@
 
                 <div class="used-products-overview address-box">
                     <div class="header">
-                        <h3>Used Products <a href="#" @click.prevent="toggleProducts"><i class="fa fa-pencil"></i></a></h3>
+                        <h3>
+                            Used Products 
+                            <a href="#" @click.prevent="toggleProducts">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </h3>
                     </div>
 
-                    <p v-if="!addressData.products.length" class="empty-data-p">There are no used products</p>
+                    <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
 
                     <ul class="used-products-list" v-if="addressData.products.length">
-                        <li v-if="!showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
-                        :title="productName(product.company, product.name)">
+                        <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
+                            :title="productName(product.company, product.name)"
+                            :key="product.id"
+                        >
                             <span class="image"></span>
                             <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
                             </span>
                         </li>
 
-                        <li v-if="showAllProducts" v-for="(product, i) in addressData.products" 
-                        :title="productName(product.company, product.name)">
+                        <li v-if="showAllProducts" 
+                            v-for="product in addressData.products" 
+                            :title="productName(product.company, product.name)"
+                            :key="product.id"
+                        >
                             <span class="image"></span>
                             <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
@@ -277,7 +302,10 @@
                     <p v-if="addressData.cluster.addresses.length === 1" class="empty-data-p">Current address is the only member in this chain</p>
 
                     <ul class="lab-chain-member-list">
-                        <li v-if="c.id != addressData.id && i < 3" v-for="(c,i) in addressData.cluster.addresses">
+                        <li v-if="c.id != addressData.id && i < 3" 
+                            v-for="(c, i) in addressData.cluster.addresses"
+                            :key="c.id"
+                        >
                             <h4><router-link :to="'/address-details/'+c.id">{{c.name}}</router-link></h4>
                             <p>{{c.address}}</p>
                         </li>
@@ -522,11 +550,9 @@
             showContactsChain: function (addressData) {
                 this.$eventGlobal.$emit('showModalContactsChain', addressData)
             },
-
             showOnMap: function () {
                 this.$eventGlobal.$emit('showSpecificItem', [this.addressData])
             },
-
             showModalIfPersonHashDetected: function () {
                 if(this.$route.hash.indexOf('#person-') !== -1) {
 
@@ -535,7 +561,6 @@
                     this.showEmployeeDetailsModal(personId, this.addressId, this.addressData);
                 }
             },
-
             loadAllTags: function () {
                 this.httpGet('/api/address-details/'+this.addressId+'/get-all-tags')
                     .then(data => {
@@ -575,19 +600,22 @@
                         phone: this.addressData.phone,
                         tags: this.addressData.tags
                     })
-                        .then(data => {
-                            this.old.name = this.addressData.name;
-                            this.old.address = this.addressData.address;
-                            this.old.url = this.addressData.url;
-                            this.old.phone = this.addressData.phone;
-                            this.loadAllTags();
-                            this.loadSelectedTags();
-                            this.madeChanges = false;
-                            this.saveBtnDisabled = false;
-                            this.editingInput = null;
-                            this.isEditing = false;
-                            alertify.notify('Address has been updated.', 'success', 3);
-                        })
+                    .then(data => {
+                        this.old.name = this.addressData.name;
+                        this.old.address = this.addressData.address;
+                        this.old.url = this.addressData.url;
+                        this.old.phone = this.addressData.phone;
+                        this.loadAllTags();
+                        this.loadSelectedTags();
+                        this.madeChanges = false;
+                        this.saveBtnDisabled = false;
+                        this.editingInput = null;
+                        this.isEditing = false;
+                        alertify.notify('Address has been updated.', 'success', 3);
+                    })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
                 }  
             },
             removeSelectedTag: function (name) {
@@ -603,7 +631,6 @@
             toggleChain: function () {
                 this.chainSelect = !this.chainSelect
             },
-
             closeProducts: function () {
                 this.isProductsEditing = false;
             },
@@ -620,6 +647,9 @@
                         alertify.notify('Used products has been updated.', 'success', 3);
                         this.closeProducts();
                     })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
             },
             toggleShowAllProducts: function () {
                 this.showAllProducts = !this.showAllProducts;
@@ -635,8 +665,8 @@
         },
 
         mounted: function () {
-            $('.address-details-fixed-height').height(window.innerHeight - 70 -51);
-            $('.slided-box').height(window.innerHeight - 70 -51);
+            $('.address-details-fixed-height').height(window.innerHeight - 70 - 51);
+            $('.slided-box').height(window.innerHeight - 70 - 51);
 
             this.addressId = this.$route.params.id;
 
