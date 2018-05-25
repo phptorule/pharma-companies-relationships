@@ -6,7 +6,7 @@
                     <div class="modal-header">
 
                         <div class="person-profile-picture">
-                            <span class="person-initials">{{getPersonInitials(personData.name)}}</span>
+                            <span class="person-initials">{{ getPersonInitials(personData.name) }}</span>
                             <img src="/images/mask-7.png" alt="" class="avatar">
 
                             <a href="javascript:void(0)" class="close-icon-a" data-dismiss="modal" aria-label="Close">
@@ -22,7 +22,7 @@
                                 <a href="#" @click.prevent="toggleEditing"><i class="fa fa-pencil"></i></a>
                             </h4>
 
-                            <p class="occupation">{{personData.description}}</p>
+                            <p class="occupation">{{ personData.description }}</p>
                         </div>
 
                         <div v-else>
@@ -69,8 +69,10 @@
 
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
                             worked at
-                            <span v-for="(address, i) in personData.addresses">
-                                <a :href="'/address-details/'+address.id" >{{address.name}}</a><span v-if="i != 0">, </span>
+                            <span v-for="(address, i) in personData.addresses" :key="address.id">
+                                <a :href="'/address-details/' + address.id" >
+                                    {{ address.name }}
+                                </a><span v-if="i != 0">, </span>
                             </span>
                         </p>
 
@@ -334,17 +336,17 @@
             },
         },
 
-        beforeDestroy: function() {
-            this.isEditing = false;
-        },
-        destroyed: function() {
-            this.isEditing = false;
-        },
+        // beforeDestroy: function() {
+        //     this.isEditing = false;
+        // },
+        // destroyed: function() {
+        //     this.isEditing = false;
+        // },
         methods: {
             connectionName: function (id) {
                 let connection = this.connectionTypes.find(el => el.id == id);
 
-                return connection? connection.name : id;
+                return connection ? connection.name : id;
             },
             endDate: function (date) {
                 return moment(date).format('MMM YYYY');
@@ -369,7 +371,7 @@
                 this.currentAddressId = addressId;
                 this.currentAddress = address;
 
-                this.httpGet('/api/people/'+personId)
+                this.httpGet('/api/people/' + personId)
                     .then(data => {
                         this.personData = data;
                         this.relationshipsCollapsedData = JSON.parse(JSON.stringify(this.personData.relationships));
@@ -437,18 +439,21 @@
             },
             updateEmploye: function() {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
-                    this.httpPut('/api/people/'+this.personId+'/update', {
+                    this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
                     })
-                        .then(data => {
-                            this.old.name = data.name;
-                            this.old.description = data.description;
-                            this.madeChanges = false;
-                            this.saveBtnDisabled = false;
-                            this.isEditing = false;
-                            alertify.notify('Employe has been updated.', 'success', 3);
-                        })
+                    .then(data => {
+                        this.old.name = data.name;
+                        this.old.description = data.description;
+                        this.madeChanges = false;
+                        this.saveBtnDisabled = false;
+                        this.isEditing = false;
+                        alertify.notify('Employe has been updated.', 'success', 3);
+                    })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
                 }  
             }
         },
@@ -523,7 +528,7 @@
         font-size: 13px;
         font-weight: 600;
         margin: 0;
-        transition: background-color 0.1s linear;
+        /* transition: background-color 0.1s linear; */
     }
 
     .save-employe-btn-disabled {

@@ -76,9 +76,9 @@
         props: ['employeeList', 'isActive', 'addressId', 'address'],
 
         mounted: function () {
-            if(this.isActive && this.addressId && !this.isDataLoaded) {
+            // if(this.isActive && this.addressId && !this.isDataLoaded) {
                 this.loadAddressEmployeesPaginated(this.addressId)
-            }
+            // }
         }
     }
 </script>

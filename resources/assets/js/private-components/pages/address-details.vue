@@ -10,7 +10,7 @@
                         :isActive="isExpanded && sideComponentToDisplay == 'all-employee'"
                         :employeeList="addressData.people"
                         :address="addressData"
-                        @closeSlidedBox="isExpanded = false"
+                        @closeSlidedBox="onCloseSlidedBox"
                     ></all-employee-list>
                 </div>
 
@@ -229,16 +229,16 @@
                                         {{ person.name }}
                                     </a>
                                 </p>
-                                <p class="occupation">{{person.description}}</p>
+                                <p class="occupation">{{ person.description }}</p>
                             </div>
                         </li>
                     </ul>
 
                     <div style="clear: both"></div>
 
-                    <a href="javascript:void(0)"
+                    <a href="#"
                        v-if="addressData.people && addressData.people.length > 3"
-                       @click="showSlidedBox('all-employee')"
+                       @click.prevent="showSlidedBox('all-employee')"
                        class="address-box-show-more-link show-all-employees-link"
                     >
                         Show all Employees
@@ -436,53 +436,47 @@
 
         methods: {
             checkIfInputsEmpty: function () {
-                if (
-                    this.addressData.name === '' ||
+                this.saveBtnDisabled = this.addressData.name === '' ||
                     this.addressData.address === '' ||
                     this.addressData.url === '' ||
                     this.addressData.phone === '' ||
-                    this.addressData.tags.length < 1
-                ) {
-                    this.saveBtnDisabled = true;
-                } else {
-                    this.saveBtnDisabled = false;
-                }
+                    this.addressData.tags.length < 1 
+                    ? true : false;
             },
             checkIfChangesMade: function () {
-
-                if (
-                    this.addressData.name !== this.old.name ||
+                this.madeChanges = this.addressData.name !== this.old.name ||
                     this.addressData.phone !== this.old.phone ||
                     this.addressData.address !== this.old.address ||
                     this.addressData.url !== this.old.url ||
-                    this.compareTags()
-                ) {
-                    this.madeChanges = true;
-                } else {
-                    this.madeChanges = false;
-                }
+                    this.compareTags() 
+                    ? true : false;
             },
             compareTags: function() {
-                var _this = this,
+                let _this = this,
                     sortedTags = this.addressData.tags.slice(),
                     sortedOldTags = this.old.tags.slice();
-
-                sortedTags.sort(function(a, b) {
-                    var c = a.name,
-                        d = b.name;
-                    if (c > d) return 1;
-                    if (c < d) return -1;
+                // sortedTags.sort(function(a, b) {
+                //     let c = a.name,
+                //         d = b.name;
+                //     if (c > d) return 1;
+                //     if (c < d) return -1;
+                // });
+                // sortedOldTags.sort(function(a, b) {
+                //     let c = a.name,
+                //         d = b.name;
+                //     if (c > d) return 1;
+                //     if (c < d) return -1;
+                // });
+                sortedTags.sort((tagA, tagB) => {
+                    return tagA.name > tagB.name;
                 });
-
-                sortedOldTags.sort(function(a, b) {
-                    var c = a.name,
-                        d = b.name;
-                    if (c > d) return 1;
-                    if (c < d) return -1;
+                
+                sortedOldTags.sort((tagA, tagB) => {
+                    return tagA.name > tagB.name;
                 });
-
+                
                 if (sortedTags.length === sortedOldTags.length) {
-                    for (var i = 0; i < sortedTags.length; i++) {
+                    for (let i = 0; i < sortedTags.length; i++) {
                         if (sortedTags[i].name !== sortedOldTags[i].name) {
                             _this.madeChanges = true;
                             break;
@@ -494,19 +488,14 @@
                     _this.madeChanges = true;
                 }
 
-                if (_this.madeChanges) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return _this.madeChanges ? true : false ;
             },
             loadAddressDetails: function () {
-                return this.httpGet('/api/address-details/'+this.addressId)
+                return this.httpGet('/api/address-details/' + this.addressId)
                     .then(data => {
                         this.addressData = data;
                         document.title = this.addressData.name;
                     })
-
             },
             loadCustomerStatusList: function () {
                 this.httpGet('/api/customer-statuses')
@@ -521,30 +510,38 @@
                     })
             },
             addChain: function (id) {
-                this.httpPut('/api/clusters/'+this.addressId, {cluster_id: id})
+                this.httpPut('/api/clusters/' + this.addressId, {
+                        cluster_id: id
+                    })
                     .then(data => {
                         this.addressData.cluster.id = data.cluster.id
                         this.addressData.cluster.name = data.cluster.name
                         alertify.notify('Chain has been updated.', 'success', 3);
                         this.chainSelect = false
                     })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
             },
             updateCustomerStatus: function (status) {
-                this.httpPut('/api/address-details/'+this.addressId+'/update-status', {status: status})
+                this.httpPut('/api/address-details/' + this.addressId + '/update-status', {
+                        status: status
+                    })
                     .then(data => {
                         this.addressData.customer_status = data.customer_status;
                         alertify.notify('Status has been updated.', 'success', 3);
                     })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
             },
             showSlidedBox: function (componentToDisplay) {
-
-                if(this.sideComponentToDisplay == componentToDisplay){
+                if(this.sideComponentToDisplay == componentToDisplay) {
                     this.isExpanded = !this.isExpanded;
-                }
-                else {
+                    componentToDisplay = '';
+                } else {
                     this.isExpanded = true;
                 }
-
                 this.sideComponentToDisplay = componentToDisplay;
             },
             showContactsChain: function (addressData) {
@@ -555,28 +552,24 @@
             },
             showModalIfPersonHashDetected: function () {
                 if(this.$route.hash.indexOf('#person-') !== -1) {
-
-                    let personId = this.$route.hash.replace('#person-','');
-
+                    let personId = this.$route.hash.replace('#person-', '');
                     this.showEmployeeDetailsModal(personId, this.addressId, this.addressData);
                 }
             },
             loadAllTags: function () {
-                this.httpGet('/api/address-details/'+this.addressId+'/get-all-tags')
+                this.httpGet('/api/address-details/' + this.addressId + '/get-all-tags')
                     .then(data => {
                         this.allTags = data;
                     })
             },
             loadSelectedTags: function () {
-                this.httpGet('/api/address-details/'+this.addressId+'/load-selected-tags')
+                this.httpGet('/api/address-details/' + this.addressId + '/load-selected-tags')
                     .then(data => {
                         this.old.tags = data;
                     })
             },
             toggleEditing: function () {
-
                 this.isEditing = !this.isEditing;
-
                 if ( ! this.isEditing) {
                     this.addressData.name = this.old.name;
                     this.addressData.address = this.old.address;
@@ -593,7 +586,7 @@
             },
             updateAddress: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
-                    this.httpPut('/api/address-details/'+this.addressData.id+'/update-details', {
+                    this.httpPut('/api/address-details/' + this.addressData.id + '/update-details', {
                         name: this.addressData.name,
                         address: this.addressData.address,
                         url: this.addressData.url,
@@ -619,14 +612,14 @@
                 }  
             },
             removeSelectedTag: function (name) {
-                var tags = this.addressData.tags.filter(function(elem) {
-                    return elem.name != name;
+                let tags = this.addressData.tags.filter(function(item) {
+                    return item.name != name;
                 });
 
                 this.addressData.tags = tags;
             },
             closeChain: function () {
-                this.chainSelect = false
+                this.chainSelect = false;
             },
             toggleChain: function () {
                 this.chainSelect = !this.chainSelect
@@ -638,7 +631,7 @@
                 this.isProductsEditing = !this.isProductsEditing;
             },
             updateProducts: function (selectedProducts) {
-                this.httpPut('/api/products/'+this.addressData.id, {
+                this.httpPut('/api/products/' + this.addressData.id, {
                         selectedProducts: selectedProducts
                     })
                     .then(data => {
@@ -656,6 +649,10 @@
             },
             productName: function (company, name) {
                 return name ? company + ': ' + name : company;
+            },
+            onCloseSlidedBox: function () {
+                this.isExpanded = false;
+                this.sideComponentToDisplay = '';
             }
         },
         computed: {
