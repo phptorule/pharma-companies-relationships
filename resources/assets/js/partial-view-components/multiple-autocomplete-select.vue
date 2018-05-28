@@ -1,6 +1,6 @@
 <template>
     <div class="main-block">
-        <div class="wrap-block">
+        <div class="wrap-block" v-if="! addNewItemForm">
             <div class="search-block form-group">
                 <i class="fa fa-search icon" aria-hidden="true"></i>
                 <input @input="handleSearch" 
@@ -26,11 +26,56 @@
                     No matches
                 </div>
             </div>
-            <div class="confirm-block text-right">
-                <button type="button" @click.prevent="closeSelf()" class="btn cancel-btn">
-                    Cancel
-                </button>
-                <a href="#" class="button" @click.prevent="addItem">Add</a>
+            <div class="confirm-block">
+                <div class="left-block">
+                    <a href="#" class="add-link" @click.prevent="toggleAddNewItemForm">
+                        <span class="plus">+</span> New product
+                    </a>
+                </div>
+                <div class="right-block">
+                    <button type="button" @click.prevent="closeSelf()" class="btn cancel-btn">
+                        Cancel
+                    </button>
+                    <a href="#" class="button" @click.prevent="addItem">Add</a>
+                </div>
+            </div>
+        </div>
+        <div class="wrap-block" v-else>
+            <h4>New product</h4>
+            <div class="form-group">
+                <input type="text" 
+                    class="input"
+                    placeholder="Company"
+                    v-model="newItem.company" 
+                    id="new-item-company"
+                >
+            </div>
+            <div class="form-group">
+                <input type="text" 
+                    class="input" 
+                    placeholder="Name"
+                    v-model="newItem.name" 
+                    id="new-item-name"
+                >
+            </div>
+            <div class="form-group">
+                <button class="upload-button">Upload image</button>
+                <input type="file" style="display: none;">
+            </div>
+            <div class="form-group">
+                <textarea v-model="newItem.description" 
+                    class="description-area"
+                    placeholder="Description"
+                    id="new-item-description"
+                ></textarea>
+            </div>
+            <div class="confirm-block">
+                <div class="right-block">
+                    <button type="button" @click.prevent="toggleAddNewItemForm" class="btn cancel-btn">
+                        Cancel
+                    </button>
+                    <a href="#" class="button" @click.prevent="addItem">Add</a>
+                </div>
             </div>
         </div>
     </div>
@@ -49,7 +94,13 @@ import http from '../mixins/http';
                 filtered: [],
                 selected: [],
                 query: '',
-                // addNewItem: false
+                addNewItemForm: false,
+
+                newItem: {
+                    company: '',
+                    name: '',
+                    description: ''
+                }
             }
         },
         watch: {
@@ -84,6 +135,9 @@ import http from '../mixins/http';
             },
             addItem: function () {
                 this.update(this.selected);
+            },
+            toggleAddNewItemForm: function () {
+                this.addNewItemForm = !this.addNewItemForm;
             }
         },
         mounted: function () {
@@ -220,4 +274,54 @@ import http from '../mixins/http';
     .list-block::-webkit-scrollbar-thumb:hover {
         background: #555; 
     }
+
+    .left-block {
+        float: left;
+        margin-top: 5px;
+    }
+
+    .right-block {
+        float: right
+    }
+
+    .confirm-block .left-block .add-link {
+        color: #72afd2;
+        position: relative;
+        margin-left: 22px;
+    }
+
+    .plus {
+        font-size: 35px;
+        position: absolute;
+        top: -16px;
+        left: -23px;
+    }
+
+    .description-area {
+        max-width: 300px;
+        min-width: 300px;
+        min-height: 100px;
+        max-height: 200px;
+        border-bottom: 2px solid #EAEFF4;
+        outline: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+
+    .upload-button {
+        background: #4a90e3;
+        color: #fff !important;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        text-align: left;
+        margin: 0;
+        transition: background-color 0.1s linear;
+    }
+
+    .upload-button:hover {
+        background: #5ba3f4;
+   }
 </style>
