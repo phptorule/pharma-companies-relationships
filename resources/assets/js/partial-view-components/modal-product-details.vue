@@ -23,7 +23,7 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number">
-                                    {{tenderData.last_tender_date ? this.tenderData.last_tender_date : ''}}
+                                    {{tenderData.last_tender_date ? tenderData.last_tender_date : ''}}
                                 </p>
 
                                 <p class="text">
@@ -88,10 +88,8 @@
                                                     v-model="appliedFilters.tendersSearchInput"
                                                     @keyup="makeTendersSearch()"
                                                     placeholder="Search tenders">
-                                            <p class="tender-slider-amount-title">Tender Amount</p>
                                         </div>
                                         <div class="col-md-4 filter-cost-tender">
-                                            <i class="fa fa-ruble slider-currency-i"></i><p class="slider-currency-k">(K)</p>
                                             <div class="col-md-6 min-value">
                                                 <input class="min-value-input" v-model="tendersCost.value[0]">
                                             </div>
@@ -108,6 +106,8 @@
                                                 >
                                                 </vue-slider>
                                             </div>
+                                            <p class="tender-slider-amount-title">Tender Amount</p>
+                                            <p class="slider-currency-k">(K rubels)</p>
                                         </div>
                                         <div class="col-md-4 filter-tag-query-tender">
                                             <div class="col-md-6">
@@ -315,8 +315,11 @@
                 if (!currency_type) {
                     currency_type = '';
                 }
-                value = String(value);
-                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
+                if(value){
+                    value = String(value);
+                    return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
+                }
+                return '';
             },
 
             tendername: function (name, size) {
