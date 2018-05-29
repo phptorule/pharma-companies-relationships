@@ -380,9 +380,9 @@ class AddressesController extends Controller
      */
     public function createProduct ()
     {
-        $company = request('company');
-        $name = request('name');
-        $description = request('description');
+        $company = trim(request('company'));
+        $name = trim(request('name'));
+        $description = trim(request('description'));
 
         if ( ! $company) {
             return response()->json([

@@ -133,7 +133,7 @@ import http from '../mixins/http';
             handleSearch: function (e) {
                 this.filtered = this.list.filter((item) => {
                     if (this.type === 'products') {
-                        return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1 || 
+                        return (item.name && item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1) || 
                                item.company.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
                     } else {
                         return item.name.toLowerCase().indexOf(e.target.value.toLowerCase()) + 1
@@ -322,7 +322,7 @@ import http from '../mixins/http';
     }
 
     .confirm-block .left-block .add-link {
-        color: #72afd2;
+        color: #4a90e3;;
         position: relative;
         margin-left: 22px;
         transition: none;
