@@ -75,4 +75,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
     Route::get('/products', 'AddressesController@getProducts')->name('address.getProducts');
 
     Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
+
+    Route::post('/products/create', 'AddressesController@createProduct');
 });

@@ -262,7 +262,8 @@
                             :title="productName(product.company, product.name)"
                             :key="product.id"
                         >
-                            <span class="image"></span>
+                            <img class="image" :src="product.image" v-if="product.image">
+                            <div class="image" v-else></div>
                             <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
                             </span>
@@ -273,7 +274,8 @@
                             :title="productName(product.company, product.name)"
                             :key="product.id"
                         >
-                            <span class="image"></span>
+                            <img class="image" :src="product.image" v-if="product.image">
+                            <div class="image" v-else></div>
                             <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
                             </span>
@@ -291,6 +293,7 @@
                         :type="'products'"
                         :close="closeProducts"
                         :update="updateProducts"
+                        :addNewProduct="addNewProduct"
                     ></multiple-autocomplete-select>
                 </div>
 
@@ -644,6 +647,27 @@
                         alertify.notify('Error occured', 'error', 3);
                     })
             },
+            addNewProduct: function (newItem) {
+                let formData = new FormData();
+                formData.append('company', newItem.company);
+                formData.append('name', newItem.name);
+                formData.append('description', newItem.description);
+                formData.append('image', newItem.image);
+                this.httpPost('/api/products/create',
+                    formData
+                )
+                .then(data => {
+                    if (data.status) {
+                        alertify.notify(data.message, 'error', 3);
+                        return;
+                    }
+                    alertify.notify('New product has been added.', 'success', 3);
+                })
+                .catch(error => {
+                    console.log(error);
+                    alertify.notify('Error occured', 'error', 3);
+                });
+            },
             toggleShowAllProducts: function () {
                 this.showAllProducts = !this.showAllProducts;
             },
@@ -693,5 +717,22 @@
 </script>
 
 <style scoped>
+    .used-products-list li .image {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 25px;
+        height: 25px;
+        background-color: #eaeff4;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
 
+    ul.used-products-list li span.prod-name {
+        margin-left: 30px;
+    }
+
+    ul.used-products-list li {
+        position: relative;
+    }
 </style>

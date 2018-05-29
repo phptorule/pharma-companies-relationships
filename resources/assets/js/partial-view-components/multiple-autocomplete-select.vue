@@ -41,11 +41,11 @@
             </div>
         </div>
         <div class="wrap-block" v-else>
-            <h4>New product</h4>
+            <h4 class="new-product-title">New product</h4>
             <div class="form-group">
                 <input type="text" 
                     class="input"
-                    placeholder="Company"
+                    placeholder="Company*"
                     v-model="newItem.company" 
                     id="new-item-company"
                 >
@@ -58,9 +58,26 @@
                     id="new-item-name"
                 >
             </div>
-            <div class="form-group">
-                <button class="upload-button">Upload image</button>
-                <input type="file" style="display: none;">
+            <div class="form-group upload-block">
+                <input type="text"
+                    class="input image-name" 
+                    placeholder="Image"
+                    v-model="imageName"
+                    id="new-item-image-name"
+                    readonly
+                >
+                <a href="#" 
+                    class="upload-button"
+                    @click.prevent="onUploadClick"
+                >
+                    Upload image
+                </a>
+                <input type="file" 
+                    style="display: none;" 
+                    ref="uploadImageInput" 
+                    accept="image/*"
+                    @change="onImageUpload"
+                >
             </div>
             <div class="form-group">
                 <textarea v-model="newItem.description" 
@@ -74,7 +91,7 @@
                     <button type="button" @click.prevent="toggleAddNewItemForm" class="btn cancel-btn">
                         Cancel
                     </button>
-                    <a href="#" class="button" @click.prevent="addItem">Add</a>
+                    <a href="#" class="button" @click.prevent="addProduct">Add</a>
                 </div>
             </div>
         </div>
@@ -86,7 +103,7 @@
 import http from '../mixins/http';
     export default {
         name: 'muliple-autocomplete-select',
-        props: ['selectedOptions', 'type', 'close', 'update'],
+        props: ['selectedOptions', 'type', 'close', 'update', 'addNewProduct'],
         mixins: [http],
         data: function () {
             return {
@@ -99,18 +116,11 @@ import http from '../mixins/http';
                 newItem: {
                     company: '',
                     name: '',
-                    description: ''
-                }
+                    description: '',
+                    image: ''
+                },
+                imageName: ''
             }
-        },
-        watch: {
-            // query: function () {
-            //     if (this.list.length > 0 && this.filtered.length < 1) {
-            //         this.addNewItem = true;
-            //     } else {
-            //         this.addNewItem = false;
-            //     }
-            // }
         },
         methods: {
             loadList: function () {
@@ -132,12 +142,30 @@ import http from '../mixins/http';
             },
             closeSelf: function () {
                 this.close();
+                this.clearNewProductForm();
             },
             addItem: function () {
                 this.update(this.selected);
+                this.clearNewProductForm();
+            },
+            addProduct: function () {
+                this.addNewProduct(this.newItem);
+                this.closeSelf();
             },
             toggleAddNewItemForm: function () {
                 this.addNewItemForm = !this.addNewItemForm;
+            },
+            onUploadClick: function () {
+                this.$refs.uploadImageInput.click();
+            },
+            onImageUpload: function () {
+                this.newItem.image = this.$refs.uploadImageInput.files[0];
+                this.imageName = this.newItem.image.name;
+            },
+            clearNewProductForm: function () {
+                this.newItem.company = '';
+                this.newItem.name = '';
+                this.newItem.description = '';
             }
         },
         mounted: function () {
@@ -195,11 +223,11 @@ import http from '../mixins/http';
         font-size: 13px;
         text-align: left;
         margin: 0;
-        transition: background-color 0.1s linear;
    }
    
    .button:hover {
         background: #5ba3f4;
+        transition: background-color 0.1s linear;
    }
 
     .list-block {
@@ -288,6 +316,7 @@ import http from '../mixins/http';
         color: #72afd2;
         position: relative;
         margin-left: 22px;
+        transition: none;
     }
 
     .plus {
@@ -318,10 +347,25 @@ import http from '../mixins/http';
         font-size: 13px;
         text-align: left;
         margin: 0;
-        transition: background-color 0.1s linear;
+        display: inline-block;
+        margin-top: 15px;
     }
 
     .upload-button:hover {
         background: #5ba3f4;
+        transition: background-color 0.1s linear;
+   }
+
+   .new-product-title {
+       font-family: Montserrat;
+       margin-top: 5px;
+   }
+
+   .upload-block {
+       padding-top: 5px;
+   }
+
+   .image-name {
+       display: block;
    }
 </style>

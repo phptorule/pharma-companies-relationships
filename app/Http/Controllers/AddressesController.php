@@ -13,6 +13,9 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Image;
+use File;
+use Storage;
 
 class AddressesController extends Controller
 {
@@ -370,6 +373,76 @@ class AddressesController extends Controller
         ]);
 
         return response()->json($address);
+    }
+
+    /**
+     * create new Product
+     */
+    public function createProduct ()
+    {
+        $company = request('company');
+        $name = request('name');
+        $description = request('description');
+
+        if ( ! $company) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Company field should not be empty"
+            ]);
+        }
+
+        if ($company && ! $name) {
+            $prod = Product::whereCompany($company)->first();
+            if ($prod) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Product with company - '$company' already exists!"
+                ]);
+            }
+        }
+
+        if ($company && $name) {
+            $prod = Product::whereCompany($company)->whereName($name)->first();
+            if ($prod) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "This product already exists!"
+                ]);
+            }
+        }
+
+        $product = new Product();
+        $product->company = $company;
+        $product->name = $name;
+        $product->description = $description;
+
+        $image = request()->file('image');
+
+        if ($image) {
+            $imageName = now()->format('Y-m-d-H-i-s').'.'.$image->getClientOriginalExtension();
+
+            $destinationPath = public_path('product-images');
+            
+            $result = File::makeDirectory($destinationPath, 0777, true, true);
+
+            File::put(public_path("/product-images/.gitignore"), "*\r\n!.gitignore\r\n");
+
+            $img = Image::make($image->getRealPath());
+
+            $img->resize(100, 100, function ($constraint) {
+
+                $constraint->aspectRatio();
+            
+            })->save(public_path("/product-images/$imageName"));
+
+            $product->image = "/product-images/$imageName";
+        }
+        
+        $product->save();
+
+        $products = Product::orderByRaw('company, name')->get();
+
+        return response()->json($products);
     }
 
 }
