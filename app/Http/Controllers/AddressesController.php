@@ -411,6 +411,13 @@ class AddressesController extends Controller
             }
         }
 
+        if (strlen($company) > 255 || strlen($name) > 255) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Max count of characters is 255!"
+            ]);
+        }
+
         $product = new Product();
         $product->company = $company;
         $product->name = $name;
