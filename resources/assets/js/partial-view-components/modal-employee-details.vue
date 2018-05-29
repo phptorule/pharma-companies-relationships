@@ -41,6 +41,13 @@
                                 ></div-editable>
                             </div>
                             <div class="confirm-employe-edit-block">
+                                <button
+                                        type="button"
+                                        class="btn cancel-employe-btn"
+                                        @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
                                 <button 
                                     type="button"
                                     class="btn save-employe-btn"
@@ -57,13 +64,7 @@
                                 >
                                     Suggest Edits
                                 </button>
-                                <button 
-                                    type="button"
-                                    class="btn cancel-employe-btn" 
-                                    @click.prevent="toggleEditing"
-                                >
-                                    Cancel Editing
-                                </button>
+
                             </div>
                         </div>
 
@@ -104,7 +105,7 @@
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)">View Contacts Chain</a>
+                            <a href="javascript:void(0)">View Relationship Graph</a>
                         </div>
                     </div>
                     <div class="modal-body">

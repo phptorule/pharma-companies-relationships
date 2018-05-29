@@ -171,7 +171,14 @@
                         </p>
 
                         <div class="confirm-edit-block">
-                            <button 
+                            <button
+                                    type="button"
+                                    @click="toggleEditing"
+                                    class="btn cancel-address-btn"
+                            >
+                                Cancel Editing
+                            </button>
+                            <button
                                 type="submit" 
                                 v-if=" ! saveBtnDisabled && madeChanges" 
                                 @click.prevent="updateAddress" 
@@ -187,13 +194,7 @@
                             >
                                 Suggest Edits
                             </button>
-                            <button 
-                                type="button" 
-                                @click="toggleEditing" 
-                                class="btn cancel-address-btn"
-                            >
-                                Cancel Editing
-                            </button>
+
                         </div>
                     </div>
                 </div>
