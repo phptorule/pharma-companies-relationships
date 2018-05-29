@@ -662,6 +662,7 @@
                         alertify.notify(data.message, 'error', 3);
                         return;
                     }
+                    this.closeProducts();
                     alertify.notify('New product has been added.', 'success', 3);
                 })
                 .catch(error => {

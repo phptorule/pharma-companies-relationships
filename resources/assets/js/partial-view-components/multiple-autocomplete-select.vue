@@ -61,7 +61,7 @@
             <div class="form-group upload-block">
                 <input type="text"
                     class="input image-name" 
-                    placeholder="Image"
+                    placeholder="Image (jpg, jpeg, png)"
                     v-model="imageName"
                     id="new-item-image-name"
                     readonly
@@ -150,7 +150,6 @@ import http from '../mixins/http';
             },
             addProduct: function () {
                 this.addNewProduct(this.newItem);
-                this.closeSelf();
             },
             toggleAddNewItemForm: function () {
                 this.addNewItemForm = !this.addNewItemForm;
@@ -159,13 +158,23 @@ import http from '../mixins/http';
                 this.$refs.uploadImageInput.click();
             },
             onImageUpload: function () {
-                this.newItem.image = this.$refs.uploadImageInput.files[0];
-                this.imageName = this.newItem.image.name;
+                let fileName = this.$refs.uploadImageInput.files[0].name;
+                let idxDot = fileName.lastIndexOf(".") + 1;
+                let extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+
+                if (extFile == "jpg" || extFile == "jpeg" || extFile == "png") {
+                    this.newItem.image = this.$refs.uploadImageInput.files[0];
+                    this.imageName = this.newItem.image.name;
+                } else {
+                    alertify.notify('Only jpg/jpeg/png files are allowed!', 'error', 3);
+                }   
             },
             clearNewProductForm: function () {
                 this.newItem.company = '';
                 this.newItem.name = '';
                 this.newItem.description = '';
+                this.newItem.image = '';
+                this.imageName = '';
             }
         },
         mounted: function () {

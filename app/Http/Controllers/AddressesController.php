@@ -419,7 +419,16 @@ class AddressesController extends Controller
         $image = request()->file('image');
 
         if ($image) {
-            $imageName = now()->format('Y-m-d-H-i-s').'.'.$image->getClientOriginalExtension();
+            $extension = $image->getClientOriginalExtension();
+
+            if ($extension !== 'jpg' || $extension !== 'jpeg' || $extension !== 'png') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Only jpg/jpeg/png files are allowed!"
+                ]);
+            }
+
+            $imageName = now()->format('Y-m-d-H-i-s') . '.' . $extension;
 
             $destinationPath = public_path('product-images');
             
