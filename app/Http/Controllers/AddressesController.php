@@ -391,8 +391,8 @@ class AddressesController extends Controller
             ]);
         }
 
-        if ($company && ! $name) {
-            $prod = Product::whereCompany($company)->first();
+        if ($company && ($name == "" || $name == null)) {
+            $prod = Product::whereCompany($company)->where('name', '=', "")->orWhere('name', '=', null)->first();
             if ($prod) {
                 return response()->json([
                     'status' => 'error',
