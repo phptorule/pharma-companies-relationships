@@ -36,8 +36,8 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 						LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
 						LEFT JOIN rl_addresses AS a ON ap.address_id = a.id
-						WHERE p.id = $id
-						AND at.address_id = $address
+						WHERE p.id = :id1
+						AND at.address_id = :address1
 						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
 						GROUP BY p.id
 						ORDER BY total_spent DESC
@@ -46,16 +46,16 @@ class ProductsController extends Controller {
 						(SELECT SUM(at.budgeted_cost)
 						FROM rl_address_tenders as at
 						$joinTable
-						WHERE p.id = $id
-						AND at.address_id = $address
+						WHERE p.id = :id2
+						AND at.address_id = :address2
 						AND YEAR(at.tender_date) <= YEAR(CURDATE())
 						) as last_budgeted_cost,
 						
 						(SELECT SUM(at.budgeted_cost)
 						FROM rl_address_tenders as at
 						$joinTable
-						WHERE p.id = $id
-						AND at.address_id = $address
+						WHERE p.id = :id3
+						AND at.address_id = :address3
 						AND YEAR(at.tender_date) >= YEAR(CURDATE())
 						) as first_budgeted_cost,
 						
@@ -67,12 +67,23 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 						LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
 						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
-						WHERE p.id = $id
-						AND at.address_id = $address
+						WHERE p.id = :id4
+						AND at.address_id = :address4
 						GROUP BY p.id";
 
-
-		$tenders = DB::select( DB::raw( $select ) );
+		$tenders = DB::select(
+            DB::raw( $select ),
+            [
+                'id1' => $id,
+                'address1' => $address,
+                'id2' => $id,
+                'address2' => $address,
+                'id3' => $id,
+                'address3' => $address,
+                'id4' => $id,
+                'address4' => $address,
+            ]
+        );
 
 		if ( $tenders ) {
 			foreach ( $tenders as $tender ) {
@@ -114,12 +125,15 @@ class ProductsController extends Controller {
 				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id 
 				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id 
 				LEFT JOIN rl_addresses AS a ON at.address_id = a.id 
-				WHERE at.address_id = $address 
+				WHERE at.address_id = :address 
 				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2 
 				GROUP BY p.id 
 				ORDER BY total_spent DESC LIMIT 3";
 
-		$result = DB::select( DB::raw( $sql ) );
+		$result = DB::select(
+		    DB::raw( $sql ),
+            ['address' => $address]
+        );
 
 		return response()->json( $result );
 	}
@@ -261,37 +275,59 @@ class ProductsController extends Controller {
 	public function TenderByProductChart( $id, $address ) {
 		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(at.budgeted_cost) as total';
 
-		if ( isset( request()->tags ) && $tags = request()->tags ) {
-			foreach ( $tags as $tag ) {
-				$select .= ", ( 
+		// init array of parameters
+        $paramsArr = [];
 
-						SELECT SUM(at$tag.budgeted_cost) 
-						FROM rl_address_tenders as at$tag
-						LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.tender_id = at$tag.id
-						LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.purchase_id = atp$tag.id
-						LEFT JOIN rl_product_consumables AS pc$tag ON atpp$tag.consumable_id = pc$tag.id
-						LEFT JOIN rl_products AS p$tag ON p$tag.id = atpp$tag.product_id
-						WHERE p$tag.id = $id
-						AND pc$tag.id = $tag
-						AND at$tag.address_id = $address
-						AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m')
-						GROUP BY month
-						
-						 ) as tag$tag";
-			}
+		if ( isset( request()->tags ) && $tags = request()->tags) {
+		    if(!empty($tags) && is_array($tags)){
+                foreach ( $tags as $tag ) {
+
+                    // clear tag as get intval of it
+                    $tag = intval($tag);
+
+                    $select .= ", ( 
+                    SELECT SUM(at$tag.budgeted_cost) 
+                    FROM rl_address_tenders as at$tag
+                    LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.tender_id = at$tag.id
+                    LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.purchase_id = atp$tag.id
+                    LEFT JOIN rl_product_consumables AS pc$tag ON atpp$tag.consumable_id = pc$tag.id
+                    LEFT JOIN rl_products AS p$tag ON p$tag.id = atpp$tag.product_id
+                    WHERE p$tag.id = ?
+                    AND pc$tag.id = $tag
+                    AND at$tag.address_id = ?
+                    AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m')
+                    GROUP BY month
+                    
+                     ) as tag$tag";
+
+                    // put data for placeholders to array of parameters
+                    array_push($paramsArr, $id, $address);
+                }
+            }
 		}
 
 		$query = DB::table( 'rl_address_tenders AS at' )
-		           ->select( DB::raw( $select ) )
-		           ->where( 'p.id', $id )
-		           ->where( 'at.address_id', $address )
-		           ->whereNotNull( 'atp.tender_id' )
-		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
-		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
-		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
-		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
-		           ->groupBy( 'month' )
-		           ->havingRaw( 'month IS NOT NULL' );
+           ->where( 'p.id', $id )
+           ->where( 'at.address_id', $address )
+           ->whereNotNull( 'atp.tender_id' )
+           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
+           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
+           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
+           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
+           ->groupBy( 'month' )
+           ->havingRaw( 'month IS NOT NULL' );
+
+		// if parameters is not empty, let's set them
+        if(!empty($paramsArr)) {
+            $query->selectRaw(
+                $select,
+                $paramsArr
+            );
+        } else {
+            $query->select(
+                DB::raw( $select )
+            );
+        }
 
 		$result = $query->get()->toArray();
 
