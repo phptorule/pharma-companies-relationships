@@ -85,7 +85,7 @@
             loadPersonData: function(personId){
                 this.httpGet('/api/people/'+personId+'/get-person-graph-data')
                     .then(data => {
-                        mainLabId = this.currentAddress.id;
+                        mainLabId = null;
 
                         mainNodeType = 'Person';
 
