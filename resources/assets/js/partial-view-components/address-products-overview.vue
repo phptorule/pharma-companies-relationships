@@ -25,8 +25,8 @@
                         </div>
                         <div class="spending">
                             <span class="spending-head">
-                                {{Math.ceil(product.total_spent/1000) | currency('Rub')}} (K)
-                                <span class="spending-title">2y Spending</span>
+                                {{Math.ceil(product.total_spent/1000)}}
+                                <span class="spending-title">2y Spending (K Rub)</span>
                             </span>
                         </div>
                         <div class="last-tender">
@@ -121,7 +121,6 @@
                 var volumeName = '';
 
                 let arr = volume.split(' ');
-                console.log(arr.length);
                 if(arr.length) {
                     volumeName += arr[0].charAt(0).toUpperCase();
                     volumeName += arr[0].charAt(1);

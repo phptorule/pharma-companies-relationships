@@ -2956,8 +2956,8 @@ ul.filter-tag-query-tender > li > ul > li:hover{
 
 .slider-currency-k{
     position: absolute;
-    left: 27px;
-    top: 12px;
+    left: calc(50% + 45px);
+    top: 61px;
     font-size: 12px;
     font-weight: 600;
 }
@@ -2994,8 +2994,8 @@ ul.tenders-list li .item .tag-list .tags:hover{
 
 #product-modal .tender-slider-amount-title{
     position: absolute;
-    left: 0px;
-    top: 42px;
+    left: 60px;
+    top: 60px;
 }
 
 #product-modal .tender-chart-container .tag-list {
