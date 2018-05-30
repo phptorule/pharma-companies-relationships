@@ -139,7 +139,7 @@ class ProductsController extends Controller {
 		return response()->json( $result );
 	}
 
-	public function getProductByTendersPaginated( $id ) {
+	public function getProductByTendersPaginated( $id, $address) {
 		$select = 'at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
 					atb.budget,
 					atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
@@ -148,7 +148,7 @@ class ProductsController extends Controller {
 					ats.amount as suppliers_amount,
 					s.name as suppliers_name, s.address as suppliers_address';
 
-		$query = $this->prepareTendersQuery( $id, $select );
+		$query = $this->prepareTendersQuery( $id, $address, $select );
 
 		$tenders = $query->paginate( 5 );
 
@@ -158,6 +158,7 @@ class ProductsController extends Controller {
 	public function productByAddressPaginated( Address $address ) {
 
 		$products = Product::whereHas( 'addresses', function ( $q ) use ( $address ) {
+
 			return $q->where( 'id', $address->id );
 		} )
 		                   ->paginate( 10 );
@@ -165,7 +166,7 @@ class ProductsController extends Controller {
 		return response()->json( $products );
 	}
 
-	public function getProductByTendersToExcel( $id ) {
+	public function getProductByTendersToExcel( $id, $address ) {
 
 		$select = 'at.budgeted_cost, at.tender_date,
 		           atpp.product_id as tpp_product_id, atpp.consumable_id as tpp_consumable_id,
@@ -173,16 +174,16 @@ class ProductsController extends Controller {
 		           pc.name as tag_name, pc.id as tag_id,
 		           p.name as product_name';
 
-		$query = $this->prepareTendersQuery( $id, $select );
+		$query = $this->prepareTendersQuery( $id, $address, $select );
 
 		$tenders = $query->get();
 
 		return response()->json( $tenders );
 	}
 
-	public function prepareTendersQuery( $id, $select ) {
+	public function prepareTendersQuery( $id, $address, $select ) {
 
-		$query = $this->getTendersByProduct( $id, $select );
+		$query = $this->getTendersByProduct( $id, $address, $select );
 
 		$query = $this->composeConditions( $query, request()->all() );
 
@@ -225,10 +226,11 @@ class ProductsController extends Controller {
 		return $query;
 	}
 
-	public function getTendersByProduct( $id, $select ) {
+	public function getTendersByProduct( $id, $address, $select ) {
 		$query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
 		           ->where( 'p.id', $id )
+		           ->where( 'at.address_id', $address )
 		           ->whereNotNull( 'atp.tender_id' )
 		           ->whereNotNull( 'atb.tender_id' )
 		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )

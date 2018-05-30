@@ -68,9 +68,9 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/product-by-tenders/{id}/{address}', 'ProductsController@productByTenders')->name('products.productByTenders');
 
-	Route::get('/product-by-tenders-paginated/{id}', 'ProductsController@getProductByTendersPaginated')->name('products.getProductByTendersPaginated');
+	Route::get('/product-by-tenders-paginated/{id}/{address}', 'ProductsController@getProductByTendersPaginated')->name('products.getProductByTendersPaginated');
 
-	Route::get('/product-by-tenders-to-excel/{id}', 'ProductsController@getProductByTendersToExcel')->name('products.getProductByTendersToExcel');
+	Route::get('/product-by-tenders-to-excel/{id}/{address}', 'ProductsController@getProductByTendersToExcel')->name('products.getProductByTendersToExcel');
 
 	Route::get('/product-load-tags', 'ProductsController@loadTagsValues')->name('products.loadTagsValues');
 
