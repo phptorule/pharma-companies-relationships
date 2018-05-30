@@ -5,19 +5,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Tender;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TendersController extends Controller {
 	function getTendersByAddress( $id ) {
-		$tenders = Tender::where( 'address_id', $id )
-		                 ->with( [
-			                 'purchase' => function ( $q ) {
-				                 $q->orderBy( 'total_price', 'desc' )->take( 3 );
-			                 }
-		                 ] )
-		                 ->with( 'budget' )
-		                 ->get();
 
-		$actualDate = date( "Y" );
+        $actualDate = date( "Y" );
+
+        $tenders = DB::table( 'rl_address_tenders_budgets AS atb' )
+            ->select( DB::raw( 'delivery_year, sum(budget) as total' ) )
+            ->where( 'at.address_id', $id )
+            ->where( 'delivery_year', '>=', $actualDate -1 )
+            ->where( 'delivery_year', '<=', $actualDate +1 )
+            ->join( 'rl_address_tenders AS at', 'atb.tender_id', '=', 'at.id' )
+            ->groupBy('delivery_year')
+            ->get();
 
 		$amountOldYear    = null;
 		$amountActualYear = null;
@@ -27,64 +29,21 @@ class TendersController extends Controller {
 		$rateActualYear = null;
 		$rateNextYear   = null;
 
-
 		foreach ( $tenders as $tender ) {
-			$tenderDate = date( "Y", strtotime( $tender->tender_date ) );
+			if ( !empty( $tender->delivery_year ) ) {
 
-			if ( isset( $tender->budget[0]->delivery_year ) ) {
-
-				foreach ( $tender->budget as $budget ) {
-
-					$deliveryDate = intval( $budget->delivery_year );
-
-				}
-
-				if ( $actualDate > $deliveryDate ) {
-
-					$amountOldYear += $budget->budget;
-
-				} else if ( $actualDate == $deliveryDate ) {
-
-					$amountActualYear += $budget->budget;
-
-				} else if ( $actualDate < $deliveryDate ) {
-
-					$amountNextYear += $budget->budget;
-
-				}
-			} else if ( $tender->budgeted_cost != $tender->actual_cost && $tender->actual_cost != null && $tender->tender_date != null ) {
-				if ( $actualDate > $tenderDate ) {
-
-					$amountOldYear += $tender->actual_cost;
-
-				} else if ( $actualDate == $tenderDate ) {
-
-					$amountActualYear += $tender->actual_cost;
-
-				} else if ( $actualDate < $tenderDate ) {
-
-					$amountNextYear += $tender->actual_cost;
-
-				}
-			}
-
-			if ( $tender->budgeted_cost != null && $tender->tender_date != null ) {
-				if ( $actualDate > $tenderDate ) {
-
-					$amountOldYear += $tender->budgeted_cost;
-
-				} else if ( $actualDate == $tenderDate ) {
-
-					$amountActualYear += $tender->budgeted_cost;
-
-				} else if ( $actualDate < $tenderDate ) {
-
-					$amountNextYear += $tender->budgeted_cost;
-
-				}
+                if ($tender->delivery_year == $actualDate) {
+                    // this is current year
+                    $amountActualYear = $tender->total;
+                } elseif ($tender->delivery_year == $actualDate - 1) {
+                    // this is old year (previous)
+                    $amountOldYear = $tender->total;
+                } elseif ($tender->delivery_year == $actualDate + 1) {
+                    // this is next year
+                    $amountNextYear = $tender->total;
+                }
 			}
 		}
-
 
 		if ( $amountOldYear != null && $amountNextYear != null ) {
 
