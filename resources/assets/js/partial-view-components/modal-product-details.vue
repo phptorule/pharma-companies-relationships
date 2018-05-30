@@ -289,12 +289,12 @@
 
             sortByOptionsForFilter: function () {
                 return [
-                    {value: 'budget-asc', label: 'Budget &uarr;'},
-                    {value: 'budget-desc', label: 'Budget &darr;'},
-                    {value: 'date-asc', label: 'Date &uarr;'},
-                    {value: 'date-desc', label: 'Date &darr;'},
-                    {value: 'tenders-asc', label: 'Ascending &uarr;'},
-                    {value: 'tenders-desc', label: 'Descen &darr;'},
+                    {value: 'budget-asc', label: 'Budget ↑'},
+                    {value: 'budget-desc', label: 'Budget ↓'},
+                    {value: 'date-asc', label: 'Date ↑'},
+                    {value: 'date-desc', label: 'Date ↓'},
+                    {value: 'tenders-asc', label: 'Ascending ↑'},
+                    {value: 'tenders-desc', label: 'Descen ↓'},
                 ]
             },
 
