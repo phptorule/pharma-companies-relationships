@@ -172,6 +172,7 @@
                                                     <p class="tender-winner" v-if="tender.budget">
                                                         Winner {{tender.suppliers_name}} of most money
                                                         {{tender.suppliers_amount | currency('Rub') }}
+                                                        <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
                                                 </div>
                                             </li>

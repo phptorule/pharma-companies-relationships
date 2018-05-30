@@ -3107,3 +3107,9 @@ ul.staff-list li .prod-info .amount{
     font-family: Montserrat;
     font-size: 12px;
 }
+
+.tenderUrlIcon{
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
