@@ -91,9 +91,12 @@ var people = [];
 var hospitalConnections = [];
 var personHospitalConnections = [];
 var peopleConnections = [];
-var physicsOptions = { enabled : true, /*, timestep : 0.66, minVelocity : 0.75,*/ barnesHut: { gravitationalConstant: -20000, springConstant: 0.04, avoidOverlap: 1, damping: 0.91 }, stabilization : false };
+var physicsOptions = { enabled : true, /*, timestep : 0.66, minVelocity : 0.75,*/ barnesHut: { gravitationalConstant: -30000, springConstant: 0.04, avoidOverlap: 1, damping: 0.91 }, stabilization : false };
 var hoverPhysicsOptions = { enabled : false, stabilization : { enabled : true } }
 var physicsEnabled = true;
+var performanceOptions = {edges:{smooth:{type:'continuous'}}};
+var qualityOptions = {edges : {smooth : { forceDirection : "none", roundness : 0.85 } }};
+
 
 function resetValues() {
     BASE_URL = window.location.origin;
@@ -279,7 +282,13 @@ function GraphEdge(id, from, to, edgeType, edgeWeight, connectionType){
     if (connectionType != -1){
         this.connections.push({weight : edgeWeight, type : connectionType, from: from, to: to});
         this.generateEdgeLabel();
-    }
+    }/*else if (nodesMap[this.from].type == NodeTypeEnum.HOSPITAL && nodesMap[this.to].type == NodeTypeEnum.HOSPITAL){
+        // hospital-hospital node, check if they are from the same cluster
+        if (nodesMap[this.from].clusterId == nodesMap[this.to].clusterId){
+            this.clabel = "Part of the same\nlaboratory chain.";
+        }
+    }*/
+
 
     this.hover = false;
 }
@@ -351,7 +360,7 @@ GraphEdge.prototype.setHover = function(hover){
         this.updateObject.label = this.clabel;
         this.updateObject.width = this.edgeWeight + 1;
     }else{
-        this.updateObject.label = "";
+        this.updateObject.label = " ";
         this.updateObject.width = this.edgeWeight;
     }
     this.hasToUpdate = true;
@@ -801,9 +810,19 @@ GraphNode.prototype.sortEmployeesByType = function(){
     this.employees.sort(sortByEmployeeType)
 }
 
+function sortByEmployeeId(emp1, emp2){
+    return (emp1.id > emp2.id);
+}
+
+
 function sortByEmployeeType(emp1, emp2){
     return (emp1.type > emp2.type || emp1.type == emp2.type && emp1.name > emp2.name);
 }
+
+function mainHospitalFirstSort(h1, h2){
+    return parseInt(h2.id) == mainNodeId;
+}
+
 
 GraphNode.prototype.sneakPeakNode = function(){
     var timeOffset = 0;
@@ -999,6 +1018,28 @@ function start(result){
         }
     }
 
+    // order workers by employee id to find if someone works at 2 places.
+    result.workers.sort(sortByEmployeeId);
+    var lastId = null;
+    var hospitalsOnLastId = [];
+    for (var j = 0; j < result.workers.length; j++){
+        if (result.workers[j].id == lastId){
+            // create relationships between this hospital and the previous one from that worker
+            for (var i = 0; i < hospitalsOnLastId.length; i++){
+                var fromId = getLabId(hospitalsOnLastId[i]);
+                var toId = getLabId(result.workers[j].address_id);
+                if (!existsRelationship(hospitalConnections, fromId, toId))
+                    hospitalConnections.push(new GraphEdge(getEdgeId(), fromId, toId, EdgeTypeEnum.HOSPITAL_HOSPITAL, 1, -1));
+            }
+
+            hospitalsOnLastId.push(result.workers[j].address_id);
+
+        }else{
+            lastId = result.workers[j].id;
+            hospitalsOnLastId = [result.workers[j].address_id];
+        }
+    }
+
     // people nodes, from the works at relationship
     for (var i = 0; i < result.related_people.length; i++){
         var person = result.related_people[i];
@@ -1104,7 +1145,7 @@ function start(result){
         nodes : { font : { size : 12, face: "Montserrat"}, margin: 15 },
         interaction : { zoomView: true, dragView: true, dragNodes : false, hover : true },
         layout : { improvedLayout : false },
-        edges : { hoverWidth : 0.2, smooth : { forceDirection : "none", roundness : 0.85 }}
+        edges : { hoverWidth : 0.2, smooth : { forceDirection : "none", roundness : 0.85 } }
     };
 
     graphCanvas = document.getElementById('graphCanvasWhiteBackground');
@@ -1156,7 +1197,22 @@ function start(result){
     requestAnimationFrame(mainLoop);
 }
 
+function existsRelationship(array, id1, id2){
+    for (var i = 0; i < array.length; i++){
+        if ((array[i].from == id1 && array[i].to == id2) || (array[i].from == id2 && array[i].to == id1))
+            return true;
+    }
+    return false;
+}
+
+
 function updateAllNodes(){
+
+/*    // for (var nodeId in nodesMap){
+    //     var node = nodesMap[nodeId];
+    //     node.hasToUpdate = true;
+    // }*/
+
 
 }
 var disablePhysicsKey = 0;
@@ -1341,6 +1397,14 @@ function hoverEdge(event){
     var hoveredEdge = edgesMap[event.edge];
     hoveredEdge.hoverEdge(true);
 }
+
+function blurAllEdges(){
+    for (var edgeId in edgesMap){
+        var edge = edgesMap[edgeId];
+        edge.hoverEdge(false);
+    }
+}
+
 
 // function called by the 'blurEdge' event on vis
 function blurEdge(event){
