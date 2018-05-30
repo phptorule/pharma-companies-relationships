@@ -124,6 +124,7 @@ class ProductsController extends Controller {
 				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id 
 				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id 
 				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id 
+				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id 
 				LEFT JOIN rl_addresses AS a ON at.address_id = a.id 
 				WHERE at.address_id = :address 
 				AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2 
