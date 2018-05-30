@@ -71,12 +71,33 @@
 
         methods: {
             init: function (addressData) {
+
                 this.currentAddress = addressData;
 
-                this.loadContactsChainData();
+                if (addressData.hasOwnProperty('personId') && addressData.hasOwnProperty('isPersonChain')) {
+                    this.loadPersonData(addressData.personId);
+                }
+                else {
+                    this.loadAddressData();
+                }
             },
 
-            loadContactsChainData: function () {
+            loadPersonData: function(personId){
+                this.httpGet('/api/people/'+personId+'/get-person-graph-data')
+                    .then(data => {
+                        mainLabId = this.currentAddress.id;
+
+                        mainNodeType = 'Person';
+
+                        mainNodeId = personId;
+
+                        start(data);
+
+                        this._toggleFullScreen()
+                    })
+            },
+
+            loadAddressData: function () {
                 this.httpGet('/api/address-details/'+this.currentAddress.id+'/load-contacts-chain-data')
                     .then(data => {
                         mainLabId = this.currentAddress.id;

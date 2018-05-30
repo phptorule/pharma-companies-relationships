@@ -346,8 +346,6 @@
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
-                console.log('url',url);
-
                 this.httpGet(url)
                     .then(data => {
                         this.addressesTotal = data.total;

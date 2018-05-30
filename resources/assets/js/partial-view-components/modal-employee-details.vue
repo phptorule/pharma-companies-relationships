@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)">View Contacts Chain</a>
+                            <a href="javascript:void(0)" @click="showContactsChain()" data-dismiss="modal" aria-label="Close">View Contacts Chain</a>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -327,6 +327,15 @@
 
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+            },
+
+            showContactsChain: function() {
+
+                let addressData = JSON.parse(JSON.stringify(this.currentAddress));
+                addressData['personId'] = this.personId;
+                addressData['isPersonChain'] = true;
+
+                this.$eventGlobal.$emit('showModalContactsChain', addressData);
             }
         },
 
