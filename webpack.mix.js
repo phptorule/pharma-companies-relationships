@@ -31,7 +31,7 @@ mix
     ],
         'public/css/app.css')
 
-    .scripts([
+    .babel([
             'node_modules/supercluster/build/supercluster.js',
             'bower_components/jquery/dist/jquery.min.js',
             'resources/assets/graph-js/vis.js',
@@ -46,12 +46,13 @@ mix
             'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             'bower_components/jquery-slimscroll/jquery.slimscroll.min.js',
             'bower_components/fastclick/lib/fastclick.js',
-            'node_modules/alertifyjs/build/alertify.js'
+            'node_modules/alertifyjs/build/alertify.js',
+            'resources/assets/graph-js/graph-1.js'
         ],
         'public/js/vendor.js')
 
     .js('resources/assets/js/app.js', 'public/js')
 
     .copyDirectory('resources/assets/fonts', 'public/fonts')
-    .copyDirectory('resources/assets/images', 'public/images')
-    .copy('resources/assets/graph-js/graph-1.js', 'public/js/graph-1.js');
+    .copyDirectory('resources/assets/images', 'public/images');
+

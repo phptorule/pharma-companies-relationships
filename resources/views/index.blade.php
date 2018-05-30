@@ -16,14 +16,13 @@
     <script src="https://unpkg.com/supercluster@2.3.0/dist/supercluster.min.js"></script>
 
     <script src="/js/vendor.js"></script>
+
 </head>
 <body class="skin-blue">
 
     <div id="app">
         <main-component></main-component>
     </div>
-
-    <script src="/js/graph-1.js"></script>
     <script src="/js/app.js"></script>
 </body>
 </html>
