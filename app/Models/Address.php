@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Address extends Model
 {
@@ -39,4 +40,23 @@ class Address extends Model
     {
         return $this->belongsToMany(People::class, 'rl_address_people', 'address_id','person_id');
     }
+
+
+    static function createRelatedLabsIds($related_labs)
+    {
+        $related_labs_ids = "";
+        $first = true;
+
+        foreach ($related_labs as $lab){
+            if ($first){
+                $first = false;
+            }else{
+                $related_labs_ids = $related_labs_ids . ",";
+            }
+            $related_labs_ids = $related_labs_ids . $lab->id;
+        }
+
+        return $related_labs_ids;
+    }
+
 }

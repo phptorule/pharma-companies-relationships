@@ -60,4 +60,6 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
     Route::get('/connection-types', 'PeopleController@getConnectionTypes')->name('people.getConnectionTypes');
 
+    Route::get('/people/{mainPersonId}/get-person-graph-data', 'PeopleController@getPersonGraphInfo')->name('people.getPersonGraphInfo');
+
 });

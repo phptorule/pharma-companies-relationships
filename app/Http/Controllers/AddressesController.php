@@ -146,22 +146,6 @@ class AddressesController extends Controller
     }
 
 
-    private function createRelatedLabsIds($related_labs){
-        $related_labs_ids = "";
-        $first = true;
-        foreach ($related_labs as $lab){
-            if ($first){
-                $first = false;
-            }else{
-                $related_labs_ids = $related_labs_ids . ",";
-            }
-            $related_labs_ids = $related_labs_ids . $lab->id;
-        }
-        return $related_labs_ids;
-    }
-
-
-
     function getContactsChain(Address $address)
     {
 
@@ -170,7 +154,7 @@ class AddressesController extends Controller
         // first get cluster members, and use them for every query.
         $sqlQuery = "SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a JOIN rl_addresses a2 WHERE (a.cluster_id = a2.cluster_id OR a2.id = " . $mainLabId . ") AND a.id = " . $mainLabId;
         $cluster_labs = DB::select(DB::raw($sqlQuery));
-        $cluster_labs_ids = $this->createRelatedLabsIds($cluster_labs);
+        $cluster_labs_ids = Address::createRelatedLabsIds($cluster_labs);
 
 
         $sql = "SELECT * from
