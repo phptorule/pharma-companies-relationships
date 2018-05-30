@@ -172,6 +172,7 @@
                                                     <p class="tender-winner" v-if="tender.budget">
                                                         Winner {{tender.suppliers_name}} of most money
                                                         {{tender.suppliers_amount | currency('Rub') }}
+                                                        <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
                                                 </div>
                                             </li>
@@ -289,12 +290,12 @@
 
             sortByOptionsForFilter: function () {
                 return [
-                    {value: 'budget-asc', label: 'Budget &uarr;'},
-                    {value: 'budget-desc', label: 'Budget &darr;'},
-                    {value: 'date-asc', label: 'Date &uarr;'},
-                    {value: 'date-desc', label: 'Date &darr;'},
-                    {value: 'tenders-asc', label: 'Ascending &uarr;'},
-                    {value: 'tenders-desc', label: 'Descen &darr;'},
+                    {value: 'budget-asc', label: 'Budget ↑'},
+                    {value: 'budget-desc', label: 'Budget ↓'},
+                    {value: 'date-asc', label: 'Date ↑'},
+                    {value: 'date-desc', label: 'Date ↓'},
+                    {value: 'tenders-asc', label: 'Ascending ↑'},
+                    {value: 'tenders-desc', label: 'Descen ↓'},
                 ]
             },
 
