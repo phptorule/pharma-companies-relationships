@@ -377,7 +377,7 @@ class ProductsController extends Controller {
 					$responsData[ $i ][] = $total;
 
 					$responsData[ $i ][] = '<span class="tooltip-total">' . $date
-					                       . '<br>Total: ' . $total . $delimetrKey . '</span>';
+					                       . '<br>Total: ' . number_format($total) . $delimetrKey . '</span>';
 				} else {
 
 					$responsData[ $i ][] = intval( $value );
