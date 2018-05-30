@@ -682,14 +682,14 @@
                     tooltip: {isHtml: true},
                     vAxis: {title: 'Budget', format: "###,###"+delimetrKey,},
                     hAxis: {baselineColor: 'none', ticks: []},
-                    seriesType: 'bars',
-                    legend: 'none',
+                    //seriesType: 'bars',
+                        legend: 'none',
                     animation: {startup: true},
-                    series: {0: {type: 'line'}},
+                    //series: {0: {type: 'line'}},
                 };
 
 
-                var chart = new google.visualization.ComboChart(document.getElementById('tender-charts'));
+                var chart = new google.visualization.LineChart(document.getElementById('tender-charts'));
                 chart.draw(data, options);
                 this.graphLoadedModal = true;
 
