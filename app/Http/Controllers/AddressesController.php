@@ -146,29 +146,51 @@ class AddressesController extends Controller
     }
 
 
+    private function createRelatedLabsIds($related_labs){
+        $related_labs_ids = "";
+        $first = true;
+        foreach ($related_labs as $lab){
+            if ($first){
+                $first = false;
+            }else{
+                $related_labs_ids = $related_labs_ids . ",";
+            }
+            $related_labs_ids = $related_labs_ids . $lab->id;
+        }
+        return $related_labs_ids;
+    }
+
+
+
     function getContactsChain(Address $address)
     {
 
         $mainLabId = $address->id;
 
+        // first get cluster members, and use them for every query.
+        $sqlQuery = "SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a JOIN rl_addresses a2 WHERE (a.cluster_id = a2.cluster_id OR a2.id = " . $mainLabId . ") AND a.id = " . $mainLabId;
+        $cluster_labs = DB::select(DB::raw($sqlQuery));
+        $cluster_labs_ids = $this->createRelatedLabsIds($cluster_labs);
+
+
         $sql = "SELECT * from
-                (SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a  
+                (SELECT a.id, a.name, a.cluster_id FROM rl_addresses a WHERE a.id IN (" . $cluster_labs_ids . ") 
+                UNION
+                SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a  
                 JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
                 JOIN rl_address_connections ac ON ac.from_person_id = ap.person_id -- people who know people on main hospital
                 JOIN rl_address_people ap2 ON ap2.person_id = ac.to_person_id -- workplaces of people who know people on main hospital
                 JOIN rl_addresses a2 ON ap2.address_id = a2.id 
-                WHERE a.id = " . $mainLabId . " 
+                WHERE a.id IN (" . $cluster_labs_ids . ") 
                 UNION 
                 SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a  
                 JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
                 JOIN rl_address_connections ac ON ac.to_person_id = ap.person_id -- people who know people on main hospital 
                 JOIN rl_address_people ap2 ON ap2.person_id = ac.from_person_id -- workplaces of people who know people on main hospital
                 JOIN rl_addresses a2 ON ap2.address_id = a2.id 
-                WHERE a.id = " . $mainLabId . "
-                UNION
-                SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a JOIN rl_addresses a2 ON a.cluster_id = a2.cluster_id WHERE a.id != a2.id AND a.cluster_id IS NOT NULL AND a.id = " . $mainLabId . " 
-                UNION 
-                SELECT a.id, a.name, a.cluster_id FROM rl_addresses a WHERE a.id = " . $mainLabId . ") related_labs ";
+                WHERE a.id IN(" . $cluster_labs_ids . ")              
+                ) related_labs ";
+
 
         $related_labs = DB::select(DB::raw($sql));
 
