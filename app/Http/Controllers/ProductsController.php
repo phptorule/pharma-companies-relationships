@@ -326,10 +326,16 @@ class ProductsController extends Controller {
                 $select,
                 $paramsArr
             );
+
+            // several lines will be drown
+            $singleChart = false;
         } else {
             $query->select(
                 DB::raw( $select )
             );
+
+            // only one line will be drown on chart
+            $singleChart = true;
         }
 
 		$result = $query->get()->toArray();
@@ -338,7 +344,11 @@ class ProductsController extends Controller {
 
 		$arrayTotal = array_column( $result, 'total' );
 
-		$minTotal = min( $arrayTotal );
+        $minTotal = 0;
+
+		if(!empty($arrayTotal)) {
+            $minTotal = min( $arrayTotal );
+        }
 
 		$delimetr    = 1;
 		$delimetrKey = 'R';
@@ -385,12 +395,16 @@ class ProductsController extends Controller {
 			}
 		}
 
-		return response()->json( [ 'chartsData'  => $responsData,
-			200,
-			[],
-			JSON_NUMERIC_CHECK,
-			                       'delimetrKey' => $delimetrKey
-		] );
+		return response()->json(
+		    [
+		        'chartsData'  => $responsData,
+			    200,
+			    [],
+			    JSON_NUMERIC_CHECK,
+                'delimetrKey' => $delimetrKey,
+                'singleChart' => $singleChart,
+	    	]
+        );
 	}
 
 }

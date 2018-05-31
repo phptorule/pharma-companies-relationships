@@ -651,26 +651,26 @@
                         DATA.unshift(title);
 
                         if (typeof DATA[1] != "undefined") {
-                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey);
+                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey, data.singleChart);
                             this.hideLoader();
                         } else {
                             DATA[0] = ['Month', 'Total'];
                             DATA[1] = ['Yan-97', 0];
-                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey);
+                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey, data.singleChart);
                             this.hideLoader();
                         }
 
                     });
             },
 
-            viewTendersChart: function (data, colorPallette, delimetrKey) {
+            viewTendersChart: function (data, colorPallette, delimetrKey, singleChart) {
 
                 if (this.graphLoadedModal) {
                     return;
                 }
-                $('#tender-charts').html('');
 
-                var data = google.visualization.arrayToDataTable(data);
+                // chear chart
+                $('#tender-charts').html('');
 
                 colorPallette.unshift('#0099c6');
 
@@ -682,17 +682,22 @@
                     tooltip: {isHtml: true},
                     vAxis: {title: 'Budget', format: "###,###"+delimetrKey,},
                     hAxis: {baselineColor: 'none', ticks: []},
-                    //seriesType: 'bars',
-                        legend: 'none',
+                    legend: 'none',
                     animation: {startup: true},
-                    //series: {0: {type: 'line'}},
                 };
 
+                var data = google.visualization.arrayToDataTable(data);
+
+                if(singleChart == true)
+                {
+                    options.legend = 'bottom';
+                }
 
                 var chart = new google.visualization.LineChart(document.getElementById('tender-charts'));
-                chart.draw(data, options);
-                this.graphLoadedModal = true;
 
+                chart.draw(data, options);
+
+                this.graphLoadedModal = true;
             },
 
             loadGoogleChart: function () {
