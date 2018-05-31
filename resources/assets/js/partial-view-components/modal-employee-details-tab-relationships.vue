@@ -20,6 +20,16 @@
                         </a>
                     </p>
                 </div>
+
+                <div style="clear: both"></div>
+
+                <publication-list
+                        class="publication-list"
+                        style="display: none;"
+                        :id="'relation-row-'+relation.id"
+                        :coAuthoredPublications="publications.co_authored_paper"
+                        :citedPublications="publications.cited_paper"
+                ></publication-list>
             </li>
         </ul>
 
@@ -41,6 +51,16 @@
                         </a>
                     </p>
                 </div>
+
+                <div style="clear: both"></div>
+
+                <publication-list
+                        class="publication-list"
+                        style="display: none;"
+                        :id="'relation-row-'+relation.id"
+                        :coAuthoredPublications="publications.co_authored_paper"
+                        :citedPublications="publications.cited_paper"
+                ></publication-list>
             </li>
         </ul>
 
@@ -85,7 +105,8 @@
                     relationships: []
                 },
                 relationshipsTotal: 0,
-                relationshipsCollapsed: true
+                relationshipsCollapsed: true,
+                publications: {}
             }
         },
 
@@ -171,15 +192,15 @@
             },
 
             loadRelationship: function (relation) {
-                console.log('relation', relation);
+
+                $('.publication-list').css('display', 'none');
 
                 let url = '/api/people/'+this.personId+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
 
-                console.log('url', url);
-
                 this.httpGet(url)
                     .then(data => {
-
+                        this.publications = data;
+                        $('#relation-row-'+relation.id).css('display', 'block');
                     })
             }
         },

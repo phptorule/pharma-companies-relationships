@@ -27,6 +27,8 @@ Vue.component('modal-contacts-chain', require('./partial-view-components/modal-c
 Vue.component('lab-chain-details', require('./partial-view-components/lab-chain-details'));
 Vue.component('customer-status-select', require('./partial-view-components/customer-status-select'));
 Vue.component('tab-relationships', require('./partial-view-components/modal-employee-details-tab-relationships'));
+Vue.component('publication-list', require('./partial-view-components/publication-list'));
+Vue.component('publication-list-item', require('./partial-view-components/publication-list-item'));
 Vue.component('pagination', Pagination);
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus

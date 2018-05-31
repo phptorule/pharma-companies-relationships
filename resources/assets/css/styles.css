@@ -2316,3 +2316,14 @@ ul.staff-list li .personal-info .name a:hover{
 .staff-list .connection-type a:hover{
     color: #3c8dbc;
 }
+
+.publication-list li h3 {
+    font-size: 16px;
+    margin: 0;
+    margin-bottom: 7px;
+}
+
+.publication-list li p {
+    font-size: 12px;
+    margin: 0;
+}
