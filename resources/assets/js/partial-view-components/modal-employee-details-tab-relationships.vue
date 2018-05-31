@@ -14,7 +14,11 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionNameForPagination(relation)}}</p>
+                    <p class="connection-type" style="text-align: left">
+                        <a href="javascript:void(0)" @click="loadRelationship(relation)">
+                            {{connectionNameForPagination(relation)}}
+                        </a>
+                    </p>
                 </div>
             </li>
         </ul>
@@ -31,7 +35,11 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionNameForPagination(relation)}}</p>
+                    <p class="connection-type" style="text-align: left">
+                        <a href="javascript:void(0)" @click="loadRelationship(relation)">
+                            {{connectionNameForPagination(relation)}}
+                        </a>
+                    </p>
                 </div>
             </li>
         </ul>
@@ -135,6 +143,45 @@
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
             },
+
+
+            composeRelationshipDetailsUrl: function(relation) {
+                let urlQuery = '';
+
+                if (relation.co_authored_paper) {
+                    urlQuery += 'co_authored_paper=' + relation.co_authored_paper;
+                }
+
+                if (relation.cited_paper) {
+
+                    if(urlQuery.length) {
+                        urlQuery += '&';
+                    }
+
+                    let ids = relation.cited_paper.replace(/ cites /g, ',');
+
+                    ids = ids.split(',').filter((value, index, self) => {
+                        return self.indexOf(value) === index;
+                    });
+
+                    urlQuery += 'cited_paper=' + ids.join(',');
+                }
+
+                return urlQuery;
+            },
+
+            loadRelationship: function (relation) {
+                console.log('relation', relation);
+
+                let url = '/api/people/'+this.personId+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
+
+                console.log('url', url);
+
+                this.httpGet(url)
+                    .then(data => {
+
+                    })
+            }
         },
 
 

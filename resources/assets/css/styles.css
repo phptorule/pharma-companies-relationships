@@ -2308,3 +2308,11 @@ ul.staff-list li .personal-info .name a:hover{
 .single-dropdown-select li label{
     cursor: pointer;
 }
+
+.staff-list .connection-type a{
+    color: #333;
+}
+
+.staff-list .connection-type a:hover{
+    color: #3c8dbc;
+}

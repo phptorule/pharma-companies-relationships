@@ -15,4 +15,8 @@ class Publication extends Model
         return $this->belongsToMany(People::class, 'rl_people_publications', 'publication_id', 'person_id');
     }
 
+
+    static function fetchArticlesByIds($ids) {
+        return self::whereIn('id', $ids)->get();
+    }
 }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\ConnectionTypes;
 use App\Models\People;
+use App\Models\Publication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use MongoDB\BSON\Persistable;
 
 class PeopleController extends Controller
 {
@@ -101,5 +103,26 @@ class PeopleController extends Controller
 
         return response()->json($result);
 
+    }
+
+
+    function getRelationshipDetails(People $person)
+    {
+        $request = request()->all();
+
+        $responseData = [
+            'co_authored_paper' => [],
+            'cited_paper' => []
+        ];
+
+        if(isset($request['co_authored_paper'])) {
+            $responseData['co_authored_paper'] = Publication::fetchArticlesByIds(explode(',', $request['co_authored_paper']));
+        }
+
+        if(isset($request['cited_paper'])) {
+            $responseData['cited_paper'] = Publication::fetchArticlesByIds(explode(',',$request['cited_paper']));
+        }
+
+        return response()->json($responseData);
     }
 }
