@@ -31,7 +31,7 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionName(relation.edge_type, relation.edge_comment)}}</p>
+                    <p class="connection-type" style="text-align: left">{{connectionNameForPagination(relation)}}</p>
                 </div>
             </li>
         </ul>
@@ -83,6 +83,38 @@
 
 
         methods: {
+
+            connectionNameForPagination: function(relation){
+
+                let text = '';
+
+                if(relation.co_authored_paper) {
+                    let numberOfCoAuthPapers = relation.co_authored_paper.split(',').length;
+
+                    text += 'Co-Authored ' + numberOfCoAuthPapers + ' paper' + (numberOfCoAuthPapers > 1? 's' : '');
+                }
+
+                if(relation.cited_paper) {
+                    let numberOfCitedPapers = relation.cited_paper.split(',').length;
+
+                    if(text.length) {
+                        text += ', ';
+                    }
+
+                    text += 'Cited ' + numberOfCitedPapers + ' paper' + (numberOfCitedPapers > 1? 's ' : '');
+                }
+
+                if(relation.signatory_at_company) {
+                    if(text.length) {
+                        text += ', ';
+                    }
+
+                    text += 'Signatory at the same company';
+                }
+
+                return text
+
+            },
 
             connectionName: function (id, edgeComment) {
 
