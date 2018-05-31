@@ -248,7 +248,11 @@
                 this.httpGet('/api/people/'+personId)
                     .then(data => {
                         this.personData = data;
-                        this.relationshipsCollapsedData = JSON.parse(JSON.stringify(this.personData.relationships));
+
+                        this.httpGet('/api/people/'+personId+'/relationships?page=1')
+                            .then(data => {
+                                this.relationshipsCollapsedData = data.data;
+                            })
                     });
 
                 $('#personal-modal').on('hidden.bs.modal', function (e) {

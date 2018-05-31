@@ -14,7 +14,7 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionName(relation.pivot.edge_type, relation.pivot.edge_comment)}}</p>
+                    <p class="connection-type" style="text-align: left">{{connectionNameForPagination(relation)}}</p>
                 </div>
             </li>
         </ul>
@@ -114,30 +114,6 @@
 
                 return text
 
-            },
-
-            connectionName: function (id, edgeComment) {
-
-                let num = 0;
-                let displayConnectionName = '';
-
-                if(edgeComment) {
-                    num = edgeComment.split(',').length;
-                }
-
-                switch (id) {
-                    case '1':
-                        displayConnectionName = 'Co-Authored ' + num + ' paper' + (num > 1? 's' : '');
-                        break;
-                    case '2':
-                        displayConnectionName = 'Cited '  + num + ' paper' + (num > 1? 's' : '');
-                        break;
-                    case '3':
-                        displayConnectionName = 'Signatory at the same company';
-                        break;
-                }
-
-                return displayConnectionName;
             },
 
             loadPersonRelationshipsPaginated: function (page) {
