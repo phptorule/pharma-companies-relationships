@@ -32,7 +32,7 @@ class People extends Model
     function relationships()
     {
         return $this->belongsToMany(People::class, 'rl_address_connections', 'from_person_id', 'to_person_id')
-            ->withPivot('edge_type');
+            ->withPivot(['edge_type', 'edge_comment']);
     }
 
 

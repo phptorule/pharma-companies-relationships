@@ -14,7 +14,7 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionName(relation.pivot.edge_type)}}</p>
+                    <p class="connection-type" style="text-align: left">{{connectionName(relation.pivot.edge_type, relation.pivot.edge_comment)}}</p>
                 </div>
             </li>
         </ul>
@@ -31,7 +31,7 @@
                 <div class="personal-info">
                     <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">{{connectionName(relation.edge_type)}}</p>
+                    <p class="connection-type" style="text-align: left">{{connectionName(relation.edge_type, relation.edge_comment)}}</p>
                 </div>
             </li>
         </ul>
@@ -84,10 +84,28 @@
 
         methods: {
 
-            connectionName: function (id) {
-                let connection = this.connectionTypes.find(el => el.id == id);
+            connectionName: function (id, edgeComment) {
 
-                return connection? connection.name : id;
+                let num = 0;
+                let displayConnectionName = '';
+
+                if(edgeComment) {
+                    num = edgeComment.split(',').length;
+                }
+
+                switch (id) {
+                    case '1':
+                        displayConnectionName = 'Co-Authored ' + num + ' paper' + (num > 1? 's' : '');
+                        break;
+                    case '2':
+                        displayConnectionName = 'Cited '  + num + ' paper' + (num > 1? 's' : '');
+                        break;
+                    case '3':
+                        displayConnectionName = 'Signatory at the same company';
+                        break;
+                }
+
+                return displayConnectionName;
             },
 
             loadPersonRelationshipsPaginated: function (page) {
