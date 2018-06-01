@@ -336,6 +336,7 @@ class AddressesController extends Controller
         $address->cluster_id = request()->get('cluster_id');
         $address->update();
         $address->load('cluster');
+        $address->load('cluster.addresses');
         return response()->json($address);
     }
 

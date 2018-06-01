@@ -19,7 +19,7 @@
                         :isActive="isExpanded && sideComponentToDisplay == 'lab-chain-details'"
                         :addressId="addressId"
                         :addressData="addressData"
-                        @closeSlidedBox="isExpanded = false"
+                        @closeSlidedBox="onCloseSlidedBox"
                     ></lab-chain-details>
                 </div>
 
@@ -135,16 +135,16 @@
                         </ul>
 
                         <v-select 
-                                v-show="editingInput === 'tags'"
-                                v-model="addressData.tags"
-                                :options="allTags"
-                                :label="'name'"
-                                :class="'tags-select'"
-                                multiple
-                                taggable
-                                push-tags
-                                :placeholder="'Select tags'"
-                        ></v-select>
+                            v-show="editingInput === 'tags'"
+                            v-model="addressData.tags"
+                            :options="allTags"
+                            :label="'name'"
+                            :class="'tags-select'"
+                            multiple
+                            taggable
+                            push-tags
+                            :placeholder="'Select tags'"
+                        />
 
                         <p class="address-line can-edit" @click="toggleEditingInput('address')">
                             <div-editable 
@@ -300,10 +300,17 @@
 
                 <div class="lab-chain-members-overview address-box">
                     <div class="header">
-                        <h3>Lab Chain Members <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">({{addressData.cluster.addresses.length}})</small></h3>
+                        <h3>Lab Chain Members 
+                            <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">
+                                ({{addressData.cluster.addresses.length}})
+                            </small>
+                        </h3>
                     </div>
 
-                    <p v-if="addressData.cluster.addresses.length === 1" class="empty-data-p">Current address is the only member in this chain</p>
+                    <p v-if="addressData.cluster.addresses.length === 1" 
+                        class="empty-data-p">
+                        Current address is the only member in this chain
+                    </p>
 
                     <ul class="lab-chain-member-list">
                         <li v-if="c.id != addressData.id && i < 3" 
@@ -520,8 +527,10 @@
                     .then(data => {
                         this.addressData.cluster.id = data.cluster.id
                         this.addressData.cluster.name = data.cluster.name
+                        this.addressData.cluster.addresses = data.cluster.addresses
                         alertify.notify('Chain has been updated.', 'success', 3);
-                        this.chainSelect = false
+                        this.chainSelect = false;
+                        this.$eventGlobal.$emit('addressClusterUpdated');
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);
@@ -643,6 +652,7 @@
                         this.addressData.products = data.products;
                         alertify.notify('Used products has been updated.', 'success', 3);
                         this.closeProducts();
+                        this.$eventGlobal.$emit('addressProductsUpdated')
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);

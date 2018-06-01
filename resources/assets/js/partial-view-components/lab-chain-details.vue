@@ -279,6 +279,24 @@
         mounted: function () {
             this.loadClusterStaffPaginated();
             this.loadClusterProductsPaginated();
+
+            this.$eventGlobal.$on('addressClusterUpdated', () => {
+                this.isShowLabChainMembersCollapsed = true;
+                this.isShowLabChainStaffCollapsed = true;
+                this.isProductCollapsed = true;
+                this.loadClusterStaffPaginated();
+                this.loadClusterProductsPaginated();
+            })
+
+            this.$eventGlobal.$on('employeeDetailsUpdated', () => {
+                this.isShowLabChainStaffCollapsed = true;
+                this.loadClusterStaffPaginated();
+            })
+            
+            this.$eventGlobal.$on('addressProductsUpdated', () => {
+                this.isProductCollapsed = true;
+                this.loadClusterProductsPaginated();
+            })
         },
 
         props: ['employeeList', 'isActive', 'addressId', 'address', 'addressData'],
