@@ -6,13 +6,13 @@
 
             <li v-if="i < 3" v-for="(relation, i) in relationshipsCollapsedData">
                 <div class="image">
-                    <a href="javascript:void(0)">
+                    <a href="javascript:void(0)" @click="loadRelationship(relation)">
                         <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
                         <img :src="'/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
                 <div class="personal-info">
-                    <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
+                    <p class="name"><a href="javascript:void(0)" @click="loadRelationship(relation)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
                     <p class="connection-type" style="text-align: left">
                         <a href="javascript:void(0)" @click="loadRelationship(relation)">
@@ -24,7 +24,7 @@
                 <div style="clear: both"></div>
 
                 <publication-list
-                        class="publication-list"
+                        class="publication-list relation-row-class"
                         style="display: none;"
                         :id="'relation-row-'+relation.id"
                         :coAuthoredPublications="publications.co_authored_paper"
@@ -37,13 +37,13 @@
 
             <li v-for="(relation, i) in person.relationships">
                 <div class="image">
-                    <a href="javascript:void(0)">
+                    <a href="javascript:void(0)" @click="loadRelationship(relation)">
                         <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
                         <img :src="'/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
                 <div class="personal-info">
-                    <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
+                    <p class="name"><a href="javascript:void(0)" @click="loadRelationship(relation)">{{relation.name}}</a></p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
                     <p class="connection-type" style="text-align: left">
                         <a href="javascript:void(0)" @click="loadRelationship(relation)">
@@ -55,7 +55,7 @@
                 <div style="clear: both"></div>
 
                 <publication-list
-                        class="publication-list"
+                        class="publication-list relation-row-class"
                         style="display: none;"
                         :id="'relation-row-'+relation.id"
                         :coAuthoredPublications="publications.co_authored_paper"
@@ -81,7 +81,7 @@
 
             <a href="javascript:void(0)"
                v-if="!relationshipsCollapsed"
-               @click="relationshipsCollapsed = true"
+               @click="showLessRelationships()"
                class="address-box-show-more-link show-all-employees-link"
             >
                 Show Less
@@ -112,6 +112,11 @@
 
 
         methods: {
+
+            showLessRelationships: function () {
+                this.slideUpAllPublications();
+                this.relationshipsCollapsed = true;
+            },
 
             connectionNameForPagination: function(relation){
 
@@ -146,6 +151,8 @@
             },
 
             loadPersonRelationshipsPaginated: function (page) {
+
+                this.slideUpAllPublications();
 
                 let p = page || 1;
 
@@ -191,16 +198,39 @@
                 return urlQuery;
             },
 
+            slideUpAllPublications: function() {
+                $('.relation-row-class').slideUp(0);
+            },
+
+            checkIfShouldBeSlidedUp: function(relationId) {
+
+                let element = $('#relation-row-'+relationId);
+
+                if(element.attr('style').replace(/\s/g, '').indexOf('display:none') === -1) {
+                    element.slideUp('slow');
+                    return true;
+                }
+                return false;
+            },
+
             loadRelationship: function (relation) {
 
-                $('.publication-list').css('display', 'none');
+                if (this.checkIfShouldBeSlidedUp(relation.id)) {
+                    return;
+                }
+
+                this.slideUpAllPublications();
 
                 let url = '/api/people/'+this.personId+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
 
                 this.httpGet(url)
                     .then(data => {
                         this.publications = data;
-                        $('#relation-row-'+relation.id).css('display', 'block');
+
+                        setTimeout(()=>{
+                            $('#relation-row-'+relation.id).slideDown('slow');
+                        }, 100);
+
                     })
             }
         },
