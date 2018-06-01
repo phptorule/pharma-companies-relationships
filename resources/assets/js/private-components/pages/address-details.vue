@@ -172,9 +172,9 @@
 
                         <div class="confirm-edit-block">
                             <button
-                                    type="button"
-                                    @click="toggleEditing"
-                                    class="btn cancel-address-btn"
+                                type="button"
+                                @click="toggleEditing"
+                                class="btn cancel-address-btn"
                             >
                                 Cancel Editing
                             </button>
@@ -201,7 +201,11 @@
 
                 <div class="staff-overview address-box">
                     <div class="header">
-                        <h3>Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                        <h3>Staff 
+                            <a href="#" @click.prevent class="without-handler">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </h3>
                         <a href="javascript:void(0)" 
                             @click="showContactsChain(addressData)" 
                             class="view-contacts-chain"
@@ -327,13 +331,18 @@
 
                 <div class="lab-news-overview address-box">
                     <div class="header">
-                        <h3>Lab News <a href="#"><i class="fa fa-plus"></i></a></h3>
+                        <h3>Lab News 
+                            <a href="#" @click.prevent class="without-handler">
+                                <i class="fa fa-plus"></i>
+                            </a>
+                        </h3>
                     </div>
 
                     <ul class="lab-news-list">
                         <li>
                             <p class="date">Feb 21, 2018</p>
-                            <h4>New employee <a href="#">Jina James</a> joined the lab</h4>
+                            <h4>New employee <a href="#" @click.prevent class="without-handler">
+                                Jina James</a> joined the lab</h4>
                         </li>
                         <li>
                             <p class="date">Feb 21, 2018</p>
@@ -341,7 +350,7 @@
                         </li>
                     </ul>
 
-                    <a href="#" class="address-box-show-more-link">Go to Lab News</a>
+                    <a href="#" @click.prevent class="address-box-show-more-link without-handler">Go to Lab News</a>
                 </div>
             </div>
 

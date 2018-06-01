@@ -7,7 +7,7 @@
 
         <h3 class="">
             Lab Employees
-            <a data-v-cd5686be="" href="#">
+            <a data-v-cd5686be="" href="#" @click.prevent class="without-handler">
                 <i data-v-cd5686be="" class="fa fa-pencil"></i>
             </a>
         </h3>

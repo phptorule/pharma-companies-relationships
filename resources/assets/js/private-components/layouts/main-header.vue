@@ -8,7 +8,11 @@
 
             <div class="box-for-logo">
                 <div class="header-logo">
-                    <span class="logo-lg"><router-link to="/dashboard"><img src="/images/labscape.png" alt=""></router-link></span>
+                    <span class="logo-lg">
+                        <router-link to="/dashboard">
+                            <img src="/images/labscape.png" alt="">
+                        </router-link>
+                    </span>
                 </div>
             </div>
 
@@ -18,9 +22,9 @@
                     <li>
                         <img src="/images/ic-search.png" alt="">
                         <input
-                               v-model="globalSearchInput"
-                               @keyup="makeGlobalSearch()"
-                               placeholder="Search by laboratory, people or location"
+                            v-model="globalSearchInput"
+                            @keyup="makeGlobalSearch()"
+                            placeholder="Search by laboratory, people or location"
                         >
                     </li>
                 </ul>
@@ -28,10 +32,10 @@
 
             <div class="nav-links">
                 <ul>
-                    <li><a href="#" class="active">Lab Map</a></li>
+                    <li><a href="#" @click.prevent class="active without-handler">Lab Map</a></li>
                     <!--<li><a href="#">Feed</a></li>-->
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="#" @click.prevent class="without-handler">About</a></li>
+                    <li><a href="#" @click.prevent class="without-handler">Contact</a></li>
                 </ul>
             </div>
 

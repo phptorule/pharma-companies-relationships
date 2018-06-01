@@ -101,18 +101,20 @@
                             </div>
 
                             <h3>
-                                <router-link :to="'/address-details/'+address.id">{{address.name}}</router-link>
+                                <router-link :to="'/address-details/'+address.id">
+                                    {{ address.name }}
+                                </router-link>
 
                                 <span class="oval"></span>
                             </h3>
 
-                            <p class="address">{{address.address}}</p>
+                            <p class="address">{{ address.address }}</p>
 
                             <p class="lab-chain-p" v-if="address.cluster">Lab Chain: <strong>{{address.cluster.name}}</strong></p>
 
                             <ul class="tag-list" v-if="address.tags && address.tags.length">
                                 <li v-for="tag in address.tags">
-                                    <a href="#">{{tag.name}}</a>
+                                    <a href="#" @click.prevent>{{tag.name}}</a>
                                 </li>
                             </ul>
 
@@ -122,10 +124,10 @@
                                 </div>
 
                                 <div class="news-label">
-                                    New employer <a href="#" class="news-link">Jina James</a> joined the lab
+                                    New employer <a href="#" @click.prevent class="news-link without-handler">Jina James</a> joined the lab
                                 </div>
 
-                                <a href="#" class="news-link more-news-link">
+                                <a href="#" @click.prevent class="news-link more-news-link without-handler">
                                     +3 more news
                                 </a>
                             </div>

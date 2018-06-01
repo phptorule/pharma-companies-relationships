@@ -7,7 +7,7 @@
 
         <h3 class="">
             {{addressData.cluster.name}}
-            <a data-v-cd5686be="" href="#">
+            <a data-v-cd5686be="" href="#" @click.prevent class="without-handler">
                 <i data-v-cd5686be="" class="fa fa-pencil"></i>
             </a>
         </h3>
@@ -52,20 +52,37 @@
         <div class="lab-chain-staff staff-overview address-box" v-if="isShowLabChainStaffCollapsed">
 
             <div class="header">
-                <h3>Lab Chain Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                <h3>Lab Chain Staff 
+                    <a href="#" 
+                        @click.prevent 
+                        class="without-handler"
+                    >
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </h3>
             </div>
 
             <ul class="staff-list">
                 <li v-if="i < 3" v-for="(person, i) in clusterStaff.data">
                     <div class="image">
-                        <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">
-                            <span class="person-initials">{{getPersonInitials(person.name)}}</span>
+                        <a href="javascript:void(0)" 
+                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                        >
+                            <span class="person-initials">
+                                {{ getPersonInitials(person.name) }}
+                            </span>
                             <img :src="'/images/mask-'+i+'.png'" alt="">
                         </a>
                     </div>
                     <div class="personal-info">
-                        <p class="name"><a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">{{person.name}}</a></p>
-                        <p class="occupation">{{person.description}}</p>
+                        <p class="name">
+                            <a href="javascript:void(0)" 
+                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                            >
+                                {{ person.name }}
+                            </a>
+                        </p>
+                        <p class="occupation">{{ person.description }}</p>
                     </div>
                 </li>
             </ul>
@@ -78,19 +95,34 @@
         <div class="lab-chain-staff staff-overview address-box" v-if="!isShowLabChainStaffCollapsed">
 
             <div class="header">
-                <h3>Lab Chain Staff <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                <h3>Lab Chain Staff 
+                    <a href="#" 
+                        @click.prevent 
+                        class="without-handler"
+                    >
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </h3>
             </div>
 
             <ul class="staff-list">
                 <li v-for="(person, i) in clusterStaff.data">
                     <div class="image">
-                        <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">
-                            <span class="person-initials">{{getPersonInitials(person.name)}}</span>
+                        <a href="javascript:void(0)" 
+                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                        >
+                            <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
                             <img :src="'/images/mask-'+i+'.png'" alt="">
                         </a>
                     </div>
                     <div class="personal-info">
-                        <p class="name"><a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)">{{person.name}}</a></p>
+                        <p class="name">
+                            <a href="javascript:void(0)" 
+                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                            >
+                                {{ person.name }}
+                            </a>
+                        </p>
                         <p class="occupation">{{person.description}}</p>
                     </div>
                 </li>
@@ -107,7 +139,11 @@
         <div class="lab-chain-staff staff-overview address-box" v-if="isProductCollapsed">
 
             <div class="header">
-                <h3>Used Products <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                <h3>Used Products 
+                    <a href="#" @click.prevent class="without-handler">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </h3>
             </div>
 
             <p v-if="!clusterProducts.data.length" class="empty-data-p">There are no used products</p>
@@ -131,13 +167,23 @@
 
             <div style="clear: both"></div>
 
-            <a v-if="clusterProducts.data.length > 3" href="javascript:void(0)" @click="showProductsPaginated()" class="address-box-show-more-link">Show all {{clusterProducts.data.length}} products</a>
+            <a v-if="clusterProducts.data.length > 3" 
+                href="javascript:void(0)" 
+                @click="showProductsPaginated()" 
+                class="address-box-show-more-link"
+            >
+                Show all {{ clusterProducts.data.length }} products
+            </a>
         </div>
 
         <div class="lab-chain-staff staff-overview address-box" v-if="!isProductCollapsed">
 
             <div class="header">
-                <h3>Used Products <a href="#"><i class="fa fa-pencil"></i></a></h3>
+                <h3>Used Products 
+                    <a href="#" @click.prevent class="without-handler">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </h3>
             </div>
 
             <ul class="products-list">
@@ -147,7 +193,7 @@
                     </div>
                     <div>
                         <span class="product-description">
-                            {{product.name? product.company + ': ' + product.name : product.company}}
+                            {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
 
                         <span class="product-also-use" v-html="productAlsoUse(product)"></span>

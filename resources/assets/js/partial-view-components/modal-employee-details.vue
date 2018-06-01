@@ -78,11 +78,31 @@
                         </p>
 
                         <ul class="social-icons">
-                            <li><a href=""><i class="fa fa-linkedin"></i></a></li>
-                            <li><a href=""><i class="fa fa-twitter"></i></a></li>
-                            <li><a href=""><i class="fa fa-facebook"></i></a></li>
-                            <li><a href=""><i class="fa fa-instagram"></i></a></li>
-                            <li><a href=""><i class="fa fa-telegram"></i></a></li>
+                            <li>
+                                <a href="#" @click.prevent class="without-handler">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent class="without-handler">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent class="without-handler">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent class="without-handler">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent class="without-handler">
+                                    <i class="fa fa-telegram"></i>
+                                </a>
+                            </li>
                         </ul>
 
                         <div class="row person-experience">
@@ -92,7 +112,9 @@
                             </div>
 
                             <div class="col-md-4" v-if="yearsAtThisJob">
-                                <p class="number">{{yearsAtThisJob}}</p>
+                                <p class="number">
+                                    {{ yearsAtThisJob }}
+                                </p>
                                 <p class="text">Years at this Job</p>
                             </div>
 
@@ -100,12 +122,16 @@
                                 <p class="number">
                                     <img src="/images/ic-education.png" alt="">
                                 </p>
-                                <p class="text">{{personData.role}}</p>
+                                <p class="text">
+                                    {{ personData.role }}
+                                </p>
                             </div>
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)">View Relationship Graph</a>
+                            <a href="#" @click.prevent class="without-handler">
+                                View Relationship Graph
+                            </a>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -288,7 +314,9 @@
         computed: {
             experienceYears: function() {
 
-                if(!this.personData.careers || !this.personData.careers.length) {
+                if( ! this.personData.careers || 
+                    ! this.personData.careers.length || 
+                    ! this.personData.careers[this.personData.careers.length-1].enddate) {
                     return 0;
                 }
 
@@ -299,13 +327,13 @@
             },
 
             yearsAtThisJob: function () {
-                if (!this.personData.careers || !this.personData.careers.length) {
+                if ( ! this.personData.careers || !this.personData.careers.length) {
                     return 0;
                 }
 
                 let recordInCareer = this.personData.careers.find(el => el.address_id == this.currentAddressId);
 
-                if (!recordInCareer) {
+                if ( ! recordInCareer || !recordInCareer.enddate) {
                     return 0;
                 }
 
@@ -336,13 +364,6 @@
                 }
             },
         },
-
-        // beforeDestroy: function() {
-        //     this.isEditing = false;
-        // },
-        // destroyed: function() {
-        //     this.isEditing = false;
-        // },
         methods: {
             connectionName: function (id) {
                 let connection = this.connectionTypes.find(el => el.id == id);
@@ -450,8 +471,8 @@
                         this.madeChanges = false;
                         this.saveBtnDisabled = false;
                         this.isEditing = false;
-                        alertify.notify('Employe has been updated.', 'success', 3);
                         this.$eventGlobal.$emit('employeeDetailsUpdated')
+                        alertify.notify('Employe has been updated.', 'success', 3);
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);
