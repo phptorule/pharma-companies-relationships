@@ -162,13 +162,15 @@
 
                 let url = '/api/people/'+this.personId+'/relationships?page='+p;
 
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
                         this.relationshipsCollapsed = false;
 
                         this.person.relationships = data.data;
 
                         this.relationshipsTotal = data.total;
+
+                        return data;
                     });
             },
 
@@ -234,6 +236,38 @@
                         }, 50);
 
                     })
+            },
+
+            openRelationIfHashDetected: function () {
+                if(this.$route.hash.indexOf('#person-') !== -1
+                    && this.$route.hash.indexOf('&relation-person=') !== -1
+                    && this.$route.hash.indexOf('&relation-page=') !== -1)
+                {
+                    let relationshipParams = this.getRelationshipParams();
+
+                    this.loadPersonRelationshipsPaginated(relationshipParams.relationPage)
+                        .then(data => {
+
+                            let relation = this.person.relationships.find(el => el.id == relationshipParams.relationPerson);
+
+                            this.loadRelationship(relation)
+                        })
+
+
+                }
+            },
+
+            getRelationshipParams: function () {
+                let hashStr = this.$route.hash;
+                let person = hashStr.split('&').find(el => el.indexOf('#person-') !== -1).replace('#person-', '');
+                let relationPerson = hashStr.split('&').find(el => el.indexOf('relation-person=') !== -1).replace('relation-person=', '');
+                let relationPage = hashStr.split('&').find(el => el.indexOf('relation-page=') !== -1).replace('relation-page=', '');
+
+                return {
+                    person: person,
+                    relationPerson: relationPerson,
+                    relationPage: relationPage
+                }
             }
         },
 
@@ -251,7 +285,7 @@
         props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes'],
 
         mounted: function () {
-
+            this.openRelationIfHashDetected()
         }
 
     }

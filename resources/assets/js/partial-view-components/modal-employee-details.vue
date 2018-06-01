@@ -270,6 +270,14 @@
                 addressData['isPersonChain'] = true;
 
                 this.$eventGlobal.$emit('showModalContactsChain', addressData);
+            },
+
+            openRelationshipTabIfHashDetected: function () {
+                if(this.$route.hash.indexOf('#person-') !== -1 && this.$route.hash.indexOf('&relation-person=') !== -1) {
+                    setTimeout(() => {
+                        this.setTabActive('relationships');
+                    }, 1000);
+                }
             }
         },
 
@@ -282,6 +290,8 @@
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
                 this.init(data.personId, data.addressId, data.address);
             });
+
+            this.openRelationshipTabIfHashDetected('relationships');
         }
     }
 </script>
