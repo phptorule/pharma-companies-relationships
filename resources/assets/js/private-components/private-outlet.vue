@@ -15,6 +15,8 @@
 
                 <modal-product-details></modal-product-details>
 
+                <modal-tender-details></modal-tender-details>
+
                 <modal-contacts-chain></modal-contacts-chain>
 
                 <map-main></map-main>

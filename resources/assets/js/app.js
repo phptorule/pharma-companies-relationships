@@ -29,6 +29,7 @@ Vue.component('lab-chain-details', require('./partial-view-components/lab-chain-
 Vue.component('customer-status-select', require('./partial-view-components/customer-status-select'));
 Vue.component('address-products-overview', require('./partial-view-components/address-products-overview'));
 Vue.component('modal-product-details', require('./partial-view-components/modal-product-details'));
+Vue.component('modal-tender-details', require('./partial-view-components/modal-tenders-details'));
 Vue.component('all-products-list', require('./partial-view-components/all-products-list'));
 Vue.component('downloadExcel', JsonExcel);
 Vue.component('pagination', Pagination);
