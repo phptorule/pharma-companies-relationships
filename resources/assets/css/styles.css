@@ -1307,6 +1307,45 @@ ul.tag-list li {
     width: calc(100% - 190px);
 }
 
+.v-select.roles {
+    width: 200px;
+    display: inline-block;
+    margin-left: 50px;
+    font-family: Montserrat;
+    font-size: 13px;
+}
+
+.v-select.roles span.selected-tag{
+    position: absolute;
+}
+
+.v-select.roles div.dropdown-toggle input[type=search].form-control {
+    opacity: 1;
+}
+
+.v-select.roles .dropdown-toggle .clear {
+    bottom: 6px;
+}
+
+.v-select.roles ul.dropdown-menu {
+    font-family: Montserrat;
+    font-size: 13px;
+    border: 1px solid #fff;
+    overflow-y: hidden;
+}
+
+.v-select.roles ul.dropdown-menu li a {
+    color: #000;
+}
+
+.v-select.roles ul.dropdown-menu li.highlight a {
+    color: #fff;
+}
+
+.v-select.roles .dropdown-toggle {
+    background: #fff;
+    border: 1px solid #fff;
+}
 /**************************************************************/
 
 

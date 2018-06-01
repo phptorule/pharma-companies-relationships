@@ -460,5 +460,4 @@ class AddressesController extends Controller
 
         return response()->json($products);
     }
-
 }

@@ -451,6 +451,7 @@
                         this.saveBtnDisabled = false;
                         this.isEditing = false;
                         alertify.notify('Employe has been updated.', 'success', 3);
+                        this.$eventGlobal.$emit('employeeDetailsUpdated')
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);

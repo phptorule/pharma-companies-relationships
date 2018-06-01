@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConnectionTypes;
 use App\Models\People;
+use App\Models\PeopleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -45,6 +46,12 @@ class PeopleController extends Controller
         $person->description = request('description');
         $person->save();
         return response()->json($person);
+    }
+
+    function getRoles ()
+    {
+        $roles = PeopleType::get();
+        return response()->json($roles);
     }
 
 }
