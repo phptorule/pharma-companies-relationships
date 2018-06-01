@@ -159,10 +159,6 @@
 
                                     this.dataCreateToChart(product.prod_id, i)
 
-                                    if (i >= 3) {
-                                        return;
-                                    }
-
                                 })
                             });
 
@@ -196,6 +192,11 @@
             },
 
             dataCreateToChart: function (productId, indexOrder) {
+
+                if (indexOrder >= 3) {
+                    return;
+                }
+
                 setTimeout(() => {
                     var url = '/api/tenders-by-product-chart/' + productId + '/' + this.addressData.id;
 
