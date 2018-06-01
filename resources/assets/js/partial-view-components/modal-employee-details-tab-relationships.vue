@@ -94,10 +94,11 @@
 
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
+    import helpers from '../mixins/helpers';
 
     export default {
 
-        mixins: [getPersonInitials, http],
+        mixins: [getPersonInitials, http, helpers],
 
         data: function () {
             return {
@@ -129,7 +130,10 @@
                 }
 
                 if(relation.cited_paper) {
-                    let numberOfCitedPapers = relation.cited_paper.split(',').length;
+
+                    let ids = relation.cited_paper.replace(/ cites /g, ',');
+
+                    let numberOfCitedPapers = this.getUniqueArrayElements(ids.split(',')).length;
 
                     if(text.length) {
                         text += ', ';
@@ -188,9 +192,7 @@
 
                     let ids = relation.cited_paper.replace(/ cites /g, ',');
 
-                    ids = ids.split(',').filter((value, index, self) => {
-                        return self.indexOf(value) === index;
-                    });
+                    ids = this.getUniqueArrayElements(ids.split(','));
 
                     urlQuery += 'cited_paper=' + ids.join(',');
                 }
