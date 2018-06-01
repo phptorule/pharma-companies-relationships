@@ -17,16 +17,39 @@
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
-                        <img :src="product.image? product.image : '/images/mask-'+i+'.png'" alt="">
+                        <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
                     </a>
                 </div>
-                <div class="personal-info">
+                <div class="prod-info">
                     <p class="name">
-                        <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.purchases[0].id, addressData)">
-                            {{product.name? product.name : product.company}}
+                        <a href="javascript:void(0)"
+                           @click="showProductDetailsModal(addressId, product.id, addressData)">
+                            {{product.name? product.name : "unspecified "+product.company+"-product"}}
                         </a>
                     </p>
-                    <p class="occupation">{{product.description}}</p>
+                    <div class="amount">
+                        <div class="volume">
+                            <span class="volume-head" :title="product.unit">
+                                {{product.volume  | volume(product.unit)}}
+                                <span class="volume-title">Est. Test Volume</span>
+                            </span>
+                        </div>
+                        <div class="spending">
+                            <span class="spending-head">
+                                {{Math.ceil(product.total_spent/1000)}}
+                                <span class="spending-title">2y Spending (K Rub)</span>
+                            </span>
+                        </div>
+                        <div class="last-tender">
+                                <span class="last-tender-head">
+                                    {{product.last_tender_date ? product.last_tender_date : ''}}
+                                <span class="last-tender-title">Last Tender</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="prod-graf" :id="'graph-container-modal-'+i" style="width: 75px; height: 50px">
+                    <div class="load-spinner-charts-product"></div>
                 </div>
             </li>
         </ul>
@@ -50,26 +73,107 @@
         data: function () {
             return {
                 products: [],
-                isDataLoaded: false,
                 productTotal: 0
             }
         },
-
-        methods: {
-            loadProductsPaginated: function (id, page) {
-
-                let p = page || 1;
-
-                this.httpGet('/api/product-by-address/'+id+'?page='+p)
-                    .then(data => {
-                        this.products = data.data;
-                        this.isDataLoaded = true;
-                        this.productTotal = data.total;
-                    })
+        filters: {
+            currency: function (value, currency_type) {
+                if (!currency_type) {
+                    currency_type = '';
+                }
+                value = Math.ceil(Number(value) / 1000);
+                value = String(value);
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
             },
 
+            volume: function (value, volume) {
+                if(!volume) {
+                    volume = '';
+                }
+
+                var volumeName = '';
+
+                let arr = volume.split(' ');
+                if(arr.length) {
+                    volumeName += arr[0].charAt(0).toUpperCase();
+                    volumeName += arr[0].charAt(1);
+                    volumeName += '.';
+                    if(arr[1]){
+                        volumeName += ' ' + arr[1].charAt(0).toUpperCase();
+                        volumeName += ' ' + arr[1].charAt(1);
+                        volumeName += '.';
+                    }
+                    if(arr[2]){
+                        volumeName += ' ' + arr[2].charAt(0).toUpperCase();
+                        volumeName += ' ' + arr[2].charAt(1);
+                        volumeName += '.';
+                    }
+                }
+
+                return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + volumeName;
+            },
+        },
+        methods: {
+            loadProductsDetails: function () {
+                this.httpGet('/api/address-details/' + this.addressId)
+                    .then(data => {
+                        this.loadProductsPaginated(this.addressId);
+                    });
+            },
+            loadProductsPaginated: function (id, page) {
+                let p = page || 1;
+
+                return this.httpGet('/api/product-by-address/'+id+'?page='+p)
+                    .then(data => {
+                        this.products = data.data;
+                        this.productTotal = data.total;
+
+                        this.products.forEach((product, i) => {
+                            this.dataCreateToChart(product.prod_id, i)
+                        })
+                    })
+            },
+            dataCreateToChart: function (productId, indexOrder) {
+
+                setTimeout(() => {
+                    var url = '/api/tenders-by-product-chart/' + productId + '/' + this.addressData.id;
+
+                    this.httpGet(url)
+                        .then(data => {
+
+                            var title = ['Month', 'Total', {type: 'string', role: 'tooltip', 'p': {'html': true}}];
+
+                            var DATA = data.chartsData;
+
+                            DATA.unshift(title);
+
+                            this.viewTendersChart(DATA, 'graph-container-modal-' + indexOrder);
+
+                        });
+                }, 1000)
+            },
             pageChanged: function (pageNumber) {
                 this.loadProductsPaginated(this.addressId, pageNumber);
+            },
+            viewTendersChart: function (data, element_id) {
+                $('#' + element_id).html('');
+
+                var data = google.visualization.arrayToDataTable(data);
+
+                var options = {
+                    title: '',
+                    vAxis: {title: '', gridlines: {color: '#fff', count: 0}},
+                    hAxis: {baselineColor: 'none', ticks: []},
+                    seriesType: 'bars',
+                    legend: 'none',
+                    enableInteractivity: false,
+                    tooltip: {trigger: 'none'},
+                    series: {0: {type: 'line'}}
+                };
+
+                var chart = new google.visualization.ComboChart(document.getElementById(element_id));
+
+                chart.draw(data, options);
             },
 
             closeSlidedBox: function () {
@@ -80,9 +184,8 @@
         props: ['addressId', 'purchaseId', 'addressData'],
 
         mounted: function () {
-
-            if(this.addressId && !this.isDataLoaded) {
-                this.loadProductsPaginated(this.addressId)
+            if (this.addressId){
+                this.loadProductsDetails(this.addressId);
             }
         }
     }

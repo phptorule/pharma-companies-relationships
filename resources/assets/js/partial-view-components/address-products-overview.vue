@@ -138,7 +138,6 @@
                 }
 
                 return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + volumeName;
-
             },
         },
 
@@ -155,10 +154,8 @@
                             .then(() => {
                                 $('.load-spinner-product').addClass('hidden');
                                 $('.empty-data-p').removeClass('hidden');
-                                this.topProducts.forEach((product, i) => {
-
+                                this.topProducts.slice(0, 3).forEach((product, i) => {
                                     this.dataCreateToChart(product.prod_id, i)
-
                                 })
                             });
 
@@ -168,9 +165,9 @@
 
             loadTopProduct: function () {
 
-                return this.httpGet('/api/load-top-products/' + this.addressData.id)
+                return this.httpGet('/api/product-by-address/' + this.addressData.id)
                     .then(data => {
-                        this.topProducts = data;
+                        this.topProducts = data.data;
                     })
             },
 
@@ -192,11 +189,6 @@
             },
 
             dataCreateToChart: function (productId, indexOrder) {
-
-                if (indexOrder >= 3) {
-                    return;
-                }
-
                 setTimeout(() => {
                     var url = '/api/tenders-by-product-chart/' + productId + '/' + this.addressData.id;
 

@@ -112,7 +112,15 @@ class ProductsController extends Controller {
 		return response()->json( $tenders );
 	}
 
-	public function loadTopProducts( $address ) {
+    /**
+     * Get paginated products for "top products" (left sidebar) and
+     * "all products" (right pop-up sidebar) lists with pagination
+     * and caching
+     *
+     * @param $address
+     * @return \Illuminate\Http\JsonResponse
+     */
+	public function productByAddressPaginated( $address ) {
 
 		$sql = "SELECT
 				p.*, p.id as prod_id,
@@ -146,13 +154,36 @@ class ProductsController extends Controller {
 				GROUP BY p.id
 				ORDER BY total_spent DESC";
 
-		$result = DB::select(
-			DB::raw( $sql ),
-			['address' => $address,
-			 'address1' => $address]
-		);
+		// cache qeuery
+        $result = \Illuminate\Support\Facades\Cache::remember(
+            "loadTopProducts-" . md5($sql) . "-$address",
+            60 * 24,
+            function() use ($sql, $address) {
+                return  DB::select(
+                    DB::raw( $sql ),
+                    [
+                        'address' => $address,
+                        'address1' => $address
+                    ]
+                );
+            }
+        );
 
-		return response()->json( $result );
+        // make new collection
+        $collection = new \Illuminate\Support\Collection($result);
+
+        // Paginate
+        $perPage = 10; // Item per page
+        $currentPage = request()->input('page', 1) - 1; // url.com/test?page=2
+        $pagedData = $collection->slice($currentPage * $perPage, $perPage)->all();
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $pagedData,
+            count($collection),
+            $perPage,
+            $currentPage
+        );
+
+		return response()->json( $paginator );
 	}
 
 	public function getProductByTendersPaginated( $id, $address) {
@@ -169,17 +200,6 @@ class ProductsController extends Controller {
 		$tenders = $query->paginate( 5 );
 
 		return response()->json( $tenders );
-	}
-
-	public function productByAddressPaginated( Address $address ) {
-
-		$products = Product::whereHas( 'addresses', function ( $q ) use ( $address ) {
-
-			return $q->where( 'id', $address->id );
-		} )
-		                   ->paginate( 10 );
-
-		return response()->json( $products );
 	}
 
 	public function getProductByTendersToExcel( $id, $address ) {
