@@ -111,7 +111,6 @@ class TendersController extends Controller {
 
 		$query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
-		           ->where( 'p.id', $id )
 		           ->where( 'at.address_id', $address )
 		           ->whereNotNull( 'atp.tender_id' )
 		           ->whereNotNull( 'atb.tender_id' )
@@ -122,6 +121,8 @@ class TendersController extends Controller {
 		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
 		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' );
+
+		if($id != ''){$query->where( 'p.id', $id );}
 
 		$query = $this->composeConditions( $query, request()->all() );
 

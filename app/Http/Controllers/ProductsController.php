@@ -174,8 +174,8 @@ class ProductsController extends Controller {
 
         // Paginate
         $perPage = 10; // Item per page
-        $currentPage = request()->input('page', 1) - 1; // url.com/test?page=2
-        $pagedData = $collection->slice($currentPage * $perPage, $perPage)->all();
+        $currentPage = request()->input('page', 1); // url.com/test?page=2
+        $pagedData = $collection->slice(($currentPage-1) * $perPage, $perPage)->all();
         $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
             $pagedData,
             count($collection),
