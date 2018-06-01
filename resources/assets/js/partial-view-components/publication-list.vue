@@ -1,21 +1,21 @@
 <template>
     <div>
-        <div class="panel panel-default" v-if="coAuthoredPublications && coAuthoredPublications.length">
-            <div class="panel-heading">
-                <h3 class="panel-title">Co Authored Publications</h3>
+        <div class="box box-solid" v-if="coAuthoredPublications && coAuthoredPublications.length">
+            <div class="box-header with-border">
+                <h3 class="box-title">Co Authored Publications</h3>
             </div>
-            <div class="panel-body">
+            <div class="box-body">
 
                 <publication-list-item :items="coAuthoredPublications"></publication-list-item>
 
             </div>
         </div>
 
-        <div class="panel panel-default" v-if="citedPublications && citedPublications.length">
-            <div class="panel-heading">
-                <h3 class="panel-title">Cited Publications</h3>
+        <div class="box box-solid" v-if="citedPublications && citedPublications.length">
+            <div class="box-header with-border">
+                <h3 class="box-title">Cited Publications</h3>
             </div>
-            <div class="panel-body">
+            <div class="box-body">
 
                 <publication-list-item :items="citedPublications"></publication-list-item>
 

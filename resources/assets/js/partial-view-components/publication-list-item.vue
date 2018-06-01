@@ -4,10 +4,10 @@
         <ul class="publication-list">
             <li v-for="item of items">
                 <div>
-                    <h3>{{item.title}}</h3>
+                    <h4>{{item.title}}</h4>
                     <p>{{item.journal}}</p>
                     <p>
-                        <a :href="item.url" target="_blank"></a>
+                        <a :href="item.url" target="_blank">{{item.url}}</a>
                     </p>
                 </div>
             </li>

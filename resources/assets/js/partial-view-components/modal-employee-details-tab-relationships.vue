@@ -2,7 +2,7 @@
     <div>
         <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
 
-        <ul class="staff-list" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length && relationshipsCollapsed">
+        <ul class="staff-list staff-with-publication-list" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length && relationshipsCollapsed">
 
             <li v-if="i < 3" v-for="(relation, i) in relationshipsCollapsedData">
                 <div class="image">
@@ -33,7 +33,7 @@
             </li>
         </ul>
 
-        <ul class="staff-list" v-if="person.relationships && person.relationships.length && !relationshipsCollapsed">
+        <ul class="staff-list staff-with-publication-list" v-if="person.relationships && person.relationships.length && !relationshipsCollapsed">
 
             <li v-for="(relation, i) in person.relationships">
                 <div class="image">

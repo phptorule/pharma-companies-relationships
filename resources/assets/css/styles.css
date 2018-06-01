@@ -2327,3 +2327,17 @@ ul.staff-list li .personal-info .name a:hover{
     font-size: 12px;
     margin: 0;
 }
+
+ul.staff-list.staff-with-publication-list li{
+    display: block;
+}
+
+ul.staff-with-publication-list .box-body h4{
+    font-size: 15px;
+    margin-bottom: 7px;
+    margin-top: 0;
+}
+
+ul.staff-with-publication-list h3.box-title {
+
+}
