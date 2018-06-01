@@ -479,7 +479,7 @@
 
                 this.showLoader();
 
-                let url = '/api/product-by-tenders-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
+                let url = '/api/tenders-by-product-and-address-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
 
                 this.httpGet(url)
                     .then(data => {
@@ -609,7 +609,7 @@
 
             exportToExcel: function (product_id) {
                 this.showLoader();
-                let url = '/api/product-by-tenders-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
+                let url = '/api/tenders-by-product-and-address-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
                         this.hideLoader();
