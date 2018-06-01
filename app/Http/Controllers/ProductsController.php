@@ -114,27 +114,43 @@ class ProductsController extends Controller {
 
 	public function loadTopProducts( $address ) {
 
-		$sql = "SELECT 
-				p.*, p.id as prod_id, 
+		$sql = "SELECT
+				p.*, p.id as prod_id,
+                pc.bud_sum, pc.consum_name,
 				SUM(atp.total_price) as total_spent, 
-				SUM(atp.quantity) as volume, GROUP_CONCAT(DISTINCT atp.id SEPARATOR ', ') as purchase_ids, 
+				SUM(atp.quantity) as volume,
 				MAX(atp.units) as unit, 
 				DATE_FORMAT(MAX(at.tender_date), '%d-%m-%Y') as last_tender_date 
-				FROM rl_products as p 
+				FROM rl_products as p
 				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id 
-				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id 
+                LEFT JOIN (
+                SELECT SUM(at1.budgeted_cost) as bud_sum , pc1.name as consum_name, pc1.id as consum_id, p1.id as pr_id
+	                FROM rl_address_tenders_budgets as atb1
+	                LEFT JOIN rl_address_tenders AS at1 ON at1.id = atb1.tender_id
+	                LEFT JOIN rl_address_tenders_purchase AS atp1 ON atp1.id = at1.id
+	                LEFT JOIN rl_address_tenders_purchase_products AS atpp1 ON atpp1.purchase_id = atp1.id
+ 	                LEFT JOIN rl_product_consumables AS pc1 ON pc1.id = atpp1.consumable_id
+                    LEFT JOIN rl_products AS p1 ON p1.id = atpp1.product_id
+	                WHERE at1.address_id = :address
+	                AND pc1.id IS NOT NULL
+	                GROUP BY pc1.id
+	                ORDER BY bud_sum DESC
+               ) AS pc ON (pc.pr_id = p.id)
+				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
 				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id 
 				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id 
+                LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
 				LEFT JOIN rl_addresses AS a ON at.address_id = a.id 
-				WHERE at.address_id = :address 
+				WHERE at.address_id = :address1
 				AND YEAR(at.tender_date) <= YEAR(CURDATE()) 
-				GROUP BY p.id 
-				ORDER BY total_spent DESC LIMIT 3";
+				GROUP BY p.id
+				ORDER BY total_spent DESC";
 
 		$result = DB::select(
-		    DB::raw( $sql ),
-            ['address' => $address]
-        );
+			DB::raw( $sql ),
+			['address' => $address,
+			 'address1' => $address]
+		);
 
 		return response()->json( $result );
 	}
