@@ -385,7 +385,7 @@ a{
     position: absolute;
     top: calc(50% - 50px);
     left: calc(50% - 50px);
-    z-index: 999;
+    z-index: 9999;
 }
 
 
