@@ -217,11 +217,6 @@
         },
 
         methods: {
-            // connectionName: function (id) {
-            //     let connection = this.connectionTypes.find(el => el.id == id);
-            //
-            //     return connection? connection.name : id;
-            // },
             endDate: function (date) {
                 return moment(date).format('MMM YYYY');
             },
@@ -234,8 +229,6 @@
                 }
             },
             init: function (personId, addressId, address) {
-
-                console.log('init');
 
                 window.location.hash = 'person-' + personId;
 

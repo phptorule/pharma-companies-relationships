@@ -65,7 +65,12 @@
         </ul>
 
         <div class="pagination-box" style="margin-top: 20px" v-if="!relationshipsCollapsed">
-            <pagination :records="relationshipsTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="relationshipsPageChanged"></pagination>
+            <pagination :records="relationshipsTotal"
+                        :class="'pagination pagination-sm no-margin pull-right'"
+                        :per-page="10"
+                        @paginate="relationshipsPageChanged"
+
+            ></pagination>
         </div>
 
         <div style="clear: both"></div>
@@ -107,7 +112,8 @@
                 },
                 relationshipsTotal: 0,
                 relationshipsCollapsed: true,
-                publications: {}
+                publications: {},
+                relationshipPage: 1
             }
         },
 
@@ -161,6 +167,8 @@
                 let p = page || 1;
 
                 let url = '/api/people/'+this.personId+'/relationships?page='+p;
+
+                this.relationshipPage = p;
 
                 return this.httpGet(url)
                     .then(data => {
@@ -229,13 +237,25 @@
 
                 this.httpGet(url)
                     .then(data => {
+
                         this.publications = data;
 
                         setTimeout(()=>{
                             $('#relation-row-'+relation.id).slideDown('slow');
                         }, 50);
 
+                        this.updateHashStr(relation.id);
+
                     })
+            },
+
+            updateHashStr: function(relationId) {
+                let hashStr = this.$route.hash.split('&')[0];
+
+                hashStr += '&relation-person=' + relationId;
+                hashStr += '&relation-page=' + this.relationshipPage;
+
+                location.hash = hashStr;
             },
 
             openRelationIfHashDetected: function () {
@@ -250,10 +270,11 @@
 
                             let relation = this.person.relationships.find(el => el.id == relationshipParams.relationPerson);
 
+                            $('#personal-modal .page-item.active').removeClass('active');
+                            $('#personal-modal .page-link:contains("'+relationshipParams.relationPage+'")').parent().addClass('active');
+
                             this.loadRelationship(relation)
                         })
-
-
                 }
             },
 

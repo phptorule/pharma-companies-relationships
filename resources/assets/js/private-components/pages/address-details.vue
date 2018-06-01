@@ -199,10 +199,6 @@
             $route: function(to){
                 this.addressId = this.$route.params['id'];
                 this.loadAddressDetails();
-
-                if(!this.isFirstLoad) {
-                    this.showModalIfPersonHashDetected();
-                }
             }
         },
 
@@ -278,6 +274,8 @@
                     this.showSlidedBox('all-employee');
                 },0)
             }
+
+            this.showModalIfPersonHashDetected();
         }
     }
 </script>
