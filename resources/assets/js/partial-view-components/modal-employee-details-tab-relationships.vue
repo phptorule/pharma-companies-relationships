@@ -229,7 +229,7 @@
 
                         setTimeout(()=>{
                             $('#relation-row-'+relation.id).slideDown('slow');
-                        }, 100);
+                        }, 50);
 
                     })
             }
