@@ -64,13 +64,17 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
 	Route::get('/tenders-by-address/{id}', 'TendersController@getTendersByAddress')->name('tenders.getTendersByAddress');
 
+	Route::get('/tenders-by-product-and-address-paginated/{product}/{address}', 'TendersController@getTendersByProductAndAdderssPaginated')->name('tenders.getTendersByProductAndAdderssPaginated');
+
+	Route::get('/tenders-by-address-paginated/{address}', 'TendersController@getTendersByAdderssPaginated')->name('tenders.getTendersByAdderssPaginated');
+
+	Route::get('/tenders-by-product-and-address-to-excel/{product}/{address}', 'TendersController@getTendersByProductAndAddressToExcel')->name('tenders.getTendersByProductAndAddressToExcel');
+
+	Route::get('/tenders-by-address-to-excel/{address}', 'TendersController@getTendersByAddressToExcel')->name('tenders.getTendersByAddressToExcel');
+
 	Route::get('/product-by-id/{product}', 'ProductsController@productById')->name('products.productById');
 
 	Route::get('/product-by-tenders/{id}/{address}', 'ProductsController@productByTenders')->name('products.productByTenders');
-
-	Route::get('/product-by-tenders-paginated/{id}/{address}', 'ProductsController@getProductByTendersPaginated')->name('products.getProductByTendersPaginated');
-
-	Route::get('/product-by-tenders-to-excel/{id}/{address}', 'ProductsController@getProductByTendersToExcel')->name('products.getProductByTendersToExcel');
 
 	Route::get('/product-load-tags', 'ProductsController@loadTagsValues')->name('products.loadTagsValues');
 
