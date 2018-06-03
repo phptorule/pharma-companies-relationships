@@ -3113,3 +3113,445 @@ ul.staff-list li .prod-info .amount{
     height: 14px;
     cursor: pointer;
 }
+
+
+
+#tenders-modal .modal-header{
+    background: #f7f7f7;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    position: relative;
+}
+
+#tenders-modal .modal-content{
+    border-radius: 6px;
+}
+
+#tenders-modal .modal-dialog{
+    margin-top: 130px;
+    width: 1120px;
+}
+
+#tenders-modal .person-profile-picture {
+    text-align: center;
+    margin-top: -115px;
+}
+
+#tenders-modal .person-profile-picture img {
+    width: 200px;
+    height: 200px;
+    background: #e6f3f9;
+    border-radius: 100px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.2);
+    border: solid 2px #ffffff;
+}
+
+#tenders-modal h4.modal-title{
+    font-family: Montserrat;
+    font-size: 38px;
+    text-align: center;
+    color: #3a444f;
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 17px;
+    justify-content: center;
+    align-items: center;
+}
+
+#tenders-modal h4.modal-title a{
+    display: inline-block;
+    color: #fff;
+    background: #bbbec2;
+    font-size: 16px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 14px;
+    text-align: center;
+    transition: background-color 0.1s linear;
+    margin-left: 15px;
+}
+
+#tenders-modal h4.modal-title a:hover{
+    background: #4a90e3;
+}
+
+#tenders-modal .place-of-work,
+#tenders-modal .occupation {
+    font-family: Montserrat;
+    font-size: 16px;
+    text-align: center;
+    color: #3a444f;
+}
+
+#tenders-modal .place-of-work a{
+    color: #4a90e3;
+    font-weight: 600;
+}
+
+#tenders-modal .place-of-work a:hover{
+    color: #5ba3f4;
+}
+
+#tenders-modal ul.tags-filter li a{
+    color: #3a444f;
+}
+
+#tenders-modal .person-experience{
+    text-align: center;
+    margin-top: 25px;
+}
+
+#tenders-modal .person-experience .number{
+    font-family: Montserrat;
+    font-size: 20px;
+    height: 40px;
+    color: #3a444f;
+    line-height: 1em;
+    font-weight: 600;
+    letter-spacing: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#tenders-modal .person-experience .text{
+    font-family: Montserrat;
+    font-size: 16px;
+    color: #3a444f;
+}
+
+#tenders-modal .view-contacts-chain-container {
+    text-align: center;
+    margin-bottom: -35px;
+    margin-top: 30px;
+}
+
+#tenders-modal .view-contacts-chain-container a{
+    background: #4a90e3;
+    color: #fff;
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    margin: 0;
+    transition: background-color 0.1s linear;
+}
+
+#tenders-modal .view-contacts-chain-container a:hover{
+    background: #5ba3f4;
+}
+
+#tenders-modal .modal-body {
+    position: initial;
+    padding-left: 140px;
+    padding-right: 140px;
+    padding-bottom: 50px;
+}
+
+#tenders-modal ul.person-tabs{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#tenders-modal ul.person-tabs li {
+
+}
+
+#tenders-modal ul.person-tabs li a{
+    padding: 10px 15px;
+    border: 2px solid transparent;
+
+    opacity: 0.5;
+    font-family: Montserrat;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-align: center;
+    color: #3a444f;
+    font-weight: 600;
+}
+
+#tenders-modal ul.person-tabs.nav-tabs>li>a:focus,
+#tenders-modal ul.person-tabs.nav-tabs>li>a:hover{
+    border-bottom: 2px solid #3a444f;
+    background: #fff;
+}
+
+#tenders-modal ul.person-tabs.nav-tabs>li.active>a,
+#tenders-modal ul.person-tabs.nav-tabs>li.active>a:focus,
+#tenders-modal ul.person-tabs.nav-tabs>li.active>a:hover{
+    opacity: 1;
+    cursor: default;
+    background: #fff;
+    border-bottom: 2px solid #3a444f
+}
+
+#tenders-modal .tab-content{
+    display: table;
+    content: "";
+    position: relative;
+}
+
+
+#tenders-modal ul{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#tenders-modal ul.career-list li{
+    margin-bottom: 35px;
+}
+
+#tenders-modal ul.career-list li p{
+    margin-bottom: 10px;
+    line-height: 1em;
+}
+
+#tenders-modal ul.career-list li p.occupation {
+
+    font-family: Montserrat;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    color: #3a444f;
+}
+
+#tenders-modal ul.career-list li p.work-place {
+
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    color: #3a444f;
+}
+
+#tenders-modal ul.career-list li p.date {
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    color: #b2b6bb;
+}
+
+#tenders-modal ul.news-list {
+
+}
+
+#tenders-modal ul.news-list li + li{
+    margin-top: 20px;
+}
+
+#tenders-modal ul.news-list li p.date{
+    opacity: 0.6;
+    font-family: Montserrat;
+    font-size: 12px;
+    color: #3a444f;
+}
+
+#tenders-modal ul.news-list li .news-box {
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: rgba(58,68,79,0.07);
+}
+
+#tenders-modal ul.news-list li .news-box p{
+    font-family: Montserrat;
+    font-size: 12px;
+    color: #3a444f;
+    margin-bottom: 0;
+}
+
+#tenders-modal .person-profile-picture .person-initials{
+    position: absolute;
+    font-family: Montserrat;
+    font-size: 70px;
+    width: 100%;
+    text-align: center;
+    height: 70px;
+    top: calc(50% - 50px);
+    left: 0;
+    color: #fff;
+    text-shadow: 1px 1px 9px rgba(0,0,0,.3);
+}
+
+#tenders-modal .tender-old{
+    float: left;
+    margin-left: 15%;
+}
+
+#tenders-modal .tender-budget{
+    margin-left: 25%;
+    float: left;
+}
+
+#tenders-modal .tender-spending{
+    float: right;
+    margin-right: 15%;
+}
+
+#tenders-modal .tender-query{
+    padding-top: 10px;
+    padding-bottom: 15px;
+}
+
+#tenders-modal .tender-search{
+    width: 192px;
+    float: left;
+    height: 42px;
+    margin-left: 10px;
+    padding-left: 0px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
+    position: relative;
+}
+
+#tenders-modal .tender-search-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
+    height: 40px;
+    width: 190px;
+    padding-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#tenders-modal .filter-cost-tender{
+    float: left;
+    padding-left: 0px;
+    padding-right: 0px;
+    position: relative;
+}
+
+#tenders-modal .min-value{
+    width: 92px;
+    float: left;
+    height: 42px;
+    margin-left: 50px;
+    padding-left: 0px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#tenders-modal .min-value-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
+    width: 90px;
+    float: left;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#tenders-modal .max-value{
+    width: 92px;
+    float: left;
+    margin-left: 30px;
+    height: 42px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#tenders-modal .max-value-input{
+    font-family: Montserrat;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3a444f;
+    line-height: 1.42857143;
+    width: 90px;
+    float: left;
+    margin-left: -15px;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#tenders-modal .min-max{
+    padding-left: 30px;
+    padding-right: 0px;
+}
+
+#tenders-modal .tender-data{
+    width: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#tenders-modal .filter-tag-query-tender{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#tenders-modal .export-excel{
+    padding: 0px;
+    width: 68px;
+}
+
+#tenders-modal .export-excel .export-to-excel{
+    float: left;
+}
+
+#tenders-modal .export-excel .export-to-csv{
+    float: left;
+}
+
+#tenders-modal .export-excel .fa-file-excel-o{
+    color: #4a90e2;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+
+#tenders-modal .export-excel .fa-file-excel-o:hover{
+    background: #4a90e2;
+    color: #fff;
+}
+
+#tenders-modal .export-excel img{
+    color: #4a90e2;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 34px;
+}
+
+
+#tenders-modal .export-excel img:hover{
+    background: #4a90e2;
+    color: #fff;
+}
+
+#tenders-modal .tender-chart-container{
+    margin-top: 10px;
+}
+
+#tenders-modal .tender-chart{
+    width: 830px;
+    float: left;
+    margin-left: 10px;
+}
+
+#tenders-modal .pagination-box{
+    margin-top: 5px;
+}
+
+.header .tender-list .more-news{
+    float: right;
+    color: #0f84bb;
+}

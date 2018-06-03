@@ -1,17 +1,15 @@
-const ProductModal = {
+const TenderModal = {
 
     methods: {
-        showProductDetailsModal: function (addressId, productId, addressData) {
+        showTenderDetailsModal: function (addressId) {
             let data = {
-                addressId: addressId,
-                purchaseId: productId,
-                 address: addressData
+                addressId: addressId
             };
 
-            this.$eventGlobal.$emit('showModalProductDetails', data);
+            this.$eventGlobal.$emit('showModalTenderDetails', data);
         }
     }
 
 };
 
-export default ProductModal;
+export default TenderModal;

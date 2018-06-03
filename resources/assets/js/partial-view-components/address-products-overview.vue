@@ -71,6 +71,9 @@
                             <span class="tender-title">Next year</span>
                         </span>
                 </div>
+                <a class="more-news" href="javascript:void(0)" @click="showTenderDetailsModal(addressId)">
+                    +3 more news
+                </a>
             </div>
             <p v-else class="empty-data-p hidden">We don't know about any tenders</p>
         </div>
@@ -81,10 +84,11 @@
 
     import http from '../mixins/http';
     import ProductModal from '../mixins/show-product-details-modal';
+    import TenderModal from '../mixins/show-tenders-details-modal';
     import getProductName from '../mixins/get-product-name';
 
     export default {
-        mixins: [http, ProductModal, getProductName],
+        mixins: [http, ProductModal, TenderModal, getProductName],
 
 
         data: function () {
