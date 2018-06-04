@@ -1676,7 +1676,7 @@ ul.staff-list li .personal-info .name a:hover{
 
 #personal-modal .modal-dialog{
     margin-top: 130px;
-    width: 800px;
+    width: 80%;
 }
 
 #personal-modal .person-profile-picture {
