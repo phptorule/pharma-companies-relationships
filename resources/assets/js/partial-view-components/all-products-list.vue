@@ -114,27 +114,44 @@
             },
         },
         methods: {
-            loadProductsDetails: function () {
-                this.httpGet('/api/address-details/' + this.addressId)
-                    .then(data => {
-                        this.loadProductsPaginated(this.addressId);
-                    });
-            },
             loadProductsPaginated: function (id, page) {
                 let p = page || 1;
 
-                return this.httpGet('/api/product-by-address/'+id+'?page='+p)
-                    .then(data => {
-                        this.products = data.data;
-                        this.productTotal = data.total;
 
-                        this.products.forEach((product, i) => {
-                            this.dataCreateToChart(product.prod_id, i)
-                        })
-                    })
+                try {
+                    let o = JSON.parse(localStorage.getItem('productsPaginatedFirstPage'));
+
+                    if (o && typeof o === "object" && p == 1) {
+                        if(o.data && o.total)
+                        {
+                            this.products = o.data;
+                            this.productTotal = o.total;
+
+                            if(typeof this.products[Symbol.iterator] === 'function') {
+                                this.products.forEach((product, i) => {
+                                    this.dataCreateToChart(product.prod_id, i)
+                                })
+                            }
+                        }
+                    } else {
+                        return this.httpGet('/api/product-by-address/'+id+'?page='+p)
+                            .then(data => {
+                                if(data.data && data.total) {
+                                    this.products = data.data;
+                                    this.productTotal = data.total;
+
+                                    if(typeof this.products[Symbol.iterator] === 'function') {
+                                        this.products.forEach((product, i) => {
+                                            this.dataCreateToChart(product.prod_id, i)
+                                        })
+                                    }
+                                }
+                            })
+                    }
+                }
+                catch (e) { }
             },
             dataCreateToChart: function (productId, indexOrder) {
-
                 setTimeout(() => {
                     var url = '/api/tenders-by-product-chart/' + productId + '/' + this.addressData.id;
 
@@ -156,24 +173,27 @@
                 this.loadProductsPaginated(this.addressId, pageNumber);
             },
             viewTendersChart: function (data, element_id) {
-                $('#' + element_id).html('');
+                if($('#' + element_id).length > 0)
+                {
+                    $('#' + element_id).html('');
 
-                var data = google.visualization.arrayToDataTable(data);
+                    var data = google.visualization.arrayToDataTable(data);
 
-                var options = {
-                    title: '',
-                    vAxis: {title: '', gridlines: {color: '#fff', count: 0}},
-                    hAxis: {baselineColor: 'none', ticks: []},
-                    seriesType: 'bars',
-                    legend: 'none',
-                    enableInteractivity: false,
-                    tooltip: {trigger: 'none'},
-                    series: {0: {type: 'line'}}
-                };
+                    var options = {
+                        title: '',
+                        vAxis: {title: '', gridlines: {color: '#fff', count: 0}},
+                        hAxis: {baselineColor: 'none', ticks: []},
+                        seriesType: 'bars',
+                        legend: 'none',
+                        enableInteractivity: false,
+                        tooltip: {trigger: 'none'},
+                        series: {0: {type: 'line'}}
+                    };
 
-                var chart = new google.visualization.ComboChart(document.getElementById(element_id));
+                    var chart = new google.visualization.ComboChart(document.getElementById(element_id));
 
-                chart.draw(data, options);
+                    chart.draw(data, options);
+                }
             },
 
             closeSlidedBox: function () {
@@ -185,7 +205,7 @@
 
         mounted: function () {
             if (this.addressId){
-                this.loadProductsDetails(this.addressId);
+                this.loadProductsPaginated(this.addressId);
             }
         }
     }

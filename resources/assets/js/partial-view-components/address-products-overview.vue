@@ -162,7 +162,6 @@
                                     this.dataCreateToChart(product.prod_id, i)
                                 })
                             });
-
                     });
 
             },
@@ -172,6 +171,9 @@
                 return this.httpGet('/api/product-by-address/' + this.addressData.id)
                     .then(data => {
                         this.topProducts = data.data;
+
+                        // store data of top products as first page to productsPaginatedFirstPage
+                        localStorage.setItem('productsPaginatedFirstPage', JSON.stringify(data));
                     })
             },
 
@@ -239,8 +241,7 @@
                         this.isGoogleChartCoreLoaded = true;
                     })
             }
-        }
-        ,
+        },
         props: ['addressId'],
         mounted:
 
