@@ -328,7 +328,7 @@ class ProductsController extends Controller {
 
 				} elseif ( $j == 'total' ) {
 
-					$total = intval( $value / $delimetr );
+					$total = $value / $delimetr;
 
 					$responsData[ $i ][] = $total;
 
