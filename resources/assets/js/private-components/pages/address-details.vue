@@ -707,8 +707,8 @@
         },
 
         mounted: function () {
-            // $('.address-details-fixed-height').height(document.body.clientHeight - 70 - 51 - 15);
-            // $('.slided-box').height(document.body.clientHeight - 70 - 51 - 15);
+            $('.address-details-fixed-height').height(document.documentElement.clientHeight - 70 - 51 - 13);
+            $('.slided-box').height(document.documentElement.clientHeight - 70 - 51 - 13);
 
             this.addressId = this.$route.params.id;
 

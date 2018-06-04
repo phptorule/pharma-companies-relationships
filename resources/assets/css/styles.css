@@ -1357,9 +1357,9 @@ ul.tag-list li {
     cursor: not-allowed !important;
 }
 
-.address-details-fixed-height, .slided-box {
-    height: calc(100vh - 134px) !important;
-}
+/* .address-details-fixed-height, .slided-box { */
+    /* height: calc(100vh - 134px) !important; */
+/* } */
 /**************************************************************/
 
 
