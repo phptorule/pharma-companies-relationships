@@ -32,6 +32,10 @@ mix
         'public/css/app.css')
 
     .babel([
+        'resources/assets/graph-js/graph-1.js'
+    ], 'public/js/graph-1.js')
+
+    .scripts([
             'node_modules/supercluster/build/supercluster.js',
             'bower_components/jquery/dist/jquery.min.js',
             'resources/assets/graph-js/vis.js',
@@ -47,7 +51,7 @@ mix
             'bower_components/jquery-slimscroll/jquery.slimscroll.min.js',
             'bower_components/fastclick/lib/fastclick.js',
             'node_modules/alertifyjs/build/alertify.js',
-            'resources/assets/graph-js/graph-1.js'
+            'public/js/graph-1.js'
         ],
         'public/js/vendor.js')
 
