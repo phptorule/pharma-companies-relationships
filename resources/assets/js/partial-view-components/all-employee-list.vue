@@ -18,6 +18,7 @@
                 type="text" 
                 class="people-search-input"
                 @keydown.enter.prevent="handleSearch"
+                @input="handleSearch"
                 placeholder="Employee name"
             >
 
@@ -31,7 +32,7 @@
             />
         </div>
         
-        <ul v-if=" ! searchSubmited" class="staff-list">
+        <ul v-if=" ! canSearch && ! canSearchByRole" class="staff-list">
             <li v-for="(person, i) in people">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressId, address)">
@@ -74,7 +75,7 @@
     
         </ul>
 
-        <div v-show=" ! searchSubmited" class="pagination-box">
+        <div v-show=" ! canSearch && ! canSearchByRole" class="pagination-box">
             <pagination :records="peopleTotal"  
                 :class="'pagination pagination-sm no-margin pull-right'" 
                 :per-page="10" @paginate="pageChanged"></pagination>
@@ -97,18 +98,19 @@
                 filtered: [],
                 roles: [],
                 selectedRole: null,
+                defaultRole: {
+                    id: -1,
+                    name: "All Employees"
+                },
                 isDataLoaded: false,
                 peopleTotal: 0,
                 query: '',
-                searchSubmited: false
             }
         },
 
         watch: {
-            query: function () {
-                if (this.query.trim() === '') {
-                    this.searchSubmited = false;
-                }
+            selectedRole: function () {
+                this.handleSearch()
             }
         },
 
@@ -128,6 +130,8 @@
                 this.httpGet('/api/get-roles')
                     .then(data => {
                         this.roles = data
+                        this.roles.unshift(this.defaultRole)
+                        this.selectedRole = this.defaultRole
                     })
             },
 
@@ -139,18 +143,16 @@
                 this.$emit('closeSlidedBox')
             },
             handleSearch: function (e) {
-                if (this.canSearch) {
-                    this.searchSubmited = true;
-
-                    this.filtered = this.employeeList.filter((item) => {
-                        if (this.selectedRole) {
-                            return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
-                                item.type_id == this.selectedRole.id
-                        } else {
-                            return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
-                        }
-                    });
-                }
+                this.filtered = this.employeeList.filter((item) => {
+                    if (this.canSearch && this.canSearchByRole) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
+                            item.type_id == this.selectedRole.id
+                    } else if (this.canSearch && ! this.canSearchByRole) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
+                    } else if ( ! this.canSearch && this.canSearchByRole) {
+                        return item.type_id == this.selectedRole.id
+                    }
+                });
             }
         },
 
@@ -173,7 +175,10 @@
         },
         computed: {
             canSearch: function () {
-                return this.query.trim() === '' ? false : true
+                return this.query.trim() === '' || this.selectedRole == null ? false : true
+            },
+            canSearchByRole: function () {
+                return this.selectedRole && this.selectedRole.id != -1 ? true : false
             }
         }
     }
