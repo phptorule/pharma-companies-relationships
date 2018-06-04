@@ -707,8 +707,10 @@
         },
 
         mounted: function () {
-            $('.address-details-fixed-height').height(document.documentElement.clientHeight - 70 - 51 - 13);
-            $('.slided-box').height(document.documentElement.clientHeight - 70 - 51 - 13);
+            let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            let ih = (iOS) ? screen.height : window.innerHeight;
+            $('.address-details-fixed-height').height(ih - 70 - 51 - 13);
+            $('.slided-box').height(ih - 70 - 51 - 13);
 
             this.addressId = this.$route.params.id;
 
