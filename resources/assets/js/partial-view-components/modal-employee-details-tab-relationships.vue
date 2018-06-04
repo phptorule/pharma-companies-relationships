@@ -235,7 +235,7 @@
 
                 let url = '/api/people/'+this.personId+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
 
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
 
                         this.publications = data;
@@ -274,6 +274,9 @@
                             $('#personal-modal .page-link:contains("'+relationshipParams.relationPage+'")').parent().addClass('active');
 
                             this.loadRelationship(relation)
+                                .then(() => {
+                                    this.scrollToElement('#relation-row-' + relationshipParams.relationPerson, 100, '#personal-modal');
+                                })
                         })
                 }
             },
