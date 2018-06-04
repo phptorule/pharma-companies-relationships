@@ -1347,6 +1347,10 @@ ul.tag-list li {
     border: 1px solid #fff;
 }
 
+.v-select.roles .clear {
+    display: none;
+}
+
 /** remove after implenenting **/
 .without-handler {
     opacity: 0.5 !important;

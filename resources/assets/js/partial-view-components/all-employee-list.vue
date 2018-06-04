@@ -97,7 +97,10 @@
                 people: [],
                 filtered: [],
                 roles: [],
-                selectedRole: null,
+                selectedRole: {
+                    id: -1,
+                    name: "All Employees"
+                },
                 defaultRole: {
                     id: -1,
                     name: "All Employees"
@@ -110,6 +113,9 @@
 
         watch: {
             selectedRole: function () {
+                if (this.selectedRole == null) {
+                    this.selectedRole = this.defaultRole
+                }
                 this.handleSearch()
             }
         },
