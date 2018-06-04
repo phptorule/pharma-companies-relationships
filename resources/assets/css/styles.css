@@ -1356,6 +1356,10 @@ ul.tag-list li {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
+
+.address-details-fixed-height, .slided-box {
+    height: calc(100vh - 134px) !important;
+}
 /**************************************************************/
 
 
