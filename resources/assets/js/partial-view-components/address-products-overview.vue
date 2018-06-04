@@ -25,7 +25,7 @@
                         </div>
                         <div class="spending">
                             <span class="spending-head">
-                                {{Math.ceil(product.total_spent/1000)}}
+                                {{product.total_spent | currency}}
                                 <span class="spending-title">2y Spending (K Rub)</span>
                             </span>
                         </div>

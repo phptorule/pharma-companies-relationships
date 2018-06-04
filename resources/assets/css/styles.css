@@ -2302,8 +2302,8 @@ ul.staff-list li .personal-info .name a:hover{
 }
 
 ul.staff-list li .prod-info{
-    width: 70%;
-    margin-right: 30px;
+    width: 100%;
+    /*margin-right: 30px;*/
     margin-left: 10px;
     position: relative;
 }
@@ -2339,11 +2339,11 @@ ul.staff-list li .prod-info .name a:hover{
     width: 270%;
 }
 ul.staff-list li .prod-graf{
+    width: 75px;
+    margin-top: auto;
+    height: 50px;
     float: right;
     background-color: #e8e7e7;
-    /*padding: 25px;*/
-    width: 150px;
-    height: 150px;
 }
 
 .tender-list{
@@ -3052,13 +3052,14 @@ ul.tenders-list li .item .tag-list .tags:hover{
 
 .volume, .spending, .last-tender{
     display: inline-flex;
+    width: 20%;
 }
 
 .volume{
-    width: 30%;
+    width: 40%;
 }
 .spending{
-    width: 125px;
+    width: 38%;
 
 }
 
