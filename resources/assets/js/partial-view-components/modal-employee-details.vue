@@ -119,8 +119,9 @@
                                     <ul class="publication-list" v-if="personData.publications.length">
                                         <li v-for="publication in personData.publications">
                                             <p class="title">
-                                                {{publication.title}}
-                                                <a :href="publication.url" target="_blank"><i class="fa fa-external-link"></i></a>
+                                                <a :href="publication.url" target="_blank">
+                                                    {{publication.title}} <i class="fa fa-external-link"></i>
+                                                </a>
                                             </p>
                                             <p class="description">
                                                 {{publication.journal}}

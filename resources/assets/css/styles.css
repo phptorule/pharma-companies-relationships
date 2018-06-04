@@ -1990,9 +1990,11 @@ ul.staff-list li .personal-info .name a:hover{
     margin-bottom: 5px;
 }
 
+.publication-list li h4 a,
 .publication-list li p.title a{
-    color: #909498;
+    color: #3a444f;
 }
+.publication-list li h4 a:hover,
 .publication-list li p.title a:hover{
     color: #4a90e3;
 }
