@@ -707,7 +707,7 @@
         },
 
         mounted: function () {
-            let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            let iOS = /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             let ih = (iOS) ? screen.height : window.innerHeight;
             $('.address-details-fixed-height').height(ih - 70 - 51 - 13);
             $('.slided-box').height(ih - 70 - 51 - 13);
