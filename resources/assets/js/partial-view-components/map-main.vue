@@ -364,6 +364,10 @@
                 let fullUrl = this.$route.fullPath;
                 let hash = this.$route.hash;
 
+                if(hash) {
+                    fullUrl = (fullUrl.split('#'))[0];
+                }
+
                 if (fullUrl.indexOf('?') === -1) {
                     fullUrl += '?';
                 }
