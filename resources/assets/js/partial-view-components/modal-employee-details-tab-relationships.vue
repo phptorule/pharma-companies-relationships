@@ -275,7 +275,7 @@
 
                             this.loadRelationship(relation)
                                 .then(() => {
-                                    this.scrollToElement('#relation-row-' + relationshipParams.relationPerson, 100, '#personal-modal');
+                                    this.scrollToElement($('#relation-row-' + relationshipParams.relationPerson).parent(), 100, '#personal-modal');
                                 })
                         })
                 }
