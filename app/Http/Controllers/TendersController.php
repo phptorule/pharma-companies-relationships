@@ -66,7 +66,7 @@ class TendersController extends Controller {
 
 		$query = $this->prepareTendersQuery($address, $product);
 
-		$tenders = $query->paginate( 5 );
+		$tenders = $query->paginate( 10 );
 
 		return response()->json( $tenders );
 
@@ -76,7 +76,7 @@ class TendersController extends Controller {
 
 		$query = $this->prepareTendersQuery($address);
 
-		$tenders = $query->paginate( 5 );
+            $tenders = $query->paginate( 10 );
 
 		return response()->json( $tenders );
 	}

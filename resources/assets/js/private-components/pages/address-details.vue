@@ -219,9 +219,8 @@
                             this.addressData.cluster = {addresses: []};
                         }
 
-                            document.title = this.addressData.name;
+                        document.title = this.addressData.name;
                     })
-
             },
             loadCustomerStatusList: function () {
                 this.httpGet('/api/customer-statuses')

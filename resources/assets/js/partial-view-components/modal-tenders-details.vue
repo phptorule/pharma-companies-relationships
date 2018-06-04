@@ -116,7 +116,7 @@
                                         <div class="col-md-12 pagination-box">
                                             <pagination :records="tendersTotal" ref="paginationDirective"
                                                         :class="'pagination pagination-sm no-margin pull-right'"
-                                                        :per-page="5" @paginate="pageChanged"></pagination>
+                                                        :per-page="10" @paginate="pageChanged"></pagination>
                                         </div>
                                     </div>
                                 </div>
