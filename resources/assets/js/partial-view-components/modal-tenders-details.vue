@@ -305,6 +305,7 @@
                         }
 
                     });
+                this.exportToExcel();
             },
 
             applyFilters: function (isOnlySortingChanged) {

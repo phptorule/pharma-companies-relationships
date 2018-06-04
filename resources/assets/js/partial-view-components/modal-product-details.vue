@@ -487,6 +487,7 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
+                this.exportToExcel(product_id);
             },
 
             applyFilters: function (isOnlySortingChanged) {
