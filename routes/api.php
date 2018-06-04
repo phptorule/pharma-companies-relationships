@@ -24,7 +24,7 @@ Route::post('recover', 'AuthController@recover');
 Route::post('password/reset/{token}', 'Auth\ResetPasswordController@postReset')->name('password.resetPost');
 
 
-Route::group(['middleware'=>['jwt.auth']],function (){
+Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/auth-test', function (){
         return response()->json(['test-data'=>'all is ok!']);
@@ -52,6 +52,12 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
     Route::get('/address-details/{address}/get-cluster-products-paginated', 'AddressesController@getClusterProductsPaginated')->name('address.getClusterProductsPaginated');
 
+    Route::put('/address-details/{address}/update-details', 'AddressesController@updateAddressDetails')->name('address.updateAddressDetails');
+
+    Route::get('/address-details/{address}/get-all-tags', 'AddressesController@loadAllTags')->name('address.loadAllTags');
+
+    Route::get('/address-details/{address}/load-selected-tags', 'AddressesController@loadSelectedTags')->name('address.loadSelectedTags');
+
     Route::get('/customer-statuses', 'CustomerStatusesController@show')->name('customerStatus.show');
 
     Route::get('/people/{person}/relationships', 'PeopleController@getPersonRelationships')->name('people.getPersonRelationships');
@@ -60,8 +66,21 @@ Route::group(['middleware'=>['jwt.auth']],function (){
 
     Route::get('/people/{person}', 'PeopleController@show')->name('people.show');
 
+    Route::get('/get-roles', 'PeopleController@getRoles');
+
+    Route::put('/people/{person}/update', 'PeopleController@updateEmploye')->name('people.updateEmploye');
+
     Route::get('/connection-types', 'PeopleController@getConnectionTypes')->name('people.getConnectionTypes');
 
     Route::get('/people/{mainPersonId}/get-person-graph-data', 'PeopleController@getPersonGraphInfo')->name('people.getPersonGraphInfo');
 
+    Route::get('/clusters', 'AddressesController@getClusters')->name('address.getClusters');
+
+    Route::put('/clusters/{address}', 'AddressesController@updateClusters')->name('address.updateClusters');
+
+    Route::get('/products', 'AddressesController@getProducts')->name('address.getProducts');
+
+    Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
+
+    Route::post('/products/create', 'AddressesController@createProduct');
 });
