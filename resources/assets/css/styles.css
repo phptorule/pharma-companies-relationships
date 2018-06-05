@@ -1358,7 +1358,7 @@ ul.tag-list li {
 }
 
 .address-details-fixed-height, .slided-box {
-    height: calc(100vh - 134px);
+    /* height: calc(100vh - 134px); */
 }
 
 .wrapper {
