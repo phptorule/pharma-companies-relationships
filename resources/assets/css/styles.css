@@ -1357,9 +1357,36 @@ ul.tag-list li {
     cursor: not-allowed !important;
 }
 
-/* .address-details-fixed-height, .slided-box { */
-    /* height: calc(100vh - 134px) !important; */
-/* } */
+.address-details-fixed-height, .slided-box {
+    height: calc(100vh - 134px);
+}
+
+.wrapper {
+    /* position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100% !important;
+    min-height: 100% !important; */
+}
+
+.main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* min-height: auto; */
+    height: calc(100vh - 134px);
+}
+
+.content-wrapper {
+    height: auto;
+    /* min-height: 100% !important; */
+}
+
+.sidebar {
+    padding-bottom: 0;
+}
 /**************************************************************/
 
 
