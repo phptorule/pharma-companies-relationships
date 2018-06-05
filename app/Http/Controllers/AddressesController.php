@@ -25,7 +25,17 @@ class AddressesController extends Controller
     {
         $addresses = $this->prepareAddressesQuery()->get();
 
-        return response()->json($addresses);
+        $addressesForResponse = [];
+
+        foreach ($addresses as $i => $address) {
+            $addressesForResponse[$i]['id'] = $address['id'];
+            $addressesForResponse[$i]['name'] = $address['name'];
+            $addressesForResponse[$i]['lat'] = $address['lat'];
+            $addressesForResponse[$i]['lon'] = $address['lon'];
+            $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+        }
+
+        return response()->json($addressesForResponse);
     }
 
 
