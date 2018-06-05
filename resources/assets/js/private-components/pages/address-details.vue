@@ -707,15 +707,15 @@
         },
 
         mounted: function () {
-            let iOS = /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            let ih = (iOS) ? screen.height : window.innerHeight;
-            if (iOS) {
-                $('.address-details-fixed-height').height(ih - 139);
-                $('.slided-box').height(ih - 139);
-            } else {
-                $('.address-details-fixed-height').height(ih - 134);
-                $('.slided-box').height(ih - 134);
-            }
+            // let iOS = /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            // let ih = (iOS) ? screen.height : window.innerHeight;
+            // if (iOS) {
+                // $('.address-details-fixed-height').height(ih - 139);
+                // $('.slided-box').height(ih - 139);
+            // } else {
+                // $('.address-details-fixed-height').height(ih - 134);
+                // $('.slided-box').height(ih - 134);
+            // }
 
             this.addressId = this.$route.params.id;
 

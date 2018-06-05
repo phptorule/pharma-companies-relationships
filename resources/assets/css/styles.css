@@ -1014,7 +1014,7 @@ ul.tag-list li + li{
 #map-element{
     height: 100%;
     width: 100%;
-    min-height: 800px;
+    /* min-height: 800px; */
 }
 
 .content {
@@ -1358,7 +1358,7 @@ ul.tag-list li {
 }
 
 .address-details-fixed-height, .slided-box {
-    /* height: calc(100vh - 134px); */
+    height: calc(100vh - 152px);
 }
 
 .wrapper {
@@ -1376,7 +1376,7 @@ ul.tag-list li {
     top: 0;
     left: 0;
     /* min-height: auto; */
-    height: calc(100vh - 134px);
+    height: calc(100vh - 152px);
 }
 
 .content-wrapper {
