@@ -55,25 +55,22 @@
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
-                <div class="col-md-4 tender" v-if="tenderData.amountOldYear">
+                <div class="col-md-4 tender" v-if="tenderData.amountOldYear" @click="showTenderDetailsModal(addressId)">
                         <span class="tender-year">{{tenderData.amountOldYear | currency('Rub (K)')}}
                             <span class="tender-title">Last year</span>
                         </span>
                 </div>
 
-                <div class="col-md-4 tender tender-head" v-if="tenderData.amountActualYear">
+                <div class="col-md-4 tender tender-head" v-if="tenderData.amountActualYear" @click="showTenderDetailsModal(addressId)">
                     <span class="tender-year">{{tenderData.amountActualYear | currency('Rub (K)')}}
                         <span class="tender-title">This year</span>
                         </span>
                 </div>
-                <div class="col-md-4 tender tender-head" v-if="tenderData.amountNextYear">
+                <div class="col-md-4 tender tender-head" v-if="tenderData.amountNextYear" @click="showTenderDetailsModal(addressId)">
                         <span class="tender-year">{{tenderData.amountNextYear | currency('Rub (K)')}}
                             <span class="tender-title">Next year</span>
                         </span>
                 </div>
-                <a class="more-news" href="javascript:void(0)" @click="showTenderDetailsModal(addressId)">
-                    +3 more news
-                </a>
             </div>
             <p v-else class="empty-data-p hidden">We don't know about any tenders</p>
         </div>

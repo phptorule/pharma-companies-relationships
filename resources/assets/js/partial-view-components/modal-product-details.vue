@@ -44,7 +44,7 @@
                             </div>
                             <div class="col-md-4">
                                 <p class="number" v-if="tenderData.next_budgeted_cost">
-                                    {{Math.ceil(tenderData.next_budgeted_cost) | currency}}(K)&nbsp;<i style="margin-top: 3px;" class="fa fa-ruble"
+                                    {{Math.ceil(tenderData.next_budgeted_cost/1000) | currency}}(K)&nbsp;<i style="margin-top: 3px;" class="fa fa-ruble"
                                                                                                        title="Russian rubels"></i>
                                 </p>
                                 <p class="number" v-else>
