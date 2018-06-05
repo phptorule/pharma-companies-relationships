@@ -413,9 +413,9 @@
                 this.addressId = this.$route.params['id'];
                 this.loadAddressDetails();
 
-                if( ! this.isFirstLoad) {
-                    this.showModalIfPersonHashDetected();
-                }
+                // if( ! this.isFirstLoad) {
+                //     this.showModalIfPersonHashDetected();
+                // }
             },
             isEditing: function () {
                 if ( ! this.isEditing) {

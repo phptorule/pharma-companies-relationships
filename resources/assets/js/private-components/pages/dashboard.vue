@@ -82,8 +82,8 @@
                     Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
                 </div>
 
-                <ul class="sidebar-list">
-                    <li v-for="(address, i) in addressList">
+                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()">
+                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
                             <div class="item-image">
@@ -150,6 +150,7 @@
 <script>
 
     import http from '../../mixins/http';
+    var _ = require('lodash');
 
     export default {
 
@@ -181,7 +182,9 @@
                 totalPointsInCurrentMap: 0,
                 multipleDropdownSelects: [],
                 queryUrl: '',
-                oldQueryUrl: ''
+                oldQueryUrl: '',
+                hoveredAddress: {},
+                mouseOverTimeoutId: null
             }
         },
 
@@ -362,6 +365,36 @@
                         this.oldQueryUrl = this.queryUrl;
                     })
 
+            },
+
+            setAddressMouseOverListener: function(address) {
+
+                if(this.mouseOverTimeoutId) {
+                    clearTimeout(this.mouseOverTimeoutId);
+                }
+
+                this.mouseOverTimeoutId = setTimeout(()=>{
+                    if(this.hoveredAddress.id == address.id) {
+                        return;
+                    }
+
+                    this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
+
+                    this.hoveredAddress = address;
+
+                    this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
+                }, 100);
+
+            },
+
+            setAddressMouseLeaveListener: function () {
+                this.hoveredAddress = {};
+
+                if(this.mouseOverTimeoutId) {
+                    clearTimeout(this.mouseOverTimeoutId);
+                }
+
+                this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
             },
 
             notifyFiltersHaveBeenApplied: function () {

@@ -13,7 +13,7 @@
     var framesPerSecond = 15;
     var initialOpacity = 1;
     var opacity = initialOpacity;
-    var initialRadius = 8;
+    var initialRadius = 7;
     var radius = initialRadius;
     var maxRadius = 18;
 
@@ -39,7 +39,8 @@
                 mapCenterLat: null,
                 moveendId: null,
                 isMapMovedBecauseOfSearch: true,
-                isMapMovedBecauseOfFitMapContent: true
+                isMapMovedBecauseOfFitMapContent: true,
+                bouncingTimeoutId: null
             }
         },
 
@@ -462,9 +463,13 @@
             },
 
 
-            animateMarker: function(timestamp) {
-                setTimeout(() => {
+            animateMarker: function() {
+                this.bouncingTimeoutId = setTimeout(() => {
                     requestAnimationFrame(this.animateMarker);
+
+                    if (!this.map.getLayer('hovered-point')) {
+                        return;
+                    }
 
                     radius += (maxRadius - radius) / framesPerSecond;
                     opacity -= ( .9 / framesPerSecond );
@@ -481,10 +486,10 @@
 
             },
 
-            addHoveredPoint: function() {
-                var p = [{"id":283,"name":"Hospital Vallée De Joux","address":"Rue de l'Hôpital 3, 1347 Le Chenit, Switzerland","lat":46.601693,"lon":6.221488,"phone":"021 845 18 18","email":"","url":"http://www.ehnv.ch/","url_tld":"ehnv.ch","thread_id":null,"marker":"marker_blue","cluster_id":152,"customer_status":2,"created_at":null,"updated_at":"2018-04-27 17:31:38","people_count":0,"tags":[{"id":9,"name":"hospital","icon":null,"top_right_tag":null,"pivot":{"address_id":283,"tag_id":9}}],"cluster":{"id":152,"name":"Hospital D'yverdon-Les-Bains"},"products":[]}];
+            addHoveredPoint: function(address) {
+                // var p = [{"id":283,"name":"Hospital Vallée De Joux","address":"Rue de l'Hôpital 3, 1347 Le Chenit, Switzerland","lat":46.601693,"lon":6.221488,"phone":"021 845 18 18","email":"","url":"http://www.ehnv.ch/","url_tld":"ehnv.ch","thread_id":null,"marker":"marker_blue","cluster_id":152,"customer_status":2,"created_at":null,"updated_at":"2018-04-27 17:31:38","people_count":0,"tags":[{"id":9,"name":"hospital","icon":null,"top_right_tag":null,"pivot":{"address_id":283,"tag_id":9}}],"cluster":{"id":152,"name":"Hospital D'yverdon-Les-Bains"},"products":[]}];
 
-                let mapData = this.composeMapData(p);
+                let mapData = this.composeMapData(address);
 
                 let featureCollection = {
                     "type": "FeatureCollection",
@@ -507,11 +512,48 @@
                     filter: ["!has", "point_count"],
                     paint: {
                         'circle-color': 'red',
-                        "circle-radius": 17,
+                        "circle-radius": initialRadius,
                         "circle-stroke-width": 1,
                         "circle-stroke-color": "#fff"
                     }
                 }, 'unclustered-point');
+
+                this.map.addLayer({
+                    id: "hovered-point-solid",
+                    type: "circle",
+                    source: "earthquakes2",
+                    filter: ["!has", "point_count"],
+                    paint: {
+                        'circle-color': ['get', 'customer_status_color'],
+                        "circle-radius": initialRadius,
+                        "circle-stroke-width": 1,
+                        "circle-stroke-color": "#fff"
+                    }
+                }, 'unclustered-point');
+            },
+
+            listenToHoveringOverAddressAtSidebar: function () {
+                this.$eventGlobal.$on('hover-over-address-at-the-sidebar', (address) => {
+
+                    this.addHoveredPoint([address]);
+
+                    this.animateMarker(0);
+                })
+            },
+
+            listenToHoverOutFromSidebar: function () {
+                this.$eventGlobal.$on('hover-out-from-the-sidebar', ()=>{
+
+                    clearTimeout(this.bouncingTimeoutId);
+
+
+                    if (this.map.getLayer('hovered-point')) {
+                        this.map.removeLayer('hovered-point');
+                        this.map.removeLayer('hovered-point-solid');
+                        this.map.removeSource('earthquakes2');
+                    }
+
+                })
             }
         },
 
@@ -546,11 +588,10 @@
 
 
 
+                            this.listenToHoveringOverAddressAtSidebar();
 
+                            this.listenToHoverOutFromSidebar();
 
-                            this.addHoveredPoint();
-
-                            this.animateMarker(0);
                         });
                 });
 
