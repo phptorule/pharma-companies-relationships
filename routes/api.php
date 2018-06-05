@@ -51,7 +51,9 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/address-details/{address}/get-cluster-staff-paginated', 'AddressesController@getClusterStaffPaginated')->name('address.getClusterStaffPaginated');
 
     Route::get('/address-details/{address}/get-cluster-products-paginated', 'AddressesController@getClusterProductsPaginated')->name('address.getClusterProductsPaginated');
-
+    
+    Route::get('/address-details/{address}/get-all-cluster-staff', 'AddressesController@getAllClusterStaff');
+    
     Route::put('/address-details/{address}/update-details', 'AddressesController@updateAddressDetails')->name('address.updateAddressDetails');
 
     Route::get('/address-details/{address}/get-all-tags', 'AddressesController@loadAllTags')->name('address.loadAllTags');
