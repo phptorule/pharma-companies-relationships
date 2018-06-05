@@ -27,9 +27,9 @@
 
             <div class="address-details-fixed-height">
 
-                <router-link to="/dashboard" title="Back to dashboard" class="link-back arrow-left">
+                <a href="javascript:void(0)" @click="$router.go(-1)" title="Back" class="link-back arrow-left">
                     <i class="fa fa-angle-left"></i>
-                </router-link>
+                </a>
 
                 <div class="address-overview">
 
