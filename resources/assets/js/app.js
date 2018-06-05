@@ -3,13 +3,14 @@ import router from './routes';
 import VueRouter from 'vue-router';
 import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
+import vSelect from 'vue-select';
 
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
 
 AuthService.defineIsLoggedIn();
-import vSelect from 'vue-select';
+
 
 /* Components Registration */
 Vue.component('main-component', require('./main-component'));
