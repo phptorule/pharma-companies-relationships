@@ -55,7 +55,7 @@
         </ul>
 
         <div class="pagination-box">
-            <pagination :records="productTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="pageChanged"></pagination>
+            <pagination :records="productTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="perPage" @paginate="pageChanged"></pagination>
         </div>
 
     </div>
@@ -69,11 +69,12 @@
 
     export default {
         mixins: [http, ProductModal, getProductName],
-
         data: function () {
             return {
                 products: [],
-                productTotal: 0
+                productTotal: 0,
+                currentPage: 1,
+                perPage: 10
             }
         },
         filters: {
@@ -114,9 +115,14 @@
             },
         },
         methods: {
+            computedICounter(i){
+                return 'graph-container-modal-' + i;
+            },
             loadProductsPaginated: function (id, page) {
                 let p = page || 1;
 
+                // init current page for correct pagination and graph indexes
+                this.currentPage = p;
 
                 try {
                     let o = JSON.parse(localStorage.getItem('productsPaginatedFirstPage'));
@@ -127,10 +133,8 @@
                             this.products = o.data;
                             this.productTotal = o.total;
 
-                            if(typeof this.products[Symbol.iterator] === 'function') {
-                                this.products.forEach((product, i) => {
-                                    this.dataCreateToChart(product.prod_id, i)
-                                })
+                            for (let key in this.products) {
+                                this.dataCreateToChart(this.products[key].prod_id, key)
                             }
                         }
                     } else {
@@ -140,10 +144,8 @@
                                     this.products = data.data;
                                     this.productTotal = data.total;
 
-                                    if(typeof this.products[Symbol.iterator] === 'function') {
-                                        this.products.forEach((product, i) => {
-                                            this.dataCreateToChart(product.prod_id, i)
-                                        })
+                                    for (let key in this.products) {
+                                        this.dataCreateToChart(this.products[key].prod_id, key)
                                     }
                                 }
                             })
@@ -165,7 +167,6 @@
                             DATA.unshift(title);
 
                             this.viewTendersChart(DATA, 'graph-container-modal-' + indexOrder);
-
                         });
                 }, 1000)
             },
@@ -173,8 +174,6 @@
                 this.loadProductsPaginated(this.addressId, pageNumber);
             },
             viewTendersChart: function (data, element_id) {
-                if($('#' + element_id).length > 0)
-                {
                     $('#' + element_id).html('');
 
                     var data = google.visualization.arrayToDataTable(data);
@@ -193,7 +192,6 @@
                     var chart = new google.visualization.ComboChart(document.getElementById(element_id));
 
                     chart.draw(data, options);
-                }
             },
 
             closeSlidedBox: function () {
