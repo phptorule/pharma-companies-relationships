@@ -3,12 +3,14 @@ import router from './routes';
 import VueRouter from 'vue-router';
 import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
+import vSelect from 'vue-select';
 
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
 
 AuthService.defineIsLoggedIn();
+
 
 /* Components Registration */
 Vue.component('main-component', require('./main-component'));
@@ -30,6 +32,8 @@ Vue.component('tab-relationships', require('./partial-view-components/modal-empl
 Vue.component('publication-list', require('./partial-view-components/publication-list'));
 Vue.component('publication-list-item', require('./partial-view-components/publication-list-item'));
 Vue.component('pagination', Pagination);
+Vue.component('v-select', vSelect);
+Vue.component('div-editable', require('./partial-view-components/div-editable'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 

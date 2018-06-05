@@ -10,6 +10,7 @@ class People extends Model
 
     protected $table = 'rl_people';
 
+    public $timestamps = false;
 
     function addresses()
     {
