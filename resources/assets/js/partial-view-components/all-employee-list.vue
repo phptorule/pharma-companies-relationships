@@ -20,6 +20,7 @@
                 @keydown.enter.prevent="handleSearch"
                 @input="handleSearch"
                 placeholder="Employee name"
+                autocomplete="off"
             >
 
             <v-select 

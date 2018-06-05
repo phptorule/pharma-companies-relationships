@@ -70,6 +70,7 @@
                     @keydown.enter.prevent="handleSearch"
                     @input="handleSearch"
                     placeholder="Employee name"
+                    autocomplete="off"
                 >
 
                 <v-select 
@@ -170,7 +171,7 @@
                 href="javascript:void(0)">Show Less</a>
             </div>
 
-            <div class="pagination-box" v-show=" ! isShowLabChainStaffCollapsed && ! canSearch && ! canSearchByRole">
+            <div class="pagination-box" v-show="! canSearch && ! canSearchByRole" v-if=" ! isShowLabChainStaffCollapsed">
                 <pagination :records="clusterStaff.total" 
                     :class="'pagination pagination-sm no-margin pull-right'" 
                     :per-page="10" @paginate="staffPageChanged"
