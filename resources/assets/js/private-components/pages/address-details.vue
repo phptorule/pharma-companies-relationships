@@ -409,13 +409,16 @@
         },
 
         watch:{
-            $route: function(to){
+            $route: function(to, from){
                 this.addressId = this.$route.params['id'];
                 this.loadAddressDetails();
 
-                // if( ! this.isFirstLoad) {
-                //     this.showModalIfPersonHashDetected();
-                // }
+                let hashToPerson = (to.hash.split('&'))[0];
+                let hashFromPerson = (from.hash.split('&'))[0];
+
+                if( ! this.isFirstLoad && hashToPerson !== hashFromPerson) {
+                    this.showModalIfPersonHashDetected();
+                }
             },
             isEditing: function () {
                 if ( ! this.isEditing) {
