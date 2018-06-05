@@ -244,9 +244,7 @@
                             $('#relation-row-'+relation.id).slideDown('slow');
                         }, 50);
 
-                        setTimeout(() => {
-                            this.updateHashStr(relation.id);
-                        }, 500);
+                        this.updateHashStr(relation.id);
 
                     })
             },
