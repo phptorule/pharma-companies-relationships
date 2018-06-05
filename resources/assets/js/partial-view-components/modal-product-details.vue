@@ -43,11 +43,12 @@
                                 </p>
                             </div>
                             <div class="col-md-4">
-                                <p class="number" v-if="spending_cost != 'Infinity'">
-                                    {{spending_cost ? spending_cost : '' }} %
+                                <p class="number" v-if="tenderData.next_budgeted_cost">
+                                    {{Math.ceil(tenderData.next_budgeted_cost) | currency}}(K)&nbsp;<i style="margin-top: 3px;" class="fa fa-ruble"
+                                                                                                       title="Russian rubels"></i>
                                 </p>
                                 <p class="number" v-else>
-                                    0 %
+                                    0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
                                 </p>
                                 <p class="text">
                                     <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending
@@ -247,10 +248,9 @@
                     last_tender_date: null,
                     max_total_spent: null,
                     min_total_spent: null,
-                    total_budgeted: null,
-                    last_budgeted_cost: null,
-                    first_budgeted_cost: null,
+                    next_budgeted_cost: null,
                     tag_ids: '',
+                    total_budgeted:null,
                 },
                 tendersList: [],
                 actual_year: (new Date()).getFullYear(),
@@ -482,8 +482,6 @@
                                 }
                             });
                         }
-
-                        this.spending_cost = Math.ceil(((this.tenderData.first_budgeted_cost/ this.tenderData.last_budgeted_cost) - 1) * 100);
 
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000);
 

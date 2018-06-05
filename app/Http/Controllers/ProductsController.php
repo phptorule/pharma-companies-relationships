@@ -19,9 +19,7 @@ class ProductsController extends Controller {
 
 	public function productByTenders( $id, $address ) {
 
-		$joinTable = "LEFT JOIN rl_address_tenders_purchase AS atp ON atp.tender_id = at.id
-						LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.purchase_id = atp.id
-						LEFT JOIN rl_products AS p ON p.id = atpp.product_id";
+		$joinTable = "";
 
 		$select = "SELECT
 						((YEAR(CURDATE()) - YEAR(MIN(at.tender_date))+1)) as last_tender_date,
@@ -43,21 +41,16 @@ class ProductsController extends Controller {
 						ORDER BY total_spent DESC
 						LIMIT 1) as total_budgeted,
 						
-						(SELECT SUM(at.budgeted_cost)
-						FROM rl_address_tenders as at
-						$joinTable
+						(SELECT SUM(atb.budget)
+						FROM rl_address_tenders_budgets as atb
+						JOIN rl_address_tenders as at on atb.tender_id = at.id
+						JOIN rl_address_tenders_purchase AS atp ON atp.tender_id = at.id
+						JOIN rl_address_tenders_purchase_products AS atpp ON atpp.purchase_id = atp.id
+						JOIN rl_products AS p ON p.id = atpp.product_id
 						WHERE p.id = :id2
 						AND at.address_id = :address2
-						AND YEAR(at.tender_date) <= YEAR(CURDATE())
-						) as last_budgeted_cost,
-						
-						(SELECT SUM(at.budgeted_cost)
-						FROM rl_address_tenders as at
-						$joinTable
-						WHERE p.id = :id3
-						AND at.address_id = :address3
-						AND YEAR(at.tender_date) >= YEAR(CURDATE())
-						) as first_budgeted_cost,
+						AND atb.delivery_year = YEAR(CURDATE()) + 1
+						) as next_budgeted_cost,
 						
 						GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
 						
@@ -67,8 +60,8 @@ class ProductsController extends Controller {
 						LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
 						LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
 						AND YEAR(CURDATE()) - YEAR(at.tender_date) <= 2
-						WHERE p.id = :id4
-						AND at.address_id = :address4
+						WHERE p.id = :id3
+						AND at.address_id = :address3
 						GROUP BY p.id";
 
 		$tenders = DB::select(
@@ -80,8 +73,6 @@ class ProductsController extends Controller {
                 'address2' => $address,
                 'id3' => $id,
                 'address3' => $address,
-                'id4' => $id,
-                'address4' => $address,
             ]
         );
 
