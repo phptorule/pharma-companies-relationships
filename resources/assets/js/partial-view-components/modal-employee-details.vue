@@ -40,32 +40,6 @@
                                     :placeholder="'Position'"
                                 ></div-editable>
                             </div>
-                            <div class="confirm-employe-edit-block">
-                                <button
-                                        type="button"
-                                        class="btn cancel-employe-btn"
-                                        @click.prevent="toggleEditing"
-                                >
-                                    Cancel Editing
-                                </button>
-                                <button 
-                                    type="button"
-                                    class="btn save-employe-btn"
-                                    v-if=" ! saveBtnDisabled && madeChanges"
-                                    @click.prevent="updateEmploye"
-                                >
-                                    Suggest Edits
-                                </button>
-                                <button 
-                                    type="button" 
-                                    v-if="saveBtnDisabled || ! madeChanges" 
-                                    disabled 
-                                    class="btn save-employe-btn-disabled"
-                                >
-                                    Suggest Edits
-                                </button>
-
-                            </div>
                         </div>
 
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
@@ -129,7 +103,37 @@
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)" @click="showContactsChain()" data-dismiss="modal" aria-label="Close">View Contacts Chain</a>
+                            <a href="javascript:void(0)" 
+                                @click="showContactsChain()" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                View Contacts Chain
+                            </a>
+                            <div v-if="isEditing" class="confirm-employe-edit-block">
+                                <button
+                                        type="button"
+                                        class="btn cancel-employe-btn"
+                                        @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button 
+                                    type="button"
+                                    class="btn save-employe-btn"
+                                    v-if=" ! saveBtnDisabled && madeChanges"
+                                    @click.prevent="updateEmploye"
+                                >
+                                    Suggest Edits
+                                </button>
+                                <button 
+                                    type="button" 
+                                    v-if="saveBtnDisabled || ! madeChanges" 
+                                    disabled 
+                                    class="btn save-employe-btn-disabled"
+                                >
+                                    Suggest Edits
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -471,11 +475,12 @@
     }
 
     .confirm-employe-edit-block {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 18px;
-        margin-bottom: 18px;
+        display: inline-block;
+        /* display: flex; */
+        /* justify-content: center; */
+        /* align-items: center; */
+        /* margin-top: 18px; */
+        /* margin-bottom: 18px; */
     }
 
     .can-edit div {
@@ -499,7 +504,6 @@
         font-size: 13px;
         font-weight: 600;
         margin: 0;
-        /* transition: background-color 0.1s linear; */
     }
 
     .save-employe-btn-disabled {
@@ -512,8 +516,8 @@
         font-weight: 600;
         margin: 0;
         font-size: 13px;
-        background-color: #000;
-        opacity: 0.2;
+        background-color: #989da3;
+        opacity: 1;
     }
 
     .save-employe-btn:focus,
