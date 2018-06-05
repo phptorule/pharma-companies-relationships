@@ -31,7 +31,7 @@
                         <div class="volume">
                             <span class="volume-head" :title="product.unit">
                                 {{product.volume  | volume(product.unit)}}
-                                <span class="volume-title">Est. Test Volume</span>
+                                <span class="volume-title" v-if="product.bud_sum">{{Math.ceil(product.bud_sum/1000)}} K Rub {{product.consum_name}}</span>
                             </span>
                         </div>
                         <div class="spending">
