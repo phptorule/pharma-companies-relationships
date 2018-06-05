@@ -2104,7 +2104,8 @@ ul.staff-list li .personal-info .name a:hover{
 }
 
 #personal-modal .view-contacts-chain-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: -35px;
     margin-top: 22px;
 }
