@@ -100,11 +100,20 @@
                                     {{ personData.role }}
                                 </p>
                                 <div v-if="isEditing" class="role-edit-block can-edit">
-                                    <div-editable
+                                    <input 
+                                        class="edit-input"
+                                        type="text" 
+                                        v-model="personData.role" 
+                                        placeholder="Role (max 25 chars)"
+                                        @keydown.enter.prevent="updateEmploye"
+                                        :maxlength="maxRoleLength"
+                                        @input="checkRoleLength"
+                                    >
+                                    <!-- <div-editable
                                         @updateEdit="updateEmploye"
                                         :content.sync="personData.role"
                                         :placeholder="'Role'"
-                                    />
+                                    /> -->
                                 </div>
                             </div>
                         </div>
@@ -266,7 +275,8 @@
                     name: '',
                     description: '',
                     role: ''
-                }
+                },
+                maxRoleLength: 25
             }
         },
 
@@ -455,6 +465,11 @@
                         alertify.notify('Error occured', 'error', 3);
                     })
                 }  
+            },
+            checkRoleLength: function (event) {
+                if (event.target.value.length > this.maxRoleLength) {
+                    this.personData.role = this.personData.role.substr(0, 25);
+                }
             }
         },
 
@@ -569,5 +584,18 @@
     .role-edit-block {
         display: flex;
         justify-content: center;
+    }
+
+    .edit-input {
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .edit-input:focus {
+        outline: none;
     }
 </style>
