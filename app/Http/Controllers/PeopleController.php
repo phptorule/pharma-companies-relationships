@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\ConnectionTypes;
 use App\Models\People;
 use App\Models\Publication;
+use App\Models\PeopleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\Persistable;
@@ -125,4 +126,19 @@ class PeopleController extends Controller
 
         return response()->json($responseData);
     }
+    
+    function updateEmploye(People $person)
+    {
+        $person->name = request('name');
+        $person->description = request('description');
+        $person->save();
+        return response()->json($person);
+    }
+
+    function getRoles ()
+    {
+        $roles = PeopleType::get();
+        return response()->json($roles);
+    }
+
 }
