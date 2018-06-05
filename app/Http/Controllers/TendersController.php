@@ -68,6 +68,8 @@ class TendersController extends Controller {
 
 		$tenders = $query->paginate( 10 );
 
+		$tenders = $this->splitSuppliers($tenders);
+
 		return response()->json( $tenders );
 
 	}
@@ -76,7 +78,9 @@ class TendersController extends Controller {
 
 		$query = $this->prepareTendersQuery($address);
 
-            $tenders = $query->paginate( 10 );
+        $tenders = $query->paginate( 10 );
+
+		$tenders = $this->splitSuppliers($tenders);
 
 		return response()->json( $tenders );
 	}
@@ -107,8 +111,8 @@ class TendersController extends Controller {
 					atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
 					atp.name as purchase_name,atp.remark as purchase_remark,
 					pc.name as tag_name, pc.id as tag_id,
-					ats.amount as suppliers_amount,
-					s.name as suppliers_name, s.address as suppliers_address";
+					group_concat(DISTINCT(ats.amount) ORDER BY ats.amount DESC separator ',') AS suppliers_amount,
+					group_concat(DISTINCT(IF(ISNULL(s.address),s.name,CONCAT(s.name,' - ', s.address))) ORDER BY ats.amount DESC separator ';') AS suppliers_data";
 
 		$query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
@@ -121,7 +125,8 @@ class TendersController extends Controller {
 		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
 		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
-		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' );
+		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
+					->groupBy('at.id');
 
 		if($id != ''){$query->where( 'p.id', $id );}
 
@@ -164,6 +169,35 @@ class TendersController extends Controller {
 		}
 
 		return $query;
+	}
+
+	public function splitSuppliers($tenders){
+
+		foreach ($tenders as $tender){
+
+			$suppliers_amount = explode(',', $tender->suppliers_amount);
+
+			$suppliers_data = explode(';', $tender->suppliers_data);
+
+			$suppliers = [];
+
+			for($i = 0;$i < count($suppliers_amount);){
+
+				if(intval($suppliers_amount[$i]) != 0){
+
+					$suppliers[$i][] = $suppliers_data[$i];
+
+					$suppliers[$i][] = $suppliers_amount[$i];
+				}
+
+				$i++;
+			}
+
+			$tender->suppliers_data = $suppliers;
+
+		}
+
+		return $tenders;
 	}
 
 }

@@ -169,9 +169,12 @@
                                                         </li>
                                                     </ul>
 
-                                                    <p class="tender-winner" v-if="tender.budget">
-                                                        Winner {{tender.suppliers_name}} of most money
-                                                        {{tender.suppliers_amount | currency('Rub') }}
+                                                    <p class="tender-winner" v-if="i < 1" v-for="(supplierData, i) in tender.suppliers_data">
+                                                        Winner {{supplierData[0]}}
+                                                        {{supplierData[1] | currency('Rub') }}
+                                                        <span v-if="tender.suppliers_data.length > 1" class="tender-winner" :title="tender.suppliers_data | supplier">
+                                                       + {{(tender.suppliers_data.length - 1)}} more winners
+                                                        </span>
                                                         <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
                                                 </div>
@@ -320,6 +323,34 @@
                     value = String(value);
                     return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
                 }
+                return '';
+            },
+
+            supplier: function (value) {
+
+                if(value.length > 1) {
+
+                    var supplier = '';
+
+                    value.forEach((suppliers, i) => {
+
+                        if(i != 0) {
+
+                            supplier += suppliers[0] + ' of most money ' + suppliers[1];
+
+                            if (i >= 3) {
+
+                                return supplier;
+
+                            }
+                        }
+
+                    });
+
+                    return supplier;
+
+                }
+
                 return '';
             },
 
