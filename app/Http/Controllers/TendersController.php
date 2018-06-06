@@ -105,13 +105,15 @@ class TendersController extends Controller {
 
 	public function prepareTendersQuery($address, $id = '') {
 
-		$select = "at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date,
+		$select = "at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date, 
 					atb.budget, (SELECT MAX(at.budgeted_cost) FROM rl_address_tenders as at where at.address_id = $address) as max_budgeted, 
 					(SELECT MIN(at.budgeted_cost) FROM rl_address_tenders as at where at.address_id = $address) as min_budgeted,
 					atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
 					atp.name as purchase_name,atp.remark as purchase_remark,
 					pc.name as tag_name, pc.id as tag_id,
+					p.name as product_name,
 					group_concat(DISTINCT(ats.amount) ORDER BY ats.amount DESC separator ',') AS suppliers_amount,
+					count(s.name) as winner,
 					group_concat(DISTINCT(IF(ISNULL(s.address),s.name,CONCAT(s.name,' - ', s.address))) ORDER BY ats.amount DESC separator ';') AS suppliers_data";
 
 		$query = DB::table( 'rl_address_tenders AS at' )

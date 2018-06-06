@@ -177,8 +177,8 @@
                     json_fields: {
                         'Tender name': 'purchase_name',
                         'Description': 'purchase_remark',
-                        'Price': 'purchase_total_price',
-                        'Winner': 'purchase_quantity',
+                        'Price': 'budget',
+                        'Winner': 'winner',
                         'Product': 'product_name',
                         'Consumables': 'tag_name',
                         'Date': 'tender_date',
