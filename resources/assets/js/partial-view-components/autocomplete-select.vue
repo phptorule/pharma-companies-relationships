@@ -60,6 +60,9 @@
             this.oldValue = this.selected.id
             document.getElementById('input').focus()
             this.loadList()
+            this.$eventGlobal.$on('clusterNameUpdated', () => {
+                this.loadList()
+            })
         }
     }
 </script>

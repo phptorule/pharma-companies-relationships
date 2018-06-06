@@ -59,6 +59,8 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/address-details/{address}/get-all-tags', 'AddressesController@loadAllTags')->name('address.loadAllTags');
 
     Route::get('/address-details/{address}/load-selected-tags', 'AddressesController@loadSelectedTags')->name('address.loadSelectedTags');
+    
+    Route::put('/address-details/{address}/update-cluster-name', 'AddressesController@updateClusterName');
 
     Route::get('/customer-statuses', 'CustomerStatusesController@show')->name('customerStatus.show');
 

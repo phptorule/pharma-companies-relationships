@@ -491,4 +491,16 @@ class AddressesController extends Controller
 
         return response()->json($clusterStaff);
     }
+
+    /**
+     * updating lab-chain name
+     */
+    public function updateClusterName (Address $address)
+    {
+        $cluster = Cluster::whereId($address->cluster->id)->first();
+        $cluster->name = request('clusterName');
+        $cluster->save();
+        
+        return response()->json($cluster);
+    }
 }
