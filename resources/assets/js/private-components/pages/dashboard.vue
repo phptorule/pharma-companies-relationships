@@ -264,7 +264,7 @@
             this.listenToTotalPointsDisplayedOnMapChanged();
 
             this.loadAddressesPaginated()
-                .then(() => {
+                .then((data) => {
                     this.scrollToSidebarListItem();
                 });
         },
@@ -371,6 +371,8 @@
                         this.isFirstLoad = false;
 
                         this.oldQueryUrl = this.queryUrl;
+
+                        return data;
                     })
 
             },
