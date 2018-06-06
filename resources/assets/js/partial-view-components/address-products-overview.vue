@@ -204,7 +204,18 @@
 
                             DATA.unshift(title);
 
-                            this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
+                            if (typeof DATA[1] != "undefined") {
+
+                                this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
+
+                            } else {
+
+                                DATA[0] = ['Month', 'Total'];
+
+                                DATA[1] = ['Yan-97', 0];
+
+                                this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
+                            }
 
                         });
                 }, 1000)
