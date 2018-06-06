@@ -23,6 +23,7 @@ Route::post('recover', 'AuthController@recover');
 
 Route::post('password/reset/{token}', 'Auth\ResetPasswordController@postReset')->name('password.resetPost');
 
+Route::get('app-version', 'Controller@getAppVersion');
 
 Route::group(['middleware'=>['jwt.auth']],function () {
 
