@@ -104,22 +104,19 @@
                                         class="edit-input"
                                         type="text" 
                                         v-model="personData.role" 
-                                        placeholder="Role (max 25 chars)"
+                                        placeholder="Role"
                                         @keydown.enter.prevent="updateEmploye"
                                         :maxlength="maxRoleLength"
                                         @input="checkRoleLength"
                                     >
-                                    <!-- <div-editable
-                                        @updateEdit="updateEmploye"
-                                        :content.sync="personData.role"
-                                        :placeholder="'Role'"
-                                    /> -->
                                 </div>
                             </div>
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)" 
+                            <a 
+                                v-show=" ! isEditing"
+                                href="javascript:void(0)" 
                                 @click="showContactsChain()" 
                                 data-dismiss="modal" 
                                 aria-label="Close">
@@ -276,7 +273,7 @@
                     description: '',
                     role: ''
                 },
-                maxRoleLength: 25
+                maxRoleLength: 1000
             }
         },
 
@@ -468,7 +465,7 @@
             },
             checkRoleLength: function (event) {
                 if (event.target.value.length > this.maxRoleLength) {
-                    this.personData.role = this.personData.role.substr(0, 25);
+                    this.personData.role = this.personData.role.substr(0, this.maxRoleLength);
                 }
             }
         },
