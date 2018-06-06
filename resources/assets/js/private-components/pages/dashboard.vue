@@ -252,8 +252,6 @@
 
             this.composeQueryUrl();
 
-            this.loadAddressesPaginated();
-
             this.loadFilterObject();
         },
 
@@ -265,7 +263,10 @@
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 
-            this.scrollToSidebarListItem();
+            this.loadAddressesPaginated()
+                .then(() => {
+                    this.scrollToSidebarListItem();
+                });
         },
 
         methods: {
@@ -358,7 +359,7 @@
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
                         this.addressesTotal = data.total;
                         this.addressList = data.data;
