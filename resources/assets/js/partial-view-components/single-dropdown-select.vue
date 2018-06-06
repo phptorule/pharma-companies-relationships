@@ -4,7 +4,7 @@
             <a class="dropdown-toggle" @click="toogleDropdown($event)" data-toggle="dropdown" href="#" :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name">
 
                 <span class="caret"></span>
-                {{selectedValuesNamesString? selectedValuesNamesString : name}}
+                {{selectedValuesNamesString ? selectedValuesNamesString : name}}
             </a>
             <ul class="dropdown-menu">
                 <li @click="selectValue('', name)" :class="{'hidden': isHiddenEmptyOption, selected: !selectedValue}">
@@ -14,7 +14,10 @@
                         </label>
                     </div>
                 </li>
-                <li v-for="option in options" @click="selectValue(option.value, option.label)" :class="{selected: option && selectedValue == option.value}">
+                <li v-for="option in options"
+                    @click="selectValue(option.value, option.label)"
+                    :class="{selected: option && selectedValue == option.value}"
+                >
                     <div class="grey-checkbox">
                         <label>
                             <span class="remember_text" v-html="option.label"></span>
@@ -34,6 +37,14 @@
                 blockId: '',
                 selectedValue: null,
                 selectedValuesNamesString: ''
+            }
+        },
+
+        watch: {
+            options: function (newVal, oldVal) {
+                if(newVal.length && !oldVal.length) {
+                    this.presetSelectedValue();
+                }
             }
         },
 
@@ -68,6 +79,21 @@
             resetSelectedValues: function () {
                 this.selectedValue = '';
                 this.selectedValuesNamesString = this.name;
+            },
+
+            presetSelectedValue: function () {
+
+                if(!this.selected || !this.options.length) {
+                    return;
+                }
+
+                this.selectedValue = this.selected;
+
+                let element = this.options.find(el => el.value == this.selected);
+
+                if (element) {
+                    this.selectedValuesNamesString = element.label;
+                }
             }
         },
 
@@ -77,10 +103,11 @@
             });
 
             this.setIdForCurrentComponent();
+
+            this.presetSelectedValue();
         },
 
-
-        props: ['options', 'name', 'isHiddenEmptyOption']
+        props: ['options', 'selected', 'name', 'isHiddenEmptyOption']
 
     }
 </script>

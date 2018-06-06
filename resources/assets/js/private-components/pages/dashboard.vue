@@ -12,6 +12,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="customerTypesForFilter"
+                                    :selected="appliedFilters.type"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"
@@ -36,6 +37,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="sortByOptionsForFilter"
+                                    :selected="appliedFilters.sortBy"
                                     :isHiddenEmptyOption="true"
                                     @changed="applySortByFilter"
                                     :name="'Sort By'"
