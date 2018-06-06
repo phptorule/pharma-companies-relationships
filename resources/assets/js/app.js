@@ -4,10 +4,13 @@ import VueRouter from 'vue-router';
 import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
 import JsonExcel from 'vue-json-excel'
+import CtkTooltip from 'vue-ctk-tooltip';
+import 'vue-ctk-tooltip/ctk-tooltip.css';
 
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
+window.Vue.use(CtkTooltip);
 
 AuthService.defineIsLoggedIn();
 

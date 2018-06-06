@@ -3558,3 +3558,7 @@ ul.staff-list li .prod-info .amount{
     float: right;
     color: #0f84bb;
 }
+
+.pointer{
+    cursor: pointer;
+}

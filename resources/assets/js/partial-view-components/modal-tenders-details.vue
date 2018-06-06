@@ -90,8 +90,8 @@
                                         <ul class="col-md-12 tenders-list">
                                             <li v-for="(tender, i) in tendersList">
                                                 <div class="item">
-                                                    <h3 v-if="tender.purchase_name" :title="tender.purchase_name">
-                                                        {{tender.tender_date}} -
+                                                    <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
+                                                        {{tender.tender_date ? tender.tender_date : 'Not date'}} -
                                                         {{tender.purchase_name | tendername(55)}}</h3>
                                                     <div class="tender-volume">{{Math.ceil(Number(tender.budget)) |
                                                         currency('Rub') }}
@@ -103,14 +103,15 @@
                                                         </li>
                                                     </ul>
 
-                                                    <p class="tender-winner" v-if="i < 1" v-for="(supplierData, i) in tender.suppliers_data">
-                                                        Winner {{supplierData[0]}}
-                                                        {{supplierData[1] | currency('Rub') }}
-                                                        <span v-if="tender.suppliers_data.length > 1" class="tender-winner" :title="tender.suppliers_data | supplier">
+                                                    <p class="tender-winner" v-if="tender.suppliers_data[0]">
+                                                        Winner {{tender.suppliers_data[0][0]}}
+                                                        {{tender.suppliers_data[0][1] | currency('Rub') }}
+                                                        <span v-if="tender.suppliers_data.length > 1" class="tender-winner pointer" v-ctk-tooltip="supplier(tender.suppliers_data)">
                                                        + {{(tender.suppliers_data.length - 1)}} more winners
                                                         </span>
                                                         <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
+                                                    <p v-else class="tender-winner">Winner unkown</p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -228,34 +229,6 @@
                 return '';
             },
 
-            supplier: function (value) {
-
-                if(value.length > 1) {
-
-                    var supplier = '';
-
-                    value.forEach((suppliers, i) => {
-
-                        if(i != 0) {
-
-                            supplier += suppliers[0] + ' of most money ' + suppliers[1];
-
-                            if (i >= 3) {
-
-                                return supplier;
-
-                            }
-                        }
-
-                    });
-
-                    return supplier;
-
-                }
-
-                return '';
-            },
-
             tendername: function (name, size) {
 
                 if (name.length > size) {
@@ -312,6 +285,34 @@
 
                 this.addressId = addressId;
 
+            },
+
+            supplier: function (value) {
+
+                if(value.length > 1) {
+
+                    var supplier = '';
+
+                    value.forEach((suppliers, i) => {
+
+                        if(i != 0) {
+
+                            supplier += suppliers[0] + ' of most money ' + suppliers[1];
+
+                            if (i >= 3) {
+
+                                return supplier;
+
+                            }
+                        }
+
+                    });
+
+                    return supplier;
+
+                }
+
+                return '';
             },
 
             getTendersPaginate: function (addressId) {
