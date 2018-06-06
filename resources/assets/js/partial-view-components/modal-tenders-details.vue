@@ -326,9 +326,9 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                         if(this.tendersCost.max == null && this.tendersCost.min == null){
-                            this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000);
+                            this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000)+1;
 
-                            this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000);
+                            this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000)-1;
 
                             this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 

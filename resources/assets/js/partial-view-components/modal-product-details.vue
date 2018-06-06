@@ -484,9 +484,9 @@
                             });
                         }
 
-                        this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000);
+                        this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000)+1;
 
-                        this.tendersCost.min = Math.ceil(this.tenderData.min_total_spent / 1000);
+                        this.tendersCost.min = Math.ceil(this.tenderData.min_total_spent / 1000)-1;
 
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
