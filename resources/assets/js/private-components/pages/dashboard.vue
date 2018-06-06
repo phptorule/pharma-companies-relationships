@@ -22,6 +22,7 @@
                                     class="form-control select-filter used-products-filter"
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
+                                    :selected="appliedFilters.usedProducts"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -30,6 +31,7 @@
                                     class="form-control select-filter tags-filter"
                                     :name="'Tags'"
                                     :options="tagOptionsForDropDown"
+                                    :selected="appliedFilters.tags"
                                     @changed="applyTagsFilter"
                                     ref="tagMultipleDropdownSelect"
                             ></multiple-dropdown-select>

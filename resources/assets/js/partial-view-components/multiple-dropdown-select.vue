@@ -10,7 +10,11 @@
                 <li v-for="option in options">
                     <div class="grey-checkbox">
                         <label>
-                            <input type="checkbox" @click="checkboxClick(option.value)" :id="blockId + option.value">
+                            <input type="checkbox"
+                                   @click="checkboxClick(option.value)"
+                                   :id="blockId + option.value"
+                                   :checked="selectedValues.indexOf(option.value) !== -1"
+                            >
                             <span class="borders"></span>
                             <span class="remember_text">{{option.label}}</span>
                         </label>
@@ -45,6 +49,14 @@
                 });
 
                 return str;
+            }
+        },
+
+        watch: {
+            options: function (newVal, oldVal) {
+                if(newVal.length && !oldVal.length) {
+                    this.presetSelectedValue();
+                }
             }
         },
 
@@ -85,6 +97,14 @@
             resetSelectedValues: function () {
                 $('#'+this.blockId+' input[type="checkbox"]:checked').prop('checked', false)
                 this.selectedValues = [];
+            },
+
+            presetSelectedValue: function () {
+                if(!this.selected.length || !this.options.length) {
+                    return;
+                }
+
+                this.selectedValues = this.selected.map(el => parseInt(el));
             }
         },
 
@@ -97,7 +117,7 @@
         },
 
 
-        props: ['options', 'name']
+        props: ['options', 'selected', 'name']
 
     }
 </script>
