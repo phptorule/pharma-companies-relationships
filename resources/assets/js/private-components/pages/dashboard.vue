@@ -120,7 +120,7 @@
                                 </li>
                             </ul>
 
-                            <div class="info-block">
+                            <div class="info-block" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
                                 <div class="lightening-icon">
                                     <img src="/images/blue-lightening.png" alt="">
                                 </div>
