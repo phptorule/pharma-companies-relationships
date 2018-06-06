@@ -260,6 +260,7 @@ class AddressesController extends Controller
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
+            ->orderByRaw('name')
             ->paginate(10);
 
         return response()->json($clusterStaff);
@@ -487,6 +488,7 @@ class AddressesController extends Controller
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
+            ->orderByRaw('name')
             ->get();
 
         return response()->json($clusterStaff);

@@ -260,9 +260,49 @@
                         </h3>
                     </div>
 
+                    <multiple-autocomplete-select 
+                        v-if="isProductsEditing"
+                        :selectedOptions="addressData.products"
+                        :type="'products'"
+                        :close="closeProducts"
+                        :update="updateProducts"
+                        :addNewProduct="addNewProduct"
+                    />
+
                     <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
 
-                    <ul class="used-products-list" v-if="addressData.products.length">
+                    <ul class="products-list">
+                        <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
+                            <img 
+                                v-if="product.image" 
+                                class="image" 
+                                :src="product.image" 
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                            >
+                            <img 
+                                v-else 
+                                class="image" 
+                                :src="'/images/mask-'+i+'.png'" 
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                            >
+                            <span class="product-description">
+                                {{ product.name ? product.company + ': ' + product.name : product.company }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    <a 
+                        href="#" 
+                        @click.prevent="toggleShowAllProducts" 
+                        v-if="addressData.products.length > 3"
+                        class="show-all-products-link"
+                    >
+                        {{ showHideProducts }}
+                    </a>
+                    
+                    <!-- <ul class="used-products-list" v-if="addressData.products.length">
                         <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
                             :title="productName(product.company, product.name)"
                             :key="product.id"
@@ -291,15 +331,8 @@
                                 {{ showHideProducts }}
                             </a>
                         </li>
-                    </ul>
-                    <multiple-autocomplete-select 
-                        v-if="isProductsEditing"
-                        :selectedOptions="addressData.products"
-                        :type="'products'"
-                        :close="closeProducts"
-                        :update="updateProducts"
-                        :addNewProduct="addNewProduct"
-                    ></multiple-autocomplete-select>
+                    </ul> -->
+                    
                 </div>
 
                 <div class="lab-chain-members-overview address-box">
@@ -750,22 +783,38 @@
 </script>
 
 <style scoped>
-    .used-products-list li .image {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        width: 25px;
-        height: 25px;
-        background-color: #eaeff4;
+    .products-list li .image {
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
-        margin-right: 10px;
+        display: inline-block;
     }
 
-    ul.used-products-list li span.prod-name {
-        margin-left: 30px;
+    ul.products-list li span.product-description {
+        display: inline-block;
+        margin-left: 15px;
     }
 
-    ul.used-products-list li {
-        position: relative;
+    ul.products-list li {
+        margin-top: 20px;
+    }
+
+    .show-all-products-link {
+        display: inline-block;
+        font-family: Montserrat;
+        font-size: 16px;
+        line-height: 1.31;
+        font-weight: 500;
+        padding: 5px;
+        border-radius: 5px;
+        margin-top: 20px;
+        transition: all 0.1s linear;
+        color: #dde3e8;
+        background: transparent;
+        
+    }
+
+    .show-all-products-link:hover {
+        color: #4a90e2;
     }
 </style>
