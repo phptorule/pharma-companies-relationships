@@ -131,6 +131,10 @@ class PeopleController extends Controller
     {
         $person->name = request('name');
         $person->description = request('description');
+        $person->role = request('role');
+        if (trim($person->role) == '') {
+            $person->role = null;
+        }
         $person->save();
         return response()->json($person);
     }

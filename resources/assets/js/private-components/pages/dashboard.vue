@@ -86,11 +86,13 @@
                     <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
-                            <div class="item-image">
+                            <div class="item-image" v-show="address.people_count > 0">
                                 <div class="main-image">
-                                    <router-link :to="'/address-details/'+address.id+ (address.people_count? '?all-employees=1' : '')">
+                                    <router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')">
                                         <div class="box-p">
-                                            <span class="people-count" v-if="address.people_count">See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}</span>
+                                            <span class="people-count" v-if="address.people_count">
+                                                See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}
+                                            </span>
 
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
                                         </div>

@@ -40,32 +40,6 @@
                                     :placeholder="'Position'"
                                 ></div-editable>
                             </div>
-                            <div class="confirm-employe-edit-block">
-                                <button
-                                        type="button"
-                                        class="btn cancel-employe-btn"
-                                        @click.prevent="toggleEditing"
-                                >
-                                    Cancel Editing
-                                </button>
-                                <button 
-                                    type="button"
-                                    class="btn save-employe-btn"
-                                    v-if=" ! saveBtnDisabled && madeChanges"
-                                    @click.prevent="updateEmploye"
-                                >
-                                    Suggest Edits
-                                </button>
-                                <button 
-                                    type="button" 
-                                    v-if="saveBtnDisabled || ! madeChanges" 
-                                    disabled 
-                                    class="btn save-employe-btn-disabled"
-                                >
-                                    Suggest Edits
-                                </button>
-
-                            </div>
                         </div>
 
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
@@ -122,14 +96,60 @@
                                 <p class="number">
                                     <img src="/images/ic-education.png" alt="">
                                 </p>
-                                <p class="text">
+                                <p v-if="!isEditing" class="text">
                                     {{ personData.role }}
                                 </p>
+                                <div v-if="isEditing" class="role-edit-block can-edit">
+                                    <input 
+                                        class="edit-input"
+                                        type="text" 
+                                        v-model="personData.role" 
+                                        placeholder="Role (max 25 chars)"
+                                        @keydown.enter.prevent="updateEmploye"
+                                        :maxlength="maxRoleLength"
+                                        @input="checkRoleLength"
+                                    >
+                                    <!-- <div-editable
+                                        @updateEdit="updateEmploye"
+                                        :content.sync="personData.role"
+                                        :placeholder="'Role'"
+                                    /> -->
+                                </div>
                             </div>
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)" @click="showContactsChain()" data-dismiss="modal" aria-label="Close">View Contacts Chain</a>
+                            <a href="javascript:void(0)" 
+                                @click="showContactsChain()" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                View Contacts Chain
+                            </a>
+                            <div v-if="isEditing" class="confirm-employe-edit-block">
+                                <button
+                                    type="button"
+                                    class="btn cancel-employe-btn"
+                                    @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button 
+                                    type="button"
+                                    class="btn save-employe-btn"
+                                    v-if=" ! saveBtnDisabled && madeChanges"
+                                    @click.prevent="updateEmploye"
+                                >
+                                    Suggest Edits
+                                </button>
+                                <button 
+                                    type="button" 
+                                    v-if="saveBtnDisabled || ! madeChanges" 
+                                    disabled 
+                                    class="btn save-employe-btn-disabled"
+                                >
+                                    Suggest Edits
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -253,8 +273,10 @@
                 saveBtnDisabled: true,
                 old: {
                     name: '',
-                    description: ''
-                }
+                    description: '',
+                    role: ''
+                },
+                maxRoleLength: 25
             }
         },
 
@@ -310,6 +332,20 @@
                     this.checkIfChangesMade();
                 }
             },
+            "personData.role": function () {
+                if (this.personData.role == null) {
+                    this.personData.role = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "old.role": function () {
+                if (this.old.role == null) {
+                    this.old.role = '';
+                }
+            }
         },
         methods: {
             endDate: function (date) {
@@ -346,6 +382,7 @@
                             
                         this.old.name = this.personData.name;
                         this.old.description = this.personData.description;
+                        this.old.role = this.personData.role;
                     });
 
                 $('#personal-modal').on('hidden.bs.modal', function (e) {
@@ -381,14 +418,15 @@
                 if ( ! this.isEditing) {
                     this.personData.name = this.old.name;
                     this.personData.description = this.old.description;
+                    this.personData.role = this.old.role;
                 } else {
                     this.checkIfChangesMade();
                 }
             },
             checkIfInputsEmpty: function() {
                 if (
-                    this.personData.name === '' ||
-                    this.personData.description === ''
+                    this.personData.name.trim() === '' ||
+                    this.personData.description.trim() === ''
                 ) {
                     this.saveBtnDisabled = true;
                 } else {
@@ -397,8 +435,9 @@
             },
             checkIfChangesMade: function() {
                 if (
-                    this.personData.name !== this.old.name ||
-                    this.personData.description !== this.old.description
+                    this.personData.name.trim() !== this.old.name.trim() ||
+                    this.personData.description.trim() !== this.old.description.trim() ||
+                    this.personData.role.trim() !== this.old.role.trim()
                 ) {
                     this.madeChanges = true;
                 } else {
@@ -410,10 +449,12 @@
                     this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
+                        role: this.personData.role
                     })
                     .then(data => {
                         this.old.name = data.name;
                         this.old.description = data.description;
+                        this.old.role = data.role;
                         this.madeChanges = false;
                         this.saveBtnDisabled = false;
                         this.isEditing = false;
@@ -424,6 +465,11 @@
                         alertify.notify('Error occured', 'error', 3);
                     })
                 }  
+            },
+            checkRoleLength: function (event) {
+                if (event.target.value.length > this.maxRoleLength) {
+                    this.personData.role = this.personData.role.substr(0, 25);
+                }
             }
         },
 
@@ -471,11 +517,12 @@
     }
 
     .confirm-employe-edit-block {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 18px;
-        margin-bottom: 18px;
+        display: inline-block;
+        /* display: flex; */
+        /* justify-content: center; */
+        /* align-items: center; */
+        /* margin-top: 18px; */
+        /* margin-bottom: 18px; */
     }
 
     .can-edit div {
@@ -486,7 +533,7 @@
         background: transparent;
         font-family: Montserrat;
         font-size: 13px;
-        margin-right: 10px;
+        /* margin-right: 10px; */
     }
 
     .save-employe-btn {
@@ -499,7 +546,6 @@
         font-size: 13px;
         font-weight: 600;
         margin: 0;
-        /* transition: background-color 0.1s linear; */
     }
 
     .save-employe-btn-disabled {
@@ -512,8 +558,8 @@
         font-weight: 600;
         margin: 0;
         font-size: 13px;
-        background-color: #000;
-        opacity: 0.2;
+        background-color: #989da3;
+        opacity: 1;
     }
 
     .save-employe-btn:focus,
@@ -534,4 +580,22 @@
     /* .can-edit div:empty:not(:focus):before { */
         /* font-weight: 100; */
     /* } */
+
+    .role-edit-block {
+        display: flex;
+        justify-content: center;
+    }
+
+    .edit-input {
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .edit-input:focus {
+        outline: none;
+    }
 </style>

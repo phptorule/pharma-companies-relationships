@@ -1014,7 +1014,7 @@ ul.tag-list li + li{
 #map-element{
     height: 100%;
     width: 100%;
-    min-height: 800px;
+    /* min-height: 800px; */
 }
 
 .content {
@@ -1183,8 +1183,8 @@ ul.tag-list li + li{
     font-weight: 600;
     margin: 0;
     font-size: 13px;
-    background-color: #000;
-    opacity: 0.2;
+    background-color: #989da3;
+    opacity: 1;
 }
 
 .sidebar .address-overview .save-address-btn:hover {
@@ -1355,6 +1355,37 @@ ul.tag-list li {
 .without-handler {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
+}
+
+.address-details-fixed-height, .slided-box {
+    height: calc(100vh - 152px);
+}
+
+.wrapper {
+    /* position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100% !important;
+    min-height: 100% !important; */
+}
+
+.main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* min-height: auto; */
+    height: calc(100vh - 152px);
+}
+
+.content-wrapper {
+    height: auto;
+    /* min-height: 100% !important; */
+}
+
+.sidebar {
+    padding-bottom: 0;
 }
 /**************************************************************/
 
@@ -1973,6 +2004,7 @@ ul.staff-list li .personal-info .name a:hover{
     width: 80%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 10px;
 }
 
 #personal-modal .modal-header .occupation{
@@ -2072,7 +2104,8 @@ ul.staff-list li .personal-info .name a:hover{
 }
 
 #personal-modal .view-contacts-chain-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: -35px;
     margin-top: 22px;
 }

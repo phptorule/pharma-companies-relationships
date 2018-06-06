@@ -49,7 +49,7 @@
         </div>
 
 
-        <div class="lab-chain-staff staff-overview address-box" v-if="isShowLabChainStaffCollapsed">
+        <div class="lab-chain-staff staff-overview address-box">
 
             <div class="header">
                 <h3>Lab Chain Staff 
@@ -62,7 +62,30 @@
                 </h3>
             </div>
 
-            <ul class="staff-list">
+            <div class="search-block">
+                <i class="fa fa-search icon" aria-hidden="true"></i>
+                <input v-model="query" 
+                    type="text" 
+                    class="people-search-input"
+                    @keydown.enter.prevent="handleSearch"
+                    @input="handleSearch"
+                    placeholder="Employee name"
+                    autocomplete="off"
+                >
+
+                <v-select 
+                    :options="roles"
+                    :label="'name'"
+                    :class="'roles'"
+                    :searchable="false"
+                    :placeholder="'Choose role'"
+                    v-model="selectedRole"
+                />
+            </div>
+
+            
+
+            <ul class="staff-list" v-if=" ! canSearch && ! canSearchByRole && isShowLabChainStaffCollapsed">
                 <li v-if="i < 3" v-for="(person, i) in clusterStaff.data">
                     <div class="image">
                         <a href="javascript:void(0)" 
@@ -86,13 +109,78 @@
                     </div>
                 </li>
             </ul>
+            
+            <ul class="staff-list" v-if=" ! canSearch && ! canSearchByRole && ! isShowLabChainStaffCollapsed ">
+                <li v-for="(person, i) in clusterStaff.data">
+                    <div class="image">
+                        <a href="javascript:void(0)" 
+                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                        >
+                            <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
+                            <img :src="'/images/mask-'+i+'.png'" alt="">
+                        </a>
+                    </div>
+                    <div class="personal-info">
+                        <p class="name">
+                            <a href="javascript:void(0)" 
+                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                            >
+                                {{ person.name }}
+                            </a>
+                        </p>
+                        <p class="occupation">{{person.description}}</p>
+                    </div>
+                </li>
+            </ul>
+
+            <ul class="staff-list" v-if="canSearch || canSearchByRole">
+                <li v-for="(person, i) in filtered">
+                    <div class="image">
+                        <a href="javascript:void(0)" 
+                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                        >
+                            <span class="person-initials">
+                                {{ getPersonInitials(person.name) }}
+                            </span>
+                            <img :src="'/images/mask-'+i+'.png'" alt="">
+                        </a>
+                    </div>
+                    <div class="personal-info">
+                        <p class="name">
+                            <a href="javascript:void(0)" 
+                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                            >
+                                {{ person.name }}
+                            </a>
+                        </p>
+                        <p class="occupation">{{ person.description }}</p>
+                    </div>
+                </li>
+            </ul>
+
+            <div v-if="(canSearch || canSearchByRole) && filtered.length < 1">No matches</div>
 
             <div style="clear: both"></div>
 
-            <a v-if="clusterStaff.data.length > 3" href="javascript:void(0)" @click="showLabChainStaffPaginated()" class="address-box-show-more-link">Show all Employees</a>
+            <a v-show="clusterStaff.data.length > 3 && isShowLabChainStaffCollapsed && ! canSearch && ! canSearchByRole" 
+                href="javascript:void(0)" @click="showLabChainStaffPaginated()" 
+                class="address-box-show-more-link">Show all Employees</a>
+
+            <div class="show-less-btn" v-show=" ! isShowLabChainStaffCollapsed && ! canSearch && ! canSearchByRole">
+                <a @click="isShowLabChainStaffCollapsed = true" 
+                href="javascript:void(0)">Show Less</a>
+            </div>
+
+            <div class="pagination-box" v-show="! canSearch && ! canSearchByRole" v-if=" ! isShowLabChainStaffCollapsed">
+                <pagination :records="clusterStaff.total" 
+                    :class="'pagination pagination-sm no-margin pull-right'" 
+                    :per-page="10" @paginate="staffPageChanged"
+                >
+                </pagination>
+            </div>
         </div>
 
-        <div class="lab-chain-staff staff-overview address-box" v-if="!isShowLabChainStaffCollapsed">
+        <!-- <div class="lab-chain-staff staff-overview address-box" v-if="!isShowLabChainStaffCollapsed">
 
             <div class="header">
                 <h3>Lab Chain Staff 
@@ -134,7 +222,7 @@
                 <pagination :records="clusterStaff.total"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="staffPageChanged"></pagination>
             </div>
 
-        </div>
+        </div> -->
 
         <div class="lab-chain-staff staff-overview address-box" v-if="isProductCollapsed">
 
@@ -239,7 +327,19 @@
                 clusterProducts: {
                     total: 0,
                     data: []
-                }
+                },
+                empList: [],
+                filtered: [],
+                roles: [],
+                selectedRole: {
+                    id: -1,
+                    name: "All Employees"
+                },
+                defaultRole: {
+                    id: -1,
+                    name: "All Employees"
+                },
+                query: ''
             }
         },
 
@@ -248,6 +348,12 @@
                 if(newVal) {
                     this.loadClusterStaffPaginated();
                 }
+            },
+            selectedRole: function () {
+                if (this.selectedRole == null) {
+                    this.selectedRole = this.defaultRole
+                }
+                this.handleSearch()
             }
         },
 
@@ -319,12 +425,42 @@
                 }
 
                 return str;
+            },
+            getRoles: function () {
+                this.httpGet('/api/get-roles')
+                    .then(data => {
+                        this.roles = data
+                        this.roles.unshift(this.defaultRole)
+                        this.selectedRole = this.defaultRole
+                    })
+            },
+            getAllClusterStuff: function () {
+                this.httpGet('/api/address-details/'+this.addressData.id+'/get-all-cluster-staff')
+                    .then(data => {
+                        this.empList = data;
+                        this.filtered = this.empList;
+                    })
+            },
+            handleSearch: function (e) {
+                this.filtered = this.empList.filter((item) => {
+                    if (this.canSearch && this.canSearchByRole) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
+                            item.type_id == this.selectedRole.id
+                    } else if (this.canSearch && ! this.canSearchByRole) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
+                    } else if ( ! this.canSearch && this.canSearchByRole) {
+                        return item.type_id == this.selectedRole.id
+                    }
+                });
             }
         },
 
         mounted: function () {
             this.loadClusterStaffPaginated();
             this.loadClusterProductsPaginated();
+
+            this.getRoles();
+            this.getAllClusterStuff();
 
             this.$eventGlobal.$on('addressClusterUpdated', () => {
                 this.isShowLabChainMembersCollapsed = true;
@@ -346,9 +482,33 @@
         },
 
         props: ['employeeList', 'isActive', 'addressId', 'address', 'addressData'],
+
+        computed: {
+            canSearch: function () {
+                return this.query.trim() === '' || this.selectedRole == null ? false : true
+            },
+            canSearchByRole: function () {
+                return this.selectedRole && this.selectedRole.id != -1 ? true : false
+            }
+        }
     }
 </script>
 
 <style scoped>
+    .people-search-input {
+        width: 200px;
+        height: 36px;
+        padding: 0 .5em;
+        border-bottom: 2px solid #EAEFF4;
+        outline: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
 
+    .search-block {
+        margin: 20px 0;
+    }
 </style>

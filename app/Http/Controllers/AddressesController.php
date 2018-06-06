@@ -477,4 +477,18 @@ class AddressesController extends Controller
 
         return response()->json($products);
     }
+
+    /**
+     * get all people for lab chain
+     */
+    public function getAllClusterStaff (Address $address)
+    {
+        $clusterStaff = People::with('addresses')
+            ->whereHas('addresses', function ($q) use ($address) {
+                $q->where('cluster_id', $address->cluster_id);
+            })
+            ->get();
+
+        return response()->json($clusterStaff);
+    }
 }
