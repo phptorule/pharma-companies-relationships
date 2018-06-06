@@ -5,12 +5,57 @@
             <img src="/images/x.png" alt="">
         </a>
 
-        <h3 class="">
-            {{addressData.cluster.name}}
-            <a data-v-cd5686be="" href="#" @click.prevent class="without-handler">
+        <h3 class="cluster-title" v-if=" ! isClusterEdit">
+            <span class="cluster-name">
+                {{ addressData.cluster.name }}
+            </span>
+            <a class="cluster-title-edit" data-v-cd5686be="" href="#" @click.prevent="toggleClusterEdit">
                 <i data-v-cd5686be="" class="fa fa-pencil"></i>
             </a>
         </h3>
+
+        <div v-if="isClusterEdit">
+            <div class="form-group edit-name-input-block">
+                <!-- <input 
+                    type="text" 
+                    autocomplete="off"
+                    class="form-control lab-chain-name-input"
+                    v-model="addressData.cluster.name"
+                    placeholder="Lab chain name"
+                > -->
+
+                <div-editable 
+                    @updateEdit="updateCluster"
+                    :content.sync="addressData.cluster.name"
+                    :placeholder="'Lab chain name'"
+                />
+            </div>
+            <div class="confirm-edit-block">
+                <button
+                    type="button"
+                    @click="toggleClusterEdit"
+                    class="btn cancel-cluster-btn"
+                >
+                    Cancel Editing
+                </button>
+                <button
+                    type="submit" 
+                    v-if=" ! saveBtnDisabled && madeChanges" 
+                    @click.prevent="updateCluster" 
+                    class="btn save-cluster-btn"
+                >
+                    Suggest Edits
+                </button>
+                <button 
+                    type="button" 
+                    v-if="saveBtnDisabled || ! madeChanges" 
+                    disabled 
+                    class="btn save-cluster-btn-disabled"
+                >
+                    Suggest Edits
+                </button>
+            </div>
+        </div>
 
         <div class="lab-chain-members-overview address-box" v-if="isShowLabChainMembersCollapsed">
             <div class="header">
@@ -180,50 +225,6 @@
             </div>
         </div>
 
-        <!-- <div class="lab-chain-staff staff-overview address-box" v-if="!isShowLabChainStaffCollapsed">
-
-            <div class="header">
-                <h3>Lab Chain Staff 
-                    <a href="#" 
-                        @click.prevent 
-                        class="without-handler"
-                    >
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                </h3>
-            </div>
-
-            <ul class="staff-list">
-                <li v-for="(person, i) in clusterStaff.data">
-                    <div class="image">
-                        <a href="javascript:void(0)" 
-                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                        >
-                            <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
-                            <img :src="'/images/mask-'+i+'.png'" alt="">
-                        </a>
-                    </div>
-                    <div class="personal-info">
-                        <p class="name">
-                            <a href="javascript:void(0)" 
-                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                            >
-                                {{ person.name }}
-                            </a>
-                        </p>
-                        <p class="occupation">{{person.description}}</p>
-                    </div>
-                </li>
-            </ul>
-
-            <div class="show-less-btn"><a @click="isShowLabChainStaffCollapsed = true" href="javascript:void(0)">Show Less</a></div>
-
-            <div class="pagination-box">
-                <pagination :records="clusterStaff.total"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="staffPageChanged"></pagination>
-            </div>
-
-        </div> -->
-
         <div class="lab-chain-staff staff-overview address-box" v-if="isProductCollapsed">
 
             <div class="header">
@@ -339,7 +340,13 @@
                     id: -1,
                     name: "All Employees"
                 },
-                query: ''
+                query: '',
+                isClusterEdit: false,
+                saveBtnDisabled: true,
+                madeChanges: false,
+                old: {
+                    clusterName: ''
+                }
             }
         },
 
@@ -354,7 +361,13 @@
                     this.selectedRole = this.defaultRole
                 }
                 this.handleSearch()
-            }
+            },
+            "addressData.cluster.name": function () {
+                this.checkIfInputsEmpty();
+                if (this.isClusterEdit) {
+                    this.checkIfChangesMade();
+                }
+            },
         },
 
         methods: {
@@ -452,7 +465,39 @@
                         return item.type_id == this.selectedRole.id
                     }
                 });
-            }
+            },
+            toggleClusterEdit: function () {
+                this.isClusterEdit = !this.isClusterEdit;
+                if ( ! this.isClusterEdit) {
+                    this.addressData.cluster.name = this.old.clusterName;
+                } else {
+                    this.checkIfChangesMade();
+                }
+            },
+            updateCluster: function () {
+                if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.httpPut('/api/address-details/'+this.addressData.id+'/update-cluster-name', {
+                        clusterName: this.addressData.cluster.name.trim()
+                    })
+                    .then(data => {
+                        this.addressData.cluster.name = data.name;
+                        this.isClusterEdit = false;
+                        this.madeChanges = false;
+                        this.old.clusterName = data.name;
+                        this.$eventGlobal.$emit('clusterNameUpdated');
+                        alertify.notify('Lab Chain name has been updated.', 'success', 3);
+                    })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
+                }
+            },
+            checkIfInputsEmpty: function () {
+                this.saveBtnDisabled = this.addressData.cluster.name.trim() === '' ? true : false;
+            },
+            checkIfChangesMade: function () {
+                this.madeChanges = this.addressData.cluster.name.trim() !== this.old.clusterName.trim() ? true : false;
+            },
         },
 
         mounted: function () {
@@ -479,6 +524,8 @@
                 this.isProductCollapsed = true;
                 this.loadClusterProductsPaginated();
             })
+
+            this.old.clusterName = this.addressData.cluster.name;
         },
 
         props: ['employeeList', 'isActive', 'addressId', 'address', 'addressData'],
@@ -510,5 +557,81 @@
 
     .search-block {
         margin: 20px 0;
+    }
+
+    .lab-chain-name-input {
+        border: none;
+        width: 80%;
+        background-color: transparent;
+    }
+
+    .confirm-edit-block {
+        margin-bottom: 15px;
+    }
+
+    .save-cluster-btn {
+        width: 170px;
+        background: #4a90e3;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .cancel-cluster-btn {
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .save-cluster-btn-disabled {
+        width: 170px;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+        font-size: 13px;
+        background-color: #989da3;
+        opacity: 1;
+    }
+
+    .save-cluster-btn:hover {
+        background: #5ba3f4;
+    }
+
+    .save-cluster-btn:focus, .cancel-cluster-btn:focus {
+        outline: none;
+    }
+
+    .save-cluster-btn:active, .cancel-cluster-btn:active {
+        box-shadow: none;
+    }
+
+    .edit-name-input-block {
+        border-bottom: 2px solid #d2d6de;
+        width: 80%;
+        font-family: Montserrat;
+        font-size: 28px;
+        font-weight: 500;
+    }
+
+    .cluster-title {
+        display: inline-block;
+    }
+
+    .cluster-name {
+        vertical-align: middle;
+    }
+
+    .cluster-title-edit {
+        vertical-align: middle;
+        margin-left: 0;
     }
 </style>
