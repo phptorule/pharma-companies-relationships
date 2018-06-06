@@ -362,7 +362,7 @@
                     <a href="javascript:void(0)" @click="showSlidedBox('lab-chain-details')" v-if="addressData.cluster.addresses.length > 1" class="address-box-show-more-link">Lab Chain Details</a>
                 </div>
 
-                <div class="lab-news-overview address-box">
+                <div class="lab-news-overview address-box" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
                     <div class="header">
                         <h3>Lab News 
                             <a href="#" @click.prevent class="without-handler">

@@ -12,6 +12,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="customerTypesForFilter"
+                                    :selected="appliedFilters.type"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"
@@ -21,6 +22,7 @@
                                     class="form-control select-filter used-products-filter"
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
+                                    :selected="appliedFilters.usedProducts"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -29,6 +31,7 @@
                                     class="form-control select-filter tags-filter"
                                     :name="'Tags'"
                                     :options="tagOptionsForDropDown"
+                                    :selected="appliedFilters.tags"
                                     @changed="applyTagsFilter"
                                     ref="tagMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -36,6 +39,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="sortByOptionsForFilter"
+                                    :selected="appliedFilters.sortBy"
                                     :isHiddenEmptyOption="true"
                                     @changed="applySortByFilter"
                                     :name="'Sort By'"
@@ -82,8 +86,8 @@
                     Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
                 </div>
 
-                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()">
-                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)">
+                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
+                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
                             <div class="item-image" v-show="address.people_count > 0">
@@ -120,7 +124,7 @@
                                 </li>
                             </ul>
 
-                            <div class="info-block">
+                            <div class="info-block" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
                                 <div class="lightening-icon">
                                     <img src="/images/blue-lightening.png" alt="">
                                 </div>
@@ -186,7 +190,8 @@
                 queryUrl: '',
                 oldQueryUrl: '',
                 hoveredAddress: {},
-                mouseOverTimeoutId: null
+                mouseOverTimeoutId: null,
+                scrollTimoutId: null
             }
         },
 
@@ -202,6 +207,8 @@
                 }
 
                 this.$refs.paginationDirective.setPage(1);
+
+
 
             }
         },
@@ -249,8 +256,6 @@
 
             this.composeQueryUrl();
 
-            this.loadAddressesPaginated();
-
             this.loadFilterObject();
         },
 
@@ -261,6 +266,11 @@
             $('ul.sidebar-list').height(window.innerHeight - 325);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
+
+            this.loadAddressesPaginated()
+                .then((data) => {
+                    this.scrollToSidebarListItem();
+                });
         },
 
         methods: {
@@ -353,7 +363,7 @@
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
                         this.addressesTotal = data.total;
                         this.addressList = data.data;
@@ -365,6 +375,8 @@
                         this.isFirstLoad = false;
 
                         this.oldQueryUrl = this.queryUrl;
+
+                        return data;
                     })
 
             },
@@ -449,6 +461,29 @@
                 }
 
                 this.applyFilters();
+            },
+
+            scrollFunction: function() {
+
+                if(this.scrollTimoutId) {
+                    clearTimeout(this.scrollTimoutId);
+                }
+
+                this.scrollTimoutId = setTimeout(() => {
+                    let offsetSidebarListItem = $(".sidebar-list-item:first-child").offset().top - $(".sidebar-list").offset().top;
+                    localStorage.setItem('offset-top-sidebar-list-item', offsetSidebarListItem);
+                }, 500);
+
+            },
+
+            scrollToSidebarListItem: function() {
+                setTimeout(()=>{
+                    if(localStorage.hasOwnProperty('offset-top-sidebar-list-item')) {
+                        let offsetTop = parseInt(localStorage.getItem('offset-top-sidebar-list-item'));
+                        offsetTop = offsetTop > 0 ? offsetTop: -offsetTop;
+                        $(".sidebar-list").animate({scrollTop:offsetTop}, 0);
+                    }
+                },100);
             }
         }
     }
