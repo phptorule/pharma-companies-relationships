@@ -239,10 +239,9 @@
 
             <ul class="products-list">
                 <li v-if="i < 3" v-for="(product, i) in clusterProducts.data">
-                    <div class="image">
-                        <img :src="'/images/mask-'+i+'.png'" alt="">
-                    </div>
-                    <div>
+                    <img class="product-image" :src="product.image" alt="" v-if="product.image">
+                    <img class="product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
+                    <div class="product-description-block">
                         <span class="product-description">
                             {{product.name? product.company + ': ' + product.name : product.company}}
                         </span>
@@ -277,10 +276,9 @@
 
             <ul class="products-list">
                 <li v-for="(product, i) in clusterProducts.data">
-                    <div class="image">
-                        <img :src="'/images/mask-'+i+'.png'" alt="">
-                    </div>
-                    <div>
+                    <img class="product-image" :src="product.image" alt="" v-if="product.image">
+                    <img class="product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
+                    <div class="product-description-block">
                         <span class="product-description">
                             {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
@@ -633,5 +631,14 @@
     .cluster-title-edit {
         vertical-align: middle;
         margin-left: 0;
+    }
+
+    .products-list .product-image {
+        height: 70px;
+        border-radius: 50%;
+    }
+
+    .products-list .product-description-block {
+        margin-left: 15px;
     }
 </style>
