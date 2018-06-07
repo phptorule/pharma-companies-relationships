@@ -161,11 +161,12 @@
 <script>
 
     import http from '../../mixins/http';
+    import addressHelpers from '../../mixins/address-helpers';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http],
+        mixins: [http,addressHelpers],
 
         data: function () {
             return {
@@ -367,42 +368,6 @@
                 return queryStr;
             },
 
-            checkAddressListForDuplicationNames: function() {
-
-                let addressIdsWithSameNames = [];
-
-                let duplications = {};
-
-                this.addressList.forEach(address => {
-                    this.addressList.forEach(add => {
-                        if(address.name === add.name) {
-                            if(!duplications.hasOwnProperty(address.id)){
-                                duplications[address.id] = 0;
-                            }
-
-                            ++duplications[address.id];
-                        }
-                    });
-                });
-
-                for(let id in duplications) {
-                    if(duplications[id] > 1 && addressIdsWithSameNames.indexOf(id) === -1) {
-                        addressIdsWithSameNames.push(id);
-                    }
-                }
-
-                if(!addressIdsWithSameNames.length) {
-                    return;
-                }
-
-                this.addressList.forEach(address => {
-                    if(addressIdsWithSameNames.indexOf(''+address.id) != -1) {
-                        let city = address.address.split(',')[1].replace(/[0-9]/g, '').replace(/\s/g, '');
-                        address.name += ' ' + city;
-                    }
-                });
-            },
-
             loadAddressesPaginated: function () {
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
@@ -420,7 +385,7 @@
 
                         this.oldQueryUrl = this.queryUrl;
 
-                        this.checkAddressListForDuplicationNames();
+                        this.unifyAddressesWithDuplicatedNames(this.addressList);
 
                         return data;
                     })
