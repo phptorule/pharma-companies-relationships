@@ -228,6 +228,7 @@
                                             :personData="personData"
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
+                                            @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
                                 </div>
