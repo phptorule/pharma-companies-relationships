@@ -51,7 +51,7 @@
                 </a>
             </li>
         </ul>
-        <ul v-else class="empty-data-p hidden">We don't know about any products</ul>
+        <ul v-if="addressData.products.length === 0" class="empty-data-p hidden">No products known at this address</ul>
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
