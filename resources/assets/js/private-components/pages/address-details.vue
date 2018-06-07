@@ -302,7 +302,7 @@
                         {{ showHideProducts }}
                     </a>
                     
-                    <!-- <ul class="used-products-list" v-if="addressData.products.length">
+                     <ul class="used-products-list" v-if="addressData.products.length && false"> <!--TODO: remove "... && false" when start to work on address products feature-->
                         <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
                             :title="productName(product.company, product.name)"
                             :key="product.id"
@@ -331,7 +331,7 @@
                                 {{ showHideProducts }}
                             </a>
                         </li>
-                    </ul> -->
+                    </ul>
                     
                 </div>
 
