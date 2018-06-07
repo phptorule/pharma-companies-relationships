@@ -511,18 +511,7 @@
                 let _this = this,
                     sortedTags = this.addressData.tags.slice(),
                     sortedOldTags = this.old.tags.slice();
-                // sortedTags.sort(function(a, b) {
-                //     let c = a.name,
-                //         d = b.name;
-                //     if (c > d) return 1;
-                //     if (c < d) return -1;
-                // });
-                // sortedOldTags.sort(function(a, b) {
-                //     let c = a.name,
-                //         d = b.name;
-                //     if (c > d) return 1;
-                //     if (c < d) return -1;
-                // });
+
                 sortedTags.sort((tagA, tagB) => {
                     return tagA.name > tagB.name;
                 });
@@ -578,7 +567,7 @@
                         this.$eventGlobal.$emit('addressClusterUpdated');
                     })
                     .catch(err => {
-                        alertify.notify('Error occured', 'error', 3);
+                        alertify.notify('Error occurred', 'error', 3);
                     })
             },
             updateCustomerStatus: function (status) {
@@ -747,15 +736,6 @@
         },
 
         mounted: function () {
-            // let iOS = /Mac|iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            // let ih = (iOS) ? screen.height : window.innerHeight;
-            // if (iOS) {
-                // $('.address-details-fixed-height').height(ih - 139);
-                // $('.slided-box').height(ih - 139);
-            // } else {
-                // $('.address-details-fixed-height').height(ih - 134);
-                // $('.slided-box').height(ih - 134);
-            // }
 
             this.addressId = this.$route.params.id;
 
