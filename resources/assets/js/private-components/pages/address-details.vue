@@ -27,7 +27,7 @@
 
             <div class="address-details-fixed-height">
 
-                <a href="javascript:void(0)" @click="/*$router.go(-1)*/returnToPreviousDashboard()" title="Back" class="link-back arrow-left">
+                <a href="javascript:void(0)" @click="returnToPreviousDashboard()" title="Back" class="link-back arrow-left">
                     <i class="fa fa-angle-left"></i>
                 </a>
 
