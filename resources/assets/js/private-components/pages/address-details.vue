@@ -793,9 +793,12 @@
     ul.products-list li span.product-description {
         display: inline-block;
         margin-left: 15px;
+        white-space: normal;
     }
 
     ul.products-list li {
+        display: flex;
+        align-items: center;
         margin-top: 20px;
     }
 
