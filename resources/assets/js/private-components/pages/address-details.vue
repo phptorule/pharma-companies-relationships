@@ -727,6 +727,15 @@
             returnToPreviousDashboard: function () {
                 let url = localStorage.getItem('previous-dashboard');
                 this.$router.push(url);
+            },
+
+            mapAddressPropertiesToForm: function () {
+                this.old.name = this.addressData.name;
+                this.old.address = this.addressData.address;
+                this.old.url = this.addressData.url;
+                this.old.phone = this.addressData.phone;
+                this.madeChanges = false;
+                this.saveBtnDisabled = true;
             }
         },
         computed: {
@@ -744,13 +753,8 @@
             this.loadAddressDetails()
                 .then(() => {
                     this.showModalIfPersonHashDetected();
+                    this.mapAddressPropertiesToForm();
                     this.isFirstLoad = false;
-                    this.old.name = this.addressData.name;
-                    this.old.address = this.addressData.address;
-                    this.old.url = this.addressData.url;
-                    this.old.phone = this.addressData.phone;
-                    this.madeChanges = false;
-                    this.saveBtnDisabled = true;
                 });
 
             this.loadCustomerStatusList();
