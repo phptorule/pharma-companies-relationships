@@ -191,10 +191,15 @@ class ProductsController extends Controller {
 	}
 
 	public function TenderByProductChart( $id, $address ) {
-		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m/%d\') as month, SUM(at.budgeted_cost) as total';
+
+		$select = "SELECT DATE_FORMAT(months, '%Y/%m/%d') as month, SUM(total) as total ";
+
+		$sql = ' FROM ( SELECT at.tender_date as months, at.budgeted_cost as total ';
 
 		// init array of parameters
         $paramsArr = [];
+
+		$queryTags = '';
 
 		if ( isset( request()->tags ) && $tags = request()->tags) {
 		    if(!empty($tags) && is_array($tags)){
@@ -203,21 +208,22 @@ class ProductsController extends Controller {
                     // clear tag as get intval of it
                     $tag = intval($tag);
 
-                    $select .= ", ( 
-                    SELECT SUM(at$tag.budgeted_cost) 
+                    $queryTags .= ",SUM(sum_tag$tag) as tag$tag ";
+
+	                $sql .= ", (
+                    SELECT at$tag.budgeted_cost
                     FROM rl_products AS p$tag
                     LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.product_id = p$tag.id
 					LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.id = atpp$tag.purchase_id
 					LEFT JOIN rl_product_consumables AS pc$tag ON pc$tag.id = atpp$tag.consumable_id
 					LEFT JOIN rl_address_products AS ap$tag ON ap$tag.product_id = p$tag.id 
 					RIGHT JOIN rl_address_tenders AS at$tag ON (at$tag.address_id = ap$tag.address_id and at$tag.id = atp$tag.tender_id)
-                    WHERE p$tag.id = ?
+                    WHERE p$tag.id = $id
                     AND pc$tag.id = $tag
-                    AND at$tag.address_id = ?
-                    AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m/%d')
-                    GROUP BY month
-                    
-                     ) as tag$tag";
+                    AND at$tag.address_id = $address
+                    AND months = at$tag.tender_date
+                    GROUP BY months
+                    ) as sum_tag$tag ";
 
                     // put data for placeholders to array of parameters
                     array_push($paramsArr, $id, $address);
@@ -225,41 +231,38 @@ class ProductsController extends Controller {
             }
 		}
 
-		$query = DB::table( 'rl_products AS p' )
-           ->where( 'p.id', $id )
-           ->where( 'at.address_id', $address )
-           ->whereNotNull( 'atp.tender_id' )
-           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.product_id', '=', 'p.id' )
-           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.id', '=', 'atpp.purchase_id' )
-			->leftJoin( 'rl_address_products AS ap', 'ap.product_id', '=', 'p.id' )
-           ->leftJoin( 'rl_product_consumables AS pc', 'pc.id', '=', 'atpp.consumable_id' )
-			->rightJoin( 'rl_address_tenders AS at', function($q)
-			{
-				$q->on('at.address_id', '=', 'ap.address_id')
-				  ->on('at.id', '=', 'atp.tender_id');
-			})
-           ->groupBy( 'month' )
-           ->havingRaw( 'month IS NOT NULL' );
+		$sql .= " FROM rl_products as p 
+					LEFT JOIN rl_address_tenders_purchase_products as atpp on atpp.product_id = p.id
+					LEFT JOIN rl_address_tenders_purchase as atp on atp.id = atpp.purchase_id 
+					LEFT JOIN rl_address_products as ap on ap.product_id = p.id
+					LEFT JOIN rl_product_consumables as pc on pc.id = atpp.consumable_id
+					RIGHT JOIN rl_address_tenders as at on at.address_id = ap.address_id and at.id = atp.tender_id 
+					WHERE p.id = $id
+					AND at.address_id = $address
+					AND atp.tender_id IS NOT NULL
+					GROUP BY at.id 
+					) as tmp
+					GROUP BY month 
+					HAVING month IS NOT NULL";
+
+		$query = $select.$queryTags.$sql;
+
+
 
 		// if parameters is not empty, let's set them
         if(!empty($paramsArr)) {
-            $query->selectRaw(
-                $select,
-                $paramsArr
-            );
+	        $query = DB::raw( $query );
 
             // several lines will be drown
             $singleChart = false;
         } else {
-            $query->select(
-                DB::raw( $select )
-            );
+            $query = DB::raw( $query );
 
             // only one line will be drown on chart
             $singleChart = true;
         }
 
-		$result = $query->get()->toArray();
+		$result = DB::select($query);
 
 		$responsData = [];
 
