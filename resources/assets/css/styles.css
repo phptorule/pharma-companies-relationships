@@ -2612,6 +2612,38 @@ ul.staff-with-publication-list .box-body h4{
     margin-top: 0;
 }
 
-ul.staff-with-publication-list h3.box-title {
+.sidebar-tabs.nav-tabs-custom{
+    margin-bottom: 0;
+}
 
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs{
+    border: 0;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li{
+    width: 50%;
+    margin: 0;
+    border: 0;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li>a{
+    text-align: center;
+    letter-spacing: 0.5px;
+    color: #999999;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li>a:hover{
+    color: #3a444f;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li.active{
+    border-top-color: transparent;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li.active>a {
+    background: #eaeff4;
+    color: #3a444f;
 }

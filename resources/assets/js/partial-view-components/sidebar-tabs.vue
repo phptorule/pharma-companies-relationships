@@ -1,11 +1,11 @@
 <template>
-    <div class="nav-tabs-custom">
+    <div class="nav-tabs-custom sidebar-tabs">
         <ul class="nav nav-tabs">
             <li :class="{active: activeTab === 'dashboard' }">
-                <router-link to="/dashboard">Organisations</router-link>
+                <router-link to="/dashboard"><i class="fa fa-building"></i> Organisations</router-link>
             </li>
             <li :class="{active: activeTab === 'people-dashboard' }">
-                <router-link to="/people-dashboard">People</router-link>
+                <router-link to="/people-dashboard"><i class="fa fa-group"></i> People</router-link>
             </li>
         </ul>
     </div>
