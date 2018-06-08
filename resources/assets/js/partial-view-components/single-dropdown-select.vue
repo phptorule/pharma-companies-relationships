@@ -1,9 +1,24 @@
 <template>
     <ul class="nav nav-tabs single-dropdown-select" :id="blockId">
         <li class="dropdown">
-            <a class="dropdown-toggle" @click="toogleDropdown($event)" data-toggle="dropdown" href="#" :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name">
+            <a class="dropdown-toggle"
+               @click="toogleDropdown($event)"
+               data-toggle="dropdown"
+               href="#"
+               :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name"
+            >
 
                 <span class="caret"></span>
+
+                <i v-if="name === 'Type' && selectedValue !== null"
+                   class="oval"
+                   :class="{
+                        both: !selectedValue || selectedValue === '',
+                        'potential-customers': selectedValue == 1,
+                        'my-customers': selectedValue == 2,
+                   }"
+                ></i>
+
                 {{selectedValuesNamesString ? selectedValuesNamesString : name}}
             </a>
             <ul class="dropdown-menu">
@@ -51,7 +66,7 @@
         methods: {
 
             selectValue: function (value, displayedLabel) {
-                this.selectedValuesNamesString = displayedLabel;
+                this.selectedValuesNamesString = displayedLabel.replace(/<(?:.|\n)*?>/gm, '');;
                 this.selectedValue = value;
                 $('#'+this.blockId+' li.open').removeClass('open');
                 this.notifyParentComponent();

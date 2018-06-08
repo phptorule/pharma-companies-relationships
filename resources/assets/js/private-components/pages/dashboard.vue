@@ -15,6 +15,7 @@
                                     class="form-control select-filter type-filter"
                                     :options="customerTypesForFilter"
                                     :selected="appliedFilters.type"
+                                    :isHiddenEmptyOption="true"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"
@@ -55,30 +56,6 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group margin-bottom-0">
-                            <ul class="tab-filter">
-                                <li>
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = ''; applyFilters()" :class="{'active': appliedFilters.type == ''}">
-                                        All Labs</a>
-                                </li>
-                                <li class="my-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 2; applyFilters()" :class="{'active': appliedFilters.type == 2}">
-                                        <span class="oval"></span>
-                                        My customers
-                                    </a>
-                                </li>
-                                <li class="potential-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 1; applyFilters()" :class="{'active': appliedFilters.type == 1}">
-                                        <span class="oval"></span>
-                                        Potential Customers
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- /.search form -->
 
@@ -235,9 +212,19 @@
             },
 
             customerTypesForFilter: function () {
-                return this.filterObject.customer_types.map(el => {
-                    return {label: el.name, value: el.id};
-                })
+                let arr = this.filterObject.customer_types.map(el => {
+                    return {
+                        label: `<i class="oval ${el.id == 1? 'potential-customers' : ''} ${el.id == 2? 'my-customers' : ''}"></i>${el.name}`,
+                        value: el.id
+                    };
+                });
+
+                arr.unshift({
+                    label: `<i class="oval both"></i> All`,
+                    value: ''
+                });
+
+                return arr;
             },
 
             usedProductOptionsForDropDown: function () {
@@ -271,7 +258,7 @@
 
             document.title = 'Labscape';
 
-            $('ul.sidebar-list').height(window.innerHeight - 359);
+            $('ul.sidebar-list').height(window.innerHeight - 310);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 

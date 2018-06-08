@@ -797,19 +797,30 @@ ul.select-filter > li > ul > li .grey-checkbox [type=checkbox]:checked + span:be
 }
 
 .oval {
-    width: 8px;
-    height: 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-right: 8px;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+    margin-right: 8px !important;
 }
 
-.my-customers .oval{
-    background-color: #34cc8c;
+.my-customers .oval,
+.my-customers.oval{
+    background-color: #34cc8c !important;
 }
 
-.potential-customers .oval{
-    background-color: #ff894f;
+.potential-customers .oval,
+.potential-customers.oval{
+    background-color: #ff894f !important;
+}
+
+.oval.both{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#34cc8c+0,34cc8c+50,ff894f+51,ff894f+100 */
+    background: #34cc8c !important; /* Old browsers */
+    background: -moz-linear-gradient(-45deg, #34cc8c 0%, #34cc8c 50%, #ff894f 51%, #ff894f 100%) !important; /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, #34cc8c 0%,#34cc8c 50%,#ff894f 51%,#ff894f 100%) !important; /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, #34cc8c 0%,#34cc8c 50%,#ff894f 51%,#ff894f 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#34cc8c', endColorstr='#ff894f',GradientType=1 ) !important; /* IE6-9 fallback on horizontal gradient */
 }
 
 .nav-links{
@@ -2645,5 +2656,5 @@ ul.staff-with-publication-list .box-body h4{
 
 .sidebar-tabs.nav-tabs-custom>.nav-tabs>li.active>a {
     background: #eaeff4;
-    color: #3a444f;
+    color: #3e7fdf;
 }
