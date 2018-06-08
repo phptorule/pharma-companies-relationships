@@ -340,7 +340,6 @@
 
                 if (this.appliedFilters.globalSearch) {
                     queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                    this.$router.push('/dashboard?global-search=' + this.appliedFilters.globalSearch);
                 }
 
                 if (this.appliedFilters.usedProducts.length) {
