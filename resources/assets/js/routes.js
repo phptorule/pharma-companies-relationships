@@ -37,6 +37,12 @@ let privateRoutes = [
         name: 'Dashboard'
     },
     {
+        path: '/people-dashboard',
+        component: require('./private-components/pages/people-dashboard'),
+        meta: { requiresAuth: true },
+        name: 'PeopleDashboard'
+    },
+    {
         path: '/address-details/:id',
         component: require('./private-components/pages/address-details'),
         meta: { requiresAuth: true },

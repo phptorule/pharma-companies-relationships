@@ -13,6 +13,8 @@ AuthService.defineIsLoggedIn();
 
 
 /* Components Registration */
+Vue.component('pagination', Pagination);
+Vue.component('v-select', vSelect);
 Vue.component('main-component', require('./main-component'));
 Vue.component('public-outlet', require('./public-components/public-outlet'));
 Vue.component('private-outlet', require('./private-components/private-outlet'));
@@ -31,9 +33,8 @@ Vue.component('customer-status-select', require('./partial-view-components/custo
 Vue.component('tab-relationships', require('./partial-view-components/modal-employee-details-tab-relationships'));
 Vue.component('publication-list', require('./partial-view-components/publication-list'));
 Vue.component('publication-list-item', require('./partial-view-components/publication-list-item'));
-Vue.component('pagination', Pagination);
-Vue.component('v-select', vSelect);
 Vue.component('div-editable', require('./partial-view-components/div-editable'));
+Vue.component('sidebar-tabs', require('./partial-view-components/sidebar-tabs'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 
