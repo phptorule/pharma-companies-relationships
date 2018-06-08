@@ -160,7 +160,7 @@
                                                     <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
                                                         {{tender.tender_date ? tender.tender_date : 'Not date'}} -
                                                         {{tender.purchase_name | tendername(55)}}</h3>
-                                                    <div class="tender-volume">{{Math.ceil(Number(tender.budget)) |
+                                                    <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) |
                                                         currency('Rub') }}
                                                     </div>
 
@@ -266,7 +266,7 @@
                     json_fields: {
                         'Tender name': 'purchase_name',
                         'Description': 'purchase_remark',
-                        'Price': 'budget',
+                        'Price': 'budgeted_cost',
                         'Winner': 'winner',
                         'Product': 'product_name',
                         'Consumables': 'tag_name',

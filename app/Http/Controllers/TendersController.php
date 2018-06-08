@@ -105,29 +105,43 @@ class TendersController extends Controller {
 
 	public function prepareTendersQuery($address, $id = '') {
 
-		$select = "at.id as tender_id, at.address_id, at.budgeted_cost, at.actual_cost, at.url as tender_url, at.tender_date, 
-					atb.budget, (SELECT MAX(at.budgeted_cost) FROM rl_address_tenders as at where at.address_id = $address) as max_budgeted, 
+		$select = "at.id as tender_id, 
+					at.address_id, 
+					at.budgeted_cost, 
+					at.actual_cost, 
+					at.url as tender_url, 
+					at.tender_date, 
+					atb.budget,
+					(SELECT MAX(at.budgeted_cost) FROM rl_address_tenders as at where at.address_id = $address) as max_budgeted, 
 					(SELECT MIN(at.budgeted_cost) FROM rl_address_tenders as at where at.address_id = $address) as min_budgeted,
-					atp.id as purchase_id, atp.quantity as purchase_quantity, atp.total_price as purchase_total_price,
-					atp.name as purchase_name,atp.remark as purchase_remark,
-					pc.name as tag_name, pc.id as tag_id,
+					atp.id as purchase_id,
+					atp.quantity as purchase_quantity,
+					atp.total_price as purchase_total_price,
+					atp.name as purchase_name,
+					atp.remark as purchase_remark,
+					pc.name as tag_name,
+					pc.id as tag_id,
 					p.name as product_name,
 					group_concat(DISTINCT(ats.amount) ORDER BY ats.amount DESC separator ',') AS suppliers_amount,
 					count(s.name) as winner,
 					group_concat(DISTINCT(IF(ISNULL(s.address),s.name,CONCAT(s.name,' - ', s.address))) ORDER BY ats.amount DESC separator ';') AS suppliers_data";
 
-		$query = DB::table( 'rl_address_tenders AS at' )
+		$query = DB::table( 'rl_products AS p' )
 		           ->select( DB::raw( $select ) )
 		           ->where( 'at.address_id', $address )
-		           ->whereNotNull( 'atp.tender_id' )
-		           ->whereNotNull( 'atb.tender_id' )
-		           ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
-		           ->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
-		           ->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
-		           ->leftJoin( 'rl_product_consumables AS pc', 'atpp.consumable_id', '=', 'pc.id' )
+					->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.product_id', '=', 'p.id' )
+					->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.id', '=', 'atpp.purchase_id' )
+					->leftJoin( 'rl_address_products AS ap', 'ap.product_id', '=', 'p.id' )
+					->leftJoin( 'rl_product_consumables AS pc', 'pc.id', '=', 'atpp.consumable_id' )
+					->leftJoin( 'rl_address_tenders AS at', function($q)
+					{
+						$q->on('at.address_id', '=', 'ap.address_id')
+						  ->on('at.id', '=', 'atp.tender_id');
+					})
+					->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
-		           ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id' )
+
 					->groupBy('at.id');
 
 		if($id != ''){$query->where( 'p.id', $id );}
