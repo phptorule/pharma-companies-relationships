@@ -17,12 +17,6 @@
                         </a>
                     </p>
                     <div class="amount">
-                        <div class="volume">
-                            <span class="volume-head" :title="product.unit">
-                                {{product.volume  | volume(product.unit)}}
-                                <span class="volume-title" v-if="product.bud_sum">{{Math.ceil(product.bud_sum/1000)}} K Rub {{product.consum_name}}</span>
-                            </span>
-                        </div>
                         <div class="spending">
                             <span class="spending-head">
                                 {{product.total_spent | currency}}
@@ -33,6 +27,12 @@
                                 <span class="last-tender-head">
                                     {{product.last_tender_date ? product.last_tender_date : ''}}
                                 <span class="last-tender-title">Last Tender</span>
+                            </span>
+                        </div>
+                        <div class="volume">
+                            <span class="volume-head" :title="product.unit">
+                                {{product.bud_sum ? Math.ceil(product.bud_sum/1000) + ' K Rub' : '?'}}
+                                <span class="volume-title">{{product.consum_name ? product.consum_name : 'No known consumables'}}</span>
                             </span>
                         </div>
                     </div>
