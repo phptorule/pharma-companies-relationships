@@ -37,11 +37,11 @@ class ProductsController extends Controller {
 							LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
 							LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
                             LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
-							LEFT JOIN rl_address_tenders as at ON (at.address_id = ap.address_id and at.id = atp.tender_id)
+							RIGHT JOIN rl_address_tenders as at ON (at.address_id = ap.address_id and at.id = atp.tender_id)
 							LEFT JOIN rl_address_tenders_budgets as atb ON atb.tender_id = at.id
 							WHERE p.id = :id1
 							AND at.address_id = :address1
-
+							AND at.id IS NOT NULL
                             GROUP BY at.id
 						) as product
 		";
@@ -92,38 +92,6 @@ class ProductsController extends Controller {
      */
 	public function productByAddressPaginated( $address ) {
 
-		/*$sql = "SELECT
-				p.*, p.id as prod_id,
-                pc.bud_sum, pc.consum_name,
-				SUM(at.budgeted_cost) as total_spent,
-				SUM(atp.quantity) as volume,
-				MAX(atp.units) as unit,
-				DATE_FORMAT(MAX(at.tender_date), '%d-%m-%Y') as last_tender_date
-				FROM rl_products as p
-				LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
-                LEFT JOIN (
-                SELECT SUM(at1.budgeted_cost) as bud_sum , pc1.name as consum_name, pc1.id as consum_id, p1.id as pr_id
-	                FROM rl_address_tenders_budgets as atb1
-	                LEFT JOIN rl_address_tenders AS at1 ON at1.id = atb1.tender_id
-	                LEFT JOIN rl_address_tenders_purchase AS atp1 ON atp1.id = at1.id
-	                LEFT JOIN rl_address_tenders_purchase_products AS atpp1 ON atpp1.purchase_id = atp1.id
- 	                LEFT JOIN rl_product_consumables AS pc1 ON pc1.id = atpp1.consumable_id
-                    LEFT JOIN rl_products AS p1 ON p1.id = atpp1.product_id
-	                WHERE at1.address_id = :address
-	                AND pc1.id IS NOT NULL
-	                GROUP BY pc1.id
-	                ORDER BY bud_sum DESC
-               ) AS pc ON (pc.pr_id = p.id)
-				LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
-				LEFT JOIN rl_address_tenders AS at ON at.id = atp.tender_id
-				LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
-                LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
-				LEFT JOIN rl_addresses AS a ON at.address_id = a.id
-				WHERE at.address_id = :address1
-				AND YEAR(at.tender_date) <= YEAR(CURDATE())
-				GROUP BY p.id
-				ORDER BY total_spent DESC";*/
-
 		$sql = "SELECT
                         prodId as id,
                         prodId as prod_id,
@@ -155,7 +123,7 @@ class ProductsController extends Controller {
 							LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
 							LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
 							LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
-							LEFT JOIN rl_address_tenders as at ON (at.address_id = ap.address_id and at.id = atp.tender_id)
+							RIGHT JOIN rl_address_tenders as at ON (at.address_id = ap.address_id and at.id = atp.tender_id)
 							LEFT JOIN rl_address_tenders_budgets as atb ON atb.tender_id = at.id
                             LEFT JOIN (
                             SELECT SUM(at1.budgeted_cost) as bud_sum , pc1.name as consum_name, pc1.id as consum_id, p1.id as pr_id
@@ -171,8 +139,10 @@ class ProductsController extends Controller {
                                 ORDER BY bud_sum DESC
                            ) AS pc ON (pc.pr_id = p.id)
 							WHERE at.address_id = :address1
+							AND at.id IS NOT NULL
 							GROUP BY at.id
 						) as product
+						WHERE prodId IS NOT NULL
                         GROUP BY prodId
                         ORDER BY total_spent DESC";
 
@@ -221,7 +191,7 @@ class ProductsController extends Controller {
 	}
 
 	public function TenderByProductChart( $id, $address ) {
-		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m\') as month, SUM(atp.total_price) as total';
+		$select = 'DATE_FORMAT(at.tender_date, \'%Y/%m/%d\') as month, SUM(at.budgeted_cost) as total';
 
 		// init array of parameters
         $paramsArr = [];
@@ -234,18 +204,17 @@ class ProductsController extends Controller {
                     $tag = intval($tag);
 
                     $select .= ", ( 
-                    SELECT SUM(atp$tag.total_price) 
+                    SELECT SUM(at$tag.budgeted_cost) 
                     FROM rl_products AS p$tag
                     LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.product_id = p$tag.id
 					LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.id = atpp$tag.purchase_id
 					LEFT JOIN rl_product_consumables AS pc$tag ON pc$tag.id = atpp$tag.consumable_id
-					LEFT JOIN rl_address_tenders AS at$tag ON at$tag.id = atp$tag.tender_id
 					LEFT JOIN rl_address_products AS ap$tag ON ap$tag.product_id = p$tag.id 
-					LEFT JOIN rl_addresses AS a$tag ON at$tag.address_id = a$tag.id
+					RIGHT JOIN rl_address_tenders AS at$tag ON (at$tag.address_id = ap$tag.address_id and at$tag.id = atp$tag.tender_id)
                     WHERE p$tag.id = ?
                     AND pc$tag.id = $tag
                     AND at$tag.address_id = ?
-                    AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m')
+                    AND month = DATE_FORMAT(at$tag.tender_date, '%Y/%m/%d')
                     GROUP BY month
                     
                      ) as tag$tag";
@@ -264,7 +233,7 @@ class ProductsController extends Controller {
            ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.id', '=', 'atpp.purchase_id' )
 			->leftJoin( 'rl_address_products AS ap', 'ap.product_id', '=', 'p.id' )
            ->leftJoin( 'rl_product_consumables AS pc', 'pc.id', '=', 'atpp.consumable_id' )
-			->leftJoin( 'rl_address_tenders AS at', function($q)
+			->rightJoin( 'rl_address_tenders AS at', function($q)
 			{
 				$q->on('at.address_id', '=', 'ap.address_id')
 				  ->on('at.id', '=', 'atp.tender_id');
