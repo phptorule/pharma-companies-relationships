@@ -43,7 +43,7 @@
             </li>
             <li>
                 <a href="javascript:void(0)"
-                   v-if="addressData.products && addressData.products.length >= 3"
+                   v-if="addressData.products && addressData.products.length > 3"
                    @click="showSlidedBox('all-products')"
                    class="address-box-show-more-link show-all-employees-link"
                 >
