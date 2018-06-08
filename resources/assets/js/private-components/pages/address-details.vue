@@ -725,7 +725,7 @@
                 this.sideComponentToDisplay = '';
             },
             returnToPreviousDashboard: function () {
-                let url = localStorage.getItem('previous-dashboard');
+                let url = localStorage.getItem('previous-dashboard') ? localStorage.getItem('previous-dashboard') : '/dashboard';
                 this.$router.push(url);
             },
 
