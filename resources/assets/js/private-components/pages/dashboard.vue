@@ -92,7 +92,8 @@
 
                             <div class="item-image" v-show="address.people_count > 0">
                                 <div class="main-image">
-                                    <router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')">
+                                    <!--<router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')" >-->
+                                    <a href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : ''))" >
                                         <div class="box-p">
                                             <span class="people-count" v-if="address.people_count">
                                                 See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}
@@ -100,16 +101,20 @@
 
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
                                         </div>
-                                    </router-link>
+                                    </a>
+                                    <!--</router-link>-->
                                 </div>
                                 <div class="circle-1"></div>
                                 <div class="circle-2"></div>
                             </div>
 
                             <h3>
-                                <router-link :to="'/address-details/'+address.id">
+                                <!--<router-link :to="'/address-details/'+address.id">
                                     {{ address.name }}
-                                </router-link>
+                                </router-link>-->
+                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id)">
+                                    {{ address.name }}
+                                </a>
 
                                 <span class="oval"></span>
                             </h3>
@@ -156,11 +161,12 @@
 <script>
 
     import http from '../../mixins/http';
+    import addressHelpers from '../../mixins/address-helpers';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http],
+        mixins: [http,addressHelpers],
 
         data: function () {
             return {
@@ -271,6 +277,9 @@
                 .then((data) => {
                     this.scrollToSidebarListItem();
                 });
+
+            this.checkLocalStoragePreviousDashboard();
+
         },
 
         methods: {
@@ -331,7 +340,6 @@
 
                 if (this.appliedFilters.globalSearch) {
                     queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                    this.$router.push('/dashboard?global-search=' + this.appliedFilters.globalSearch);
                 }
 
                 if (this.appliedFilters.usedProducts.length) {
@@ -375,6 +383,8 @@
                         this.isFirstLoad = false;
 
                         this.oldQueryUrl = this.queryUrl;
+
+                        this.unifyAddressesWithDuplicatedNames(this.addressList);
 
                         return data;
                     })
@@ -484,6 +494,17 @@
                         $(".sidebar-list").animate({scrollTop:offsetTop}, 0);
                     }
                 },100);
+            },
+
+            GoToAddressDetails:function(url) {
+                localStorage.setItem('previous-dashboard', this.$route.fullPath);
+                this.$router.push(url);
+            },
+
+            checkLocalStoragePreviousDashboard: function() {
+                if(localStorage.getItem('previous-dashboard')){
+                    localStorage.removeItem('previous-dashboard');
+                }
             }
         }
     }

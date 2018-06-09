@@ -46,8 +46,7 @@
                             worked at
                             <span v-for="(address, i) in personData.addresses" :key="address.id">
                                 <a :href="'/address-details/' + address.id" >
-                                    {{ address.name }}
-                                </a><span v-if="i != 0">, </span>
+                                    {{ address.name }}</a><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
                         </p>
 
@@ -228,6 +227,7 @@
                                             :personData="personData"
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
+                                            @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
                                 </div>
@@ -245,9 +245,10 @@
 
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
+    import addressHelpers from '../mixins/address-helpers';
 
     export default {
-        mixins: [http, getPersonInitials],
+        mixins: [http, getPersonInitials, addressHelpers],
 
         data: function () {
             return {
@@ -371,6 +372,8 @@
                 this.httpGet('/api/people/' + personId)
                     .then(data => {
                         this.personData = data;
+
+                        this.unifyAddressesWithDuplicatedNames(this.personData.addresses);
 
                         this.httpGet('/api/people/'+personId+'/relationships?page=1')
                             .then(data => {

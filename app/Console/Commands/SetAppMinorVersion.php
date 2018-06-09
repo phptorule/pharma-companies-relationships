@@ -19,7 +19,7 @@ class SetAppMinorVersion extends Command
      *
      * @var string
      */
-    protected $description = 'Set the minor version of the app in DB to equal to commit numbers in master branch';
+    protected $description = 'Set the minor version of the app in DB to equal to commits number in master branch';
 
     /**
      * Create a new command instance.
