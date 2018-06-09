@@ -37,13 +37,17 @@
 
             <li v-for="(relation, i) in person.relationships">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="loadAnotherUser(relation)">
+                    <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
                         <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
                         <img :src="'/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
                 <div class="personal-info">
-                    <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
+                    <p class="name">
+                        <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
+                            {{relation.name}}
+                        </a>
+                    </p>
                     <p class="occupation" style="text-align: left">{{relation.description}}</p>
                     <p class="connection-type" style="text-align: left">
                         <a href="javascript:void(0)" @click="loadRelationship(relation)">
@@ -297,7 +301,7 @@
                     relationPerson: relationPerson,
                     relationPage: relationPage
                 }
-            }
+            },
         },
 
 

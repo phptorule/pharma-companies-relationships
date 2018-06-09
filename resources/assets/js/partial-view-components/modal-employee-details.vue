@@ -50,33 +50,114 @@
                             </span>
                         </p>
 
-                        <ul class="social-icons">
-                            <li>
-                                <a href="#" @click.prevent class="without-handler">
+                        <ul class="social-icons" v-if=" ! isEditing">
+                            <li v-if="personData.linkedin_url">
+                                <a :href="personData.linkedin_url" target="_blank">
                                     <i class="fa fa-linkedin"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" @click.prevent class="without-handler">
+                            <li v-if="personData.twitter">
+                                <a :href="personData.twitter" target="_blank">
                                     <i class="fa fa-twitter"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" @click.prevent class="without-handler">
+                            <li v-if="personData.facebook">
+                                <a :href="personData.facebook" target="_blank">
                                     <i class="fa fa-facebook"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" @click.prevent class="without-handler">
+                            <li v-if="personData.instagram">
+                                <a :href="personData.instagram" target="_blank">
                                     <i class="fa fa-instagram"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" @click.prevent class="without-handler">
+                            <li v-if="personData.telegram">
+                                <a :href="personData.telegram" target="_blank">
                                     <i class="fa fa-telegram"></i>
                                 </a>
                             </li>
                         </ul>
+
+                        <ul class="social-icons" v-if="isEditing">
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('linkedin')" 
+                                    :class="{'active': personData.linkedin_url, 'editing': isSocialEditing =='linkedin'}">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('twitter')" 
+                                    :class="{'active': personData.twitter, 'editing': isSocialEditing =='twitter'}">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('facebook')" 
+                                    :class="{'active': personData.facebook, 'editing': isSocialEditing =='facebook'}">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('instagram')" 
+                                    :class="{'active': personData.instagram, 'editing': isSocialEditing =='instagram'}">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('telegram')" 
+                                    :class="{'active': personData.telegram, 'editing': isSocialEditing =='telegram'}">
+                                    <i class="fa fa-telegram"></i>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="social-edit-block">
+                            <input 
+                                type="text" 
+                                v-model="personData.linkedin_url"
+                                v-if="isSocialEditing && isSocialEditing =='linkedin'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.twitter"
+                                v-if="isSocialEditing && isSocialEditing =='twitter'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.facebook"
+                                v-if="isSocialEditing && isSocialEditing =='facebook'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.instagram"
+                                v-if="isSocialEditing && isSocialEditing =='instagram'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.telegram"
+                                v-if="isSocialEditing && isSocialEditing =='telegram'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                        </div>
 
                         <div class="row person-experience">
                             <div :class="yearsAtThisJob? 'col-md-4': 'col-md-6'">
@@ -272,9 +353,16 @@
                 old: {
                     name: '',
                     description: '',
-                    role: ''
+                    role: '',
+                    linkedin: '',
+                    twitter: '',
+                    facebook: '',
+                    instagram: '',
+                    telegram: ''
                 },
-                maxRoleLength: 1000
+                maxRoleLength: 1000,
+                maxSocialLength: 1000,
+                isSocialEditing: false
             }
         },
 
@@ -339,11 +427,81 @@
                     this.checkIfChangesMade();
                 }
             },
+            "personData.linkedin_url": function () {
+                if (this.personData.linkedin_url == null) {
+                    this.personData.linkedin_url = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.twitter": function () {
+                if (this.personData.twitter == null) {
+                    this.personData.twitter = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.facebook": function () {
+                if (this.personData.facebook == null) {
+                    this.personData.facebook = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.instagram": function () {
+                if (this.personData.instagram == null) {
+                    this.personData.instagram = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.telegram": function () {
+                if (this.personData.telegram == null) {
+                    this.personData.telegram = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
             "old.role": function () {
                 if (this.old.role == null) {
                     this.old.role = '';
                 }
-            }
+            },
+            "old.linkedin": function () {
+                if (this.old.linkedin == null) {
+                    this.old.linkedin = '';
+                }
+            },
+            "old.twitter": function () {
+                if (this.old.twitter == null) {
+                    this.old.twitter = '';
+                }
+            },
+            "old.facebook": function () {
+                if (this.personoldData.facebook == null) {
+                    this.old.facebook = '';
+                }
+            },
+            "old.instagram": function () {
+                if (this.old.instagram == null) {
+                    this.old.instagram = '';
+                }
+            },
+            "old.telegram": function () {
+                if (this.old.telegram == null) {
+                    this.old.telegram = '';
+                }
+            },
         },
         methods: {
             endDate: function (date) {
@@ -383,6 +541,11 @@
                         this.old.name = this.personData.name;
                         this.old.description = this.personData.description;
                         this.old.role = this.personData.role;
+                        this.old.linkedin = this.personData.linkedin_url ? this.personData.linkedin_url : '';
+                        this.old.twitter = this.personData.twitter ? this.personData.twitter : '';
+                        this.old.facebook = this.personData.facebook ? this.personData.facebook : '';
+                        this.old.instagram = this.personData.instagram ? this.personData.instagram : '';
+                        this.old.telegram = this.personData.telegram ? this.personData.telegram : '';
                     });
 
                 $('#personal-modal').on('hidden.bs.modal', function (e) {
@@ -416,9 +579,15 @@
                 this.isEditing = !this.isEditing;
 
                 if ( ! this.isEditing) {
+                    this.isSocialEditing = false;
                     this.personData.name = this.old.name;
                     this.personData.description = this.old.description;
                     this.personData.role = this.old.role;
+                    this.personData.linkedin_url = this.old.linkedin;
+                    this.personData.twitter = this.old.twitter;
+                    this.personData.facebook = this.old.facebook;
+                    this.personData.instagram = this.old.instagram;
+                    this.personData.telegram = this.old.telegram;
                 } else {
                     this.checkIfChangesMade();
                 }
@@ -437,7 +606,12 @@
                 if (
                     this.personData.name.trim() !== this.old.name.trim() ||
                     this.personData.description.trim() !== this.old.description.trim() ||
-                    this.personData.role.trim() !== this.old.role.trim()
+                    this.personData.role.trim() !== this.old.role.trim() ||
+                    this.personData.linkedin_url.trim() !== this.old.linkedin.trim() ||
+                    this.personData.twitter.trim() !== this.old.twitter.trim() ||
+                    this.personData.facebook.trim() !== this.old.facebook.trim() ||
+                    this.personData.instagram.trim() !== this.old.instagram.trim() ||
+                    this.personData.telegram.trim() !== this.old.telegram.trim()
                 ) {
                     this.madeChanges = true;
                 } else {
@@ -449,15 +623,26 @@
                     this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
-                        role: this.personData.role
+                        role: this.personData.role,
+                        linkedin_url: this.personData.linkedin_url,
+                        twitter: this.personData.twitter,
+                        facebook: this.personData.facebook,
+                        instagram: this.personData.instagram,
+                        telegram: this.personData.telegram
                     })
                     .then(data => {
                         this.old.name = data.name;
                         this.old.description = data.description;
                         this.old.role = data.role;
+                        this.old.linkedin = data.linkedin_url;
+                        this.old.twitter = data.twitter;
+                        this.old.facebook = data.facebook;
+                        this.old.instagram = data.instagram;
+                        this.old.telegram = data.telegram;
                         this.madeChanges = false;
                         this.saveBtnDisabled = false;
                         this.isEditing = false;
+                        this.isSocialEditing = false;
                         this.$eventGlobal.$emit('employeeDetailsUpdated')
                         alertify.notify('Employe has been updated.', 'success', 3);
                     })
@@ -470,6 +655,9 @@
                 if (event.target.value.length > this.maxRoleLength) {
                     this.personData.role = this.personData.role.substr(0, this.maxRoleLength);
                 }
+            },
+            setSocialEdit: function (social) {
+                this.isSocialEditing = social;
             }
         },
 
@@ -500,7 +688,6 @@
         justify-content: center;
         align-items: center;
         font-weight: 400;
-        /* margin: 0; */
         line-height: 1.42857143;
         box-sizing: border-box;
     }
@@ -518,11 +705,6 @@
 
     .confirm-employe-edit-block {
         display: inline-block;
-        /* display: flex; */
-        /* justify-content: center; */
-        /* align-items: center; */
-        /* margin-top: 18px; */
-        /* margin-bottom: 18px; */
     }
 
     .can-edit div {
@@ -533,7 +715,6 @@
         background: transparent;
         font-family: Montserrat;
         font-size: 13px;
-        /* margin-right: 10px; */
     }
 
     .save-employe-btn {
@@ -577,10 +758,6 @@
         content: attr(data-placeholder);
     }
 
-    /* .can-edit div:empty:not(:focus):before { */
-        /* font-weight: 100; */
-    /* } */
-
     .role-edit-block {
         display: flex;
         justify-content: center;
@@ -596,6 +773,45 @@
     }
 
     .edit-input:focus {
+        outline: none;
+    }
+
+    #personal-modal ul.social-icons li a.active {
+        background-color: #4a90e3;
+        color: white;
+    }
+
+    #personal-modal ul.social-icons li a {
+        transition: none;
+        position: relative;
+    }
+
+    #personal-modal ul.social-icons li a.editing:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 0;
+        left: 0;
+        bottom: -6px;
+        border-bottom: 2px solid #d2d6de;
+    }
+
+    .social-edit-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 15px 10px 0 0;
+    }
+
+    .social-input {
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 14px;
+    }
+
+    .social-input:focus {
         outline: none;
     }
 </style>
