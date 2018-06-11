@@ -126,18 +126,18 @@ class TendersController extends Controller {
 					count(s.name) as winner,
 					group_concat(DISTINCT(IF(ISNULL(s.address),s.name,CONCAT(s.name,' - ', s.address))) ORDER BY ats.amount DESC separator ';') AS suppliers_data";
 
-		$query = DB::table( 'rl_products AS p' )
+
+        $query = DB::table( 'rl_address_tenders AS at' )
 		           ->select( DB::raw( $select ) )
 		           ->where( 'at.address_id', $address )
-					->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.product_id', '=', 'p.id' )
-					->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.id', '=', 'atpp.purchase_id' )
+                    ->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.tender_id', '=', 'at.id' )
+					->leftJoin( 'rl_address_tenders_purchase_products AS atpp', 'atpp.purchase_id', '=', 'atp.id' )
+                    ->leftJoin( 'rl_products AS p', 'p.id', '=', 'atpp.product_id')
 					->leftJoin( 'rl_address_products AS ap', 'ap.product_id', '=', 'p.id' )
 					->leftJoin( 'rl_product_consumables AS pc', 'pc.id', '=', 'atpp.consumable_id' )
-                    ->leftJoin( 'rl_address_tenders AS at', 'at.address_id', '=', 'ap.address_id')
 					->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
-
 					->groupBy('at.id');
 
 		if($id != ''){$query->where( 'p.id', $id );}
