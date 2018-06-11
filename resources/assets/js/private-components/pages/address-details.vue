@@ -282,8 +282,6 @@
                         :addNewProduct="addNewProduct"
                     />
 
-                    <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
-
 
                     
                 </div>
