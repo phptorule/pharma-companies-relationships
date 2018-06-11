@@ -133,11 +133,7 @@ class TendersController extends Controller {
 					->leftJoin( 'rl_address_tenders_purchase AS atp', 'atp.id', '=', 'atpp.purchase_id' )
 					->leftJoin( 'rl_address_products AS ap', 'ap.product_id', '=', 'p.id' )
 					->leftJoin( 'rl_product_consumables AS pc', 'pc.id', '=', 'atpp.consumable_id' )
-					->leftJoin( 'rl_address_tenders AS at', function($q)
-					{
-						$q->on('at.address_id', '=', 'ap.address_id')
-						  ->on('at.id', '=', 'atp.tender_id');
-					})
+                    ->leftJoin( 'rl_address_tenders AS at', 'at.address_id', '=', 'ap.address_id')
 					->leftJoin( 'rl_address_tenders_budgets AS atb', 'atb.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_address_tenders_suppliers AS ats', 'ats.tender_id', '=', 'at.id' )
 		           ->leftJoin( 'rl_suppliers AS s', 's.id', '=', 'ats.supplier_id' )
