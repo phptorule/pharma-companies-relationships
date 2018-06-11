@@ -33,6 +33,7 @@
                                                 <option value="0" disabled selected>Data Sources</option>
                                                 <option value="1" selected>Coauthors</option>
                                                 <option value="2" selected>Cited By</option>
+                                                <option value="3" selected>Zefix</option>
                                             </select>
                                         </div>
                                         <img src="/images/graph/undo.svg" class="graphIcon" onclick="undoAction()"/>
@@ -70,12 +71,33 @@
 
         methods: {
             init: function (addressData) {
+
                 this.currentAddress = addressData;
 
-                this.loadContactsChainData();
+                if (addressData.hasOwnProperty('personId') && addressData.hasOwnProperty('isPersonChain')) {
+                    this.loadPersonData(addressData.personId);
+                }
+                else {
+                    this.loadAddressData();
+                }
             },
 
-            loadContactsChainData: function () {
+            loadPersonData: function(personId){
+                this.httpGet('/api/people/'+personId+'/get-person-graph-data')
+                    .then(data => {
+                        mainLabId = null;
+
+                        mainNodeType = 'Person';
+
+                        mainNodeId = personId;
+
+                        start(data);
+
+                        this._toggleFullScreen()
+                    })
+            },
+
+            loadAddressData: function () {
                 this.httpGet('/api/address-details/'+this.currentAddress.id+'/load-contacts-chain-data')
                     .then(data => {
                         mainLabId = this.currentAddress.id;

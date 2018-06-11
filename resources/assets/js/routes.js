@@ -40,7 +40,7 @@ let privateRoutes = [
         path: '/address-details/:id',
         component: require('./private-components/pages/address-details'),
         meta: { requiresAuth: true },
-        name: 'Dashboard'
+        name: 'AddressDetails'
     }
 
 

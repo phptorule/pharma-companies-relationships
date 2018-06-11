@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\AddressTag;
+use App\Models\AddressProduct;
 use App\Models\Cluster;
 use App\Models\CustomerType;
 use App\Models\People;
@@ -12,6 +14,9 @@ use App\Models\Tender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Image;
+use File;
+use Storage;
 
 class AddressesController extends Controller
 {
@@ -22,7 +27,17 @@ class AddressesController extends Controller
     {
         $addresses = $this->prepareAddressesQuery()->limit($this->MAX_ADDRESSES)->get();
 
-        return response()->json($addresses);
+        $addressesForResponse = [];
+
+        foreach ($addresses as $i => $address) {
+            $addressesForResponse[$i]['id'] = $address['id'];
+            $addressesForResponse[$i]['name'] = $address['name'];
+            $addressesForResponse[$i]['lat'] = $address['lat'];
+            $addressesForResponse[$i]['lon'] = $address['lon'];
+            $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+        }
+
+        return response()->json($addressesForResponse);
     }
 
 
@@ -43,6 +58,7 @@ class AddressesController extends Controller
             ->withCount('people')
             ->with(['products' => function($q){
                 $q->select('id');
+                $q->orderByRaw('company, name');
             }]);
 
         $query = $this->composeConditions($query, request()->all());
@@ -103,7 +119,7 @@ class AddressesController extends Controller
     function loadFilterValues()
     {
         $tags = Tag::get(['id', 'name']);
-        $products = Product::all();
+        $products = Product::orderByRaw('company, name')->get();
         $customerTypes = CustomerType::visible()->get();
 
         $filters = [
@@ -122,7 +138,11 @@ class AddressesController extends Controller
         $address->load('cluster');
         $address->load('cluster.addresses');
         $address->load('people');
-        $address->load('products');
+        $address->load([
+            'products' => function ($query) {
+                $query->orderByRaw('company, name');
+            }
+        ]);
 	    $address->load('tenders.purchase');
 
 	    $address = $address->toArray();
@@ -262,6 +282,7 @@ class AddressesController extends Controller
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
+            ->orderByRaw('name')
             ->paginate(10);
 
         return response()->json($clusterStaff);
@@ -274,9 +295,237 @@ class AddressesController extends Controller
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
+            ->orderByRaw('company, name')
             ->paginate(10);
 
         return response()->json($products);
     }
 
+    /**
+     * update Address
+     */
+    public function updateAddressDetails(Address $address)
+    {
+        $address->name = request()->get('name');
+        $address->address = request()->get('address');
+        $address->url = request()->get('url');
+        $address->phone = request()->get('phone');
+        $address->save();
+
+        $tags = request()->get('tags');
+
+        $ids = [];
+
+        foreach ($tags as $tag) {
+            if ( ! Tag::whereName($tag['name'])->first()) {
+                $newTag = new Tag();
+                $newTag->name = $tag['name'];
+                $newTag->save();
+                $ids[] = $newTag->id;
+            } else {
+                $ids[] = $tag['id'];
+            }
+        }
+
+        AddressTag::where('address_id', '=', $address->id)->delete();
+
+        foreach ($ids as $tagId) {
+            $addressTag = new AddressTag();
+            $addressTag->address_id = $address->id;
+            $addressTag->tag_id = $tagId;
+            $addressTag->save();
+        }
+
+        return response()->json($address);
+    }
+
+    /**
+     * get all tags
+     */
+    public function loadAllTags(Address $address)
+    {
+        $tags = Tag::all();
+
+        return response()->json($tags);
+    }
+
+    /**
+     * get selected tags for address
+     */
+    public function loadSelectedTags(Address $address)
+    {
+        $selectedTags = $address->load('tags')->tags;
+
+        return response()->json($selectedTags);
+    }
+
+    /**
+     * get all clusters
+     */
+    public function getClusters()
+    {
+        $clusters = Cluster::get();
+        return response()->json($clusters);
+    }
+
+    /**
+     * update clusters
+     */
+    public function updateClusters(Address $address)
+    {
+        $address->cluster_id = request()->get('cluster_id');
+        $address->update();
+        $address->load('cluster');
+        $address->load('cluster.addresses');
+        return response()->json($address);
+    }
+
+    /**
+     * get all products
+     */
+    public function getProducts()
+    {
+        $products = Product::orderByRaw('company, name')->get();
+        return response()->json($products);
+    }
+
+    /**
+     * update used products for address
+     */
+    public function updateProducts(Address $address)
+    {
+        $selectedProducts = request('selectedProducts');
+
+        AddressProduct::where('address_id', $address->id)->delete();
+
+        if (count($selectedProducts > 0)) {
+            foreach ($selectedProducts as $productId) {
+                $addressProduct = new AddressProduct();
+                $addressProduct->address_id = $address->id;
+                $addressProduct->product_id = $productId;
+                $addressProduct->save();
+            }
+        }
+
+        $address->load([
+            'products' => function ($query) {
+                $query->orderByRaw('company, name');
+            }
+        ]);
+
+        return response()->json($address);
+    }
+
+    /**
+     * create new Product
+     */
+    public function createProduct ()
+    {
+        $company = trim(request('company'));
+        $name = trim(request('name'));
+        $description = trim(request('description'));
+
+        if ( ! $company) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Company field should not be empty"
+            ]);
+        }
+
+        if ($company && ($name == "" || $name == null)) {
+            $prod = Product::whereCompany($company)->where('name', '=', "")->orWhere('name', '=', null)->first();
+            if ($prod) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Product with company - '$company' already exists!"
+                ]);
+            }
+        }
+
+        if ($company && $name) {
+            $prod = Product::whereCompany($company)->whereName($name)->first();
+            if ($prod) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "This product already exists!"
+                ]);
+            }
+        }
+
+        if (strlen($company) > 255 || strlen($name) > 255) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Max count of characters is 255!"
+            ]);
+        }
+
+        $product = new Product();
+        $product->company = $company;
+        $product->name = $name;
+        $product->description = $description;
+
+        $image = request()->file('image');
+
+        if ($image) {
+            $extension = $image->getClientOriginalExtension();
+
+            if ($extension == 'jpg' || $extension == 'jpeg' || $extension == 'png') {
+                $imageName = now()->format('Y-m-d-H-i-s') . '.' . $extension;
+
+                $destinationPath = public_path('product-images');
+                
+                $result = File::makeDirectory($destinationPath, 0777, true, true);
+
+                File::put(public_path("/product-images/.gitignore"), "*\r\n!.gitignore\r\n");
+
+                $img = Image::make($image->getRealPath());
+
+                $img->resize(100, 100, function ($constraint) {
+
+                    $constraint->aspectRatio();
+                
+                })->save(public_path("/product-images/$imageName"));
+
+                $product->image = "/product-images/$imageName";
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Only jpg/jpeg/png files are allowed!"
+                ]);
+            }
+        }
+        
+        $product->save();
+
+        $products = Product::orderByRaw('company, name')->get();
+
+        return response()->json($products);
+    }
+
+    /**
+     * get all people for lab chain
+     */
+    public function getAllClusterStaff (Address $address)
+    {
+        $clusterStaff = People::with('addresses')
+            ->whereHas('addresses', function ($q) use ($address) {
+                $q->where('cluster_id', $address->cluster_id);
+            })
+            ->orderByRaw('name')
+            ->get();
+
+        return response()->json($clusterStaff);
+    }
+
+    /**
+     * updating lab-chain name
+     */
+    public function updateClusterName (Address $address)
+    {
+        $cluster = Cluster::whereId($address->cluster->id)->first();
+        $cluster->name = request('clusterName');
+        $cluster->save();
+        
+        return response()->json($cluster);
+    }
 }

@@ -6,7 +6,7 @@
                     <div class="modal-header">
 
                         <div class="person-profile-picture">
-                            <span class="person-initials">{{getPersonInitials(personData.name)}}</span>
+                            <span class="person-initials">{{ getPersonInitials(personData.name) }}</span>
                             <img src="/images/mask-7.png" alt="" class="avatar">
 
                             <a href="javascript:void(0)" class="close-icon-a" data-dismiss="modal" aria-label="Close">
@@ -16,24 +16,148 @@
 
                         <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
 
-                        <h4 class="modal-title">{{personData.name}} <a href="#"><i class="fa fa-pencil"></i></a></h4>
+                        <div v-if=" ! isEditing">
+                            <h4 class="modal-title">
+                                {{personData.name}}
+                                <a href="#" @click.prevent="toggleEditing"><i class="fa fa-pencil"></i></a>
+                            </h4>
 
-                        <p class="occupation">{{personData.description}}</p>
+                            <p class="occupation">{{ personData.description }}</p>
+                        </div>
+
+                        <div v-else>
+                            <div class="employe-name-block can-edit">
+                                <div-editable
+                                    @updateEdit="updateEmploye"
+                                    :content.sync="personData.name"
+                                    :placeholder="'Name'"
+                                ></div-editable>
+                            </div>
+                            <div class="employe-description-block can-edit">
+                                <div-editable 
+                                    @updateEdit="updateEmploye"
+                                    :content.sync="personData.description"
+                                    :placeholder="'Position'"
+                                ></div-editable>
+                            </div>
+                        </div>
 
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
                             worked at
-                            <span v-for="(address, i) in personData.addresses">
-                                <a :href="'/address-details/'+address.id" >{{address.name}}</a><span v-if="i != 0">, </span>
+                            <span v-for="(address, i) in personData.addresses" :key="address.id">
+                                <a :href="'/address-details/' + address.id" >
+                                    {{ address.name }}</a><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
                         </p>
 
-                        <ul class="social-icons">
-                            <li><a href=""><i class="fa fa-linkedin"></i></a></li>
-                            <li><a href=""><i class="fa fa-twitter"></i></a></li>
-                            <li><a href=""><i class="fa fa-facebook"></i></a></li>
-                            <li><a href=""><i class="fa fa-instagram"></i></a></li>
-                            <li><a href=""><i class="fa fa-telegram"></i></a></li>
+                        <ul class="social-icons" v-if=" ! isEditing">
+                            <li v-if="personData.linkedin_url">
+                                <a :href="personData.linkedin_url" target="_blank">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <li v-if="personData.twitter">
+                                <a :href="personData.twitter" target="_blank">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li v-if="personData.facebook">
+                                <a :href="personData.facebook" target="_blank">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li v-if="personData.instagram">
+                                <a :href="personData.instagram" target="_blank">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li v-if="personData.telegram">
+                                <a :href="personData.telegram" target="_blank">
+                                    <i class="fa fa-telegram"></i>
+                                </a>
+                            </li>
                         </ul>
+
+                        <ul class="social-icons" v-if="isEditing">
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('linkedin')" 
+                                    :class="{'active': personData.linkedin_url, 'editing': isSocialEditing =='linkedin'}">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('twitter')" 
+                                    :class="{'active': personData.twitter, 'editing': isSocialEditing =='twitter'}">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('facebook')" 
+                                    :class="{'active': personData.facebook, 'editing': isSocialEditing =='facebook'}">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('instagram')" 
+                                    :class="{'active': personData.instagram, 'editing': isSocialEditing =='instagram'}">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" @click.prevent="setSocialEdit('telegram')" 
+                                    :class="{'active': personData.telegram, 'editing': isSocialEditing =='telegram'}">
+                                    <i class="fa fa-telegram"></i>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="social-edit-block">
+                            <input 
+                                type="text" 
+                                v-model="personData.linkedin_url"
+                                v-if="isSocialEditing && isSocialEditing =='linkedin'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.twitter"
+                                v-if="isSocialEditing && isSocialEditing =='twitter'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.facebook"
+                                v-if="isSocialEditing && isSocialEditing =='facebook'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.instagram"
+                                v-if="isSocialEditing && isSocialEditing =='instagram'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                            <input 
+                                type="text" 
+                                v-model="personData.telegram"
+                                v-if="isSocialEditing && isSocialEditing =='telegram'" 
+                                :placeholder="isSocialEditing" 
+                                class="social-input"
+                                :maxlength="maxSocialLength"
+                                @keydown.enter.prevent="updateEmploye"
+                            >
+                        </div>
 
                         <div class="row person-experience">
                             <div :class="yearsAtThisJob? 'col-md-4': 'col-md-6'">
@@ -42,7 +166,9 @@
                             </div>
 
                             <div class="col-md-4" v-if="yearsAtThisJob">
-                                <p class="number">{{yearsAtThisJob}}</p>
+                                <p class="number">
+                                    {{ yearsAtThisJob }}
+                                </p>
                                 <p class="text">Years at this Job</p>
                             </div>
 
@@ -50,12 +176,57 @@
                                 <p class="number">
                                     <img src="/images/ic-education.png" alt="">
                                 </p>
-                                <p class="text">{{personData.role}}</p>
+                                <p v-if="!isEditing" class="text">
+                                    {{ personData.role }}
+                                </p>
+                                <div v-if="isEditing" class="role-edit-block can-edit">
+                                    <input 
+                                        class="edit-input"
+                                        type="text" 
+                                        v-model="personData.role" 
+                                        placeholder="Role"
+                                        @keydown.enter.prevent="updateEmploye"
+                                        :maxlength="maxRoleLength"
+                                        @input="checkRoleLength"
+                                    >
+                                </div>
                             </div>
                         </div>
 
                         <div class="view-contacts-chain-container">
-                            <a href="javascript:void(0)">View Contacts Chain</a>
+                            <a 
+                                v-show=" ! isEditing"
+                                href="javascript:void(0)" 
+                                @click="showContactsChain()" 
+                                data-dismiss="modal" 
+                                aria-label="Close">
+                                View Contacts Chain
+                            </a>
+                            <div v-if="isEditing" class="confirm-employe-edit-block">
+                                <button
+                                    type="button"
+                                    class="btn cancel-employe-btn"
+                                    @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button 
+                                    type="button"
+                                    class="btn save-employe-btn"
+                                    v-if=" ! saveBtnDisabled && madeChanges"
+                                    @click.prevent="updateEmploye"
+                                >
+                                    Suggest Edits
+                                </button>
+                                <button 
+                                    type="button" 
+                                    v-if="saveBtnDisabled || ! madeChanges" 
+                                    disabled 
+                                    class="btn save-employe-btn-disabled"
+                                >
+                                    Suggest Edits
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -119,8 +290,9 @@
                                     <ul class="publication-list" v-if="personData.publications.length">
                                         <li v-for="publication in personData.publications">
                                             <p class="title">
-                                                {{publication.title}}
-                                                <a :href="publication.url" target="_blank"><i class="fa fa-external-link"></i></a>
+                                                <a :href="publication.url" target="_blank">
+                                                    {{publication.title}} <i class="fa fa-external-link"></i>
+                                                </a>
                                             </p>
                                             <p class="description">
                                                 {{publication.journal}}
@@ -131,65 +303,14 @@
 
                                 <div v-if="activeTab == 'relationships'">
 
-                                    <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
+                                    <tab-relationships
+                                            :personId="personId"
+                                            :personData="personData"
+                                            :relationshipsCollapsedData="relationshipsCollapsedData"
+                                            :connectionTypes="connectionTypes"
+                                            @resetTab="activeTab='career'"
+                                    ></tab-relationships>
 
-                                    <ul class="staff-list" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length && relationshipsCollapsed">
-
-                                        <li v-if="i < 3" v-for="(relation, i) in relationshipsCollapsedData">
-                                            <div class="image">
-                                                <a href="javascript:void(0)">
-                                                    <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
-                                                    <img :src="'/images/mask-'+i+'.png'" alt="">
-                                                </a>
-                                            </div>
-                                            <div class="personal-info">
-                                                <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
-                                                <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                                                <p class="connection-type" style="text-align: left">{{connectionName(relation.pivot.edge_type)}}</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-
-                                    <ul class="staff-list" v-if="personData.relationships && personData.relationships.length && !relationshipsCollapsed">
-
-                                        <li v-for="(relation, i) in personData.relationships">
-                                            <div class="image">
-                                                <a href="javascript:void(0)">
-                                                    <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
-                                                    <img :src="'/images/mask-'+i+'.png'" alt="">
-                                                </a>
-                                            </div>
-                                            <div class="personal-info">
-                                                <p class="name"><a href="javascript:void(0)">{{relation.name}}</a></p>
-                                                <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                                                <p class="connection-type" style="text-align: left">{{connectionName(relation.edge_type)}}</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-
-                                    <div class="pagination-box" style="margin-top: 20px" v-if="!relationshipsCollapsed">
-                                        <pagination :records="relationshipsTotal"  :class="'pagination pagination-sm no-margin pull-right'" :per-page="10" @paginate="relationshipsPageChanged"></pagination>
-                                    </div>
-
-                                    <div style="clear: both"></div>
-
-                                    <div class="text-center" style="margin-top: 20px" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length > 3">
-                                        <a href="javascript:void(0)"
-                                           v-if="relationshipsCollapsed"
-                                           @click="loadPersonRelationshipsPaginated()"
-                                           class="address-box-show-more-link show-all-employees-link"
-                                        >
-                                            Show all Relationships
-                                        </a>
-
-                                        <a href="javascript:void(0)"
-                                           v-if="!relationshipsCollapsed"
-                                           @click="relationshipsCollapsed = true"
-                                           class="address-box-show-more-link show-all-employees-link"
-                                        >
-                                            Show Less
-                                        </a>
-                                    </div>
                                 </div>
 
                             </div>
@@ -205,9 +326,10 @@
 
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
+    import addressHelpers from '../mixins/address-helpers';
 
     export default {
-        mixins: [http, getPersonInitials],
+        mixins: [http, getPersonInitials, addressHelpers],
 
         data: function () {
             return {
@@ -222,16 +344,34 @@
                 },
                 activeTab: 'career',
                 connectionTypes: [],
-                relationshipsCollapsed: true,
+                // relationshipsCollapsed: true,
                 relationshipsCollapsedData: [],
-                relationshipsTotal: 0
+                // relationshipsTotal: 0
+                isEditing: false,
+                madeChanges: false,
+                saveBtnDisabled: true,
+                old: {
+                    name: '',
+                    description: '',
+                    role: '',
+                    linkedin: '',
+                    twitter: '',
+                    facebook: '',
+                    instagram: '',
+                    telegram: ''
+                },
+                maxRoleLength: 1000,
+                maxSocialLength: 1000,
+                isSocialEditing: false
             }
         },
 
         computed: {
             experienceYears: function() {
 
-                if(!this.personData.careers || !this.personData.careers.length) {
+                if( ! this.personData.careers || 
+                    ! this.personData.careers.length || 
+                    ! this.personData.careers[this.personData.careers.length-1].enddate) {
                     return 0;
                 }
 
@@ -242,13 +382,13 @@
             },
 
             yearsAtThisJob: function () {
-                if (!this.personData.careers || !this.personData.careers.length) {
+                if ( ! this.personData.careers || !this.personData.careers.length) {
                     return 0;
                 }
 
                 let recordInCareer = this.personData.careers.find(el => el.address_id == this.currentAddressId);
 
-                if (!recordInCareer) {
+                if ( ! recordInCareer || !recordInCareer.enddate) {
                     return 0;
                 }
 
@@ -265,15 +405,105 @@
                 if(window.location.hash.indexOf('person-') === -1 && $('#personal-modal').hasClass('in')){
                     $('#personal-modal').modal('hide');
                 }
-            }
-        },
-
-        methods: {
-            connectionName: function (id) {
-                let connection = this.connectionTypes.find(el => el.id == id);
-
-                return connection? connection.name : id;
             },
+            "personData.name": function() {
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.description": function() {
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.role": function () {
+                if (this.personData.role == null) {
+                    this.personData.role = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.linkedin_url": function () {
+                if (this.personData.linkedin_url == null) {
+                    this.personData.linkedin_url = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.twitter": function () {
+                if (this.personData.twitter == null) {
+                    this.personData.twitter = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.facebook": function () {
+                if (this.personData.facebook == null) {
+                    this.personData.facebook = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.instagram": function () {
+                if (this.personData.instagram == null) {
+                    this.personData.instagram = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "personData.telegram": function () {
+                if (this.personData.telegram == null) {
+                    this.personData.telegram = '';
+                }
+                this.checkIfInputsEmpty();
+                if (this.isEditing) {
+                    this.checkIfChangesMade();
+                }
+            },
+            "old.role": function () {
+                if (this.old.role == null) {
+                    this.old.role = '';
+                }
+            },
+            "old.linkedin": function () {
+                if (this.old.linkedin == null) {
+                    this.old.linkedin = '';
+                }
+            },
+            "old.twitter": function () {
+                if (this.old.twitter == null) {
+                    this.old.twitter = '';
+                }
+            },
+            "old.facebook": function () {
+                if (this.personoldData.facebook == null) {
+                    this.old.facebook = '';
+                }
+            },
+            "old.instagram": function () {
+                if (this.old.instagram == null) {
+                    this.old.instagram = '';
+                }
+            },
+            "old.telegram": function () {
+                if (this.old.telegram == null) {
+                    this.old.telegram = '';
+                }
+            },
+        },
+        methods: {
             endDate: function (date) {
                 return moment(date).format('MMM YYYY');
             },
@@ -289,16 +519,33 @@
 
                 window.location.hash = 'person-' + personId;
 
+                this.isEditing = false;
+
                 $('#personal-modal').modal('show');
 
                 this.personId = personId;
                 this.currentAddressId = addressId;
                 this.currentAddress = address;
 
-                this.httpGet('/api/people/'+personId)
+                this.httpGet('/api/people/' + personId)
                     .then(data => {
                         this.personData = data;
-                        this.relationshipsCollapsedData = JSON.parse(JSON.stringify(this.personData.relationships));
+
+                        this.unifyAddressesWithDuplicatedNames(this.personData.addresses);
+
+                        this.httpGet('/api/people/'+personId+'/relationships?page=1')
+                            .then(data => {
+                                this.relationshipsCollapsedData = data.data;
+                            })
+                            
+                        this.old.name = this.personData.name;
+                        this.old.description = this.personData.description;
+                        this.old.role = this.personData.role;
+                        this.old.linkedin = this.personData.linkedin_url ? this.personData.linkedin_url : '';
+                        this.old.twitter = this.personData.twitter ? this.personData.twitter : '';
+                        this.old.facebook = this.personData.facebook ? this.personData.facebook : '';
+                        this.old.instagram = this.personData.instagram ? this.personData.instagram : '';
+                        this.old.telegram = this.personData.telegram ? this.personData.telegram : '';
                     });
 
                 $('#personal-modal').on('hidden.bs.modal', function (e) {
@@ -309,24 +556,108 @@
                 this.activeTab = tabName;
             },
 
-            loadPersonRelationshipsPaginated: function (page) {
+            showContactsChain: function() {
 
-                let p = page || 1;
+                let addressData = JSON.parse(JSON.stringify(this.currentAddress));
+                addressData['personId'] = this.personId;
+                addressData['isPersonChain'] = true;
 
-                let url = '/api/people/'+this.personData.id+'/relationships?page='+p;
-
-                this.httpGet(url)
-                    .then(data => {
-                        this.relationshipsCollapsed = false;
-
-                        this.personData.relationships = data.data;
-
-                        this.relationshipsTotal = data.total;
-                    });
+                this.$eventGlobal.$emit('showModalContactsChain', addressData);
             },
 
+            openRelationshipTabIfHashDetected: function () {
+                if(this.$route.hash.indexOf('#person-') !== -1 && this.$route.hash.indexOf('&relation-person=') !== -1) {
+                    setTimeout(() => {
+                        this.setTabActive('relationships');
+                    }, 1000);
+                }
+            },
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+            },
+            toggleEditing: function() {
+                this.isEditing = !this.isEditing;
+
+                if ( ! this.isEditing) {
+                    this.isSocialEditing = false;
+                    this.personData.name = this.old.name;
+                    this.personData.description = this.old.description;
+                    this.personData.role = this.old.role;
+                    this.personData.linkedin_url = this.old.linkedin;
+                    this.personData.twitter = this.old.twitter;
+                    this.personData.facebook = this.old.facebook;
+                    this.personData.instagram = this.old.instagram;
+                    this.personData.telegram = this.old.telegram;
+                } else {
+                    this.checkIfChangesMade();
+                }
+            },
+            checkIfInputsEmpty: function() {
+                if (
+                    this.personData.name.trim() === '' ||
+                    this.personData.description.trim() === ''
+                ) {
+                    this.saveBtnDisabled = true;
+                } else {
+                    this.saveBtnDisabled = false;
+                }
+            },
+            checkIfChangesMade: function() {
+                if (
+                    this.personData.name.trim() !== this.old.name.trim() ||
+                    this.personData.description.trim() !== this.old.description.trim() ||
+                    this.personData.role.trim() !== this.old.role.trim() ||
+                    this.personData.linkedin_url.trim() !== this.old.linkedin.trim() ||
+                    this.personData.twitter.trim() !== this.old.twitter.trim() ||
+                    this.personData.facebook.trim() !== this.old.facebook.trim() ||
+                    this.personData.instagram.trim() !== this.old.instagram.trim() ||
+                    this.personData.telegram.trim() !== this.old.telegram.trim()
+                ) {
+                    this.madeChanges = true;
+                } else {
+                    this.madeChanges = false;
+                }
+            },
+            updateEmploye: function() {
+                if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.httpPut('/api/people/' + this.personId + '/update', {
+                        name: this.personData.name,
+                        description: this.personData.description,
+                        role: this.personData.role,
+                        linkedin_url: this.personData.linkedin_url,
+                        twitter: this.personData.twitter,
+                        facebook: this.personData.facebook,
+                        instagram: this.personData.instagram,
+                        telegram: this.personData.telegram
+                    })
+                    .then(data => {
+                        this.old.name = data.name;
+                        this.old.description = data.description;
+                        this.old.role = data.role;
+                        this.old.linkedin = data.linkedin_url;
+                        this.old.twitter = data.twitter;
+                        this.old.facebook = data.facebook;
+                        this.old.instagram = data.instagram;
+                        this.old.telegram = data.telegram;
+                        this.madeChanges = false;
+                        this.saveBtnDisabled = false;
+                        this.isEditing = false;
+                        this.isSocialEditing = false;
+                        this.$eventGlobal.$emit('employeeDetailsUpdated')
+                        alertify.notify('Employe has been updated.', 'success', 3);
+                    })
+                    .catch(err => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
+                }  
+            },
+            checkRoleLength: function (event) {
+                if (event.target.value.length > this.maxRoleLength) {
+                    this.personData.role = this.personData.role.substr(0, this.maxRoleLength);
+                }
+            },
+            setSocialEdit: function (social) {
+                this.isSocialEditing = social;
             }
         },
 
@@ -339,10 +670,148 @@
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
                 this.init(data.personId, data.addressId, data.address);
             });
+
+            this.openRelationshipTabIfHashDetected('relationships');
         }
     }
 </script>
 
 <style scoped>
+    .employe-name-block {
+        font-family: Montserrat;
+        font-size: 28px;
+        text-align: center;
+        color: #3a444f;
+        display: flex;
+        margin-top: 18px;
+        margin-bottom: 7px;
+        justify-content: center;
+        align-items: center;
+        font-weight: 400;
+        line-height: 1.42857143;
+        box-sizing: border-box;
+    }
 
+    .employe-description-block {
+        font-family: Montserrat;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.31;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #3a444f;
+    }
+
+    .confirm-employe-edit-block {
+        display: inline-block;
+    }
+
+    .can-edit div {
+        border-bottom: 2px solid #d2d6de;
+    }
+
+    .cancel-employe-btn {
+        background: transparent;
+        font-family: Montserrat;
+        font-size: 13px;
+    }
+
+    .save-employe-btn {
+        width: 170px;
+        background: #4a90e3;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .save-employe-btn-disabled {
+        width: 170px;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+        font-size: 13px;
+        background-color: #989da3;
+        opacity: 1;
+    }
+
+    .save-employe-btn:focus,
+    .cancel-employe-btn:focus {
+        outline: none;
+    }
+
+    .save-employe-btn:active,
+    .cancel-employe-btn:active {
+        box-shadow: none;
+    }
+
+    .can-edit div:empty:not(:focus):before {
+        color: #b3b3b3;
+        content: attr(data-placeholder);
+    }
+
+    .role-edit-block {
+        display: flex;
+        justify-content: center;
+    }
+
+    .edit-input {
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .edit-input:focus {
+        outline: none;
+    }
+
+    #personal-modal ul.social-icons li a.active {
+        background-color: #4a90e3;
+        color: white;
+    }
+
+    #personal-modal ul.social-icons li a {
+        transition: none;
+        position: relative;
+    }
+
+    #personal-modal ul.social-icons li a.editing:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 0;
+        left: 0;
+        bottom: -6px;
+        border-bottom: 2px solid #d2d6de;
+    }
+
+    .social-edit-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 15px 10px 0 0;
+    }
+
+    .social-input {
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+        background-color: transparent;
+        font-family: Montserrat;
+        font-size: 14px;
+    }
+
+    .social-input:focus {
+        outline: none;
+    }
 </style>

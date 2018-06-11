@@ -12,6 +12,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="customerTypesForFilter"
+                                    :selected="appliedFilters.type"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"
@@ -21,6 +22,7 @@
                                     class="form-control select-filter used-products-filter"
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
+                                    :selected="appliedFilters.usedProducts"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -29,6 +31,7 @@
                                     class="form-control select-filter tags-filter"
                                     :name="'Tags'"
                                     :options="tagOptionsForDropDown"
+                                    :selected="appliedFilters.tags"
                                     @changed="applyTagsFilter"
                                     ref="tagMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -36,6 +39,7 @@
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
                                     :options="sortByOptionsForFilter"
+                                    :selected="appliedFilters.sortBy"
                                     :isHiddenEmptyOption="true"
                                     @changed="applySortByFilter"
                                     :name="'Sort By'"
@@ -82,50 +86,59 @@
                     Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
                 </div>
 
-                <ul class="sidebar-list">
-                    <li v-for="(address, i) in addressList">
+                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
+                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
-                            <div class="item-image">
+                            <div class="item-image" v-show="address.people_count > 0">
                                 <div class="main-image">
-                                    <router-link :to="'/address-details/'+address.id+ (address.people_count? '?all-employees=1' : '')">
+                                    <!--<router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')" >-->
+                                    <a href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : ''))" >
                                         <div class="box-p">
-                                            <span class="people-count" v-if="address.people_count">See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}</span>
+                                            <span class="people-count" v-if="address.people_count">
+                                                See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}
+                                            </span>
 
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
                                         </div>
-                                    </router-link>
+                                    </a>
+                                    <!--</router-link>-->
                                 </div>
                                 <div class="circle-1"></div>
                                 <div class="circle-2"></div>
                             </div>
 
                             <h3>
-                                <router-link :to="'/address-details/'+address.id">{{address.name}}</router-link>
+                                <!--<router-link :to="'/address-details/'+address.id">
+                                    {{ address.name }}
+                                </router-link>-->
+                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id)">
+                                    {{ address.name }}
+                                </a>
 
                                 <span class="oval"></span>
                             </h3>
 
-                            <p class="address">{{address.address}}</p>
+                            <p class="address">{{ address.address }}</p>
 
                             <p class="lab-chain-p" v-if="address.cluster">Lab Chain: <strong>{{address.cluster.name}}</strong></p>
 
                             <ul class="tag-list" v-if="address.tags && address.tags.length">
                                 <li v-for="tag in address.tags">
-                                    <a href="#">{{tag.name}}</a>
+                                    <a href="#" @click.prevent>{{tag.name}}</a>
                                 </li>
                             </ul>
 
-                            <div class="info-block">
+                            <div class="info-block" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
                                 <div class="lightening-icon">
                                     <img src="/images/blue-lightening.png" alt="">
                                 </div>
 
                                 <div class="news-label">
-                                    New employer <a href="#" class="news-link">Jina James</a> joined the lab
+                                    New employer <a href="#" @click.prevent class="news-link without-handler">Jina James</a> joined the lab
                                 </div>
 
-                                <a href="#" class="news-link more-news-link">
+                                <a href="#" @click.prevent class="news-link more-news-link without-handler">
                                     +3 more news
                                 </a>
                             </div>
@@ -148,10 +161,12 @@
 <script>
 
     import http from '../../mixins/http';
+    import addressHelpers from '../../mixins/address-helpers';
+    var _ = require('lodash');
 
     export default {
 
-        mixins: [http],
+        mixins: [http,addressHelpers],
 
         data: function () {
             return {
@@ -179,7 +194,10 @@
                 totalPointsInCurrentMap: 0,
                 multipleDropdownSelects: [],
                 queryUrl: '',
-                oldQueryUrl: ''
+                oldQueryUrl: '',
+                hoveredAddress: {},
+                mouseOverTimeoutId: null,
+                scrollTimoutId: null
             }
         },
 
@@ -195,6 +213,8 @@
                 }
 
                 this.$refs.paginationDirective.setPage(1);
+
+
 
             }
         },
@@ -242,8 +262,6 @@
 
             this.composeQueryUrl();
 
-            this.loadAddressesPaginated();
-
             this.loadFilterObject();
         },
 
@@ -254,6 +272,14 @@
             $('ul.sidebar-list').height(window.innerHeight - 325);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
+
+            this.loadAddressesPaginated()
+                .then((data) => {
+                    this.scrollToSidebarListItem();
+                });
+
+            this.checkLocalStoragePreviousDashboard();
+
         },
 
         methods: {
@@ -314,7 +340,6 @@
 
                 if (this.appliedFilters.globalSearch) {
                     queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                    this.$router.push('/dashboard?global-search=' + this.appliedFilters.globalSearch);
                 }
 
                 if (this.appliedFilters.usedProducts.length) {
@@ -346,9 +371,7 @@
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
-                console.log('url',url);
-
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
                         this.addressesTotal = data.total;
                         this.addressList = data.data;
@@ -360,8 +383,42 @@
                         this.isFirstLoad = false;
 
                         this.oldQueryUrl = this.queryUrl;
+
+                        this.unifyAddressesWithDuplicatedNames(this.addressList);
+
+                        return data;
                     })
 
+            },
+
+            setAddressMouseOverListener: function(address) {
+
+                if(this.mouseOverTimeoutId) {
+                    clearTimeout(this.mouseOverTimeoutId);
+                }
+
+                this.mouseOverTimeoutId = setTimeout(()=>{
+                    if(this.hoveredAddress.id == address.id) {
+                        return;
+                    }
+
+                    this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
+
+                    this.hoveredAddress = address;
+
+                    this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
+                }, 100);
+
+            },
+
+            setAddressMouseLeaveListener: function () {
+                this.hoveredAddress = {};
+
+                if(this.mouseOverTimeoutId) {
+                    clearTimeout(this.mouseOverTimeoutId);
+                }
+
+                this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
             },
 
             notifyFiltersHaveBeenApplied: function () {
@@ -414,6 +471,40 @@
                 }
 
                 this.applyFilters();
+            },
+
+            scrollFunction: function() {
+
+                if(this.scrollTimoutId) {
+                    clearTimeout(this.scrollTimoutId);
+                }
+
+                this.scrollTimoutId = setTimeout(() => {
+                    let offsetSidebarListItem = $(".sidebar-list-item:first-child").offset().top - $(".sidebar-list").offset().top;
+                    localStorage.setItem('offset-top-sidebar-list-item', offsetSidebarListItem);
+                }, 500);
+
+            },
+
+            scrollToSidebarListItem: function() {
+                setTimeout(()=>{
+                    if(localStorage.hasOwnProperty('offset-top-sidebar-list-item')) {
+                        let offsetTop = parseInt(localStorage.getItem('offset-top-sidebar-list-item'));
+                        offsetTop = offsetTop > 0 ? offsetTop: -offsetTop;
+                        $(".sidebar-list").animate({scrollTop:offsetTop}, 0);
+                    }
+                },100);
+            },
+
+            GoToAddressDetails:function(url) {
+                localStorage.setItem('previous-dashboard', this.$route.fullPath);
+                this.$router.push(url);
+            },
+
+            checkLocalStoragePreviousDashboard: function() {
+                if(localStorage.getItem('previous-dashboard')){
+                    localStorage.removeItem('previous-dashboard');
+                }
             }
         }
     }
