@@ -41,6 +41,12 @@ let privateRoutes = [
         component: require('./private-components/pages/address-details'),
         meta: { requiresAuth: true },
         name: 'AddressDetails'
+    },
+    {
+        path: '/user/edit-profile',
+        component: require('./private-components/pages/edit-profile'),
+        meta: { requiresAuth: true},
+        name: 'Edit Profile'
     }
 
 

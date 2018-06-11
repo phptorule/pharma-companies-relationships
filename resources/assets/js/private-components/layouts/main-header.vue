@@ -41,11 +41,11 @@
 
             <div class="profile-avatar-block">
                 <div class="avatar-image-block">
-                    <a href="#" class="avatar-link" @click.prevent>
+                    <router-link to="/user/edit-profile" class="avatar-link">
                         <img class="avatar-image" 
                             src="/images/anonimus-person_100x100.png" alt=""
                         >
-                    </a>
+                    </router-link>
                 </div>
             </div>
 
