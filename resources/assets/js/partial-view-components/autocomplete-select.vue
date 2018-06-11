@@ -13,7 +13,7 @@
             </div>
             <div class="confirm-block">
                 <div class="left-block">
-                    <a href="#" class="add-link" @click.prevent>
+                    <a href="#" class="add-link" @click.prevent="createNewLabchain">
                         <span class="plus">+</span> Create new labchain
                     </a>
                 </div>
@@ -30,7 +30,7 @@
     import http from '../mixins/http';
     export default {
         name: "autocompleteSelect",
-        props: ['type', 'choose', 'selected', 'close'],
+        props: ['type', 'choose', 'selected', 'close', 'createNewChain'],
         mixins: [http],
         data: function () {
             return {
@@ -60,12 +60,19 @@
             closeSelf: function () {
                 this.cluster.id = this.oldValue
                 this.close()
+            },
+            createNewLabchain: function () {
+                this.createNewChain();
             }
         },
         mounted: function () {
-            this.cluster = this.selected
-            this.oldValue = this.selected.id
+            if (this.selected) {
+                this.cluster = this.selected;
+                this.oldValue = this.selected.id;
+            }
+
             document.getElementById('input').focus()
+            
             this.loadList()
             this.$eventGlobal.$on('clusterNameUpdated', () => {
                 this.loadList()

@@ -54,7 +54,9 @@
                         <div style="clear: both"></div>
 
                         <p class="lab-chain">
-                            <span class="current-chain-name">{{addressData.cluster.name}}</span>
+                            <span class="current-chain-name">
+                                {{addressData.cluster ? addressData.cluster.name : 'No chain'}}
+                            </span>
 
                             <br />
 
@@ -65,16 +67,20 @@
                                 :selected="addressData.cluster" 
                                 :close="closeChain" 
                                 :choose="addChain" 
+                                :createNewChain="createNewChain"
                             />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul class="tag-list">
-                            <li v-for="tag in addressData.tags" :key="tag.id">
+                            <li v-if="addressData.tags.length" v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                 </a>
                             </li>
+                            <span v-show=" ! addressData.tags.length">
+                                No tags
+                            </span>
                         </ul>
 
                         <p class="address-line">
@@ -103,7 +109,9 @@
                         <div style="clear: both"></div>
 
                         <p class="lab-chain">
-                            <span class="current-chain-name">{{addressData.cluster.name}}</span>
+                            <span class="current-chain-name">
+                                {{addressData.cluster ? addressData.cluster.name : 'No chain'}}
+                            </span>
 
                             <br />
 
@@ -114,12 +122,13 @@
                                 :selected="addressData.cluster" 
                                 :close="closeChain" 
                                 :choose="addChain"
+                                :createNewChain="createNewChain"
                             />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
-                            <li v-for="tag in addressData.tags" :key="tag.id">
+                            <li v-if="addressData.tags.length" v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                     <button class="delete-tag" @click="removeSelectedTag(tag.name)">
@@ -217,7 +226,7 @@
                     <p v-if="!addressData.people.length" class="empty-data-p">There are no employees yet.</p>
 
                     <ul class="staff-list">
-                        <li v-if="i < 3" v-for="(person, i) in addressData.people" :key="person.id">
+                        <li v-if="i < 3 && addressData.people.length" v-for="(person, i) in addressData.people" :key="person.id">
                             <div class="image">
                                 <a href="javascript:void(0)" 
                                     @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
@@ -271,7 +280,7 @@
 
                     <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
 
-                    <ul class="products-list">
+                    <ul class="products-list" v-if="addressData.products.length">
                         <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
                             <img 
                                 v-if="product.image" 
@@ -335,7 +344,7 @@
                     
                 </div>
 
-                <div class="lab-chain-members-overview address-box">
+                <div class="lab-chain-members-overview address-box" v-if="addressData.cluster">
                     <div class="header">
                         <h3>Lab Chain Members 
                             <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">
@@ -512,25 +521,28 @@
                     sortedTags = this.addressData.tags.slice(),
                     sortedOldTags = this.old.tags.slice();
 
-                sortedTags.sort((tagA, tagB) => {
-                    return tagA.name > tagB.name;
-                });
-                
-                sortedOldTags.sort((tagA, tagB) => {
-                    return tagA.name > tagB.name;
-                });
-                
-                if (sortedTags.length === sortedOldTags.length) {
-                    for (let i = 0; i < sortedTags.length; i++) {
-                        if (sortedTags[i].name !== sortedOldTags[i].name) {
-                            _this.madeChanges = true;
-                            break;
-                        } else {
-                            _this.madeChanges = false;
+                if (this.addressData.tags) {
+                    
+                    sortedTags.sort((tagA, tagB) => {
+                        return tagA.name > tagB.name;
+                    });
+                    
+                    sortedOldTags.sort((tagA, tagB) => {
+                        return tagA.name > tagB.name;
+                    });
+                    
+                    if (sortedTags.length === sortedOldTags.length) {
+                        for (let i = 0; i < sortedTags.length; i++) {
+                            if (sortedTags[i].name !== sortedOldTags[i].name) {
+                                _this.madeChanges = true;
+                                break;
+                            } else {
+                                _this.madeChanges = false;
+                            }
                         }
+                    } else {
+                        _this.madeChanges = true;
                     }
-                } else {
-                    _this.madeChanges = true;
                 }
 
                 return _this.madeChanges ? true : false ;
@@ -736,7 +748,31 @@
                 this.old.phone = this.addressData.phone;
                 this.madeChanges = false;
                 this.saveBtnDisabled = true;
-            }
+            },
+            createNewChain: _.debounce(function () {
+                this.httpPost('/api/clusters/create/' + this.addressData.id,
+                    {
+                        name: this.addressData.name
+                    }
+                )
+                .then(data => {
+                    if (data.status && data.status === 'error') {
+                        alertify.notify(data.message , 'error', 3);
+                    }
+
+                    if (data.status && data.status === 'success') {
+                        this.addressData.cluster = data.cluster;
+                        this.addressData.cluster_id = data.cluster.id;
+                        alertify.notify('New labchain has been added.', 'success', 3);
+                        this.chainSelect = false;
+                        this.$eventGlobal.$emit('addressClusterUpdated');
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    alertify.notify('Error occured', 'error', 3);
+                });
+            }, 400)
         },
         computed: {
             showHideProducts: function () {

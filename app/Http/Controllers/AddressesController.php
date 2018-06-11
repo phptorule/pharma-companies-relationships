@@ -507,4 +507,38 @@ class AddressesController extends Controller
         
         return response()->json($cluster);
     }
+
+    /**
+     * create new cluster if not exist
+     */
+    public function createCluster (Address $address)
+    {
+        $name = trim(request('name'));
+
+        $cluster = Cluster::where('name', $name)->first();
+        
+        if ($cluster) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lab chain already exists'
+            ]);
+        } else {
+            $cluster = new Cluster();
+
+            $cluster->name = $name;
+
+            $cluster->save();
+
+            $address->cluster_id = $cluster->id;
+
+            $address->save();
+
+            $cluster->load('addresses');
+
+            return response()->json([
+                'status' => 'success',
+                'cluster' => $cluster
+            ]);
+        }
+    }
 }
