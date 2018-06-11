@@ -34,9 +34,19 @@
                 <ul>
                     <li><a href="#" @click.prevent class="active without-handler">Lab Map</a></li>
                     <!--<li><a href="#">Feed</a></li>-->
-                    <li><a href="#" @click.prevent class="without-handler">About</a></li>
+                    <!-- <li><a href="#" @click.prevent class="without-handler">About</a></li> -->
                     <li><a href="#" @click.prevent class="without-handler">Contact</a></li>
                 </ul>
+            </div>
+
+            <div class="profile-avatar-block">
+                <div class="avatar-image-block">
+                    <a href="#" class="avatar-link" @click.prevent>
+                        <img class="avatar-image" 
+                            src="/images/anonimus-person_100x100.png" alt=""
+                        >
+                    </a>
+                </div>
             </div>
 
         </nav>
@@ -91,5 +101,26 @@
 </script>
 
 <style scoped>
+
+.avatar-image {
+    height: 50px;
+}
+
+.avatar-link {
+    border-radius: 50%;
+    background: transparent;
+}
+
+.avatar-link:hover {
+    background-color: #2b579c;
+}
+
+.avatar-image-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
 
 </style>

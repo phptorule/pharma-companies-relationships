@@ -440,8 +440,12 @@ a{
 }
 
 .navbar.navbar-static-top > div{
-    width: 33%;
+    width: 30%;
     float: none;
+}
+
+.navbar.navbar-static-top > div:last-child {
+    width: 10%;
 }
 
 .navbar.navbar-static-top > div.nav-search{
