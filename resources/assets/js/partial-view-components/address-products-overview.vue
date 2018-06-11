@@ -98,7 +98,9 @@
                     rateActualYear: '',
                     rateNextYear: ''
                 },
-                addressData: {},
+                addressData: {
+                    products: []
+                },
                 topProducts: [],
                 isGoogleChartCoreLoaded: false,
             }
