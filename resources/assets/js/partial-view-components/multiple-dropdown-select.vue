@@ -100,7 +100,7 @@
             },
 
             presetSelectedValue: function () {
-                if(!this.selected.length || !this.options.length) {
+                if(!this.selected || !this.selected.length || !this.options || !this.options.length) {
                     return;
                 }
 

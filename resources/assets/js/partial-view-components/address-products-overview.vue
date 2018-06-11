@@ -6,7 +6,20 @@
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
-                        <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
+                        <img
+                                v-if="product.image"
+                                class="image"
+                                :src="product.image"
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                        >
+                        <img
+                                v-else
+                                class="image"
+                                :src="'/images/mask-'+i+'.png'"
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                        >
                     </a>
                 </div>
                 <div class="prod-info">
@@ -250,7 +263,11 @@
                     .then(() => {
                         this.isGoogleChartCoreLoaded = true;
                     })
-            }
+            },
+
+            productName: function (company, name) {
+                return name ? company + ': ' + name : company;
+            },
         },
         props: ['addressId'],
         mounted:

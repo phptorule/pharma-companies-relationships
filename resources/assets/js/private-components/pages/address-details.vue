@@ -284,67 +284,7 @@
 
                     <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
 
-                    <ul class="products-list">
-                        <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
-                            <img 
-                                v-if="product.image" 
-                                class="image" 
-                                :src="product.image" 
-                                alt=""
-                                :title="productName(product.company, product.name)"
-                            >
-                            <img 
-                                v-else 
-                                class="image" 
-                                :src="'/images/mask-'+i+'.png'" 
-                                alt=""
-                                :title="productName(product.company, product.name)"
-                            >
-                            <span class="product-description">
-                                {{ product.name ? product.company + ': ' + product.name : product.company }}
-                            </span>
-                        </li>
-                    </ul>
 
-                    <a 
-                        href="#" 
-                        @click.prevent="toggleShowAllProducts" 
-                        v-if="addressData.products.length > 3"
-                        class="show-all-products-link"
-                    >
-                        {{ showHideProducts }}
-                    </a>
-                    
-                     <ul class="used-products-list" v-if="addressData.products.length && false"> <!--TODO: remove "... && false" when start to work on address products feature-->
-                        <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
-                            :title="productName(product.company, product.name)"
-                            :key="product.id"
-                        >
-                            <img class="image" :src="product.image" v-if="product.image">
-                            <div class="image" v-else></div>
-                            <span class="prod-name">
-                                {{ productName(product.company, product.name) }}
-                            </span>
-                        </li>
-
-                        <li v-if="showAllProducts" 
-                            v-for="product in addressData.products" 
-                            :title="productName(product.company, product.name)"
-                            :key="product.id"
-                        >
-                            <img class="image" :src="product.image" v-if="product.image">
-                            <div class="image" v-else></div>
-                            <span class="prod-name">
-                                {{ productName(product.company, product.name) }}
-                            </span>
-                        </li>
-                        
-                        <li v-if="addressData.products.length > 3">
-                            <a href="#" @click.prevent="toggleShowAllProducts" class="show-all-link prod-name">
-                                {{ showHideProducts }}
-                            </a>
-                        </li>
-                    </ul>
                     
                 </div>
 
