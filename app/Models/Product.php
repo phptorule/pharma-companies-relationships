@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-
     protected $table = 'rl_products';
 
+    public $timestamps = false;
 
     function addresses()
     {

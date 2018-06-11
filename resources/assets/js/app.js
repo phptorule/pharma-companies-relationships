@@ -6,6 +6,7 @@ import {Pagination} from 'vue-pagination-2';
 import JsonExcel from 'vue-json-excel'
 import CtkTooltip from 'vue-ctk-tooltip';
 import 'vue-ctk-tooltip/ctk-tooltip.css';
+import vSelect from 'vue-select';
 
 window.Vue = require('vue');
 
@@ -13,6 +14,7 @@ window.Vue.use(VueRouter);
 window.Vue.use(CtkTooltip);
 
 AuthService.defineIsLoggedIn();
+
 
 /* Components Registration */
 Vue.component('main-component', require('./main-component'));
@@ -35,7 +37,12 @@ Vue.component('modal-product-details', require('./partial-view-components/modal-
 Vue.component('modal-tender-details', require('./partial-view-components/modal-tenders-details'));
 Vue.component('all-products-list', require('./partial-view-components/all-products-list'));
 Vue.component('downloadExcel', JsonExcel);
+Vue.component('tab-relationships', require('./partial-view-components/modal-employee-details-tab-relationships'));
+Vue.component('publication-list', require('./partial-view-components/publication-list'));
+Vue.component('publication-list-item', require('./partial-view-components/publication-list-item'));
 Vue.component('pagination', Pagination);
+Vue.component('v-select', vSelect);
+Vue.component('div-editable', require('./partial-view-components/div-editable'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 

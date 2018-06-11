@@ -9,6 +9,7 @@ class Cluster extends Model
 
     protected $table = 'rl_clusters';
 
+    public $timestamps = false;
 
     function addresses()
     {

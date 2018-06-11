@@ -385,7 +385,7 @@ a{
     position: absolute;
     top: calc(50% - 50px);
     left: calc(50% - 50px);
-    z-index: 999;
+    z-index: 9999;
 }
 
 
@@ -633,16 +633,17 @@ ul.select-filter > li > a .caret {
 
 ul.select-filter > li > ul.dropdown-menu{
     max-height: 500px;
-    overflow-y: auto;
+    overflow: auto;
     box-shadow: 5px 5px 20px rgba(0,0,0,.2);
     padding: 15px 0px;
     margin-top: 10px;
     border-radius: 5px;
+    max-width: 455px;
 }
 
 ul.select-filter > li > ul > li{
     white-space: nowrap;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-overflow: ellipsis;
     padding-left: 20px;
     padding-right: 20px;
@@ -676,12 +677,12 @@ ul.select-filter > li > ul > li.selected .grey-checkbox span.remember_text{
 ul.select-filter > li > ul > li .grey-checkbox span.remember_text{
     font-weight: 500;
     float: none;
-
     font-family: Montserrat;
     font-size: 14px;
     letter-spacing: 0.5px;
-
     color: #3a444f;
+    white-space: normal;
+    width: 440px;
 }
 
 ul.select-filter > li > ul > li:hover .grey-checkbox span.remember_text{
@@ -1006,7 +1007,7 @@ ul.tag-list li + li{
 #map-element{
     height: 100%;
     width: 100%;
-    min-height: 800px;
+    /* min-height: 800px; */
 }
 
 .content {
@@ -1110,19 +1111,287 @@ ul.tag-list li + li{
     border-radius: 14px;
     text-align: center;
     transition: background-color 0.1s linear;
+    vertical-align: middle;
 }
+
+/********************************************************************/
 
 .sidebar .address-overview h2 a:hover{
     background: #4a90e3;
 }
 
-.customer-status-select-box {
-
+.sidebar .address-overview h2 a.active {
+    background: #4a90e3;
 }
+
+.sidebar .address-overview h2 a.active:hover {
+    background: #bbbec2;
+}
+
+.sidebar .address-overview .can-edit {
+    /*color: #4a90e2;*/
+    border-bottom: 2px solid #d2d6de;
+    /* border-bottom: 2px solid #EAEFF4; */
+}
+
+.sidebar .address-overview .can-edit:hover {
+    cursor: pointer;
+}
+
+.sidebar .address-overview .confirm-edit-block {
+    margin-top: 10px;
+    float: right;
+}
+
+.sidebar .address-overview .edit-input-block {
+    margin-top: 7px;
+}
+
+.sidebar .address-overview .save-address-btn {
+    width: 170px;
+    background: #4a90e3;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    /* transition: background-color 0.1s linear; */
+}
+
+.sidebar .address-overview .cancel-address-btn {
+    background: #fff;
+    font-family: Montserrat;
+    font-size: 13px;
+    margin: 0;
+}
+.sidebar .address-overview .save-address-btn-disabled {
+    width: 170px;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Montserrat;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+    font-size: 13px;
+    background-color: #989da3;
+    opacity: 1;
+}
+
+.sidebar .address-overview .save-address-btn:hover {
+    background: #5ba3f4;
+}
+
+.sidebar .address-overview .save-address-btn:focus,
+.sidebar .address-overview .cancel-address-btn:focus {
+    outline: none;
+}
+
+.sidebar .address-overview .save-address-btn:active,
+.sidebar .address-overview .cancel-address-btn:active {
+    box-shadow: none;
+}
+
+.sidebar .address-overview ul.tags-edit li a {
+    position: relative;
+    display: block;
+    padding: 4px 30px 4px 15px;
+    font-family: Montserrat;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+    border-radius: 6px;
+    border: solid 1px #eaeff4;
+    transition: background-color 100ms linear;
+}
+
+.sidebar .address-overview ul.tags-edit li a .delete-tag {
+    position: absolute;
+    right: 8px;
+    top: -1px;
+    font-size: 30px;
+    padding: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0;
+    font-weight: 500;
+    line-height: 1;
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}
+
+.sidebar .address-overview ul.tags-edit li a .delete-tag:focus {
+    outline: none;
+}
+
+.sidebar .address-overview ul li a.add-tag {
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+    padding: 4px 12px;
+}
+
+.sidebar .address-overview div.v-select.tags-select ul.dropdown-menu li a {
+    font-family: Montserrat;
+    font-size: 13px;
+    color: #3a444f;
+}
+
+.sidebar .address-overview div.v-select.tags-select ul.dropdown-menu li:hover > a {
+    color: #fff;
+}
+
+.sidebar .address-overview div.v-select.tags-select .selected-tag {
+    position: relative;
+    display: block;
+    padding: 0 30px 0 15px;
+    font-family: Montserrat;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: #3a444f;
+    border-radius: 6px;
+    border: solid 1px #eaeff4;
+    transition: background-color 100ms linear;
+    background: #fff;
+}
+
+.sidebar .address-overview div.v-select.tags-select .selected-tag .close {
+    position: absolute;
+    right: 8px;
+    top: -2px;
+    font-size: 30px;
+    padding: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0;
+    font-weight: 500;
+    line-height: 1;
+    filter: alpha(opacity=20);
+    opacity: 0.2;
+}
+
+.sidebar .address-overview div.v-select.tags-select .selected-tag:hover {
+    background-color: #eaeff4;
+}
+
+ul.tag-list li {
+    margin-bottom: 10px;
+}
+
+.sidebar .address-overview .can-edit div:empty:not(:focus):before {
+    color: #b3b3b3;
+    content: attr(data-placeholder);
+}
+
+.sidebar .address-overview .name-block.can-edit div:empty:not(:focus):before {
+    font-weight: 100;
+}
+
+.sidebar .address-overview div.name-block.can-edit {
+    display: inline-block;
+    align-items: center;
+    font-family: Montserrat;
+    font-size: 27px;
+    line-height: 1.39em;
+    font-weight: 400;
+    margin: 0;
+    /* float: left; */
+    width: calc(100% - 190px);
+}
+
+.v-select.roles {
+    width: 200px;
+    display: inline-block;
+    margin-left: 50px;
+    font-family: Montserrat;
+    font-size: 13px;
+}
+
+.v-select.roles span.selected-tag{
+    position: absolute;
+}
+
+.v-select.roles div.dropdown-toggle input[type=search].form-control {
+    opacity: 1;
+}
+
+.v-select.roles .dropdown-toggle .clear {
+    bottom: 6px;
+}
+
+.v-select.roles ul.dropdown-menu {
+    font-family: Montserrat;
+    font-size: 13px;
+    border: 1px solid #fff;
+    overflow-y: hidden;
+}
+
+.v-select.roles ul.dropdown-menu li a {
+    color: #000;
+}
+
+.v-select.roles ul.dropdown-menu li.highlight a {
+    color: #fff;
+}
+
+.v-select.roles .dropdown-toggle {
+    background: #fff;
+    border: 1px solid #fff;
+}
+
+.v-select.roles .clear {
+    display: none;
+}
+
+/** remove after implenenting **/
+.without-handler {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.address-details-fixed-height, .slided-box {
+    height: calc(100vh - 152px);
+}
+
+.wrapper {
+    /* position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100% !important;
+    min-height: 100% !important; */
+}
+
+.main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* min-height: auto; */
+    height: calc(100vh - 152px);
+}
+
+.content-wrapper {
+    height: auto;
+    /* min-height: 100% !important; */
+}
+
+.sidebar {
+    padding-bottom: 0;
+}
+/**************************************************************/
+
+
+
+/* .customer-status-select-box { */
+
+/* } */
 
 .address-overview {
     padding-right: 25px;
-    padding-bottom: 25px;
+    /*padding-bottom: 25px;*/
+    padding-bottom: 50px;
 }
 
 .address-overview h2{
@@ -1135,6 +1404,7 @@ ul.tag-list li + li{
     margin: 0;
     float: left;
     width: calc(100% - 170px);
+    vertical-align: middle;
 }
 
 .address-overview .lab-chain{
@@ -1413,6 +1683,7 @@ ul.used-products-list li{
     float: left;
     width: 25%;
     align-items: center;
+    margin-bottom: 15px;
 }
 
 ul.used-products-list li span.image{
@@ -1444,7 +1715,7 @@ ul.used-products-list li a.show-all-link {
     line-height: 25px;
     display: block;
     width: 100px;
-    text-align: right;
+    /* text-align: right; */
 }
 
 ul.used-products-list li a.show-all-link:hover{
@@ -1668,7 +1939,7 @@ ul.staff-list li .personal-info .name a:hover{
 
 #personal-modal .modal-dialog{
     margin-top: 130px;
-    width: 800px;
+    width: 80%;
 }
 
 #personal-modal .person-profile-picture {
@@ -1726,6 +1997,7 @@ ul.staff-list li .personal-info .name a:hover{
     width: 80%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 10px;
 }
 
 #personal-modal .modal-header .occupation{
@@ -1825,7 +2097,8 @@ ul.staff-list li .personal-info .name a:hover{
 }
 
 #personal-modal .view-contacts-chain-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: -35px;
     margin-top: 22px;
 }
@@ -1982,9 +2255,11 @@ ul.staff-list li .personal-info .name a:hover{
     margin-bottom: 5px;
 }
 
+.publication-list li h4 a,
 .publication-list li p.title a{
-    color: #909498;
+    color: #3a444f;
 }
+.publication-list li h4 a:hover,
 .publication-list li p.title a:hover{
     color: #4a90e3;
 }
@@ -3561,4 +3836,36 @@ ul.staff-list li .prod-info .amount{
 
 .pointer{
     cursor: pointer;
+}
+.staff-list .connection-type a{
+    color: #333;
+}
+
+.staff-list .connection-type a:hover{
+    color: #3c8dbc;
+}
+
+.publication-list li h3 {
+    font-size: 16px;
+    margin: 0;
+    margin-bottom: 7px;
+}
+
+.publication-list li p {
+    font-size: 12px;
+    margin: 0;
+}
+
+ul.staff-list.staff-with-publication-list li{
+    display: block;
+}
+
+ul.staff-with-publication-list .box-body h4{
+    font-size: 15px;
+    margin-bottom: 7px;
+    margin-top: 0;
+}
+
+ul.staff-with-publication-list h3.box-title {
+
 }

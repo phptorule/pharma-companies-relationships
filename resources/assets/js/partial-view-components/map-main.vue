@@ -9,10 +9,11 @@
     var geojsonExtent = require('@mapbox/geojson-extent');
 
     import http from '../mixins/http';
+    import bouncingMarker from '../mixins/bouncing-marker';
 
     export default {
 
-        mixins: [http],
+        mixins: [http, bouncingMarker],
 
         data: function () {
             return {
@@ -32,7 +33,7 @@
                 mapCenterLat: null,
                 moveendId: null,
                 isMapMovedBecauseOfSearch: true,
-                isMapMovedBecauseOfFitMapContent: true
+                isMapMovedBecauseOfFitMapContent: true,
             }
         },
 
@@ -61,11 +62,9 @@
 
             loadAddresses: function (queryString, isGlobalSearchInitiator) {
 
-                if ((this.isFirstLoad && this.$route.query['global-search']) || isGlobalSearchInitiator) {
+                if (isGlobalSearchInitiator) {
 
                     let url = '/api/addresses?global-search=' + encodeURIComponent(this.$route.query['global-search']);
-
-                    this.isFirstLoad = false;
 
                     return this.httpGet(url);
                 }
@@ -367,6 +366,10 @@
                 let fullUrl = this.$route.fullPath;
                 let hash = this.$route.hash;
 
+                if(hash) {
+                    fullUrl = (fullUrl.split('#'))[0];
+                }
+
                 if (fullUrl.indexOf('?') === -1) {
                     fullUrl += '?';
                 }
@@ -451,7 +454,23 @@
                     }, 2000);
 
                 })
+            },
+
+            setInitialMapViewFromQueryStr: function () {
+
+                if(!this.isFirstLoad) {
+                    return;
+                }
+
+                let zoom = this.$route.query['zoom'];
+                let centerLng = this.$route.query['center-lng'];
+                let centerLat = this.$route.query['center-lat'];
+
+                if (zoom != this.mapZoom || centerLng != this.mapCenterLng || centerLat != this.mapCenterLat) {
+                    this.map.flyTo({center: [centerLng, centerLat], zoom: zoom});
+                }
             }
+
         },
 
         mounted: function () {
@@ -482,6 +501,14 @@
                             this.listenToMarkerClicks();
 
                             this.detectMapMoveEnds();
+
+                            this.listenToHoveringOverAddressAtSidebar();
+
+                            this.listenToHoverOutFromSidebar();
+
+                            this.setInitialMapViewFromQueryStr();
+
+                            this.isFirstLoad = false;
 
                         });
                 });
