@@ -147,7 +147,7 @@ class ProductsController extends Controller {
                         ORDER BY total_spent DESC";
 
 		// cache qeuery
-        $result = \Illuminate\Support\Facades\Cache::remember(
+        /*$result = \Illuminate\Support\Facades\Cache::remember(
             "loadTopProducts-" . md5($sql) . "-$address",
             60 * 24,
             function() use ($sql, $address) {
@@ -159,6 +159,14 @@ class ProductsController extends Controller {
                     ]
                 );
             }
+        );*/
+
+        $result = DB::select(
+            DB::raw( $sql ),
+            [
+                'address' => $address,
+                'address1' => $address
+            ]
         );
 
         // make new collection
