@@ -352,10 +352,19 @@ class AddressesController extends Controller
      */
     public function updateClusters(Address $address)
     {
+        $oldClusterId = $address->cluster_id;
         $address->cluster_id = request()->get('cluster_id');
         $address->update();
         $address->load('cluster');
         $address->load('cluster.addresses');
+        $cluster = Cluster::with('addresses')
+                    ->whereId($oldClusterId)
+                    ->first();
+        if ($cluster) {
+            if ($cluster->addresses->count() < 1) {
+                $cluster->delete();
+            }
+        }
         return response()->json($address);
     }
 
