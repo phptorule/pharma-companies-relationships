@@ -334,7 +334,7 @@
 
                 this.showLoader();
 
-                let url = '/api/There are no used products/' + addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
+                let url = '/api/tenders-by-address-paginated/' + addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
                         this.hideLoader();
