@@ -19,31 +19,19 @@ class ProductsController extends Controller {
 
 	public function productByTenders( $id, $address ) {
 
-		$select = "SELECT
-						((YEAR(CURDATE()) - YEAR(MIN(tdate))+1)) as last_tender_date,
-						MAX(budgetedCost) as max_total_spent,
-						MIN(budgetedCost) as min_total_spent,
-						SUM(budgetedCost) as total_budgeted,
-						SUM(atbBudget) as next_budgeted_cost,
-						GROUP_CONCAT(DISTINCT tags SEPARATOR ', ') as tag_ids
-						FROM
-						(
-						    SELECT at.tender_date as tdate,
-                            atpp.consumable_id as tags,
-							atb.budget as atbBudget,
-						    at.budgeted_cost as budgetedCost
-							FROM rl_products as p
-							LEFT JOIN rl_address_tenders_purchase_products AS atpp ON atpp.product_id = p.id
-							LEFT JOIN rl_address_tenders_purchase AS atp ON atp.id = atpp.purchase_id
-							LEFT JOIN rl_address_products AS ap ON ap.product_id = p.id
-                            LEFT JOIN rl_product_consumables AS pc ON pc.id = atpp.consumable_id
-							RIGHT JOIN rl_address_tenders as at ON (at.address_id = ap.address_id and at.id = atp.tender_id)
-							LEFT JOIN rl_address_tenders_budgets as atb ON atb.tender_id = at.id
-							WHERE p.id = :id1
-							AND at.address_id = :address1
-							AND at.id IS NOT NULL
-                            GROUP BY at.id
-						) as product
+        $select = "select delivery_year, 
+                sum(budget) as total_budgeted, 
+                sum(budget) as next_budgeted_cost, 
+                max(budget) AS max_total_spent,
+                min(budget) AS min_total_spent,
+                GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
+            from rl_address_tenders_purchase_products as atpp
+            left join rl_address_tenders_purchase as atp on atp.id = atpp.purchase_id
+            left join rl_address_tenders_budgets as atb on atp.tender_id = atb.tender_id
+            left join rl_address_tenders as at on at.id = atb.tender_id
+            where `atpp`.`product_id` = :id1
+            and at.address_id = :address1
+            group by delivery_year
 		";
 
 		$tenders = DB::select(
