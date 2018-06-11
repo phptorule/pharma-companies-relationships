@@ -16,13 +16,21 @@ use Illuminate\Support\Facades\Log;
 class AddressesController extends Controller
 {
 
-    private $MAX_ADDRESSES = 500;
-
     function index()
     {
-        $addresses = $this->prepareAddressesQuery()->limit($this->MAX_ADDRESSES)->get();
+        $addresses = $this->prepareAddressesQuery()->get();
 
-        return response()->json($addresses);
+        $addressesForResponse = [];
+
+        foreach ($addresses as $i => $address) {
+            $addressesForResponse[$i]['id'] = $address['id'];
+            $addressesForResponse[$i]['name'] = $address['name'];
+            $addressesForResponse[$i]['lat'] = $address['lat'];
+            $addressesForResponse[$i]['lon'] = $address['lon'];
+            $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+        }
+
+        return response()->json($addressesForResponse);
     }
 
 
@@ -30,7 +38,7 @@ class AddressesController extends Controller
     {
         $query = $this->prepareAddressesQuery();
 
-        $addresses = $query->limit($this->MAX_ADDRESSES)->paginate(20);
+        $addresses = $query->paginate(20);
 
         return response()->json($addresses);
     }
