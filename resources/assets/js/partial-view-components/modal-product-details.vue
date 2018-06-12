@@ -6,7 +6,7 @@
                     <div class="modal-header">
 
                         <div class="person-profile-picture">
-                            <span class="person-initials">{{getProductName(productsData.name? productsData.name : productsData.company)}}</span>
+                            <span class="person-initials">{{productsData.image ? "":getProductName(productsData.name? productsData.name : productsData.company)}}</span>
                             <img :src="productsData.image ? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
                         <h4 class="modal-title">
@@ -52,7 +52,7 @@
                                 </p>
                                 <p class="text">
                                     <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending
-                                    {{actual_year+1}}
+                                    {{actual_year}}
                                 </p>
                             </div>
                         </div>
