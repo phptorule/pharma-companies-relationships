@@ -476,6 +476,8 @@
 
                         if(String(this.tenderData.tag_ids) != 'null') {
 
+                            console.log('this.tenderData.tag_ids', this.tenderData.tag_ids);
+
                             let tenderTag = JSON.parse("[" + this.tenderData.tag_ids + "]");
                             this.tag_list.forEach(tag =>{
                                 for (let i = 0; i < tenderTag.length; i++) {

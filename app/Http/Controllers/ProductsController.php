@@ -67,6 +67,17 @@ class ProductsController extends Controller {
             ) subq"
         ));
 
+
+        $tags = DB::select(DB::raw("select GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
+            from rl_address_tenders_purchase_products as atpp
+            left join rl_address_tenders as at on at.id = atpp.tender_id
+            where atpp.product_id = $id
+            and at.address_id = $address
+            group by atpp.product_id
+		"));
+
+
+
 		return response()->json( [
 			'years_used'    => $yearsUsed[0] ? $yearsUsed[0]->yearsUsed : 0,
 			'max_total_spent'     => $topSpent[0] ? $topSpent[0]->topSpent : 0,
@@ -74,7 +85,8 @@ class ProductsController extends Controller {
 			'min_total_spent'     => null,
 			'total_budgeted'      => null,
 			'last_budgeted_cost'  => null,
-			'first_budgeted_cost' => null
+			'first_budgeted_cost' => null,
+            'tag_ids' => $tags[0] ? $tags[0]->tag_ids : ''
 		] );
 
 	}
