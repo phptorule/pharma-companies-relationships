@@ -44,8 +44,8 @@
                         </div>
                         <div class="volume">
                             <span class="volume-head" :title="product.unit">
-                                {{product.bud_sum ? Math.ceil(product.bud_sum/1000) + ' K Rub' : 'No spending on consumables'}}
-                                <span class="volume-title">{{product.consum_name ? product.consum_name : ''}}</span>
+                                {{product.bud_sum ? Math.ceil(product.bud_sum/1000) +" K Rub"  : 'No known spending on consumables'}}
+                                <span class="volume-title">{{product.bud_sum ? "Total spending on consumables" :""}}</span>
                             </span>
                         </div>
                     </div>
