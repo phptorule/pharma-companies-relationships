@@ -369,6 +369,10 @@
 
                         if (tag.name != null) {
 
+                            if(tag.id === 'empty') {
+                                return;
+                            }
+
                             this.chartQueryTag += '&tags[]=' + tag.id;
 
                         }
@@ -376,6 +380,11 @@
                     })
 
                 }
+
+                if(tagVal.findIndex(el => el.id === 'empty') !== -1) {
+                    this.chartQueryTag += '&tags[]=empty';
+                }
+
                 this.graphLoadedModal = false;
                 this.filterTagToChart();
             },
