@@ -168,6 +168,7 @@ class AddressesController extends Controller
                         ->whereHas('addresses', function ($q) use ($address){
                             return $q->where('id', $address->id);
                         })
+                        ->groupBy('rl_people.name')
                         ->paginate(10);
 
         return response()->json($people);

@@ -13,6 +13,10 @@ class CreateAppVersionsTable extends Migration
      */
     public function up()
     {
+        if(Schema::hasTable('app_versions')) {
+            return;
+        }
+
         Schema::create('app_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('main');
