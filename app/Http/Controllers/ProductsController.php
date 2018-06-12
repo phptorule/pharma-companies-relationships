@@ -222,7 +222,7 @@ class ProductsController extends Controller {
 
 	public function TenderByProductChart( $id, $address ) {
 
-		$select = "SELECT DATE_FORMAT(months, '%Y/%m/%d') as month, SUM(total) as total ";
+		$select = "SELECT DATE_FORMAT(months, '%d/%m/%Y') as month, SUM(total) as total ";
 
 		$sql = ' FROM ( SELECT at.tender_date as months, at.budgeted_cost as total ';
 
