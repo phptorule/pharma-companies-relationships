@@ -206,6 +206,12 @@
     import vueSlider from 'vue-slider-component';
 
 
+    const othersTag = {
+        id: 'empty',
+        color: '#666666',
+        name: 'Others',
+    };
+
     export default {
         mixins: [http, getProductName, ProductModal],
         data: function () {
@@ -482,6 +488,8 @@
                                     }
                                 }
                             });
+                            this.productTags.push(othersTag);
+                            this.selectedTags.push(othersTag);
                         }
 
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000)+1;
@@ -516,7 +524,7 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
-                this.exportToExcel(product_id);
+
             },
 
             applyFilters: function (isOnlySortingChanged) {

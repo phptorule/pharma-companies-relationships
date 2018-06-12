@@ -183,6 +183,12 @@ class ProductsController extends Controller {
 			$tagsColor[] = $tag;
 		}
 
+		array_push($tagsColor, [
+		    'id' => 'empty',
+            'name' => 'Others',
+            'color' => '#666666'
+        ]);
+
 		return response()->json( $tagsColor );
 	}
 
@@ -199,30 +205,58 @@ class ProductsController extends Controller {
 
 		if ( isset( request()->tags ) && $tags = request()->tags) {
 		    if(!empty($tags) && is_array($tags)){
+
                 foreach ( $tags as $tag ) {
 
-                    // clear tag as get intval of it
-                    $tag = intval($tag);
+                    if($tag == 'empty') {
 
-                    $queryTags .= ",SUM(sum_tag$tag) as tag$tag ";
 
-	                $sql .= ", (
-                    SELECT at$tag.budgeted_cost
-                    FROM rl_products AS p$tag
-                    LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.product_id = p$tag.id
-					LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.id = atpp$tag.purchase_id
-					LEFT JOIN rl_product_consumables AS pc$tag ON pc$tag.id = atpp$tag.consumable_id
-					LEFT JOIN rl_address_products AS ap$tag ON ap$tag.product_id = p$tag.id 
-					RIGHT JOIN rl_address_tenders AS at$tag ON (at$tag.address_id = ap$tag.address_id and at$tag.id = atp$tag.tender_id)
-                    WHERE p$tag.id = $id
-                    AND pc$tag.id = $tag
-                    AND at$tag.address_id = $address
-                    AND months = at$tag.tender_date
-                    GROUP BY months
-                    ) as sum_tag$tag ";
 
-                    // put data for placeholders to array of parameters
-                    array_push($paramsArr, $id, $address);
+                        $queryTags .= ",SUM(sum_tag$tag) as tag$tag ";
+
+                        $sql .= ", (
+                            SELECT at$tag.budgeted_cost
+                            FROM rl_products AS p$tag
+                            LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.product_id = p$tag.id
+                            LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.id = atpp$tag.purchase_id
+                            
+                            LEFT JOIN rl_address_products AS ap$tag ON ap$tag.product_id = p$tag.id 
+                            RIGHT JOIN rl_address_tenders AS at$tag ON (at$tag.address_id = ap$tag.address_id and at$tag.id = atp$tag.tender_id)
+                            WHERE p$tag.id = $id
+                            AND atpp$tag.consumable_id IS NULL
+                            AND at$tag.address_id = $address
+                            AND months = at$tag.tender_date
+                            GROUP BY months
+                            ) as sum_tag$tag ";
+
+                        // put data for placeholders to array of parameters
+                        array_push($paramsArr, $id, $address);
+
+                    }
+                    else {
+                        // clear tag as get intval of it
+                        $tag = intval($tag);
+
+                        $queryTags .= ",SUM(sum_tag$tag) as tag$tag ";
+
+                        $sql .= ", (
+                            SELECT at$tag.budgeted_cost
+                            FROM rl_products AS p$tag
+                            LEFT JOIN rl_address_tenders_purchase_products AS atpp$tag ON atpp$tag.product_id = p$tag.id
+                            LEFT JOIN rl_address_tenders_purchase AS atp$tag ON atp$tag.id = atpp$tag.purchase_id
+                            LEFT JOIN rl_product_consumables AS pc$tag ON pc$tag.id = atpp$tag.consumable_id
+                            LEFT JOIN rl_address_products AS ap$tag ON ap$tag.product_id = p$tag.id 
+                            RIGHT JOIN rl_address_tenders AS at$tag ON (at$tag.address_id = ap$tag.address_id and at$tag.id = atp$tag.tender_id)
+                            WHERE p$tag.id = $id
+                            AND pc$tag.id = $tag
+                            AND at$tag.address_id = $address
+                            AND months = at$tag.tender_date
+                            GROUP BY months
+                            ) as sum_tag$tag ";
+
+                        // put data for placeholders to array of parameters
+                        array_push($paramsArr, $id, $address);
+                    }
                 }
             }
 		}
@@ -242,8 +276,6 @@ class ProductsController extends Controller {
 					HAVING month IS NOT NULL";
 
 		$query = $select.$queryTags.$sql;
-
-
 
 		// if parameters is not empty, let's set them
         if(!empty($paramsArr)) {
@@ -310,7 +342,7 @@ class ProductsController extends Controller {
 					                       . '<br>Total: ' . number_format($total) . $delimetrKey . '</span>';
 				} else {
 
-					$responsData[ $i ][] = intval( $value );
+					$responsData[ $i ][] = intval( $value / $delimetr );
 				}
 			}
 		}
