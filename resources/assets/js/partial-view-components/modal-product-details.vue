@@ -52,7 +52,7 @@
                                 </p>
                                 <p class="text">
                                     <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending
-                                    {{actual_year+1}}
+                                    {{actual_year}}
                                 </p>
                             </div>
                         </div>
