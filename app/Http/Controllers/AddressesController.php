@@ -135,7 +135,9 @@ class AddressesController extends Controller
         $address->load('tags');
         $address->load('cluster');
         $address->load('cluster.addresses');
-        $address->load('people');
+        $address->load(['people' => function($query){
+            $query->groupBy('name');
+        }]);
         $address->load([
             'products' => function ($query) {
                 $query->orderByRaw('company, name');
