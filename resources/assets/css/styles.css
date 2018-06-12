@@ -3263,6 +3263,16 @@ ul.tenders-list li .item .tag-list .tags{
     cursor: default;
 }
 
+ul.tenders-list li .item .tag-list .tags.product-tag{
+    background: #e3f1ff;
+    border-color: #cce6ff;
+}
+ul.tenders-list li .item .tag-list .tags.product-tag:hover{
+    border-color: #cce6ff;
+    background: #cce6ff;
+}
+
+
 ul.tenders-list li .item .tag-list .tags:hover{
     background-color: #eaeff4;
 }

@@ -109,8 +109,23 @@
                                                         </div>
 
                                                         <ul class="tag-list">
-                                                            <li v-if="tender.tag_name"><a href="javascript:void(0)"
-                                                                                          class="tags">{{tender.tag_name}}</a>
+                                                            <li v-if="tender.tag_name">
+                                                                <a v-if="tender.product_name"
+                                                                   href="javascript:void(0)"
+                                                                   :title="'Product: ' + tender.product_name"
+                                                                   class="tags product-tag"
+                                                                >
+                                                                    {{tender.product_name}}
+                                                                </a>
+                                                            </li>
+
+                                                            <li v-if="tender.tag_name">
+                                                                <a href="javascript:void(0)"
+                                                                   :title="'Consumable type: ' + tender.tag_name"
+                                                                   class="tags"
+                                                                >
+                                                                    {{tender.tag_name}}
+                                                                </a>
                                                             </li>
                                                         </ul>
 
