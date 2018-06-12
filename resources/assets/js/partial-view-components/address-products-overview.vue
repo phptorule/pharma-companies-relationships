@@ -44,8 +44,8 @@
                         </div>
                         <div class="volume">
                             <span class="volume-head" :title="product.unit">
-                                {{product.bud_sum ? Math.ceil(product.bud_sum/1000) + ' K Rub' : '?'}}
-                                <span class="volume-title">{{product.consum_name ? product.consum_name : 'No known consumables'}}</span>
+                                {{product.bud_sum ? Math.ceil(product.bud_sum/1000) + ' K Rub' : 'No spending on consumables'}}
+                                <span class="volume-title">{{product.consum_name ? product.consum_name : ''}}</span>
                             </span>
                         </div>
                     </div>
@@ -186,7 +186,28 @@
 
                         // store data of top products as first page to productsPaginatedFirstPage
                         localStorage.setItem('productsPaginatedFirstPage', JSON.stringify(data));
+
+                        this.loadTopProductConsumablesSum();
+
+                        return data;
                     })
+            },
+
+            loadTopProductConsumablesSum: function() {
+                this.topProducts.forEach(prod => {
+
+                    let url = '/api/product-consumables-sum/' +this.addressData.id+ '/' + prod.prod_id;
+
+                    this.httpGet(url)
+                        .then(data => {
+                            this.topProducts.forEach(p => {
+                                if(p.prod_id == prod.prod_id) {
+                                    p.bud_sum = data && data.total_price ? +data.total_price : null;
+                                    p.consum_name = data && data.name ? 'Last year spending on ' + data.name : null;
+                                }
+                            });
+                        })
+                })
             },
 
             getTendersData: function () {

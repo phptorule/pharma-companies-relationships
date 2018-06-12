@@ -327,4 +327,32 @@ class ProductsController extends Controller {
         );
 	}
 
+    function getProductConsumableSum($addressId, $productId) {
+
+            $sql = "SELECT SUM(total_price) as total_price, name 
+                    from (
+                        SELECT at.id, atp.id as atpID, MAX(atp.total_price) as total_price, pc.name
+                        FROM rl_address_tenders AS at
+                        LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                            ON atpp.tender_id = at.id
+                        LEFT JOIN rl_address_tenders_purchase AS atp
+                            ON atp.tender_id = at.id
+                        LEFT JOIN rl_product_consumables AS pc
+                            ON pc.id = atpp.consumable_id
+                        WHERE product_id = $productId
+                        AND address_id = $addressId
+                        AND atpp.consumable_id IS NOT NULL
+                        AND YEAR(NOW()) - 1 = YEAR(at.tender_date)
+                        GROUP BY at.id, atpID 
+                    )
+                     subtbl";
+
+	    $res = DB::select(DB::raw($sql));
+
+	    $data = $res && $res[0] ? $res[0] : false;
+
+	    return response()->json($data);
+
+    }
+
 }
