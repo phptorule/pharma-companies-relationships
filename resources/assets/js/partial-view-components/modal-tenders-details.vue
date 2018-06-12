@@ -366,6 +366,10 @@
 
                             this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000)-1;
 
+                            if(this.tendersCost.min === -1) {
+                                this.tendersCost.min = 0;
+                            }
+
                             this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
                             this.addressDoesNotHaveTenders = false
