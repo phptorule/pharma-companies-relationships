@@ -140,7 +140,7 @@ class TendersController extends Controller {
 					atp.remark as purchase_remark,
 					pc.name as tag_name,
 					pc.id as tag_id,
-					p.name as product_name,
+					IF(p.name='',CONCAT(p.company, ': unspecified'), p.name) as product_name,
 					group_concat(DISTINCT(ats.amount) ORDER BY ats.amount DESC separator ',') AS suppliers_amount,
 					count(s.name) as winner,
 					group_concat(DISTINCT(CONCAT(s.name, ': ', ats.amount)) ORDER BY ats.amount DESC SEPARATOR ', ') as supplier_winner,
