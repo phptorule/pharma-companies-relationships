@@ -936,10 +936,11 @@ ul.tag-list {
 
 ul.tag-list li{
     display: inline-block;
+    margin-right: 7px;
 }
 
-ul.tag-list li + li{
-    margin-left: 7px;
+ul.tag-list li:last-child{
+    margin-right: 0px;
 }
 
 .sidebar ul.tag-list li a{

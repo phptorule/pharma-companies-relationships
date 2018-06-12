@@ -219,6 +219,7 @@
                         <a href="javascript:void(0)" 
                             @click="showContactsChain(addressData)" 
                             class="view-contacts-chain"
+                           v-if="false"
                         >
                             View Relationship Graph
                         </a>
