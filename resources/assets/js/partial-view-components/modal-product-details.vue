@@ -73,7 +73,7 @@
                                 <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
                                      @click="viewTendersChart()">
                                     <div class="tag-list">
-                                        <div class="item-tag" v-for="tag in productTags">
+                                        <div class="item-tag" v-for="tag in productTags" :class="{hidden: isHideOthersTag && tag.id === 'empty'}">
                                             <input type="checkbox" id="checkbox"  v-bind:value="tag" v-model="selectedTags">
                                             <label :style="{color: tag.color}">{{tag.name}}</label>
                                         </div>
@@ -293,6 +293,7 @@
                     {name:'Alice', age:26}
                 ],
                 selectedUsers:[],
+                isHideOthersTag: false
             }
         },
 
@@ -476,8 +477,6 @@
 
                         if(String(this.tenderData.tag_ids) != 'null') {
 
-                            console.log('this.tenderData.tag_ids', this.tenderData.tag_ids);
-
                             let tenderTag = JSON.parse("[" + this.tenderData.tag_ids + "]");
                             this.tag_list.forEach(tag =>{
                                 for (let i = 0; i < tenderTag.length; i++) {
@@ -657,12 +656,37 @@
                     });
             },
 
+            checkIfNoSpentOnOthers: function(chartData)
+            {
+                let othersSum = 0;
+
+                for(let i=0; i <  chartData.length; ++i) {
+                    let row = chartData[i];
+
+                    othersSum += row[row.length-1];
+                }
+
+                if(othersSum === 0) {
+                    this.isHideOthersTag = true;
+                    chartData.forEach((el,i) => {
+                        el.splice([el.length-1],1);
+                    })
+                }
+                else {
+                    this.isHideOthersTag = false;
+                }
+            },
+
             filterTagToChart: function () {
                 this.showLoader()
                 var url = '/api/tenders-by-product-chart/' + this.productId + '/' + this.addressId + '?' + this.chartQueryTag;
 
                 this.httpGet(url)
                     .then(data => {
+
+                        var DATA = data.chartsData;
+
+                        this.checkIfNoSpentOnOthers(DATA);
 
                         var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
 
@@ -676,6 +700,10 @@
 
                                     if (tag.id == selectTag.id) {
 
+                                        if(this.isHideOthersTag && selectTag.id == 'empty') {
+                                            return;
+                                        }
+
                                         title.push(tag.name);
 
                                         colorPallette.push(tag.color);
@@ -685,8 +713,6 @@
 
                             });
                         }
-
-                        var DATA = data.chartsData;
 
                         DATA.unshift(title);
 
