@@ -100,8 +100,27 @@ class TendersController extends Controller {
 
 		$tenders = $query->get();
 
+        $tenders = $this->replaceNullToEmptyStr($tenders->toArray());
+
 		return response()->json( $tenders );
 	}
+
+
+	protected function replaceNullToEmptyStr($arr) {
+
+	    $replacedArr = [];
+
+	    foreach ($arr as $i => $row) {
+
+            $replacedArr[$i] = [];
+
+            foreach ($row as $prop => $val) {
+                $replacedArr[$i][$prop] = is_null($val) ? '' : $val;
+            }
+        }
+
+        return $replacedArr;
+    }
 
 	public function prepareTendersQuery($address, $id = '') {
 
