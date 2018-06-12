@@ -242,6 +242,11 @@
 
                             if (typeof DATA[1] != "undefined") {
 
+                                if(DATA.length === 2) {
+                                    $('#graph-container-' + indexOrder).html('').css('background', '#fff');
+                                    return;
+                                }
+
                                 this.viewTendersChart(DATA, 'graph-container-' + indexOrder);
 
                             } else {
