@@ -677,6 +677,12 @@
                 }
             },
 
+            tempRemoveTotalFromGraph: function(graphData) {
+                graphData.forEach(el => {
+                    el.splice(1,1);
+                })
+            },
+
             filterTagToChart: function () {
                 this.showLoader()
                 var url = '/api/tenders-by-product-chart/' + this.productId + '/' + this.addressId + '?' + this.chartQueryTag;
@@ -689,6 +695,12 @@
                         this.checkIfNoSpentOnOthers(DATA);
 
                         var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
+
+                        //todo: temp override title for excluding "Total"
+                        title = ['Month', {type: 'string', role: 'tooltip', 'p': {'html': true}}];
+
+                        //todo: temp override DATA for excluding "Total"
+                        this.tempRemoveTotalFromGraph(DATA);
 
                         var colorPallette = [];
 
@@ -738,7 +750,8 @@
                 // chear chart
                 $('#tender-charts').html('');
 
-                colorPallette.unshift('#0099c6');
+                //todo: temp override colorPallette for excluding "Total"
+                // colorPallette.unshift('#0099c6');
 
                 var options = {
                     width: 830,
