@@ -19,46 +19,62 @@ class ProductsController extends Controller {
 
 	public function productByTenders( $id, $address ) {
 
-        $select = "select delivery_year, 
-                sum(budget) as total_budgeted, 
-                sum(budget) as next_budgeted_cost, 
-                max(budget) AS max_total_spent,
-                min(budget) AS min_total_spent,
-                GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
-            from rl_address_tenders_purchase_products as atpp
-            left join rl_address_tenders_purchase as atp on atp.id = atpp.purchase_id
-            left join rl_address_tenders_budgets as atb on atp.tender_id = atb.tender_id
-            left join rl_address_tenders as at on at.id = atb.tender_id
-            where `atpp`.`product_id` = :id1
-            and at.address_id = :address1
-            group by delivery_year
-		";
+        $yearsUsed = DB::select(DB::raw(
+            "select year(now()) - min(delivery_year) as yearsUsed from
+                    (select sum(budget) as budgeted, delivery_year
+                    from rl_address_tenders_budgets bu 
+                    where bu.tender_id in 
+                        (select tender_id 
+                        from rl_address_tenders_purchase_products pro
+                        inner join rl_address_tenders te 
+                        on pro.tender_id = te.id
+                        where te.address_id = $address 
+                        and product_id=$id)
+                    group by delivery_year) subq"
+        ));
 
-		$tenders = DB::select(
-            DB::raw( $select ),
-            [
-                'id1' => $id,
-                'address1' => $address,
+        $topSpent = DB::select(DB::raw(
+            "select sum(budgeted) as topSpent from(
+                select sum(budget) as budgeted, delivery_year
+                from rl_address_tenders_budgets bu 
+                where bu.tender_id in (
+                    select tender_id 
+                    from rl_address_tenders_purchase_products pro
+                    inner join rl_address_tenders te 
+                    on pro.tender_id = te.id
+                    where te.address_id = $address 
+                    and product_id= $id
+                    and delivery_year < year(now())
+                )
+                group by delivery_year
+            ) subq"
+        ));
 
-            ]
-        );
-
-		if ( $tenders ) {
-			foreach ( $tenders as $tender ) {
-				$tenderdata = $tender;
-			}
-
-			return response()->json( $tenderdata );
-		}
+        $nextYearSpent = DB::select(DB::raw(
+            "select sum(budgeted) as nextYearSpent from(
+                select sum(budget) as budgeted, delivery_year
+                from rl_address_tenders_budgets bu 
+                where bu.tender_id in (
+                    select tender_id 
+                    from rl_address_tenders_purchase_products pro
+                    inner join rl_address_tenders te 
+                    on pro.tender_id = te.id
+                    where te.address_id = $address 
+                    and product_id=$id
+                    and delivery_year = year(now())
+                )
+                group by delivery_year
+            ) subq"
+        ));
 
 		return response()->json( [
-			'last_tender_date'    => null,
-			'max_total_spent'     => null,
+			'years_used'    => $yearsUsed[0] ? $yearsUsed[0]->yearsUsed : 0,
+			'max_total_spent'     => $topSpent[0] ? $topSpent[0]->topSpent : 0,
+            'next_budgeted_cost' => $nextYearSpent[0] ? $nextYearSpent[0]->nextYearSpent : 0,
 			'min_total_spent'     => null,
 			'total_budgeted'      => null,
 			'last_budgeted_cost'  => null,
-			'first_budgeted_cost' => null,
-			'tag_ids'             => null
+			'first_budgeted_cost' => null
 		] );
 
 	}

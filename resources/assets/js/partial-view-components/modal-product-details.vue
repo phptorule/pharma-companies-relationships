@@ -23,7 +23,7 @@
                         <div class="row person-experience">
                             <div class="col-md-4">
                                 <p class="number">
-                                    {{tenderData.last_tender_date ? tenderData.last_tender_date : ''}}
+                                    {{tenderData.years_used ? tenderData.years_used : ''}}
                                 </p>
 
                                 <p class="text">
