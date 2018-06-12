@@ -207,7 +207,7 @@
                         'Tender name': 'purchase_name',
                         'Description': 'purchase_remark',
                         'Price': 'budget',
-                        'Winner': 'winner',
+                        'Winner': 'supplier_winner',
                         'Product': 'product_name',
                         'Consumables': 'tag_name',
                         'Date': 'tender_date',

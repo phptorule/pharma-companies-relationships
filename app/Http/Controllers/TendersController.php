@@ -143,6 +143,7 @@ class TendersController extends Controller {
 					p.name as product_name,
 					group_concat(DISTINCT(ats.amount) ORDER BY ats.amount DESC separator ',') AS suppliers_amount,
 					count(s.name) as winner,
+					group_concat(DISTINCT(CONCAT(s.name, ': ', ats.amount)) ORDER BY ats.amount DESC SEPARATOR ', ') as supplier_winner,
 					group_concat(DISTINCT(IF(ISNULL(s.address),s.name,CONCAT(s.name,' - ', s.address))) ORDER BY ats.amount DESC separator ';') AS suppliers_data";
 
 
