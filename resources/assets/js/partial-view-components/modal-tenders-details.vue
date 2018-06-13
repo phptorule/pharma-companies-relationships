@@ -127,6 +127,11 @@
                                                                     {{tender.tag_name}}
                                                                 </a>
                                                             </li>
+
+                                                            <!-- TODO remove this hardcoded section -->
+                                                            <li v-if="tender.tender_id == 46796"><a href="javascript:void(0)"
+                                                                                                                       class="tags">Test</a>
+                                                            </li>
                                                         </ul>
 
                                                         <p class="tender-winner" v-if="tender.suppliers_data[0]">
