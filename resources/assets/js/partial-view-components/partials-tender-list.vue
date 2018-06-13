@@ -1,95 +1,114 @@
 <template>
     <div>
-        <div class="modal fade" id="product-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-
-                        <div class="person-profile-picture">
-                            <span class="person-initials">{{productsData.image ? "":getProductName(productsData.name? productsData.name : productsData.company)}}</span>
-                            <img :src="productsData.image ? productsData.image : '/images/mask-0.png'" alt="">
-                        </div>
-                        <h4 class="modal-title">
-                            {{productsData.name? productsData.name : "unspecified "+productsData.company+"-product"}}
-                            <a href="#"><i class="fa fa-pencil"></i></a>
-                        </h4>
-
-                        <p class="occupation">{{productsData.description}}</p>
-
-                        <p class="place-of-work">
-                            at <a href="#">{{currentAddress.name}}</a>
-                        </p>
-
-                        <div class="row person-experience">
-                            <div class="col-md-4">
-                                <p class="number">
-                                    {{tenderData.years_used ? tenderData.years_used : ''}}
-                                </p>
-
-                                <p class="text">
-                                    <span><i class="fa fa-calendar"></i></span> Used for years
-                                </p>
-                            </div>
-                            <div class="col-md-4">
-                                <p class="number" v-if="tenderData.max_total_spent">
-                                    {{Math.ceil(tenderData.max_total_spent/1000) | currency}}(K)&nbsp;<i style="margin-top: 3px;" class="fa fa-ruble"
-                                                                           title="Russian rubels"></i>
-                                </p>
-                                <p class="number" v-else>
-                                    0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
-                                </p>
-                                <p class="text">
-                                    Tot spent
-                                </p>
-                            </div>
-                            <div class="col-md-4">
-                                <p class="number" v-if="tenderData.next_budgeted_cost">
-                                    {{Math.ceil(tenderData.next_budgeted_cost/1000) | currency}}(K)&nbsp;<i style="margin-top: 3px;" class="fa fa-ruble"
-                                                                                                       title="Russian rubels"></i>
-                                </p>
-                                <p class="number" v-else>
-                                    0 <span> <i class="fa fa-ruble" title="Russian rubels"></i></span>
-                                </p>
-                                <p class="text">
-                                    <span><i class="fa fa-arrow-circle-up"></i></span> Projected spending
-                                    {{actual_year}}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <ul class="nav nav-tabs person-tabs">
-                                <li :class="{'active': activeTab == 'chart'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('chart')" data-toggle="tab"
-                                       aria-expanded="false">Chart</a></li>
-                                <li :class="{'active': activeTab == 'tender'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('tender')" data-toggle="tab"
-                                       aria-expanded="false">Tender</a></li>
-                            </ul>
-
-                            <div class="tab-content">
-                                <div class="loader-spinner hidden"></div>
-                                <div class="tender-chart-container" :class="{hidden: activeTab !== 'chart'}"
-                                     @click="viewTendersChart()">
-                                    <div class="tag-list">
-                                        <div class="item-tag" v-for="tag in productTags" :class="{hidden: isHideOthersTag && tag.id === 'empty'}">
-                                            <input type="checkbox" id="checkbox"  v-bind:value="tag" v-model="selectedTags">
-                                            <label :style="{color: tag.color}">{{tag.name}}</label>
-                                        </div>
-                                    </div>
-                                    <div class="tender-chart" id="tender-charts"></div>
-                                </div>
-
-                                <div :class="{hidden: activeTab !== 'tender'}">
-                                    <tender-list-partial
-                                            :initalParams="tenderListParams"
-                                    ></tender-list-partial>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-md-12 tender-query">
+            <div class="col-md-4 tender-search">
+                <input
+                        class="tender-search-input"
+                        v-model="appliedFilters.tendersSearchInput"
+                        @keyup="makeTendersSearch()"
+                        placeholder="Search tenders">
+            </div>
+            <div class="col-md-4 filter-cost-tender">
+                <div class="col-md-6 min-value">
+                    <input class="min-value-input" v-model="tendersCost.value[0]">
                 </div>
+                <div class="slider-dash">-</div>
+
+                <div class="col-md-6 max-value">
+                    <input class="max-value-input" v-model="tendersCost.value[1]">
+                </div>
+                <div class="col-md-12 min-max">
+                    <vue-slider ref="sortCost"
+                                v-bind="tendersCost"
+                                v-model="tendersCost.value"
+                                :show="showTenderCost"
+                    >
+                    </vue-slider>
+                </div>
+                <p class="tender-slider-amount-title">Tender Amount</p>
+                <p class="slider-currency-k">(K rubels)</p>
+            </div>
+            <div class="col-md-4 filter-tag-query-tender">
+                <div class="col-md-6">
+                    <multiple-dropdown-select
+                            class="form-control select-filter tags-filter"
+                            :name="'Tags'"
+                            :options="tagOptionsForDropDown"
+                            @changed="applyTagsFilter"
+                            ref="tagMultipleDropdownSelect"
+                    ></multiple-dropdown-select>
+                </div>
+                <div class="col-md-6">
+                    <single-dropdown-select
+                            class="form-control select-filter tags-filter"
+                            :options="sortByOptionsForFilter"
+                            :isHiddenEmptyOption="true"
+                            @changed="applySortFilter"
+                            :name="'Sort By'"
+                            ref="sortBySingleDropdownSelect"
+                    ></single-dropdown-select>
+                </div>
+            </div>
+            <div class="col-md-1 export-excel">
+                <download-excel
+                        class="export-to-excel"
+                        :data="tendersExport.json_data"
+                        :fields="tendersExport.json_fields"
+                        name="tenders.xls"
+                >
+                    <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)"
+                       title="Export to excel"></i>
+                </download-excel>
+                <download-excel
+                        class="export-to-csv"
+                        :data="tendersExport.json_data"
+                        :fields="tendersExport.json_fields"
+                        type="csv"
+                        name="tenders.csv"
+                >
+                    <img @click="exportToExcel(productId)" src="/images/csv.png"
+                         title="Export to csv">
+                </download-excel>
+            </div>
+        </div>
+        <div class="col-md-12 tender-data">
+            <ul class="col-md-12 tenders-list">
+                <li v-for="(tender, i) in tendersList">
+                    <div class="item">
+                        <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
+                            {{tender.tender_date ? tender.tender_date : 'Not date'}} -
+                            {{tender.purchase_name | tendername(55)}}</h3>
+                        <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) |
+                            currency('Rub') }}
+                        </div>
+
+                        <ul class="tag-list">
+                            <li v-if="tender.tag_name"><a href="javascript:void(0)"
+                                                          class="tags">{{tender.tag_name}}</a>
+                            </li>
+
+                            <!-- TODO remove this hardcoded section -->
+                            <li v-if="productId == 12 && currentAddress.id == 2830"><a href="javascript:void(0)"
+                                                                                       class="tags">Test</a>
+                            </li>
+                        </ul>
+
+                        <p class="tender-winner" v-if="tender.suppliers_data[0]">
+                            Winner {{tender.suppliers_data[0][0]}}
+                            {{tender.suppliers_data[0][1] | currency('Rub') }}
+                            <span v-if="tender.suppliers_data.length > 1" class="tender-winner pointer" v-ctk-tooltip="supplier(tender.suppliers_data)">
+                                                       + {{(tender.suppliers_data.length - 1)}} more winners
+                                                        </span>
+                            <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
+                        </p>
+                        <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
+                    </div>
+                </li>
+            </ul>
+            <div class="col-md-12 pagination-box">
+                <pagination :records="tendersTotal" ref="paginationDirective"
+                            :class="'pagination pagination-sm no-margin pull-right'"
+                            :per-page="10" @paginate="pageChanged"></pagination>
             </div>
         </div>
     </div>
@@ -103,19 +122,13 @@
     import vueSlider from 'vue-slider-component';
 
 
-    const othersTag = {
-        id: 'empty',
-        color: '#666666',
-        name: 'Others',
-    };
 
     export default {
+
         mixins: [http, getProductName, ProductModal],
+
         data: function () {
             return {
-
-                tenderListParams: {},
-
                 tendersCost: {
                     value: [],
                     min: 0,
@@ -248,16 +261,15 @@
             }
         },
 
-        created: function () {
-
-            this.loadTagsFilter();
-        },
-
-        components: {
-            vueSlider
-        },
-
         watch: {
+
+            initalParams: {handler: function(data) {
+                    this.init(data.addressId, data.purchaseId, data.address);
+                    this.activeTab = 'chart';
+                    this.tendersCost.value = [];
+                },
+                deep: true
+            },
 
             selectedTags(tagVal) {
 
@@ -296,10 +308,26 @@
                 }
             },
 
+            tendersCost: {
+                handler: function () {
+
+                    this.filterCost();
+
+                },
+                deep: true
+            },
 
             $route: function (to) {
 
+                if ($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
 
+
+                    this.initFilters();
+
+                    this.composeQueryUrl();
+
+                    this.$refs.paginationDirective.setPage(1);
+                }
 
             },
 
@@ -312,17 +340,52 @@
 
         methods: {
             init: function (addressId, productId, address) {
-                $('#product-modal').modal('show');
 
+                this.showLoader();
+                this.graphLoadedModal = false;
+                this.spending_cost = null;
+                this.actual_year_cost = null;
                 this.addressId = addressId;
                 this.productId = productId;
                 this.currentAddress = address;
 
-                this.getTendersByProduct(this.productId);
+                let url = '/api/product-by-id/' + productId;
+                this.httpGet(url)
+                    .then(data => {
+                        this.productsData = data;
+                        this.hideLoader();
+                        this.getTendersByProduct(this.productId);
+                    });
 
             },
 
+            supplier: function (value) {
 
+                if(value.length > 1) {
+
+                    var supplier = '';
+
+                    value.forEach((suppliers, i) => {
+
+                        if(i != 0) {
+
+                            supplier += suppliers[0] + ' of most money ' + suppliers[1];
+
+                            if (i >= 3) {
+
+                                return supplier;
+
+                            }
+                        }
+
+                    });
+
+                    return supplier;
+
+                }
+
+                return '';
+            },
 
             getTendersByProduct: function (product_id) {
                 this.showLoader();
@@ -347,8 +410,7 @@
                                     }
                                 }
                             });
-                            this.productTags.push(othersTag);
-                            this.selectedTags.push(othersTag);
+
                         }
 
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000)+1;
@@ -373,6 +435,45 @@
                 } else {
                     this.showTenderCost = false;
                 }
+            },
+
+            getTendersPaginate: function (product_id) {
+
+                this.showLoader();
+
+                let url = '/api/tenders-by-product-and-address-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
+
+                this.httpGet(url)
+                    .then(data => {
+                        this.hideLoader();
+                        this.tendersTotal = data.total;
+                        this.tendersList = data.data;
+                    });
+
+            },
+
+            applyFilters: function (isOnlySortingChanged) {
+
+                this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
+
+                this.composeQueryUrl();
+
+                this.$refs.paginationDirective.setPage(1);
+            },
+
+            applyTagsFilter: function (data) {
+                this.appliedFilters.tags = data;
+                this.applyFilters(true);
+            },
+
+            applySortFilter: function (data) {
+                this.appliedFilters.sortBy = data;
+                this.applyFilters(true);
+            },
+
+            pageChanged: function (pageNumber) {
+                this.pagination.currentPage = pageNumber;
+                this.getTendersPaginate(this.productId);
             },
 
             composeQueryUrl: function () {
@@ -408,6 +509,19 @@
                 return queryStr;
             },
 
+            initFilters: function () {
+
+                this.appliedFilters.tags = this.$route.query['tag-tenders[]'] || [];
+
+                if (typeof this.appliedFilters.tags === 'string') {
+                    this.appliedFilters.tags = [this.appliedFilters.tags];
+                }
+
+                this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
+                this.appliedFilters.tendersSearchInput = this.$route.query['tenders-search'] || '';
+
+            },
+
             makeTendersSearch: function () {
                 if (this.timeOutId) {
                     clearTimeout(this.timeOutId)
@@ -433,6 +547,20 @@
                 }, 1000)
             },
 
+            filterCost: function () {
+
+                if (this.timeOutId) {
+                    clearTimeout(this.timeOutId)
+                }
+
+                this.timeOutId = setTimeout(() => {
+                    this.appliedFilters.sortCost[0] = this.tendersCost.value[0];
+                    this.appliedFilters.sortCost[1] = this.tendersCost.value[1];
+                    this.applyFilters(true);
+                }, 1000)
+
+            },
+
             loadTagsFilter: function () {
                 return this.httpGet('/api/product-load-tags')
                     .then(data => {
@@ -440,6 +568,16 @@
                         this.tag_list = data;
 
                     })
+            },
+
+            exportToExcel: function (product_id) {
+                this.showLoader();
+                let url = '/api/tenders-by-product-and-address-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
+                this.httpGet(url)
+                    .then(data => {
+                        this.hideLoader();
+                        this.tendersExport.json_data = data;
+                    });
             },
 
             checkIfNoSpentOnOthers: function(chartData)
@@ -582,18 +720,20 @@
 
         },
 
-        mounted: function () {
-            this.$eventGlobal.$on('showModalProductDetails', (data) => {
+        props: ['initalParams'],
 
-                this.tenderListParams = data;
+        mounted: function() {
 
-                this.init(data.addressId, data.purchaseId, data.address);
-                this.activeTab = 'chart';
-                this.tendersCost.value = [];
-            });
+        },
 
-            this.loadGoogleChart();
-        }
+        created: function () {
+
+            this.loadTagsFilter();
+        },
+
+        components: {
+            vueSlider
+        },
     }
 </script>
 
