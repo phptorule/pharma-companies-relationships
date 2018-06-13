@@ -69,6 +69,7 @@
                 this.httpPost('/api/login', data)
                     .then(data => {
                         if(!data.success || !data.data) {
+                            console.log(data);
                             return;
                         }
 

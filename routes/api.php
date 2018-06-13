@@ -33,6 +33,16 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/logged-user', 'UserController@showLoggedUserData')->name('user.showLoggedUserData');
 
+    Route::post('/user/update-profile-picture', 'UserController@updateProfilePicture');
+
+    Route::post('/user/remove-avatar', 'UserController@removeAvatar');
+
+    Route::put('/user/update-profile-settings', 'UserController@updateProfileSettings');
+
+    Route::post('/user/change-password', 'UserController@changePassword');
+
+    Route::post('/user/logout', 'AuthController@logout');
+
     Route::get('/addresses', 'AddressesController@index')->name('address.index');
 
     Route::get('/addresses-paginated', 'AddressesController@loadAddressesPaginated')->name('address.loadAddressesPaginated');

@@ -40,26 +40,37 @@
             </div>
 
             <div class="profile-avatar-block">
-                <div class="avatar-image-block">
+                <div class="avatar-image-block" v-if="isUserLoaded && user.avatar">
                     <router-link to="/user/edit-profile" class="avatar-link">
                         <img class="avatar-image" 
-                            src="/images/anonimus-person_100x100.png" alt=""
+                            :src="user.avatar" alt=""
                         >
                     </router-link>
                 </div>
             </div>
+
+            <!-- <div>
+                <a href="#" @click.prevent="logout">Logout</a>
+            </div> -->
 
         </nav>
     </header>
 </template>
 
 <script>
+
+    import http from '../../mixins/http.js';
+    import AuthService from '../../services/auth-service.js';
+
     export default {
+        mixins: [http],
+
         data: function () {
             return {
                 user: {},
                 globalSearchInput: this.$route.query['global-search'],
-                timeOutId: null
+                timeOutId: null,
+                isUserLoaded: false
             }
         },
         methods: {
@@ -86,6 +97,32 @@
                     }
 
                 },1000)
+            },
+            getUser: function () {
+                let url = '/api/logged-user';
+                
+                this.httpGet(url)
+                    .then(data => {
+                        this.user = data.data;
+                        this.isUserLoaded = true;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            logout: function () {
+                let url = '/api/user/logout';
+                console.log(localStorage.getItem('auth-token'));
+                this.httpPost(url, {
+                    token: localStorage.getItem('auth-token')
+                })
+                    .then(data => {
+                        console.log(data);
+                        this.$eventGlobal.$emit('userLogout');
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
             }
         },
 
@@ -93,8 +130,13 @@
 
         },
         mounted: function () {
+            this.getUser();
             this.$eventGlobal.$on('resetedAllFilters', () => {
                 this.globalSearchInput = '';
+            });
+
+            this.$eventGlobal.$on('userProfileUpdated', (user) => {
+                this.user = user;
             })
         }
     }
@@ -109,10 +151,23 @@
 .avatar-link {
     border-radius: 50%;
     background: transparent;
+    /* border: 2px solid white; */
+    /* min-width: 50px; */
+    width: 50px;
+    min-width: 50px;
+    height: 50px;
 }
 
 .avatar-link:hover {
-    background-color: #2b579c;
+    /* background-color: #2b579c; */
+    background-color: cornflowerblue;
+}
+
+.avatar-link img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
 }
 
 .avatar-image-block {
