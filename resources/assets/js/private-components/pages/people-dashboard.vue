@@ -50,16 +50,16 @@
                     Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
                 </div>
 
-                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
-                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
-                        <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
+                <ul class="sidebar-list people-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
+                    <li v-for="(person, i) in people" @mouseover="setAddressMouseOverListener(person)" class="sidebar-list-item">
+                        <div class="item">
 
-                            <div class="item-image" v-show="address.people_count > 0">
+                            <div class="item-image">
                                 <div class="main-image">
-                                    <a href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : ''))" >
+                                    <a href="javascript:void(0)">
                                         <div class="box-p">
-                                            <span class="people-count" v-if="address.people_count">
-                                                See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}
+                                            <span class="people-count person-initials">
+                                                {{getPersonInitials(person.name)}}
                                             </span>
 
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
@@ -71,36 +71,28 @@
                             </div>
 
                             <h3>
-                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id)">
-                                    {{ address.name }}
+                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+person.id)">
+                                    {{ person.name }}
                                 </a>
 
-                                <span class="oval"></span>
                             </h3>
 
-                            <p class="address">{{ address.address }}</p>
+                            <p class="address">Type: {{ personType(person.type_id) }}</p>
 
-                            <p class="lab-chain-p" v-if="address.cluster">Lab Chain: <strong>{{address.cluster.name}}</strong></p>
+                            <p class="address">Role: <strong>{{ person.role }}</strong></p>
 
-                            <ul class="tag-list" v-if="address.tags && address.tags.length">
-                                <li v-for="tag in address.tags">
-                                    <a href="#" @click.prevent>{{tag.name}}</a>
-                                </li>
-                            </ul>
+                            <p class="address">
+                                {{ person.addresses.length ? person.addresses[0].address : 0 }}
 
-                            <div class="info-block" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
-                                <div class="lightening-icon">
-                                    <img src="/images/blue-lightening.png" alt="">
-                                </div>
+                                <span v-if="person.addresses.length > 1">
+                                    <br>
+                                    <a href="javascript:void(0)" class="person-more-companies">+ {{person.addresses.length - 1}} more
+                                        <span v-if="person.addresses.length - 1 === 1">company</span>
+                                        <span v-if="person.addresses.length - 1 > 1">companies</span>
+                                    </a>
+                                </span>
+                            </p>
 
-                                <div class="news-label">
-                                    New employer <a href="#" @click.prevent class="news-link without-handler">Jina James</a> joined the lab
-                                </div>
-
-                                <a href="#" @click.prevent class="news-link more-news-link without-handler">
-                                    +3 more news
-                                </a>
-                            </div>
 
                         </div>
                     </li>
@@ -121,14 +113,18 @@
 
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
+    import getPersonInitials from '../../mixins/get-person-initials';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers],
+        mixins: [http,addressHelpers, getPersonInitials],
 
         data: function () {
             return {
+                people: [{
+                    addresses: []
+                }],
                 isFirstLoad: true,
                 user: {},
                 addressList: [],
@@ -215,6 +211,7 @@
                 })
             }
         },
+
 
         methods: {
 
@@ -308,6 +305,7 @@
                 this.httpGet(url)
                     .then(data => {
                         console.log('people', data);
+                        this.people = data.data;
                     })
 
 
@@ -449,7 +447,13 @@
                 if(localStorage.getItem('previous-dashboard')){
                     localStorage.removeItem('previous-dashboard');
                 }
-            }
+            },
+
+            personType: function (typeId) {
+                let type = this.filterObject.person_types.find(el => el.id == typeId);
+
+                return type? type.name : '';
+            },
         },
 
         mounted: function () {

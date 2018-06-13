@@ -900,6 +900,10 @@ ul.sidebar-list li:first-child .item{
     padding-top: 0px;
 }
 
+ul.sidebar-list.people-list li .item{
+    min-height: 150px;
+}
+
 ul.sidebar-list li h3{
     display: flex;
     align-items: center;
@@ -2523,6 +2527,11 @@ ul.staff-list li .personal-info .name a:hover{
     top: calc(50% - 20px);
 }
 
+.sidebar-list .item-image .main-image .box-p span.people-count.person-initials{
+    font-size: 29px;
+    top: calc(50% - 22px);
+}
+
 .modal-open .main-header,
 .modal-open .main-sidebar,
 .modal-open #map-element,
@@ -2682,4 +2691,12 @@ ul.staff-with-publication-list .box-body h4{
 
 .skin-blue .sidebar-form .person-role-filter-box + .select-filter{
     margin-left: 4px;
+}
+
+.skin-blue .sidebar a.person-more-companies{
+    color: #4a90e2;
+}
+
+.skin-blue .sidebar a.person-more-companies:hover{
+    text-decoration: underline;
 }
