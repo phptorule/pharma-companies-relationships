@@ -13,7 +13,7 @@
 
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
-                                    :options="personTypes"
+                                    :options="personTypesForFilter"
                                     :selected="appliedFilters.personTypes"
                                     @changed="applyPersonTypeFilter"
                                     :name="'Person Type'"
@@ -47,7 +47,9 @@
             <div class="sidebar-list-box">
 
                 <div class="found-result-statistics">
-                    Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
+                    Found {{peopleTotal}}
+                    <span v-if="peopleTotal == 1">person</span>
+                    <span v-if="peopleTotal != 1">people</span>.
                 </div>
 
                 <ul class="sidebar-list people-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
@@ -146,7 +148,7 @@
                     isOnlySortingChanged: false,
                     globalSearch: this.$route.query['global-search'] || '',
                     addressIds: this.$route.query['address-ids'] || '',
-                    personTypes: this.$route.query['person-type'] || ''
+                    personTypes: this.$route.query['person-type-id'] || ''
                 },
                 pagination: {
                     currentPage: 1
@@ -173,9 +175,6 @@
                 }
 
                 this.$refs.paginationDirective.setPage(1);
-
-
-
             }
         },
 
@@ -194,7 +193,7 @@
                 })
             },
 
-            personTypes: function() {
+            personTypesForFilter: function() {
                 return this.filterObject.person_types.map(el => {
                     return {label: el.name, value: el.id};
                 })
@@ -225,7 +224,7 @@
 
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
                 this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
-                this.appliedFilters.personTypes = this.$route.query['person-type'] || '';
+                this.appliedFilters.personTypes = this.$route.query['person-type-id'] || '';
 
             },
 
@@ -271,12 +270,13 @@
 
                 this.httpGet(url)
                     .then(data => {
-                        console.log('people', data);
                         this.people = data.data;
                         this.peopleTotal = data.total;
+
+                        this.oldQueryUrl = this.queryUrl;
+
+                        this.people.forEach(p => this.unifyAddressesWithDuplicatedNames(p.addresses));
                     })
-
-
             },
 
             loadAddressesPaginated: function () {
@@ -432,10 +432,10 @@
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 
-            this.loadAddressesPaginated()
-                .then((data) => {
-                    this.scrollToSidebarListItem();
-                });
+            // this.loadAddressesPaginated()
+            //     .then((data) => {
+            //         this.scrollToSidebarListItem();
+            //     });
 
             this.loadPersonsPaginated();
 

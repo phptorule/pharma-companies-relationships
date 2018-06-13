@@ -169,9 +169,21 @@ class PeopleController extends Controller
 
     function getPeoplePaginated() {
 
-        $people = People::with('addresses')
-            ->paginate(20);
+        $query = People::with('addresses');
+
+        $query = $this->composeConditions($query, request()->all());
+
+        $people = $query->paginate(20);
 
         return response()->json($people);
+    }
+
+
+    function composeConditions($query, $params) {
+        if (isset($params['person-type-id'])) {
+            $query->where('type_id', $params['person-type-id']);
+        }
+
+        return $query;
     }
 }
