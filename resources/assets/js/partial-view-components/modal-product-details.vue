@@ -178,7 +178,7 @@
                                                         </span>
                                                         <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
-                                                    <p v-else class="tender-winner">Winner unkown</p>
+                                                    <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
                                                 </div>
                                             </li>
                                         </ul>
