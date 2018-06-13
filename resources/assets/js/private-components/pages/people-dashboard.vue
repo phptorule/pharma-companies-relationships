@@ -15,7 +15,7 @@
                                     class="form-control select-filter type-filter"
                                     :options="personTypes"
                                     :selected="appliedFilters.personTypes"
-                                    @changed="applyTypeFilter"
+                                    @changed="applyPersonTypeFilter"
                                     :name="'Person Type'"
                                     ref="personTypeSingleDropdownSelect"
                             ></single-dropdown-select>
@@ -223,37 +223,14 @@
 
             initFilters: function () {
 
-                this.appliedFilters.usedProducts = this.$route.query['used-product-ids[]'] || [];
-
-                if(typeof this.appliedFilters.usedProducts === 'string') {
-                    this.appliedFilters.usedProducts = [this.appliedFilters.usedProducts ];
-                }
-
-                this.appliedFilters.tags = this.$route.query['tag-ids[]'] || [];
-
-                if(typeof this.appliedFilters.tags === 'string') {
-                    this.appliedFilters.tags = [this.appliedFilters.tags ];
-                }
-
-                this.appliedFilters.type =  this.$route.query['type-id'] || '';
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
                 this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
-                this.appliedFilters.addressIds = this.$route.query['address-ids'] || '';
+                this.appliedFilters.personTypes = this.$route.query['person-type'] || '';
 
             },
 
-            applyTypeFilter: function (data) {
-                this.appliedFilters.type = data;
-                this.applyFilters();
-            },
-
-            applyUsedProductsFilter: function (data) {
-                this.appliedFilters.usedProducts = data;
-                this.applyFilters();
-            },
-
-            applyTagsFilter: function (data) {
-                this.appliedFilters.tags = data;
+            applyPersonTypeFilter: function (data) {
+                this.appliedFilters.personTypes = data;
                 this.applyFilters();
             },
 
@@ -271,28 +248,12 @@
             composeQueryUrl: function () {
                 let queryStr = '';
 
-                if (this.appliedFilters.type) {
-                    queryStr += '&type-id=' + this.appliedFilters.type;
+                if (this.appliedFilters.personTypes) {
+                    queryStr += '&person-type-id=' + this.appliedFilters.personTypes;
                 }
 
                 if (this.appliedFilters.globalSearch) {
                     queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                }
-
-                if (this.appliedFilters.usedProducts.length) {
-                    this.appliedFilters.usedProducts.forEach(id => {
-                        queryStr += '&used-product-ids[]=' + id;
-                    });
-                }
-
-                if (this.appliedFilters.tags.length) {
-                    this.appliedFilters.tags.forEach(id => {
-                        queryStr += '&tag-ids[]=' + id;
-                    });
-                }
-
-                if(this.$route.query['address-ids']){
-                    queryStr += '&address-ids=' + this.$route.query['address-ids'];
                 }
 
                 if (this.appliedFilters.sortBy) {
@@ -378,7 +339,6 @@
 
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
-                this.loadAddressesPaginated();
                 this.loadPersonsPaginated()
             },
 
@@ -396,7 +356,7 @@
 
                 this.composeQueryUrl();
 
-                this.$router.push('/dashboard?'+this.queryUrl);
+                this.$router.push('/people-dashboard?'+this.queryUrl);
             },
 
             resetFilters: function () {
