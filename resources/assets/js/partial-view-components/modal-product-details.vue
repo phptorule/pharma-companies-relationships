@@ -168,6 +168,11 @@
                                                         <li v-if="tender.tag_name"><a href="javascript:void(0)"
                                                                                       class="tags">{{tender.tag_name}}</a>
                                                         </li>
+
+                                                        <!-- TODO remove this hardcoded section -->
+                                                        <li v-if="productId == 12 && currentAddress.id == 2830"><a href="javascript:void(0)"
+                                                                                      class="tags">Test</a>
+                                                        </li>
                                                     </ul>
 
                                                     <p class="tender-winner" v-if="tender.suppliers_data[0]">
@@ -178,7 +183,7 @@
                                                         </span>
                                                         <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                     </p>
-                                                    <p v-else class="tender-winner">Winner unkown</p>
+                                                    <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
                                                 </div>
                                             </li>
                                         </ul>

@@ -127,6 +127,11 @@
                                                                     {{tender.tag_name}}
                                                                 </a>
                                                             </li>
+
+                                                            <!-- TODO remove this hardcoded section -->
+                                                            <li v-if="tender.tender_id == 46796"><a href="javascript:void(0)"
+                                                                                                                       class="tags">Test</a>
+                                                            </li>
                                                         </ul>
 
                                                         <p class="tender-winner" v-if="tender.suppliers_data[0]">
@@ -134,10 +139,11 @@
                                                             {{tender.suppliers_data[0][1] | currency('Rub') }}
                                                             <span v-if="tender.suppliers_data.length > 1" class="tender-winner pointer" v-ctk-tooltip="supplier(tender.suppliers_data)">
                                                        + {{(tender.suppliers_data.length - 1)}} more winners
+                                                                <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                                                         </span>
-                                                            <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
+
                                                         </p>
-                                                        <p v-else class="tender-winner">Winner unkown</p>
+                                                        <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
                                                     </div>
                                                 </li>
                                             </ul>
