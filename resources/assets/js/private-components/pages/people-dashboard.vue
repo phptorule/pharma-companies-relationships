@@ -99,7 +99,12 @@
                 </ul>
 
                 <div class="pagination-box">
-                    <pagination :records="addressesTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="20" @paginate="pageChanged"></pagination>
+                    <pagination
+                            :records="peopleTotal"
+                            ref="paginationDirective"
+                            :class="'pagination pagination-sm no-margin pull-right'"
+                            :per-page="20"
+                            @paginate="pageChanged"></pagination>
                 </div>
 
             </div>
@@ -129,6 +134,7 @@
                 user: {},
                 addressList: [],
                 addressesTotal: 0,
+                peopleTotal: 0,
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
@@ -306,6 +312,7 @@
                     .then(data => {
                         console.log('people', data);
                         this.people = data.data;
+                        this.peopleTotal = data.total;
                     })
 
 
@@ -372,6 +379,7 @@
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
                 this.loadAddressesPaginated();
+                this.loadPersonsPaginated()
             },
 
             loadFilterObject: function() {
