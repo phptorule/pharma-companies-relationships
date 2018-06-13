@@ -56,6 +56,7 @@ class AddressesController extends Controller
             ->withCount('people')
             ->with(['products' => function($q){
                 $q->select('id');
+                $q->orderByRaw('company, name');
             }]);
 
         $query = $this->composeConditions($query, request()->all());
@@ -116,7 +117,7 @@ class AddressesController extends Controller
     function loadFilterValues()
     {
         $tags = Tag::get(['id', 'name']);
-        $products = Product::all();
+        $products = Product::orderByRaw('company, name')->get();
         $customerTypes = CustomerType::visible()->get();
 
         $filters = [
@@ -273,6 +274,7 @@ class AddressesController extends Controller
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
+            ->orderByRaw('company, name')
             ->paginate(10);
 
         return response()->json($products);

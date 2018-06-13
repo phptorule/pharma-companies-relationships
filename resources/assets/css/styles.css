@@ -641,16 +641,17 @@ ul.select-filter > li > a .caret {
 
 ul.select-filter > li > ul.dropdown-menu{
     max-height: 500px;
-    overflow-y: auto;
+    overflow: auto;
     box-shadow: 5px 5px 20px rgba(0,0,0,.2);
     padding: 15px 0px;
     margin-top: 10px;
     border-radius: 5px;
+    max-width: 455px;
 }
 
 ul.select-filter > li > ul > li{
     white-space: nowrap;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-overflow: ellipsis;
     padding-left: 20px;
     padding-right: 20px;
@@ -684,12 +685,12 @@ ul.select-filter > li > ul > li.selected .grey-checkbox span.remember_text{
 ul.select-filter > li > ul > li .grey-checkbox span.remember_text{
     font-weight: 500;
     float: none;
-
     font-family: Montserrat;
     font-size: 14px;
     letter-spacing: 0.5px;
-
     color: #3a444f;
+    white-space: normal;
+    width: 440px;
 }
 
 ul.select-filter > li > ul > li:hover .grey-checkbox span.remember_text{

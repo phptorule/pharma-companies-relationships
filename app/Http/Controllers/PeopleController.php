@@ -132,8 +132,28 @@ class PeopleController extends Controller
         $person->name = request('name');
         $person->description = request('description');
         $person->role = request('role');
+        $person->linkedin_url = request('linkedin_url');
+        $person->twitter = request('twitter');
+        $person->facebook = request('facebook');
+        $person->instagram = request('instagram');
+        $person->telegram = request('telegram');
         if (trim($person->role) == '') {
             $person->role = null;
+        }
+        if (trim($person->linkedin_url) == '') {
+            $person->linkedin_url = null;
+        }
+        if (trim($person->twitter) == '') {
+            $person->twitter = null;
+        }
+        if (trim($person->facebook) == '') {
+            $person->facebook = null;
+        }
+        if (trim($person->instagram) == '') {
+            $person->instagram = null;
+        }
+        if (trim($person->telegram) == '') {
+            $person->telegram = null;
         }
         $person->save();
         return response()->json($person);

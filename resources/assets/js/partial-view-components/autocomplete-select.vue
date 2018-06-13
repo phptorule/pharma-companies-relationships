@@ -11,9 +11,16 @@
                     <span class="checkmark"></span>
                 </label>
             </div>
-            <div class="text-right">
-                <button type="button" @click="closeSelf" class="btn cancel-address-btn">Cancel</button>
-                <a href="javascript:void(0)" class="button" @click="addItem">Add</a>
+            <div class="confirm-block">
+                <div class="left-block">
+                    <a href="#" class="add-link" @click.prevent>
+                        <span class="plus">+</span> Create new labchain
+                    </a>
+                </div>
+                <div class="right-block">
+                    <button type="button" @click="closeSelf" class="btn cancel-address-btn">Cancel</button>
+                    <a href="javascript:void(0)" class="button" @click="addItem">Add</a>
+                </div>
             </div>
         </div>
     </div>
@@ -178,5 +185,28 @@
 
     .selects::-webkit-scrollbar-thumb:hover {
         background: #555; 
+    }
+
+    .confirm-block .left-block {
+        float: left;
+        margin-top: 5px;
+    }
+    
+    .confirm-block .right-block {
+        float: right;
+    }
+
+    .confirm-block .left-block .add-link {
+        color: #4a90e3;;
+        position: relative;
+        margin-left: 22px;
+        transition: none;
+    }
+
+    .plus {
+        font-size: 35px;
+        position: absolute;
+        top: -16px;
+        left: -23px;
     }
 </style>
