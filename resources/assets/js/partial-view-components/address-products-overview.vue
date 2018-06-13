@@ -119,6 +119,12 @@
             }
         },
 
+        watch: {
+            addressId: function(newAddressId) {
+                this.loadProductsDetails();
+            }
+        },
+
         filters: {
             currency: function (value, currency_type) {
                 if (!currency_type) {
