@@ -2659,3 +2659,23 @@ ul.staff-with-publication-list .box-body h4{
     background: #eaeff4;
     color: #3e7fdf;
 }
+
+.skin-blue .sidebar-form .person-role-filter-box {
+    float: left;
+    margin-left: 4px;
+    width: calc(71% - 4px);
+}
+
+.skin-blue .sidebar-form .person-role-filter-box input{
+    color: #555555;
+    background: #fff;
+    border: 1px solid #d2d6de;
+    padding: 10px;
+    border-radius: 6px;
+    line-height: 41px;
+    height: 41px;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    width: 100%;
+}

@@ -16,37 +16,13 @@
                                     :options="customerTypesForFilter"
                                     :selected="appliedFilters.type"
                                     @changed="applyTypeFilter"
-                                    :name="'Type'"
+                                    :name="'Person Type'"
                                     ref="typeSingleDropdownSelect"
                             ></single-dropdown-select>
 
-                            <multiple-dropdown-select
-                                    class="form-control select-filter used-products-filter"
-                                    :name="'Used Products'"
-                                    :options="usedProductOptionsForDropDown"
-                                    :selected="appliedFilters.usedProducts"
-                                    @changed="applyUsedProductsFilter"
-                                    ref="productsMultipleDropdownSelect"
-                            ></multiple-dropdown-select>
-
-                            <multiple-dropdown-select
-                                    class="form-control select-filter tags-filter"
-                                    :name="'Tags'"
-                                    :options="tagOptionsForDropDown"
-                                    :selected="appliedFilters.tags"
-                                    @changed="applyTagsFilter"
-                                    ref="tagMultipleDropdownSelect"
-                            ></multiple-dropdown-select>
-
-                            <single-dropdown-select
-                                    class="form-control select-filter type-filter"
-                                    :options="sortByOptionsForFilter"
-                                    :selected="appliedFilters.sortBy"
-                                    :isHiddenEmptyOption="true"
-                                    @changed="applySortByFilter"
-                                    :name="'Sort By'"
-                                    ref="sortBySingleDropdownSelect"
-                            ></single-dropdown-select>
+                            <div class="person-role-filter-box">
+                                <input type="text" placeholder="Person Role...">
+                            </div>
 
                             <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
                                 <i class="fa fa-remove"></i>
@@ -94,7 +70,6 @@
 
                             <div class="item-image" v-show="address.people_count > 0">
                                 <div class="main-image">
-                                    <!--<router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')" >-->
                                     <a href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : ''))" >
                                         <div class="box-p">
                                             <span class="people-count" v-if="address.people_count">
@@ -104,16 +79,12 @@
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
                                         </div>
                                     </a>
-                                    <!--</router-link>-->
                                 </div>
                                 <div class="circle-1"></div>
                                 <div class="circle-2"></div>
                             </div>
 
                             <h3>
-                                <!--<router-link :to="'/address-details/'+address.id">
-                                    {{ address.name }}
-                                </router-link>-->
                                 <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id)">
                                     {{ address.name }}
                                 </a>
