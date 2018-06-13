@@ -42,10 +42,10 @@ class SetAppMinorVersion extends Command
 
         $number = exec('git rev-list --count master');
 
-        if($currentVersion->minor != $number) {
+        if(!$currentVersion || $currentVersion->minor != $number) {
             AppVersion::create([
-                'main' => $currentVersion->main,
-                'major' => $currentVersion->major,
+                'main' => !$currentVersion ? 1 : $currentVersion->main,
+                'major' => !$currentVersion ? 0 : $currentVersion->major,
                 'minor' => $number
             ]);
         }
