@@ -13,16 +13,26 @@
 
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
-                                    :options="customerTypesForFilter"
-                                    :selected="appliedFilters.type"
+                                    :options="personTypes"
+                                    :selected="appliedFilters.personTypes"
                                     @changed="applyTypeFilter"
                                     :name="'Person Type'"
-                                    ref="typeSingleDropdownSelect"
+                                    ref="personTypeSingleDropdownSelect"
                             ></single-dropdown-select>
 
                             <div class="person-role-filter-box">
                                 <input type="text" placeholder="Person Role...">
                             </div>
+
+                            <single-dropdown-select
+                                    class="form-control select-filter type-filter"
+                                    :options="sortByOptionsForFilter"
+                                    :selected="appliedFilters.sortBy"
+                                    :isHiddenEmptyOption="true"
+                                    @changed="applySortByFilter"
+                                    :name="'Sort By'"
+                                    ref="sortBySingleDropdownSelect"
+                            ></single-dropdown-select>
 
                             <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
                                 <i class="fa fa-remove"></i>
@@ -31,30 +41,6 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group margin-bottom-0">
-                            <ul class="tab-filter">
-                                <li>
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = ''; applyFilters()" :class="{'active': appliedFilters.type == ''}">
-                                        All Labs</a>
-                                </li>
-                                <li class="my-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 2; applyFilters()" :class="{'active': appliedFilters.type == 2}">
-                                        <span class="oval"></span>
-                                        My customers
-                                    </a>
-                                </li>
-                                <li class="potential-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 1; applyFilters()" :class="{'active': appliedFilters.type == 1}">
-                                        <span class="oval"></span>
-                                        Potential Customers
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- /.search form -->
 
@@ -150,16 +136,15 @@
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
-                    customer_types: []
+                    customer_types: [],
+                    person_types: []
                 },
                 appliedFilters: {
-                    usedProducts: this.$route.query['used-product-ids[]'] || [],
-                    tags: this.$route.query['tag-ids[]'] || [],
-                    type:  this.$route.query['type-id'] || '',
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
                     globalSearch: this.$route.query['global-search'] || '',
-                    addressIds: this.$route.query['address-ids'] || ''
+                    addressIds: this.$route.query['address-ids'] || '',
+                    personTypes: this.$route.query['person-type'] || ''
                 },
                 pagination: {
                     currentPage: 1
@@ -198,15 +183,17 @@
                 return [
                     {value: 'name-asc', label: 'Name &uarr;'},
                     {value: 'name-desc', label: 'Name &darr;'},
-                    {value: 'people-asc', label: 'Employee &uarr;'},
-                    {value: 'people-desc', label: 'Employee &darr;'},
-                    {value: 'products-asc', label: 'Products &uarr;'},
-                    {value: 'products-desc', label: 'Products &darr;'},
                 ]
             },
 
             customerTypesForFilter: function () {
                 return this.filterObject.customer_types.map(el => {
+                    return {label: el.name, value: el.id};
+                })
+            },
+
+            personTypes: function() {
+                return this.filterObject.person_types.map(el => {
                     return {label: el.name, value: el.id};
                 })
             },
@@ -227,32 +214,6 @@
                     }
                 })
             }
-        },
-
-        created: function () {
-
-            this.initFilters();
-
-            this.composeQueryUrl();
-
-            this.loadFilterObject();
-        },
-
-        mounted: function () {
-
-            document.title = 'Labscape';
-
-            $('ul.sidebar-list').height(window.innerHeight - 359);
-
-            this.listenToTotalPointsDisplayedOnMapChanged();
-
-            this.loadAddressesPaginated()
-                .then((data) => {
-                    this.scrollToSidebarListItem();
-                });
-
-            this.checkLocalStoragePreviousDashboard();
-
         },
 
         methods: {
@@ -340,6 +301,18 @@
                 return queryStr;
             },
 
+            loadPersonsPaginated: function() {
+
+                let url = '/api/people-paginated?page=' + this.pagination.currentPage + this.queryUrl;
+
+                this.httpGet(url)
+                    .then(data => {
+                        console.log('people', data);
+                    })
+
+
+            },
+
             loadAddressesPaginated: function () {
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
@@ -422,10 +395,7 @@
 
             resetFilters: function () {
 
-                this.$refs.typeSingleDropdownSelect.resetSelectedValues();
-                this.$refs.productsMultipleDropdownSelect.resetSelectedValues();
-                this.$refs.tagMultipleDropdownSelect.resetSelectedValues();
-                this.$refs.sortBySingleDropdownSelect.resetSelectedValues();
+                this.$refs.personTypeSingleDropdownSelect.resetSelectedValues();
 
                 this.appliedFilters = {
                     usedProducts: [],
@@ -434,7 +404,8 @@
                     sortBy: '',
                     isOnlySortingChanged: false,
                     globalSearch: '',
-                    addressIds: ''
+                    addressIds: '',
+                    personTypes: ''
                 };
 
                 this.$eventGlobal.$emit('resetedAllFilters');
@@ -479,7 +450,35 @@
                     localStorage.removeItem('previous-dashboard');
                 }
             }
-        }
+        },
+
+        mounted: function () {
+
+            document.title = 'Labscape People';
+
+            $('ul.sidebar-list').height(window.innerHeight - 359);
+
+            this.listenToTotalPointsDisplayedOnMapChanged();
+
+            this.loadAddressesPaginated()
+                .then((data) => {
+                    this.scrollToSidebarListItem();
+                });
+
+            this.loadPersonsPaginated();
+
+            this.checkLocalStoragePreviousDashboard();
+
+        },
+
+        created: function () {
+
+            this.initFilters();
+
+            this.composeQueryUrl();
+
+            this.loadFilterObject();
+        },
     }
 </script>
 

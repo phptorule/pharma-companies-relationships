@@ -119,11 +119,13 @@ class AddressesController extends Controller
         $tags = Tag::get(['id', 'name']);
         $products = Product::orderByRaw('company, name')->get();
         $customerTypes = CustomerType::visible()->get();
+        $personTypes = DB::table('rl_people_types')->get();
 
         $filters = [
             'tag_list' => $tags,
             'used_product_list' => $products,
-            'customer_types' => $customerTypes
+            'customer_types' => $customerTypes,
+            'person_types' => $personTypes
         ];
 
         return response()->json($filters);

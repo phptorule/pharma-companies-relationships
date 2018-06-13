@@ -2663,7 +2663,7 @@ ul.staff-with-publication-list .box-body h4{
 .skin-blue .sidebar-form .person-role-filter-box {
     float: left;
     margin-left: 4px;
-    width: calc(71% - 4px);
+    width: calc(51% - 4px);
 }
 
 .skin-blue .sidebar-form .person-role-filter-box input{
@@ -2678,4 +2678,8 @@ ul.staff-with-publication-list .box-body h4{
     font-weight: 600;
     outline: none;
     width: 100%;
+}
+
+.skin-blue .sidebar-form .person-role-filter-box + .select-filter{
+    margin-left: 4px;
 }

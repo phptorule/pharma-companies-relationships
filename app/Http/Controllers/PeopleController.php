@@ -159,10 +159,19 @@ class PeopleController extends Controller
         return response()->json($person);
     }
 
+
     function getRoles ()
     {
         $roles = PeopleType::get();
         return response()->json($roles);
     }
 
+
+    function getPeoplePaginated() {
+
+        $people = People::with('addresses')
+            ->paginate(20);
+
+        return response()->json($people);
+    }
 }
