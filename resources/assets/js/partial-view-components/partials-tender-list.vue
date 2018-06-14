@@ -32,6 +32,7 @@
                         <vue-slider ref="sortCost"
                                     v-bind="tendersCost"
                                     v-model="tendersCost.value"
+                                    v-if="isSliderVisible"
                         >
                         </vue-slider>
                     </div>
@@ -139,6 +140,7 @@
 
         data: function () {
             return {
+                isSliderVisible: false,
                 addressDoesNotHaveTenders: 'loading',
                 tendersCost: {
                     value: [],
@@ -247,6 +249,17 @@
         },
 
         watch: {
+
+            isListVisible: function(isTrue){
+
+                this.isSliderVisible = false;
+
+                if (isTrue && this.productId) {
+                    setTimeout(()=>{
+                        this.isSliderVisible = true;
+                    },0);
+                }
+            },
 
             initalParams: {
                 handler: function(data) {
@@ -378,6 +391,8 @@
 
                         }
 
+                        this.isSliderVisible = true;
+
                     });
             },
 
@@ -410,8 +425,6 @@
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000)+1;
 
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
-
-                        
 
                     });
             },
@@ -581,7 +594,7 @@
 
         },
 
-        props: ['initalParams'],
+        props: ['initalParams', 'isListVisible'],
 
         mounted: function() {
 

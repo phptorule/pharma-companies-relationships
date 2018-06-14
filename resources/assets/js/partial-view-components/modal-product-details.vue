@@ -84,6 +84,7 @@
                                 <div :class="{hidden: activeTab !== 'tender'}">
                                     <tender-list-partial
                                             :initalParams="tenderListParams"
+                                            :isListVisible="activeTab == 'tender'"
                                     ></tender-list-partial>
                                 </div>
                             </div>
