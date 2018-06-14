@@ -1,12 +1,29 @@
+let loadersArrCounter = [];
+let tiid = null;
+
 const http = {
     methods: {
 
         showLoader: function () {
+
+            loadersArrCounter.push(1);
+
             $('.spin-loader').removeClass('hidden');
         },
 
         hideLoader: function () {
-            $('.spin-loader').addClass('hidden');
+
+            loadersArrCounter.shift();
+
+            if(tiid) {
+                clearTimeout(tiid);
+            }
+
+            tiid = setTimeout(()=>{
+                if(!loadersArrCounter.length) {
+                    $('.spin-loader').addClass('hidden');
+                }
+            },300)
         },
 
         httpGet: function (url) {
