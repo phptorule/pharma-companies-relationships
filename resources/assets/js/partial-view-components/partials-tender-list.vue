@@ -32,7 +32,6 @@
                         <vue-slider ref="sortCost"
                                     v-bind="tendersCost"
                                     v-model="tendersCost.value"
-                                    :show="showTenderCost"
                         >
                         </vue-slider>
                     </div>
