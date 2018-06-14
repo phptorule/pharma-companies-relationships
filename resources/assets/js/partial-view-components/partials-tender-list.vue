@@ -131,9 +131,9 @@
             return {
                 tendersCost: {
                     value: [],
-                    min: 0,
+                    min: null,
                     width: '100%',
-                    max: 100,
+                    max: null,
                     disabled: false,
                     show: true,
                     tooltip: 'always',
@@ -237,7 +237,10 @@
 
         watch: {
 
-            initalParams: {handler: function(data) {
+            initalParams: {
+                handler: function(data) {
+                    this.tendersCost.max = null;
+                    this.tendersCost.min = null;
                     this.init(data.addressId, data.purchaseId, data.address);
                     this.activeTab = 'chart';
                     this.tendersCost.value = [];
@@ -273,18 +276,11 @@
                 }
 
             },
-
-            isGoogleChartCoreLoaded: function (newVal) {
-                if ($('#product-modal').hasClass('in') && newVal && this.activeTab == 'chart') {
-                    this.viewTendersChart(DATA);
-                }
-            }
         },
 
         methods: {
             init: function (addressId, productId, address) {
 
-                
                 this.graphLoadedModal = false;
                 this.spending_cost = null;
                 this.actual_year_cost = null;
@@ -292,13 +288,16 @@
                 this.productId = productId;
                 this.currentAddress = address;
 
-                let url = '/api/product-by-id/' + productId;
-                this.httpGet(url)
-                    .then(data => {
-                        this.productsData = data;
-                        
-                        this.getTendersByProduct(this.productId);
-                    });
+
+                if(productId) {
+                    let url = '/api/product-by-id/' + productId;
+                    this.httpGet(url)
+                        .then(data => {
+                            this.productsData = data;
+
+                            this.getTendersByProduct(this.productId);
+                        });
+                }
 
             },
 
@@ -328,6 +327,46 @@
                 }
 
                 return '';
+            },
+
+            getTendersByProductPaginate: function (product_id) {
+
+                let url = '/api/tenders-by-product-and-address-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
+
+                this.httpGet(url)
+                    .then(data => {
+
+                        this.tendersTotal = data.total;
+                        this.tendersList = data.data;
+                    });
+
+            },
+
+            getTendersPaginate: function (addressId) {
+
+                this.showLoader();
+
+                let url = '/api/tenders-by-address-paginated/' + addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
+                this.httpGet(url)
+                    .then(data => {
+                        this.hideLoader();
+                        this.tendersTotal = data.total;
+                        this.tendersList = data.data;
+
+                        if(this.tendersCost.max == null && this.tendersCost.min == null){
+                            this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000)+1;
+
+                            this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000)-1;
+
+                            if(this.tendersCost.min === -1) {
+                                this.tendersCost.min = 0;
+                            }
+
+                            this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
+
+                        }
+
+                    });
             },
 
             getTendersByProduct: function (product_id) {
@@ -371,28 +410,6 @@
                     });
             },
 
-            setTabActive: function (tabName) {
-                this.activeTab = tabName;
-                if (tabName == 'tender') {
-                    this.showTenderCost = true;
-                } else {
-                    this.showTenderCost = false;
-                }
-            },
-
-            getTendersPaginate: function (product_id) {
-
-                let url = '/api/tenders-by-product-and-address-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
-
-                this.httpGet(url)
-                    .then(data => {
-                        
-                        this.tendersTotal = data.total;
-                        this.tendersList = data.data;
-                    });
-
-            },
-
             applyFilters: function (isOnlySortingChanged) {
 
                 this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
@@ -414,7 +431,13 @@
 
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
-                this.getTendersPaginate(this.productId);
+                if(this.productId) {
+                    this.getTendersByProductPaginate(this.productId);
+                }
+                else {
+                    this.getTendersPaginate(this.addressId);
+                }
+
             },
 
             composeQueryUrl: function () {
@@ -441,7 +464,7 @@
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
                 }
 
-                if (this.appliedFilters.sortCost.length) {
+                if (this.appliedFilters.sortCost.length && this.appliedFilters.sortCost[0] && this.appliedFilters.sortCost[1]) {
                     queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
                 }
 
