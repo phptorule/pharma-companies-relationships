@@ -22,6 +22,18 @@ const helpers = {
         hideLocalLoader: function () {
             $('.loader-spinner').addClass('hidden');
         },
+
+        checkIfShouldBeSlidedUp: function (selector) {
+
+            let element = $(selector);
+
+            if(element.attr('style').replace(/\s/g, '').indexOf('display:none') === -1) {
+                element.slideUp('slow');
+                return true;
+            }
+            return false;
+
+        }
     }
 
 };

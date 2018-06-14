@@ -44,6 +44,7 @@ Vue.component('pagination', Pagination);
 Vue.component('v-select', vSelect);
 Vue.component('div-editable', require('./partial-view-components/div-editable'));
 Vue.component('tender-list-partial', require('./partial-view-components/partials-tender-list'));
+Vue.component('purchase-list-of-tender', require('./partial-view-components/purchase-list-of-tender'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 

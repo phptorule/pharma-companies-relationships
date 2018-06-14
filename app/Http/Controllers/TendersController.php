@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\DB;
 
 class TendersController extends Controller {
 
+
+    function show(Tender $tender) {
+
+        return response()->json($tender);
+
+    }
+
+
 	public function getTendersByAddress( $id ) {
 
         $actualDate = date( "Y" );

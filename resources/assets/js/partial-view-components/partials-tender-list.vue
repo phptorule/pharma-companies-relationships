@@ -86,7 +86,11 @@
                 <ul class="col-md-12 tenders-list">
                     <li v-for="(tender, i) in tendersList">
                         <div class="item">
-                            <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
+                            <h3 class="pointer"
+                                v-if="tender.purchase_name"
+                                v-ctk-tooltip="tender.purchase_name"
+                                @click="loadTenderDetails(tender)"
+                            >
                                 {{tender.tender_date ? tender.tender_date : 'Not date'}} -
                                 {{tender.purchase_name | tendername(55)}}</h3>
                             <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) | currency('Rub') }}
@@ -111,6 +115,15 @@
                                 <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
                             </p>
                             <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
+
+                            <div class="tender-details-box"
+                                 style="display: none"
+                                 :class="'tender-box-id-' + tender.tender_id"
+                            >
+                                <purchase-list-of-tender
+                                        :incomingTenderData="selectedTenderData"
+                                ></purchase-list-of-tender>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -164,6 +177,7 @@
                 activeTab: 'chart',
                 tag_list: [],
                 selectedTags: [],
+                selectedTenderData: {},
                 productTags: [],
                 appliedFilters: {
                     tags: this.$route.query['tag-cons[]'] || [],
@@ -590,6 +604,28 @@
 
             makeTagArray: function (tagsString) {
                 return tagsString ? tagsString.split(', ') : [];
+            },
+
+            slideUpAllTenderBoxes: function() {
+                $('.tender-details-box').slideUp(0);
+            },
+
+            loadTenderDetails: function (tender) {
+
+                let selector = '.tender-box-id-' + tender.tender_id;
+
+                if (this.checkIfShouldBeSlidedUp(selector)) {
+                    return;
+                }
+
+                this.slideUpAllTenderBoxes();
+
+                this.httpGet('/api/tenders/'+tender.tender_id)
+                    .then(data => {
+                        this.selectedTenderData = data;
+
+                        $(selector).slideDown('slow');
+                    });
             }
 
         },

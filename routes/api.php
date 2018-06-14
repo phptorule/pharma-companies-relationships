@@ -112,4 +112,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::post('/products/create', 'AddressesController@createProduct');
 
     Route::get('/product-consumables-sum/{addressId}/{productId}', 'ProductsController@getProductConsumableSum');
+
+    Route::get('/tenders/{tender}', 'TendersController@show');
 });
