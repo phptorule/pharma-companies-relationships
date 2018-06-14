@@ -13,7 +13,15 @@ const helpers = {
                     scrollTop: $(element).offset().top
                 }, 1000);
             },timeout);
-        }
+        },
+
+        showLocalLoader: function () {
+            $('.loader-spinner').removeClass('hidden');
+        },
+
+        hideLocalLoader: function () {
+            $('.loader-spinner').addClass('hidden');
+        },
     }
 
 };

@@ -116,6 +116,7 @@
 <script>
 
     import http from '../mixins/http';
+    import helpers from '../mixins/helpers';
     import getProductName from '../mixins/get-product-name';
     import ProductModal from '../mixins/show-product-details-modal';
     import vueSlider from 'vue-slider-component';
@@ -124,7 +125,7 @@
 
     export default {
 
-        mixins: [http, getProductName, ProductModal, labscapeFilters],
+        mixins: [http, helpers, getProductName, ProductModal, labscapeFilters],
 
         data: function () {
             return {
@@ -244,36 +245,6 @@
                 deep: true
             },
 
-            selectedTags(tagVal) {
-
-                this.chartQueryTag = '';
-
-                if (tagVal.length) {
-
-                    tagVal.forEach(tag => {
-
-                        if (tag.name != null) {
-
-                            if(tag.id === 'empty') {
-                                return;
-                            }
-
-                            this.chartQueryTag += '&tags[]=' + tag.id;
-
-                        }
-
-                    })
-
-                }
-
-                if(tagVal.findIndex(el => el.id === 'empty') !== -1) {
-                    this.chartQueryTag += '&tags[]=empty';
-                }
-
-                this.graphLoadedModal = false;
-                this.filterTagToChart();
-            },
-
             show(val) {
                 if (val) {
 
@@ -313,7 +284,7 @@
         methods: {
             init: function (addressId, productId, address) {
 
-                this.showLoader();
+                
                 this.graphLoadedModal = false;
                 this.spending_cost = null;
                 this.actual_year_cost = null;
@@ -325,7 +296,7 @@
                 this.httpGet(url)
                     .then(data => {
                         this.productsData = data;
-                        this.hideLoader();
+                        
                         this.getTendersByProduct(this.productId);
                     });
 
@@ -360,7 +331,7 @@
             },
 
             getTendersByProduct: function (product_id) {
-                this.showLoader();
+                
                 this.httpGet('/api/product-by-tenders/' + product_id + '/' + this.addressId)
                     .then(data => {
                         this.tenderData = data;
@@ -395,7 +366,7 @@
 
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
-                        this.hideLoader();
+                        
 
                     });
             },
@@ -411,13 +382,11 @@
 
             getTendersPaginate: function (product_id) {
 
-                this.showLoader();
-
                 let url = '/api/tenders-by-product-and-address-paginated/' + product_id + '/' + this.addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
 
                 this.httpGet(url)
                     .then(data => {
-                        this.hideLoader();
+                        
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
                     });
@@ -543,11 +512,11 @@
             },
 
             exportToExcel: function (product_id) {
-                this.showLoader();
+
                 let url = '/api/tenders-by-product-and-address-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
-                        this.hideLoader();
+                        
                         this.tendersExport.json_data = data;
                     });
             },
@@ -571,123 +540,6 @@
                 else {
                     this.isHideOthersTag = false;
                 }
-            },
-
-            tempRemoveTotalFromGraph: function(graphData) {
-                graphData.forEach(el => {
-                    el.splice(1,1);
-                })
-            },
-
-            filterTagToChart: function () {
-                this.showLoader()
-                var url = '/api/tenders-by-product-chart/' + this.productId + '/' + this.addressId + '?' + this.chartQueryTag;
-
-                this.httpGet(url)
-                    .then(data => {
-
-                        var DATA = data.chartsData;
-
-                        this.checkIfNoSpentOnOthers(DATA);
-
-                        var title = ['Month', 'Total',{type: 'string', role: 'tooltip', 'p': {'html': true}}];
-
-                        //todo: temp override title for excluding "Total"
-                        title = ['Month', {type: 'string', role: 'tooltip', 'p': {'html': true}}];
-
-                        //todo: temp override DATA for excluding "Total"
-                        this.tempRemoveTotalFromGraph(DATA);
-
-                        var colorPallette = [];
-
-                        if (this.selectedTags.length > 0) {
-
-                            this.tag_list.forEach(tag => {
-
-                                this.selectedTags.forEach(selectTag => {
-
-                                    if (tag.id == selectTag.id) {
-
-                                        if(this.isHideOthersTag && selectTag.id == 'empty') {
-                                            return;
-                                        }
-
-                                        title.push(tag.name);
-
-                                        colorPallette.push(tag.color);
-                                    }
-
-                                });
-
-                            });
-                        }
-
-                        DATA.unshift(title);
-
-                        if (typeof DATA[1] != "undefined") {
-                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey, data.singleChart);
-                            this.hideLoader();
-                        } else {
-                            DATA[0] = ['Month', 'Total'];
-                            DATA[1] = ['Yan-97', 0];
-                            this.viewTendersChart(DATA, colorPallette, data.delimetrKey, data.singleChart);
-                            this.hideLoader();
-                        }
-
-                    });
-            },
-
-            viewTendersChart: function (data, colorPallette, delimetrKey, singleChart) {
-
-                if (this.graphLoadedModal) {
-                    return;
-                }
-
-                // chear chart
-                $('#tender-charts').html('');
-
-                //todo: temp override colorPallette for excluding "Total"
-                // colorPallette.unshift('#0099c6');
-
-                var options = {
-                    width: 830,
-                    height: 200,
-                    title: 'Sales',
-                    colors: colorPallette,
-                    tooltip: {isHtml: true},
-                    vAxis: {title: 'Budget', format: "###,###"+delimetrKey,},
-                    hAxis: {baselineColor: 'none', ticks: []},
-                    legend: 'none',
-                    animation: {startup: true},
-                };
-
-                var data = google.visualization.arrayToDataTable(data);
-
-                if(singleChart == true)
-                {
-                    options.legend = 'bottom';
-                }
-
-                var chart = new google.visualization.LineChart(document.getElementById('tender-charts'));
-
-                chart.draw(data, options);
-
-                this.graphLoadedModal = true;
-            },
-
-            loadGoogleChart: function () {
-                return google.charts.load('current', {'packages': ['corechart']})
-                    .then(() => {
-                        this.isGoogleChartCoreLoaded = true;
-                    })
-            },
-
-            showLoader: function () {
-                $('.loader-spinner').removeClass('hidden');
-            },
-
-            hideLoader: function () {
-                $('.loader-spinner').addClass('hidden');
             },
 
         },
