@@ -230,21 +230,16 @@
                     <ul class="staff-list">
                         <li v-if="i < 3" v-for="(person, i) in addressData.people" :key="person.id">
                             <div class="image">
-                                <a href="javascript:void(0)" 
-                                    @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                                >
+                                <a href="javascript:void(0)" style="cursor: default">
                                     <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
                                     <img :src="'/images/mask-'+i+'.png'" alt="">
                                 </a>
                             </div>
                             <div class="personal-info">
                                 <p class="name">
-                                    <a href="javascript:void(0)" 
-                                        @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                                    >
-                                        {{ person.name }}
-                                    </a>
+                                    {{ person.name }}
                                 </p>
+                                <p class="occupation">{{ person.email }}</p>
                                 <p class="occupation">{{ person.description }}</p>
                             </div>
                         </li>

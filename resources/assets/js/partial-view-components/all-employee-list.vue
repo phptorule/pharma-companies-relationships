@@ -36,18 +36,16 @@
         <ul v-if=" ! canSearch && ! canSearchByRole" class="staff-list">
             <li v-for="(person, i) in people">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showEmployeeDetailsModal(person.id, addressId, address)">
+                    <a href="javascript:void(0)" style="cursor: default;">
                         <span class="person-initials">{{getPersonInitials(person.name)}}</span>
                         <img :src="'/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
                 <div class="personal-info">
                     <p class="name">
-                        <a href="javascript:void(0)" 
-                            @click="showEmployeeDetailsModal(person.id, addressId, address)">
-                            {{ person.name }}
-                        </a>
+                        {{ person.name }}
                     </p>
+                    <p class="occupation">{{ person.email }}</p>
                     <p class="occupation">{{ person.description }}</p>
                 </div>
             </li>

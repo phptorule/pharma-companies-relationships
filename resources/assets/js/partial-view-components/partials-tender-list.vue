@@ -343,12 +343,13 @@
 
             getTendersPaginate: function (addressId) {
 
-                this.showLoader();
+                if(!addressId) {
+                    return;
+                }
 
                 let url = '/api/tenders-by-address-paginated/' + addressId + '?page=' + this.pagination.currentPage + this.composeQueryUrl();
                 this.httpGet(url)
                     .then(data => {
-                        this.hideLoader();
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
 
