@@ -142,7 +142,7 @@
                 addressDoesNotHaveTenders: 'loading',
                 tendersCost: {
                     value: [],
-                    min: null,
+                    min: 0,
                     width: '100%',
                     max: null,
                     disabled: false,
@@ -251,7 +251,7 @@
             initalParams: {
                 handler: function(data) {
                     this.tendersCost.max = null;
-                    this.tendersCost.min = null;
+                    this.tendersCost.min = 0;
                     this.init(data.addressId, data.purchaseId, data.address);
                     this.activeTab = 'chart';
                     this.tendersCost.value = [];
@@ -371,14 +371,8 @@
 
                         this.addressDoesNotHaveTenders = false;
 
-                        if(this.tendersCost.max == null && this.tendersCost.min == null && this.tendersList[0]){
+                        if(this.tendersCost.max == null && this.tendersList[0]){
                             this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000)+1;
-
-                            this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000)-1;
-
-                            if(this.tendersCost.min === -1) {
-                                this.tendersCost.min = 0;
-                            }
 
                             this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
@@ -414,12 +408,6 @@
                         }
 
                         this.tendersCost.max = Math.ceil(this.tenderData.max_total_spent / 1000)+1;
-
-                        this.tendersCost.min = Math.ceil(this.tenderData.min_total_spent / 1000)-1;
-
-                        if(this.tendersCost.min === -1) {
-                            this.tendersCost.min = 0;
-                        }
 
                         this.tendersCost.value = [this.tendersCost.min, this.tendersCost.max];
 
