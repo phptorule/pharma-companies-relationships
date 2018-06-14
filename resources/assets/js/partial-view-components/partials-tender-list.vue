@@ -470,7 +470,7 @@
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
                 }
 
-                if (this.appliedFilters.sortCost.length && this.appliedFilters.sortCost[0] && this.appliedFilters.sortCost[1]) {
+                if (this.appliedFilters.sortCost.length && this.appliedFilters.sortCost[1]) {
                     queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
                 }
 
