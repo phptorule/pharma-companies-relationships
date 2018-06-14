@@ -319,8 +319,7 @@
 
             $route: function (to) {
 
-                if ($('#product-modal').hasClass('in') && this.activeTab == 'tender') {
-
+                if ($('#product-modal').hasClass('in') || $('#tenders-modal').hasClass('in')) {
 
                     this.initFilters();
 

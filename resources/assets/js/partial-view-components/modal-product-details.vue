@@ -368,69 +368,8 @@
 
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
-                if (tabName == 'tender') {
-                    this.showTenderCost = true;
-                } else {
-                    this.showTenderCost = false;
-                }
-            },
 
-            composeQueryUrl: function () {
-                let queryStr = '';
-
-                if (this.appliedFilters.tendersSearchInput) {
-                    queryStr += '&tenders-search=' + this.appliedFilters.tendersSearchInput;
-
-                }
-
-                if (this.appliedFilters.tags.length) {
-
-                    if (typeof this.appliedFilters.tags === 'string') {
-                        queryStr += '&tag-cons[]=' + this.appliedFilters.tags;
-                    }
-                    else {
-                        this.appliedFilters.tags.forEach(id => {
-                            queryStr += '&tag-cons[]=' + id;
-                        });
-                    }
-                }
-
-                if (this.appliedFilters.sortBy) {
-                    queryStr += '&sort-by=' + this.appliedFilters.sortBy;
-                }
-
-                if (this.appliedFilters.sortCost.length) {
-                    queryStr += '&min=' + (this.appliedFilters.sortCost[0] * 1000) + '&max=' + (this.appliedFilters.sortCost[1] * 1000);
-                }
-
-                this.queryUrl = queryStr;
-
-                return queryStr;
-            },
-
-            makeTendersSearch: function () {
-                if (this.timeOutId) {
-                    clearTimeout(this.timeOutId)
-                }
-
-                this.timeOutId = setTimeout(() => {
-
-                    if (this.$route.path != '/address-details/' + this.addressId) {
-                        this.$router.push('/address-details/' + this.addressId + '?tenders-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
-                    }
-                    else {
-                        this.$router.push('/address-details/' + this.addressId + '?global-search=' + encodeURIComponent(this.appliedFilters.tendersSearchInput));
-                    }
-
-                    if (this.appliedFilters.tendersSearchInput == '') {
-                        this.$router.push('/address-details/' + this.addressId);
-                    }
-
-                    this.composeQueryUrl();
-
-                    this.$router.push('/address-details/' + this.addressId + '?' + this.queryUrl);
-
-                }, 1000)
+                this.showTenderCost = tabName == 'tender';
             },
 
             loadTagsFilter: function () {
