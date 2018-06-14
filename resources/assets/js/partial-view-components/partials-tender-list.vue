@@ -82,13 +82,12 @@
                         </div>
 
                         <ul class="tag-list">
-                            <li v-if="tender.tag_name"><a href="javascript:void(0)"
-                                                          class="tags">{{tender.tag_name}}</a>
-                            </li>
-
-                            <!-- TODO remove this hardcoded section -->
-                            <li v-if="productId == 12 && currentAddress.id == 2830"><a href="javascript:void(0)"
-                                                                                       class="tags">Test</a>
+                            <li v-if="tender.tag_name"
+                                v-for="tag in makeTagArray(tender.tag_name)"
+                            >
+                                <a href="javascript:void(0)" class="tags">
+                                    {{tag}}
+                                </a>
                             </li>
                         </ul>
 
@@ -353,7 +352,7 @@
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
 
-                        if(this.tendersCost.max == null && this.tendersCost.min == null){
+                        if(this.tendersCost.max == null && this.tendersCost.min == null && this.tendersList[0]){
                             this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000)+1;
 
                             this.tendersCost.min = Math.ceil(this.tendersList[0].min_budgeted / 1000)-1;
@@ -564,6 +563,10 @@
                     this.isHideOthersTag = false;
                 }
             },
+
+            makeTagArray: function (tagsString) {
+                return tagsString ? tagsString.split(', ') : [];
+            }
 
         },
 
