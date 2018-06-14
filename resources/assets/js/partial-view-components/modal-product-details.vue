@@ -101,6 +101,7 @@
     import getProductName from '../mixins/get-product-name';
     import ProductModal from '../mixins/show-product-details-modal';
     import vueSlider from 'vue-slider-component';
+    import labscapeFilters from '../filters/labscape-filters';
 
 
     const othersTag = {
@@ -110,7 +111,7 @@
     };
 
     export default {
-        mixins: [http, getProductName, ProductModal],
+        mixins: [http, getProductName, ProductModal, labscapeFilters],
         data: function () {
             return {
 
@@ -139,13 +140,7 @@
                 tag_list: [],
                 selectedTags: [],
                 productTags: [],
-                appliedFilters: {
-                    tags: this.$route.query['tag-cons[]'] || [],
-                    sortCost: this.$route.query['min-max[]'] || [],
-                    sortBy: this.$route.query['sort-by'] || '',
-                    isOnlySortingChanged: false,
-                    tendersSearchInput: this.$route.query['tenders-search'] || '',
-                },
+
                 tendersTotal: 0,
                 pagination: {
                     currentPage: 1
@@ -168,22 +163,7 @@
                 isGoogleChartCoreLoaded: false,
                 graphLoadedModal: false,
                 showTenderCost: false,
-                tendersExport: {
-                    json_fields: {
-                        'Tender name': 'purchase_name',
-                        'Description': 'purchase_remark',
-                        'Price': 'budgeted_cost',
-                        'Winner': 'winner',
-                        'Product': 'product_name',
-                        'Consumables': 'tag_name',
-                        'Date': 'tender_date',
-                    },
-                    json_data: [],
-                    json_meta: [[{
-                        'key': 'charset',
-                        'value': 'utf-8'
-                    }]],
-                },
+
                 chartQueryTag: '',
 
                 users:[
@@ -222,32 +202,6 @@
 
         },
 
-        filters: {
-            currency: function (value, currency_type) {
-                if (!currency_type) {
-                    currency_type = '';
-                }
-                if(value){
-                    value = String(value);
-                    return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
-                }
-                return '';
-            },
-
-            tendername: function (name, size) {
-
-                if (name.length > size) {
-
-                    return name.slice(0, size) + ' ...';
-
-                } else {
-
-                    return name;
-
-                }
-            }
-        },
-
         created: function () {
 
             this.loadTagsFilter();
@@ -274,7 +228,6 @@
                             }
 
                             this.chartQueryTag += '&tags[]=' + tag.id;
-
                         }
 
                     })
@@ -296,13 +249,6 @@
                 }
             },
 
-
-            $route: function (to) {
-
-
-
-            },
-
             isGoogleChartCoreLoaded: function (newVal) {
                 if ($('#product-modal').hasClass('in') && newVal && this.activeTab == 'chart') {
                     this.viewTendersChart(DATA);
@@ -321,8 +267,6 @@
                 this.getTendersByProduct(this.productId);
 
             },
-
-
 
             getTendersByProduct: function (product_id) {
                 this.showLoader();
@@ -535,7 +479,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

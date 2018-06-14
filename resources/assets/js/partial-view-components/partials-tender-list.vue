@@ -78,8 +78,7 @@
                         <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
                             {{tender.tender_date ? tender.tender_date : 'Not date'}} -
                             {{tender.purchase_name | tendername(55)}}</h3>
-                        <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) |
-                            currency('Rub') }}
+                        <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) | currency('Rub') }}
                         </div>
 
                         <ul class="tag-list">
@@ -120,12 +119,12 @@
     import getProductName from '../mixins/get-product-name';
     import ProductModal from '../mixins/show-product-details-modal';
     import vueSlider from 'vue-slider-component';
-
+    import labscapeFilters from '../filters/labscape-filters';
 
 
     export default {
 
-        mixins: [http, getProductName, ProductModal],
+        mixins: [http, getProductName, ProductModal, labscapeFilters],
 
         data: function () {
             return {
@@ -233,32 +232,6 @@
                 })
             }
 
-        },
-
-        filters: {
-            currency: function (value, currency_type) {
-                if (!currency_type) {
-                    currency_type = '';
-                }
-                if(value){
-                    value = String(value);
-                    return value.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' ' + currency_type;
-                }
-                return '';
-            },
-
-            tendername: function (name, size) {
-
-                if (name.length > size) {
-
-                    return name.slice(0, size) + ' ...';
-
-                } else {
-
-                    return name;
-
-                }
-            }
         },
 
         watch: {
