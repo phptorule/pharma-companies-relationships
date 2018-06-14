@@ -1,112 +1,124 @@
 <template>
     <div>
-        <div class="col-md-12 tender-query">
-            <div class="col-md-4 tender-search">
-                <input
-                        class="tender-search-input"
-                        v-model="appliedFilters.tendersSearchInput"
-                        @keyup="makeTendersSearch()"
-                        placeholder="Search tenders">
-            </div>
-            <div class="col-md-4 filter-cost-tender">
-                <div class="col-md-6 min-value">
-                    <input class="min-value-input" v-model="tendersCost.value[0]">
-                </div>
-                <div class="slider-dash">-</div>
 
-                <div class="col-md-6 max-value">
-                    <input class="max-value-input" v-model="tendersCost.value[1]">
-                </div>
-                <div class="col-md-12 min-max">
-                    <vue-slider ref="sortCost"
-                                v-bind="tendersCost"
-                                v-model="tendersCost.value"
-                                :show="showTenderCost"
-                    >
-                    </vue-slider>
-                </div>
-                <p class="tender-slider-amount-title">Tender Amount</p>
-                <p class="slider-currency-k">(K rubels)</p>
-            </div>
-            <div class="col-md-4 filter-tag-query-tender">
-                <div class="col-md-6">
-                    <multiple-dropdown-select
-                            class="form-control select-filter tags-filter"
-                            :name="'Tags'"
-                            :options="tagOptionsForDropDown"
-                            @changed="applyTagsFilter"
-                            ref="tagMultipleDropdownSelect"
-                    ></multiple-dropdown-select>
-                </div>
-                <div class="col-md-6">
-                    <single-dropdown-select
-                            class="form-control select-filter tags-filter"
-                            :options="sortByOptionsForFilter"
-                            :isHiddenEmptyOption="true"
-                            @changed="applySortFilter"
-                            :name="'Sort By'"
-                            ref="sortBySingleDropdownSelect"
-                    ></single-dropdown-select>
-                </div>
-            </div>
-            <div class="col-md-1 export-excel">
-                <download-excel
-                        class="export-to-excel"
-                        :data="tendersExport.json_data"
-                        :fields="tendersExport.json_fields"
-                        name="tenders.xls"
-                >
-                    <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)"
-                       title="Export to excel"></i>
-                </download-excel>
-                <download-excel
-                        class="export-to-csv"
-                        :data="tendersExport.json_data"
-                        :fields="tendersExport.json_fields"
-                        type="csv"
-                        name="tenders.csv"
-                >
-                    <img @click="exportToExcel(productId)" src="/images/csv.png"
-                         title="Export to csv">
-                </download-excel>
-            </div>
+
+        <div v-show="addressDoesNotHaveTenders === 'loading'">
+            <h3 class="text-center">Loading ...</h3>
         </div>
-        <div class="col-md-12 tender-data">
-            <ul class="col-md-12 tenders-list">
-                <li v-for="(tender, i) in tendersList">
-                    <div class="item">
-                        <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
-                            {{tender.tender_date ? tender.tender_date : 'Not date'}} -
-                            {{tender.purchase_name | tendername(55)}}</h3>
-                        <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) | currency('Rub') }}
-                        </div>
 
-                        <ul class="tag-list">
-                            <li v-if="tender.tag_name"
-                                v-for="tag in makeTagArray(tender.tag_name)"
-                            >
-                                <a href="javascript:void(0)" class="tags">
-                                    {{tag}}
-                                </a>
-                            </li>
-                        </ul>
+        <div class="col-md-12" v-show="addressDoesNotHaveTenders === true">
+            <h3 class="text-center">Sorry the current address didn't participate in that tender</h3>
+        </div>
 
-                        <p class="tender-winner" v-if="tender.suppliers_data[0]">
-                            Winner {{tender.suppliers_data[0][0]}}
-                            {{tender.suppliers_data[0][1] | currency('Rub') }}
-                            <span v-if="tender.suppliers_data.length > 1" class="tender-winner pointer" v-ctk-tooltip="supplier(tender.suppliers_data)">
+        <div v-show="addressDoesNotHaveTenders === false">
+            <div class="col-md-12 tender-query">
+                <div class="col-md-4 tender-search">
+                    <input
+                            class="tender-search-input"
+                            v-model="appliedFilters.tendersSearchInput"
+                            @keyup="makeTendersSearch()"
+                            placeholder="Search tenders">
+                </div>
+                <div class="col-md-4 filter-cost-tender">
+                    <div class="col-md-6 min-value">
+                        <input class="min-value-input" v-model="tendersCost.value[0]">
+                    </div>
+                    <div class="slider-dash">-</div>
+
+                    <div class="col-md-6 max-value">
+                        <input class="max-value-input" v-model="tendersCost.value[1]">
+                    </div>
+                    <div class="col-md-12 min-max">
+                        <vue-slider ref="sortCost"
+                                    v-bind="tendersCost"
+                                    v-model="tendersCost.value"
+                                    :show="showTenderCost"
+                        >
+                        </vue-slider>
+                    </div>
+                    <p class="tender-slider-amount-title">Tender Amount</p>
+                    <p class="slider-currency-k">(K rubels)</p>
+                </div>
+                <div class="col-md-4 filter-tag-query-tender">
+                    <div class="col-md-6">
+                        <multiple-dropdown-select
+                                class="form-control select-filter tags-filter"
+                                :name="'Tags'"
+                                :options="tagOptionsForDropDown"
+                                @changed="applyTagsFilter"
+                                ref="tagMultipleDropdownSelect"
+                        ></multiple-dropdown-select>
+                    </div>
+                    <div class="col-md-6">
+                        <single-dropdown-select
+                                class="form-control select-filter tags-filter"
+                                :options="sortByOptionsForFilter"
+                                :isHiddenEmptyOption="true"
+                                @changed="applySortFilter"
+                                :name="'Sort By'"
+                                ref="sortBySingleDropdownSelect"
+                        ></single-dropdown-select>
+                    </div>
+                </div>
+                <div class="col-md-1 export-excel">
+                    <download-excel
+                            class="export-to-excel"
+                            :data="tendersExport.json_data"
+                            :fields="tendersExport.json_fields"
+                            name="tenders.xls"
+                    >
+                        <i class="fa fa-file-excel-o fa-2x" @click="exportToExcel(productId)"
+                           title="Export to excel"></i>
+                    </download-excel>
+                    <download-excel
+                            class="export-to-csv"
+                            :data="tendersExport.json_data"
+                            :fields="tendersExport.json_fields"
+                            type="csv"
+                            name="tenders.csv"
+                    >
+                        <img @click="exportToExcel(productId)" src="/images/csv.png"
+                             title="Export to csv">
+                    </download-excel>
+                </div>
+            </div>
+            <div class="col-md-12 tender-data">
+                <ul class="col-md-12 tenders-list">
+                    <li v-for="(tender, i) in tendersList">
+                        <div class="item">
+                            <h3 class="pointer" v-if="tender.purchase_name" v-ctk-tooltip="tender.purchase_name">
+                                {{tender.tender_date ? tender.tender_date : 'Not date'}} -
+                                {{tender.purchase_name | tendername(55)}}</h3>
+                            <div class="tender-volume">{{Math.ceil(Number(tender.budgeted_cost)) | currency('Rub') }}
+                            </div>
+
+                            <ul class="tag-list">
+                                <li v-if="tender.tag_name"
+                                    v-for="tag in makeTagArray(tender.tag_name)"
+                                >
+                                    <a href="javascript:void(0)" class="tags">
+                                        {{tag}}
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <p class="tender-winner" v-if="tender.suppliers_data[0]">
+                                Winner {{tender.suppliers_data[0][0]}}
+                                {{tender.suppliers_data[0][1] | currency('Rub') }}
+                                <span v-if="tender.suppliers_data.length > 1" class="tender-winner pointer" v-ctk-tooltip="supplier(tender.suppliers_data)">
                                                        + {{(tender.suppliers_data.length - 1)}} more winners
                                                         </span>
-                            <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
-                        </p>
-                        <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
-                    </div>
-                </li>
-            </ul>
-            <div class="col-md-12 pagination-box">
-                <pagination :records="tendersTotal" ref="paginationDirective"
-                            :class="'pagination pagination-sm no-margin pull-right'"
-                            :per-page="10" @paginate="pageChanged"></pagination>
+                                <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a>
+                            </p>
+                            <p v-else class="tender-winner">Winner unkown <a target="_blank" :href="tender.tender_url"><img data-v-6d155616="" src="/images/graph/external_link.svg" class="tenderUrlIcon"></a></p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="col-md-12 pagination-box">
+                    <pagination :records="tendersTotal" ref="paginationDirective"
+                                :class="'pagination pagination-sm no-margin pull-right'"
+                                :per-page="10" @paginate="pageChanged"></pagination>
+                </div>
             </div>
         </div>
     </div>
@@ -128,6 +140,7 @@
 
         data: function () {
             return {
+                addressDoesNotHaveTenders: 'loading',
                 tendersCost: {
                     value: [],
                     min: null,
@@ -280,6 +293,8 @@
         methods: {
             init: function (addressId, productId, address) {
 
+                this.addressDoesNotHaveTenders = 'loading';
+
                 this.graphLoadedModal = false;
                 this.spending_cost = null;
                 this.actual_year_cost = null;
@@ -337,6 +352,8 @@
 
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
+
+                        this.addressDoesNotHaveTenders = false;
                     });
 
             },
@@ -352,6 +369,8 @@
                     .then(data => {
                         this.tendersTotal = data.total;
                         this.tendersList = data.data;
+
+                        this.addressDoesNotHaveTenders = false;
 
                         if(this.tendersCost.max == null && this.tendersCost.min == null && this.tendersList[0]){
                             this.tendersCost.max = Math.ceil(this.tendersList[0].max_budgeted / 1000)+1;
@@ -537,9 +556,13 @@
             exportToExcel: function (product_id) {
 
                 let url = '/api/tenders-by-product-and-address-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
+
+                if(!product_id) {
+                    url = '/api/tenders-by-address-to-excel/' + this.addressId + '?' + this.composeQueryUrl();
+                }
+
                 this.httpGet(url)
                     .then(data => {
-                        
                         this.tendersExport.json_data = data;
                     });
             },

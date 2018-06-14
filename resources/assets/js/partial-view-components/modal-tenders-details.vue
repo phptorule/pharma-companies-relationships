@@ -13,12 +13,10 @@
                     </div>
                     <div class="modal-body">
 
-                        <div class="tab-content">
-                            <div class="activeTab">
-                                <tender-list-partial
-                                        :initalParams="tenderListParams"
-                                ></tender-list-partial>
-                            </div>
+                        <div class="tab-content" style="width: 100%">
+                            <tender-list-partial
+                                    :initalParams="tenderListParams"
+                            ></tender-list-partial>
                         </div>
 
                     </div>
