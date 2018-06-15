@@ -78,7 +78,9 @@
 
                 appliedFilters: {
                     usedProducts: []
-                }
+                },
+
+                queryUrl: ''
             }
         },
 
@@ -125,8 +127,33 @@
             applyUsedProductsFilter: function (data) {
                 this.appliedFilters.usedProducts = data;
 
-                // this.applyFilters();
+                this.applyFilters();
             },
+
+            applyFilters: function () {
+                this.composeQueryUrl();
+
+                this.loadGraphData();
+            },
+
+            composeQueryUrl: function () {
+                this.queryUrl = '?';
+
+                if(this.appliedFilters.usedProducts.length) {
+                    this.queryUrl += 'used-products=';
+                    this.appliedFilters.usedProducts.forEach((id,i) => {
+                        this.queryUrl += id;
+                        if(i+1 < this.appliedFilters.usedProducts.length) {
+                            this.queryUrl += ',';
+                        }
+                    })
+                }
+
+            },
+
+            loadGraphData: function () {
+                console.log('queryUrl', this.queryUrl);
+            }
         },
 
         mounted: function () {
@@ -142,6 +169,8 @@
                 this.fetchListOfAddressProducts()
                     .then(data => {
                         this.markAllProductItemsAsSelected();
+
+                        this.applyFilters();
                     })
             });
 
