@@ -42,6 +42,19 @@
                                             ref="productsMultipleDropdownSelect"
                                             style="max-width: 200px"
                                     ></multiple-dropdown-select>
+
+                                    <div class="pull-left filter-label include-others-label-box">
+                                        <div class="grey-checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       @click="includeOthersProduct()"
+                                                       :checked="isOthersIncluded"
+                                                >
+                                                <span class="borders"></span>
+                                                <span class="remember_text">Include others (none-specified) products</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -80,7 +93,9 @@
                     usedProducts: []
                 },
 
-                queryUrl: ''
+                queryUrl: '',
+
+                isOthersIncluded: true
             }
         },
 
@@ -130,6 +145,12 @@
                 this.applyFilters();
             },
 
+            includeOthersProduct: function() {
+                this.isOthersIncluded = !this.isOthersIncluded;
+
+                this.applyFilters();
+            },
+
             applyFilters: function () {
                 this.composeQueryUrl();
 
@@ -139,8 +160,10 @@
             composeQueryUrl: function () {
                 this.queryUrl = '?';
 
+                this.queryUrl += 'include-others=' + (+this.isOthersIncluded);
+
                 if(this.appliedFilters.usedProducts.length) {
-                    this.queryUrl += 'used-products=';
+                    this.queryUrl += '&used-products=';
                     this.appliedFilters.usedProducts.forEach((id,i) => {
                         this.queryUrl += id;
                         if(i+1 < this.appliedFilters.usedProducts.length) {

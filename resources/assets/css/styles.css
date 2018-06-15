@@ -676,6 +676,7 @@ ul.select-filter > li > ul > li.selected .grey-checkbox span.remember_text{
     color: #fff !important;
 }
 
+.filter-label .grey-checkbox span.remember_text,
 ul.select-filter > li > ul > li .grey-checkbox span.remember_text{
     font-weight: 500;
     float: none;
@@ -691,6 +692,7 @@ ul.select-filter > li > ul > li:hover .grey-checkbox span.remember_text{
     color: #333333;
 }
 
+.filter-label .grey-checkbox label span.borders,
 ul.select-filter > li > ul > li .grey-checkbox label span.borders{
     float: none;
     margin: 0;
@@ -701,15 +703,26 @@ ul.select-filter > li > ul > li .grey-checkbox label span.borders{
     margin-right: 15px;
 }
 
+.filter-label .grey-checkbox [type=checkbox]:checked + span.borders,
 ul.select-filter > li > ul > li .grey-checkbox [type=checkbox]:checked + span.borders{
     background: #4081df;
     border-color: #4081df;
 }
 
+.filter-label .grey-checkbox [type=checkbox]:checked + span:before,
 ul.select-filter > li > ul > li .grey-checkbox [type=checkbox]:checked + span:before{
     color: #ffffff;
     top: -2px;
     left: 2px;
+}
+
+.filter-label .grey-checkbox label {
+    line-height: 20px;
+}
+
+.filter-label .grey-checkbox .borders {
+    margin-right: 0 !important;
+    top: 5px;
 }
 
 .sidebar .sidebar-form a.reset-filters {
@@ -3976,4 +3989,10 @@ ul.tenders-list li.open .item > .tag-list {
     height: 40px;
     margin-right: 10px;
     font-weight: 500;
+}
+
+.modal-body .filters .filter-label.include-others-label-box {
+    display: inline-block;
+    margin-right: 0;
+    padding-left: 50px;
 }
