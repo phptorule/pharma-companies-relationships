@@ -471,6 +471,9 @@
             },
 
             pageChanged: function (pageNumber) {
+
+                this.slideUpAllTenderBoxes();
+
                 this.pagination.currentPage = pageNumber;
                 if(this.productId) {
                     this.getTendersByProductPaginate(this.productId);
