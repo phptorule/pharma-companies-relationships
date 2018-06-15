@@ -13,10 +13,28 @@
                     </div>
                     <div class="modal-body">
 
+                        <ul class="nav nav-tabs person-tabs">
+                            <li :class="{'active': activeTab == 'chart'}">
+                                <a href="javascript:void(0)" @click="setTabActive('chart')" data-toggle="tab"
+                                   aria-expanded="false">Chart</a></li>
+                            <li :class="{'active': activeTab == 'tender'}">
+                                <a href="javascript:void(0)" @click="setTabActive('tender')" data-toggle="tab"
+                                   aria-expanded="false">Tender</a></li>
+                        </ul>
+
+
                         <div class="tab-content" style="width: 100%">
-                            <tender-list-partial
-                                    :initalParams="tenderListParams"
-                            ></tender-list-partial>
+
+                            <div :class="{hidden: activeTab !== 'chart'}">
+                                Chart
+                            </div>
+
+                            <div :class="{hidden: activeTab !== 'tender'}">
+                                <tender-list-partial
+                                        :initalParams="tenderListParams"
+                                        :isListVisible="activeTab == 'tender'"
+                                ></tender-list-partial>
+                            </div>
                         </div>
 
                     </div>
@@ -33,7 +51,14 @@
 
         data: function () {
             return {
-                tenderListParams: {}
+                tenderListParams: {},
+                activeTab: 'chart'
+            }
+        },
+
+        methods: {
+            setTabActive: function (name) {
+                this.activeTab = name;
             }
         },
 

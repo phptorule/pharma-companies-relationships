@@ -276,7 +276,7 @@
 
                 this.isSliderVisible = false;
 
-                if (isTrue && this.productId) {
+                if (isTrue) {
                     setTimeout(()=>{
                         this.isSliderVisible = true;
                     },0);
