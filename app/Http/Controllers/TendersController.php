@@ -6,6 +6,7 @@ use App\Models\Tender;
 use App\Models\TenderPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TendersController extends Controller {
 
@@ -13,7 +14,9 @@ class TendersController extends Controller {
     function show(Tender $tender) {
 
         $purchases = TenderPurchase::where('tender_id', $tender->id)
-                        ->with('products')
+                        ->with(['products' => function($q){
+                            $q->groupBy('rl_address_tenders_purchase_products.purchase_id', 'rl_products.id');
+                        }])
                         ->with('consumables')
                         ->paginate(10);
 
