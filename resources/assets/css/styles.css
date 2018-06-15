@@ -3981,6 +3981,7 @@ ul.tenders-list li.open .item > .tag-list {
 }
 
 .modal-body .filters {
+    margin-top: 10px;
     margin-bottom: 10px;
 }
 

@@ -29,31 +29,39 @@
 
                                 <div class="filters">
 
-                                    <div class="pull-left filter-label">
-                                        Used Products:
-                                    </div>
+                                    <div class="row">
 
-                                    <multiple-dropdown-select
-                                            class="form-control select-filter pull-left"
-                                            :name="'Used Products'"
-                                            :options="usedProductOptionsForDropDown"
-                                            :selected="appliedFilters.usedProducts"
-                                            @changed="applyUsedProductsFilter"
-                                            ref="productsMultipleDropdownSelect"
-                                            style="max-width: 200px"
-                                    ></multiple-dropdown-select>
+                                        <div class="col-md-12">
 
-                                    <div class="pull-left filter-label include-others-label-box">
-                                        <div class="grey-checkbox">
-                                            <label>
-                                                <input type="checkbox"
-                                                       @click="includeOthersProduct()"
-                                                       :checked="isOthersIncluded"
-                                                >
-                                                <span class="borders"></span>
-                                                <span class="remember_text">Include others (none-specified) products</span>
-                                            </label>
+                                            <div class="pull-left filter-label">
+                                                Used Products:
+                                            </div>
+
+                                            <multiple-dropdown-select
+                                                    class="form-control select-filter pull-left"
+                                                    :name="'Used Products'"
+                                                    :options="usedProductOptionsForDropDown"
+                                                    :selected="appliedFilters.usedProducts"
+                                                    @changed="applyUsedProductsFilter"
+                                                    ref="productsMultipleDropdownSelect"
+                                                    style="max-width: 200px"
+                                            ></multiple-dropdown-select>
+
+                                            <div class="pull-left filter-label include-others-label-box">
+                                                <div class="grey-checkbox">
+                                                    <label>
+                                                        <input type="checkbox"
+                                                               @click="includeOthersProduct()"
+                                                               :checked="isOthersIncluded"
+                                                        >
+                                                        <span class="borders"></span>
+                                                        <span class="remember_text">Include others (none-specified) products</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
                                         </div>
+
                                     </div>
                                 </div>
 
