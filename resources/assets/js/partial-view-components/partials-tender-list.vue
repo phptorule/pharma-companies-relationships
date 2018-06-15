@@ -123,6 +123,13 @@
                                 <purchase-list-of-tender
                                         :incomingTenderData="selectedTenderData"
                                 ></purchase-list-of-tender>
+
+                                <div class="text-center">
+                                    <pagination :records="selectedTenderDataTotalPurchases"
+                                                :class="'pagination pagination-sm'"
+                                                :per-page="10" @paginate="pageChangedOfPurchaseList"
+                                    ></pagination>
+                                </div>
                             </div>
                         </div>
                     </li>
@@ -154,6 +161,7 @@
         data: function () {
             return {
                 isSliderVisible: false,
+                selectedTenderDataTotalPurchases: 0,
                 addressDoesNotHaveTenders: 'loading',
                 tendersCost: {
                     value: [],
@@ -612,6 +620,21 @@
                 });
             },
 
+
+            pageChangedOfPurchaseList: function(pageNumber) {
+
+                let url = '/api/tenders/'+this.selectedTenderData.tender.id + '?page=' + pageNumber;
+
+                this.httpGet(url)
+                    .then(data => {
+                        this.selectedTenderData = data;
+
+                        this.selectedTenderDataTotalPurchases = data.purchases.total;
+
+                        this.selectedTenderData.purchases = data.purchases.data;
+                    });
+            },
+
             loadTenderDetails: function (tender) {
 
                 let selector = '.tender-box-id-' + tender.tender_id;
@@ -626,6 +649,9 @@
 
                 this.httpGet(url)
                     .then(data => {
+
+                        this.selectedTenderDataTotalPurchases = data.purchases.total;
+
                         this.selectedTenderData = data;
 
                         this.selectedTenderData.purchases = data.purchases.data;
