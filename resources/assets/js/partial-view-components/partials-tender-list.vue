@@ -338,13 +338,8 @@
 
 
                 if(productId) {
-                    let url = '/api/product-by-id/' + productId;
-                    this.httpGet(url)
-                        .then(data => {
-                            this.productsData = data;
 
-                            this.getTendersByProduct(this.productId);
-                        });
+                    this.getTendersByProduct(this.productId);
                 }
 
             },
