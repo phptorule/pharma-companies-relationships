@@ -57,6 +57,10 @@
                                     </div>
                                 </div>
 
+                                <div class="chart-container">
+                                    <div id="address-products-chart"></div>
+                                </div>
+
                             </div>
 
                             <div :class="{hidden: activeTab !== 'tender'}">
@@ -94,8 +98,8 @@
                 },
 
                 queryUrl: '',
-
-                isOthersIncluded: true
+                isOthersIncluded: true,
+                isGoogleChartCoreLoaded: false
             }
         },
 
@@ -176,7 +180,14 @@
 
             loadGraphData: function () {
                 console.log('queryUrl', this.queryUrl);
-            }
+            },
+
+            loadGoogleChartCore: function () {
+                return google.charts.load('current', {'packages': ['corechart']})
+                    .then(() => {
+                        this.isGoogleChartCoreLoaded = true;
+                    })
+            },
         },
 
         mounted: function () {
@@ -197,6 +208,7 @@
                     })
             });
 
+            this.loadGoogleChartCore();
         }
     }
 </script>
