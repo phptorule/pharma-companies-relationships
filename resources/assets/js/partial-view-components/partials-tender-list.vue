@@ -607,24 +607,34 @@
             },
 
             slideUpAllTenderBoxes: function() {
-                $('.tender-details-box').slideUp(0);
+                $('.tender-details-box').slideUp(0, ()=>{
+                    $('.tender-details-box').parent().parent().removeClass('open')
+                });
             },
 
             loadTenderDetails: function (tender) {
 
                 let selector = '.tender-box-id-' + tender.tender_id;
 
-                if (this.checkIfShouldBeSlidedUp(selector)) {
+                if (this.checkIfShouldBeSlidedUp(selector, ()=>{$(selector).parent().parent().removeClass('open');})) {
                     return;
                 }
 
                 this.slideUpAllTenderBoxes();
 
-                this.httpGet('/api/tenders/'+tender.tender_id)
+                let url = '/api/tenders/'+tender.tender_id + '?page=1';
+
+                this.httpGet(url)
                     .then(data => {
                         this.selectedTenderData = data;
 
-                        $(selector).slideDown('slow');
+                        this.selectedTenderData.purchases = data.purchases.data;
+
+                        setTimeout(()=>{
+                            $(selector).slideDown('slow');
+                            $(selector).parent().parent().addClass('open');
+                        }, 100);
+
                     });
             }
 

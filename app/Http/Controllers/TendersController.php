@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tender;
+use App\Models\TenderPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +12,16 @@ class TendersController extends Controller {
 
     function show(Tender $tender) {
 
-        return response()->json($tender);
+        $purchases = TenderPurchase::where('tender_id', $tender->id)
+                        ->with('products')
+                        ->paginate(10);
+
+        $responseData = [
+            'tender'=>$tender,
+            'purchases'=>$purchases
+        ];
+
+        return response()->json($responseData);
 
     }
 

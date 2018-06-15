@@ -23,12 +23,12 @@ const helpers = {
             $('.loader-spinner').addClass('hidden');
         },
 
-        checkIfShouldBeSlidedUp: function (selector) {
+        checkIfShouldBeSlidedUp: function (selector, callback) {
 
             let element = $(selector);
 
             if(element.attr('style').replace(/\s/g, '').indexOf('display:none') === -1) {
-                element.slideUp('slow');
+                element.slideUp('slow', callback);
                 return true;
             }
             return false;

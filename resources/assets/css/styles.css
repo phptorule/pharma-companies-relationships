@@ -3169,6 +3169,18 @@ ul.tenders-list li .item h3{
     background-color: #ffffff;
 }
 
+ul.tenders-list li .item h3.pointer{
+
+}
+
+ul.tenders-list li .item h3.pointer:hover{
+    color: #4a90e2;
+}
+
+ul.tenders-list li .item h3.pointer:active{
+    color: #3c8dbc;
+}
+
 ul.tenders-list .item p.tender-winner{
     font-family: Montserrat;
     font-size: 14px;
@@ -3879,4 +3891,66 @@ ul.staff-with-publication-list .box-body h4{
 
 ul.staff-with-publication-list h3.box-title {
 
+}
+
+table.tender-data-table{
+    margin-left: 20px;
+}
+
+table.tender-data-table ul.list-style-type-circle {
+    list-style-type: circle !important;
+    font-weight: 500 !important;
+}
+
+table.tender-data-table tr{
+    border-bottom: 1px solid #e8e8e8;
+}
+
+table.tender-data-table tr:last-child{
+    border-bottom-color: transparent;
+}
+
+table.tender-data-table tr td {
+    padding: 5px 3px;
+}
+
+ul.tenders-list li.open .item h3,
+h3.purchase-tender-header{
+    background-color: transparent !important;
+}
+
+.font-weight-500{
+    font-weight: 500 !important;
+}
+
+table.tender-data-table tr td h3{
+    font-size: 14px;
+    color: #444444;
+    font-weight: 400;
+    background: transparent !important;
+}
+
+table.tender-data-table tr td p.remark,
+table.tender-data-table tr td p.units-and-quantity{
+    font-size: 12px;
+    line-height: 1.5em;
+    color: #444444;
+}
+
+table.tender-data-table tr td p.remark{
+    font-style: italic;
+}
+
+table.tender-data-table tr td.total-price{
+    font-size: 0.9em;
+}
+
+ul.tenders-list li.open{
+    background: #f7f7f7;
+    box-shadow: inset 0 0 30px rgba(0,0,0,.1);
+    border-radius: 6px;
+}
+
+ul.tenders-list li.open .item h3.pointer{
+    color: #4a90e2;
 }
