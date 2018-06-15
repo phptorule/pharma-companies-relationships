@@ -18,4 +18,8 @@ class TenderPurchase extends Model
 		return $this->belongsToMany(Product::class, 'rl_address_tenders_purchase_products', 'purchase_id', 'product_id');
 	}
 
+	function consumables() {
+        return $this->belongsToMany(ProductConsumable::class, 'rl_address_tenders_purchase_products', 'purchase_id', 'consumable_id');
+    }
+
 }

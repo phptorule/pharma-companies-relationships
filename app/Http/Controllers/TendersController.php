@@ -14,6 +14,7 @@ class TendersController extends Controller {
 
         $purchases = TenderPurchase::where('tender_id', $tender->id)
                         ->with('products')
+                        ->with('consumables')
                         ->paginate(10);
 
         $responseData = [

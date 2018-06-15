@@ -4,9 +4,6 @@
         <h3 class="font-weight-500 purchase-tender-header">Purchases within the tender</h3>
         <table class="tender-data-table">
             <tr v-for="purchase in tenderData.purchases">
-                <!--<td>-->
-                    <!--<ul class="list-style-type-circle"><li></li></ul>-->
-                <!--</td>-->
                 <td>
                     <h3>{{purchase.name}}</h3>
                     <p class="units-and-quantity">{{purchase.quantity}} {{purchase.units}}</p>
@@ -19,6 +16,12 @@
                                     {{product.name ? product.name : 'unspecified product'}}
                                 </a>
                             </li>
+
+                            <li v-for="consumable in purchase.consumables">
+                                <a href="javascript:void(0)" class="tags">
+                                    {{consumable.name}}
+                                </a>
+                            </li>
                         </ul>
                     </div>
 
@@ -27,7 +30,9 @@
                     </p>
                 </td>
                 <td class="total-price">
-                    {{purchase.total_price | currency('Rub')}}
+                    <p>
+                        {{purchase.total_price | currency('Rub')}}
+                    </p>
                 </td>
             </tr>
         </table>

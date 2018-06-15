@@ -3942,7 +3942,13 @@ table.tender-data-table tr td p.remark{
 }
 
 table.tender-data-table tr td.total-price{
-    font-size: 0.9em;
+    vertical-align: top;
+}
+
+table.tender-data-table tr td.total-price p{
+    font-size: 14px;
+    margin-top: 0;
+    padding-top: 5px;
 }
 
 ul.tenders-list li.open{
