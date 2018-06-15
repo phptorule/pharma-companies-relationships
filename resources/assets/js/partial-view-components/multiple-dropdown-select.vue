@@ -1,5 +1,5 @@
 <template>
-    <ul class="nav nav-tabs" :id="blockId">
+    <ul class="nav nav-tabs multiple-dropdown-select" :id="blockId">
         <li class="dropdown">
             <a class="dropdown-toggle" @click="toogleDropdown($event)" data-toggle="dropdown" href="#" :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name">
 
@@ -55,6 +55,12 @@
         watch: {
             options: function (newVal, oldVal) {
                 if(newVal.length && !oldVal.length) {
+                    this.presetSelectedValue();
+                }
+            },
+
+            selected: function (newVal, oldVal) {
+                if(newVal && newVal.length) {
                     this.presetSelectedValue();
                 }
             }

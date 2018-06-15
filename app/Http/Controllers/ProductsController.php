@@ -415,4 +415,21 @@ class ProductsController extends Controller {
 
     }
 
+
+    function getProductListForAddress (Address $address)
+    {
+        $sql = "SELECT p.id, p.company, p.name
+            FROM rl_products AS p
+            LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                ON atpp.product_id = p.id
+            LEFT JOIN rl_address_tenders AS at
+                ON at.id = atpp.tender_id
+            WHERE at.address_id = $address->id
+            GROUP BY p.id";
+
+	    $products = DB::select(DB::raw($sql));
+
+	    return response()->json($products);
+    }
+
 }

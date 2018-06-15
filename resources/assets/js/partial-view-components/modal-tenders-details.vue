@@ -26,7 +26,24 @@
                         <div class="tab-content" style="width: 100%">
 
                             <div :class="{hidden: activeTab !== 'chart'}">
-                                Chart
+
+                                <div class="filters">
+
+                                    <div class="pull-left filter-label">
+                                        Used Products:
+                                    </div>
+
+                                    <multiple-dropdown-select
+                                            class="form-control select-filter pull-left"
+                                            :name="'Used Products'"
+                                            :options="usedProductOptionsForDropDown"
+                                            :selected="appliedFilters.usedProducts"
+                                            @changed="applyUsedProductsFilter"
+                                            ref="productsMultipleDropdownSelect"
+                                            style="max-width: 200px"
+                                    ></multiple-dropdown-select>
+                                </div>
+
                             </div>
 
                             <div :class="{hidden: activeTab !== 'tender'}">
@@ -46,29 +63,86 @@
 
 <script>
 
+    import http from '../mixins/http';
 
     export default {
+
+        mixins: [http],
 
         data: function () {
             return {
                 tenderListParams: {},
-                activeTab: 'chart'
+                addressId: null,
+                activeTab: 'chart',
+                productList: [],
+
+                appliedFilters: {
+                    usedProducts: []
+                }
+            }
+        },
+
+        computed: {
+            usedProductOptionsForDropDown: function () {
+                return this.productList.map(product => {
+                    return {
+                        label: product.company + (product.name? ': ' + product.name : ': unspecified product'),
+                        value: product.id
+                    }
+                })
             }
         },
 
         methods: {
             setTabActive: function (name) {
                 this.activeTab = name;
-            }
+            },
+
+            fetchListOfAddressProducts: function () {
+                return this.httpGet('/api/get-product-list-by-address/'+this.addressId)
+                    .then(data =>{
+
+                        this.productList = JSON.parse(JSON.stringify(data));
+
+                        console.log('this.productList', this.productList);
+
+                        return data;
+                    })
+            },
+
+            markAllProductItemsAsSelected: function () {
+                this.productList.forEach(el => {
+                    this.appliedFilters.usedProducts.push(el.id);
+                })
+            },
+
+            resetFilters: function () {
+                this.appliedFilters = {
+                    usedProducts: []
+                };
+            },
+
+            applyUsedProductsFilter: function (data) {
+                this.appliedFilters.usedProducts = data;
+
+                // this.applyFilters();
+            },
         },
 
         mounted: function () {
             this.$eventGlobal.$on('showModalTenderDetails', (data) => {
 
+                this.resetFilters();
+
                 this.tenderListParams = data;
+                this.addressId = data.addressId;
 
                 $('#tenders-modal').modal('show');
 
+                this.fetchListOfAddressProducts()
+                    .then(data => {
+                        this.markAllProductItemsAsSelected();
+                    })
             });
 
         }

@@ -606,6 +606,8 @@ ul.select-filter > li {
     border-radius: 6px;
 }
 
+.multiple-dropdown-select > li > a,
+
 .sidebar-form ul.select-filter > li > a {
     padding: 10px;
     color: #555555;
@@ -3963,4 +3965,15 @@ ul.tenders-list li.open .item h3.pointer{
 
 ul.tenders-list li.open .item > .tag-list {
     opacity: 0;
+}
+
+.modal-body .filters {
+    margin-bottom: 10px;
+}
+
+.modal-body .filters .filter-label {
+    line-height: 40px;
+    height: 40px;
+    margin-right: 10px;
+    font-weight: 500;
 }
