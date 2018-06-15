@@ -3960,3 +3960,7 @@ ul.tenders-list li.open{
 ul.tenders-list li.open .item h3.pointer{
     color: #4a90e2;
 }
+
+ul.tenders-list li.open .item > .tag-list {
+    opacity: 0;
+}
