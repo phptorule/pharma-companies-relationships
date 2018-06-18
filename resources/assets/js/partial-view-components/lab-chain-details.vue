@@ -151,7 +151,12 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span @hover.prevent="showTooltip" v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                            at {{ person.addresses[0].name }} <span v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
                         </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
