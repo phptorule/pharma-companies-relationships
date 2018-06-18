@@ -6,7 +6,7 @@
                 <span class="caret"></span>
                 {{selectedValuesNamesString? selectedValuesNamesString : name}}
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" v-if="this.name != 'Used Products'">
                 <li v-for="option in options">
                     <div class="grey-checkbox">
                         <label>
@@ -19,6 +19,12 @@
                             <span class="remember_text">{{option.label}}</span>
                         </label>
                     </div>
+                </li>
+            </ul>
+
+            <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
+                <li v-for="option in options">
+                    {{ option.company }}
                 </li>
             </ul>
         </li>

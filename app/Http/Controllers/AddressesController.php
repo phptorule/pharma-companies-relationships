@@ -117,7 +117,13 @@ class AddressesController extends Controller
     function loadFilterValues()
     {
         $tags = Tag::get(['id', 'name']);
-        $products = Product::orderByRaw('company, name')->get();
+        $products = Product::where('name', '=', '')->orderByRaw('company, name')->get();
+        $products->each(function ($product) {
+            $product->childProducts = Product::where('company', $product->company)
+                                        ->where('name', '!=', '')
+                                        ->orderByRaw('company, name')
+                                        ->get();
+        });
         $customerTypes = CustomerType::visible()->get();
 
         $filters = [
