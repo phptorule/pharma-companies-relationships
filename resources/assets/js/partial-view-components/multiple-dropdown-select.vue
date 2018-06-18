@@ -23,14 +23,13 @@
             </ul>
 
             <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
-                <li class="" v-for="parentProduct in options">
-                    <a class="" @click.prevent="toogleChildDropdown($event)" href="#">
-                        <img :src="parentProduct.image" alt="" style="height: 70px;
-                                                                border-radius: 50%;
-                                                                display: inline-block;"
-                        >
-                        <span>{{ parentProduct.company }}</span>
-                        <span class="caret"></span>
+                <li class="dropdown-child-products" v-for="parentProduct in options">
+                    <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event)" href="#">
+                        <img class="parent-product-image" :src="parentProduct.image" alt="">
+                        <div>
+                            <span>{{ parentProduct.company }}</span>
+                            <span class="caret"></span>
+                        </div>
                     </a>
                     <ul class="">
                         <li v-for="childProduct in parentProduct.childProducts">
@@ -94,11 +93,11 @@
 
                 let dropdownContainer = $($event.target).parent();
 
-                if(dropdownContainer.hasClass('open')) {
-                    dropdownContainer.removeClass('open');
+                if(dropdownContainer.hasClass('show-child-dropdown')) {
+                    dropdownContainer.removeClass('show-child-dropdown');
                 }
                 else {
-                    dropdownContainer.addClass('open');
+                    dropdownContainer.addClass('show-child-dropdown');
                 }
             },
 
@@ -152,5 +151,29 @@
 </script>
 
 <style scoped>
+    li.dropdown-child-products ul {
+        display: none;
+    }
 
+    li.dropdown-child-products.show-child-dropdown ul{
+        display: block;
+    }
+
+    .dropdown-child-products-link {
+        background-color: transparent;
+    }
+
+    .dropdown-child-products-link:hover {
+        background-color: transparent;
+    }
+    
+    .dropdown-child-products-link:focus {
+        background-color: transparent;
+    }
+
+    .parent-product-image {
+        height: 70px;
+        border-radius: 50%;
+        display: inline-block;
+    }
 </style>
