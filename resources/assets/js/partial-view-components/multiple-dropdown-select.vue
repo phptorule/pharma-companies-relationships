@@ -31,7 +31,8 @@
                         >
                         <span @click="parentCheckboxClick($event, parentProduct.id, i)" class="product-check"></span>
                         <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
-                            <img class="parent-product-image" :src="parentProduct.image" alt="">
+                            <img class="parent-product-image" :src="parentProduct.image" alt="" v-if="parentProduct.image">
+                            <img class="parent-product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
                             <div class="parent-product-info">
                                 <span>{{ parentProduct.company }}</span>
                                 <span class="fa fa-angle-down" data-caret></span>
@@ -261,6 +262,7 @@
 
     .parent-product-image {
         height: 70px;
+        width: 70px;
         border-radius: 50%;
         display: inline-block;
     }
@@ -275,6 +277,7 @@
     
     .parent-product-info span:first-child {
         color: #333333;
+        white-space: normal;
     }
 
     .child-products-list {
