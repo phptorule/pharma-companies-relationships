@@ -107,9 +107,8 @@
                 }
             },
             toogleChildDropdown: function ($event, i) {
-
-                // let dropdownContainer = $($event.target).parent();
                 let cl = '.drp-' + i;
+                
                 let dropdownContainer = $(cl);
 
                 if(dropdownContainer.hasClass('show-child-dropdown')) {
@@ -173,7 +172,6 @@
     li.dropdown-child-products {
         display: flex;
         flex-direction: column;
-        /* align-items: center; */
     }
 
     li.dropdown-child-products ul {

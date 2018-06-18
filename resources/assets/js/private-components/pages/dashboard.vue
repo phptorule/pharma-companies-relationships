@@ -22,7 +22,7 @@
                                     class="form-control select-filter used-products-filter"
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
-                                    :selected="appliedFilters.usedProducts"
+                                    :selected="selectedUsedProductsForDropDown"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -254,6 +254,41 @@
                         value: tag.id
                     }
                 })
+            },
+            selectedUsedProductsForDropDown: function () {
+                if (this.appliedFilters.usedProducts.length) {
+                    let selected = [];
+
+                    let filtered = this.filterObject.used_product_list.filter((elem) => {
+                        return this.appliedFilters.usedProducts.indexOf(elem.id.toString()) > -1;
+                    });
+
+                    selected = filtered;
+
+                    filtered.forEach((elem) => {
+                        elem.childProducts.forEach(el => {
+                            if  (this.appliedFilters.usedProducts.indexOf(el.id.toString()) > -1) {
+                                selected.push(el);
+                            }
+                        })
+                    });
+
+                    // this.usedProductOptionsForDropDown.forEach(el => {
+                        // let elem = el;
+                        // this.appliedFilters.usedProducts.forEach((item, elem) => {
+                            // console.log(item, elem);
+                            // if (elem.id == item.id) {
+                                // selected.push(elem);
+                            // }
+                        // });
+                    // });
+                    // return this.filterObject.used_product_list.map(el => {
+                        // return this.appliedFilters.usedProducts.forEach(item => {
+                            // return item == el.id;
+                        // });
+                    // });
+                    return selected;
+                }
             }
         },
 
