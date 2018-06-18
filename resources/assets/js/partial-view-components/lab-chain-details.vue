@@ -150,6 +150,9 @@
                                 {{ person.name }}
                             </a>
                         </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at {{ person.addresses[0].name }} <span @hover.prevent="showTooltip" v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                        </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
                 </li>
@@ -172,6 +175,9 @@
                             >
                                 {{ person.name }}
                             </a>
+                        </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at {{ person.addresses[0].name }} <span v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
                         </p>
                         <p class="occupation">{{person.description}}</p>
                     </div>
@@ -197,6 +203,9 @@
                             >
                                 {{ person.name }}
                             </a>
+                        </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at {{ person.addresses[0].name }} <span v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
                         </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
@@ -641,4 +650,5 @@
     .products-list .product-description-block {
         margin-left: 15px;
     }
+
 </style>
