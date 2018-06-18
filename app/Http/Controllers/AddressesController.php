@@ -117,10 +117,10 @@ class AddressesController extends Controller
     function loadFilterValues()
     {
         $tags = Tag::get(['id', 'name']);
-        $products = Product::where('name', '=', '')->orderByRaw('company, name')->get();
-        $products->each(function ($product) {
+        $products = Product::orderByRaw('company, name')->get();
+        $relationalProducts = Product::where('name', '')->orderByRaw('company, name')->get();
+        $relationalProducts->each(function ($product) {
             $product->childProducts = Product::where('company', $product->company)
-                                        ->where('name', '!=', '')
                                         ->orderByRaw('company, name')
                                         ->get();
         });
@@ -129,7 +129,8 @@ class AddressesController extends Controller
         $filters = [
             'tag_list' => $tags,
             'used_product_list' => $products,
-            'customer_types' => $customerTypes
+            'customer_types' => $customerTypes,
+            'relational_products' => $relationalProducts
         ];
 
         return response()->json($filters);

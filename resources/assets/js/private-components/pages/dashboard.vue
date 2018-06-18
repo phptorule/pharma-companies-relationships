@@ -22,7 +22,8 @@
                                     class="form-control select-filter used-products-filter"
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
-                                    :selected="selectedUsedProductsForDropDown"
+                                    :selected="appliedFilters.usedProducts"
+                                    :relationalProducts="filterObject.relational_products"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -177,7 +178,8 @@
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
-                    customer_types: []
+                    customer_types: [],
+                    relational_products: []
                 },
                 appliedFilters: {
                     usedProducts: this.$route.query['used-product-ids[]'] || [],

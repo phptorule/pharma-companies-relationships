@@ -61,7 +61,8 @@
         data: function () {
             return {
                 selectedValues: [],
-                blockId: ''
+                blockId: '',
+                products: []
             }
         },
 
@@ -108,7 +109,7 @@
             },
             toogleChildDropdown: function ($event, i) {
                 let cl = '.drp-' + i;
-                
+
                 let dropdownContainer = $(cl);
 
                 if(dropdownContainer.hasClass('show-child-dropdown')) {
@@ -163,7 +164,7 @@
         },
 
 
-        props: ['options', 'selected', 'name']
+        props: ['options', 'selected', 'name', 'relationalProducts']
 
     }
 </script>
