@@ -23,16 +23,29 @@
             </ul>
 
             <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
-                <li class="dropdown-child-products" v-for="parentProduct in options">
-                    <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event)" href="#">
-                        <img class="parent-product-image" :src="parentProduct.image" alt="">
-                        <div>
-                            <span>{{ parentProduct.company }}</span>
-                            <span class="caret"></span>
-                        </div>
-                    </a>
-                    <ul class="">
+                <li :class="['dropdown-child-products', 'drp-' + i]" v-for="(parentProduct, i) in options">
+                    <div class="parent-product-block">
+                        <span class="borders"></span>
+                        <input type="checkbox"
+                                    @click="checkboxClick(parentProduct.id)"
+                                    :id="blockId + parentProduct.id"
+                                    :checked="selectedValues.indexOf(parentProduct.id) !== -1"
+                                >
+                        <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
+                            <img class="parent-product-image" :src="parentProduct.image" alt="">
+                            <div class="parent-product-info">
+                                <span>{{ parentProduct.company }}</span>
+                                <span class="caret"></span>
+                            </div>
+                        </a>
+                    </div>
+                    <ul class="child-products-list">
                         <li v-for="childProduct in parentProduct.childProducts">
+                            <input type="checkbox"
+                                   @click="checkboxClick(childProduct.id)"
+                                   :id="blockId + childProduct.id"
+                                   :checked="selectedValues.indexOf(childProduct.id) !== -1"
+                            >
                             {{ childProduct.name }}
                         </li>
                     </ul>
@@ -56,9 +69,13 @@
             selectedValuesNamesString: function () {
                 let str = '';
                 this.selectedValues.forEach((id, index) => {
-                    let option = this.options.find(el => el.value == id);
-
-                    str += option.label
+                    if (this.name == 'Used Products') {
+                        let option = this.options.find(el => el.id == id);
+                        str += option.company + (option.name ? ': ' + option.name : '');
+                    } else {
+                        let option = this.options.find(el => el.value == id);
+                        str += option.label
+                    }
 
                     if(++index !== this.selectedValues.length) {
                         str += ', ';
@@ -89,9 +106,11 @@
                     dropdownContainer.addClass('open');
                 }
             },
-            toogleChildDropdown: function ($event) {
+            toogleChildDropdown: function ($event, i) {
 
-                let dropdownContainer = $($event.target).parent();
+                // let dropdownContainer = $($event.target).parent();
+                let cl = '.drp-' + i;
+                let dropdownContainer = $(cl);
 
                 if(dropdownContainer.hasClass('show-child-dropdown')) {
                     dropdownContainer.removeClass('show-child-dropdown');
@@ -151,6 +170,12 @@
 </script>
 
 <style scoped>
+    li.dropdown-child-products {
+        display: flex;
+        flex-direction: column;
+        /* align-items: center; */
+    }
+
     li.dropdown-child-products ul {
         display: none;
     }
@@ -159,8 +184,15 @@
         display: block;
     }
 
+    .parent-product-block {
+        display: flex;
+        align-items: center;
+    }
+
     .dropdown-child-products-link {
         background-color: transparent;
+        display: flex;
+        align-items: center;
     }
 
     .dropdown-child-products-link:hover {
@@ -175,5 +207,17 @@
         height: 70px;
         border-radius: 50%;
         display: inline-block;
+    }
+
+    .parent-product-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        min-width: 200px;
+        margin-left: 20px;
+    }
+
+    .child-products-list {
+        list-style-type: none;
     }
 </style>
