@@ -141,10 +141,14 @@
                 let selected = [];
                 let newSelected = [];
                 let old = this.selectedIds;
+                let isChildSelected = false;
                 parent.childProducts.forEach(function (item) {
+                    if (old.indexOf(item.id) > -1) {
+                        isChildSelected = true;
+                    }
                     selected.push(item.id);
                 });
-                if (this.selectedValues.indexOf(selectedValue) > -1) {
+                if (isChildSelected) {
                     let delIndexes = [];
                     old.forEach((element, i) => {
                         if (selected.indexOf(element) > -1) {
@@ -154,7 +158,6 @@
                     while(delIndexes.length) {
                         old.splice(delIndexes.pop(), 1);
                     }
-                    console.log(old);
                     this.selectedValues = old;
                 } else {
                     if ( ! old.length) {
@@ -173,8 +176,9 @@
             childProductSelected: function (id) {
                 let parent = this.relationalProducts.find(el => el.id === id);
                 let isChildSelected = false;
+                let old = this.selectedIds;
                 parent.childProducts.forEach(function (item) {
-                    if (this.selectedValues.indexOf(item.id) > -1) {
+                    if (old.indexOf(item.id) > -1) {
                         isChildSelected = true;
                     }
                 });
