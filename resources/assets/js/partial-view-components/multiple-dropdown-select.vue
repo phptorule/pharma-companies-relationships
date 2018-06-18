@@ -29,7 +29,7 @@
                         <input type="checkbox"
                                     @click="parentCheckboxClick(parentProduct.id)"
                                     :id="blockId + parentProduct.id"
-                                    :checked="selectedValues.indexOf(parentProduct.id) !== -1"
+                                    :checked="childProductSelected(parentProduct.id)"
                                 >
                         <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
                             <img class="parent-product-image" :src="parentProduct.image" alt="">
@@ -83,6 +83,9 @@
                 });
 
                 return str;
+            },
+            selectedIds: function () {
+                return this.selectedValues;
             }
         },
 
@@ -137,36 +140,46 @@
                 let parent = this.relationalProducts.find(el => el.id === selectedValue);
                 let selected = [];
                 let newSelected = [];
+                let old = this.selectedIds;
                 parent.childProducts.forEach(function (item) {
                     selected.push(item.id);
                 });
                 if (this.selectedValues.indexOf(selectedValue) > -1) {
-                    newSelected = this.selectedValues.filter(elem => {
-                        if (selected.indexOf(parseInt(elem)) > -1) {
-                            
-                        } else {
-                            return elem;
+                    let delIndexes = [];
+                    old.forEach((element, i) => {
+                        if (selected.indexOf(element) > -1) {
+                            delIndexes.push(i);
                         }
                     });
-                    this.selectedValues = newSelected;
+                    while(delIndexes.length) {
+                        old.splice(delIndexes.pop(), 1);
+                    }
+                    console.log(old);
+                    this.selectedValues = old;
                 } else {
-                    selected.forEach(function (item) {
-                        console.log(item);
-                        // this.selectedValues.push(item);
-                    });
-                }
-                console.log(selected, newSelected);
-                
-                // let index = this.selectedValues.indexOf(selectedValue);
+                    if ( ! old.length) {
+                        old = selected;
 
-                // if (index === -1) {
-                //     this.selectedValues.push(selectedValue);
-                // }
-                // else {
-                //     this.selectedValues.splice(index, 1);
-                // }
+                    } else {
+                        selected.forEach(function (item) {
+                            old.push(item);
+                        })
+                    }
+                    this.selectedValues = old;
+                }
 
                 this.notifyParentComponent();
+            },
+            childProductSelected: function (id) {
+                let parent = this.relationalProducts.find(el => el.id === id);
+                let isChildSelected = false;
+                parent.childProducts.forEach(function (item) {
+                    if (this.selectedValues.indexOf(item.id) > -1) {
+                        isChildSelected = true;
+                    }
+                });
+
+                return isChildSelected;
             },
 
             notifyParentComponent: function () {
