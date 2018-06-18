@@ -24,29 +24,30 @@
 
             <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
                 <li :class="['dropdown-child-products', 'drp-' + i]" v-for="(parentProduct, i) in relationalProducts">
-                    <div class="parent-product-block">
-                        <span class="borders"></span>
+                    <div class="parent-product-block blue-checkbox">
                         <input type="checkbox"
-                                    @click="parentCheckboxClick(parentProduct.id)"
-                                    :id="blockId + parentProduct.id"
-                                    :checked="childProductSelected(parentProduct.id)"
-                                >
+                            :id="blockId + parentProduct.id"
+                            :checked="childProductSelected(parentProduct.id)"
+                        >
+                        <span @click="parentCheckboxClick($event, parentProduct.id, i)" class="product-check"></span>
                         <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
                             <img class="parent-product-image" :src="parentProduct.image" alt="">
                             <div class="parent-product-info">
                                 <span>{{ parentProduct.company }}</span>
-                                <span class="caret"></span>
+                                <span class="fa fa-angle-down" data-caret></span>
                             </div>
                         </a>
                     </div>
                     <ul class="child-products-list">
-                        <li v-for="childProduct in parentProduct.childProducts">
+                        <li @click="checkboxClick(childProduct.id)" v-for="childProduct in parentProduct.childProducts">
                             <input type="checkbox"
-                                   @click="checkboxClick(childProduct.id)"
                                    :id="blockId + childProduct.id"
                                    :checked="selectedValues.indexOf(childProduct.id) !== -1"
                             >
-                            {{ childProduct.name ? childProduct.name : 'Unspecified ' + childProduct.company + ' product' }}
+                            <span  class="product-check"></span>
+                            <span>
+                                {{ childProduct.name ? childProduct.name : 'Unspecified ' + childProduct.company + ' product' }}
+                            </span>
                         </li>
                     </ul>
                 </li>
@@ -110,15 +111,19 @@
                 }
             },
             toogleChildDropdown: function ($event, i) {
-                let cl = '.drp-' + i;
+                let dropClass = '.drp-' + i;
+                let down = 'fa-angle-down';
+                let up = 'fa-angle-up';
 
-                let dropdownContainer = $(cl);
+                let dropdownContainer = $(dropClass);
 
                 if(dropdownContainer.hasClass('show-child-dropdown')) {
                     dropdownContainer.removeClass('show-child-dropdown');
+                    dropdownContainer.find('[data-caret]').removeClass(up).addClass(down);
                 }
                 else {
                     dropdownContainer.addClass('show-child-dropdown');
+                    dropdownContainer.find('[data-caret]').removeClass(down).addClass(up);
                 }
             },
 
@@ -136,7 +141,7 @@
                 this.notifyParentComponent();
             },
 
-            parentCheckboxClick: function (selectedValue) {
+            parentCheckboxClick: function ($event, selectedValue, index) {
                 let parent = this.relationalProducts.find(el => el.id === selectedValue);
                 let selected = [];
                 let newSelected = [];
@@ -267,8 +272,64 @@
         min-width: 200px;
         margin-left: 20px;
     }
+    
+    .parent-product-info span:first-child {
+        color: #333333;
+    }
 
     .child-products-list {
         list-style-type: none;
+    }
+
+    .child-products-list input {
+        display: none;
+    }
+
+    .child-products-list li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    .child-products-list li span:last-child {
+        white-space: normal;
+    }
+
+    .blue-checkbox input {
+        display: none;
+    }
+
+    .product-check {
+        float: none;
+        margin: 0;
+        background: #ffffff;
+        padding: 8px;
+        border-radius: 5px;
+        border: 2px solid #e2e3e5;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        margin-right: 15px;
+    }
+
+    [type=checkbox]:checked + .product-check:before {
+        content: '\2714';
+        position: absolute;
+        font-size: 14px;
+        top: 0;
+        left: 3px;
+        color: #2488c5;
+    }
+
+    [type=checkbox]:checked + .product-check {
+        background: #4081df;
+        border-color: #4081df;
+    }
+
+    [type=checkbox]:checked + .product-check:before {
+        color: #ffffff;
+        top: -2px;
+        left: 2px;
     }
 </style>
