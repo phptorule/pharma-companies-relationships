@@ -23,11 +23,11 @@
             </ul>
 
             <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
-                <li :class="['dropdown-child-products', 'drp-' + i]" v-for="(parentProduct, i) in options">
+                <li :class="['dropdown-child-products', 'drp-' + i]" v-for="(parentProduct, i) in relationalProducts">
                     <div class="parent-product-block">
                         <span class="borders"></span>
                         <input type="checkbox"
-                                    @click="checkboxClick(parentProduct.id)"
+                                    @click="parentCheckboxClick(parentProduct.id)"
                                     :id="blockId + parentProduct.id"
                                     :checked="selectedValues.indexOf(parentProduct.id) !== -1"
                                 >
@@ -46,7 +46,7 @@
                                    :id="blockId + childProduct.id"
                                    :checked="selectedValues.indexOf(childProduct.id) !== -1"
                             >
-                            {{ childProduct.name }}
+                            {{ childProduct.name ? childProduct.name : 'Unspecified ' + childProduct.company + ' product' }}
                         </li>
                     </ul>
                 </li>
@@ -61,8 +61,7 @@
         data: function () {
             return {
                 selectedValues: [],
-                blockId: '',
-                products: []
+                blockId: ''
             }
         },
 
@@ -130,6 +129,42 @@
                 else {
                     this.selectedValues.splice(index, 1);
                 }
+
+                this.notifyParentComponent();
+            },
+
+            parentCheckboxClick: function (selectedValue) {
+                let parent = this.relationalProducts.find(el => el.id === selectedValue);
+                let selected = [];
+                let newSelected = [];
+                parent.childProducts.forEach(function (item) {
+                    selected.push(item.id);
+                });
+                if (this.selectedValues.indexOf(selectedValue) > -1) {
+                    newSelected = this.selectedValues.filter(elem => {
+                        if (selected.indexOf(parseInt(elem)) > -1) {
+                            
+                        } else {
+                            return elem;
+                        }
+                    });
+                    this.selectedValues = newSelected;
+                } else {
+                    selected.forEach(function (item) {
+                        console.log(item);
+                        // this.selectedValues.push(item);
+                    });
+                }
+                console.log(selected, newSelected);
+                
+                // let index = this.selectedValues.indexOf(selectedValue);
+
+                // if (index === -1) {
+                //     this.selectedValues.push(selectedValue);
+                // }
+                // else {
+                //     this.selectedValues.splice(index, 1);
+                // }
 
                 this.notifyParentComponent();
             },
