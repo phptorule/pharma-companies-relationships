@@ -23,8 +23,20 @@
             </ul>
 
             <ul class="dropdown-menu" v-if="this.name == 'Used Products'">
-                <li v-for="option in options">
-                    {{ option.company }}
+                <li class="" v-for="parentProduct in options">
+                    <a class="" @click.prevent="toogleChildDropdown($event)" href="#">
+                        <img :src="parentProduct.image" alt="" style="height: 70px;
+                                                                border-radius: 50%;
+                                                                display: inline-block;"
+                        >
+                        <span>{{ parentProduct.company }}</span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="">
+                        <li v-for="childProduct in parentProduct.childProducts">
+                            {{ childProduct.name }}
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </li>
@@ -68,6 +80,17 @@
 
         methods: {
             toogleDropdown: function ($event) {
+
+                let dropdownContainer = $($event.target).parent();
+
+                if(dropdownContainer.hasClass('open')) {
+                    dropdownContainer.removeClass('open');
+                }
+                else {
+                    dropdownContainer.addClass('open');
+                }
+            },
+            toogleChildDropdown: function ($event) {
 
                 let dropdownContainer = $($event.target).parent();
 

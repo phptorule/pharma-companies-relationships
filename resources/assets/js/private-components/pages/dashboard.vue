@@ -239,12 +239,13 @@
             },
 
             usedProductOptionsForDropDown: function () {
-                return this.filterObject.used_product_list.map(product => {
-                    return {
-                        label: product.company + (product.name? ': ' + product.name: ''),
-                        value: product.id
-                    }
-                })
+                // return this.filterObject.used_product_list.map(product => {
+                //     return {
+                //         label: product.company + (product.name? ': ' + product.name: ''),
+                //         value: product.id
+                //     }
+                // })
+                return this.filterObject.used_product_list;
             },
             tagOptionsForDropDown: function () {
                 return this.filterObject.tag_list.map(tag => {
