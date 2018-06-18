@@ -151,9 +151,9 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
                             <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
-                                <p v-for="(address, k) in person.addresses">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
                                     {{ address.name }}
                                 </p>
                             </div>
@@ -182,7 +182,12 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
                         </p>
                         <p class="occupation">{{person.description}}</p>
                     </div>
@@ -210,7 +215,12 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span v-if="person.addresses.length > 1">and {{ person.addresses.length - 1 }} other</span> 
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
                         </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
@@ -654,6 +664,10 @@
 
     .products-list .product-description-block {
         margin-left: 15px;
+    }
+
+    span.worked-at-other {
+        cursor: pointer;
     }
 
 </style>
