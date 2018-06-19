@@ -1,19 +1,23 @@
 <template>
     <ul class="nav nav-tabs" :id="blockId">
         <li class="dropdown">
-            <a class="dropdown-toggle" @click="toogleDropdown($event)" data-toggle="dropdown" href="#" :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name">
-
+            <a class="dropdown-toggle" 
+                @click="toogleDropdown($event)" 
+                data-toggle="dropdown" 
+                href="#" 
+                :title="selectedValuesNamesString ? name + ': ' + selectedValuesNamesString : name"
+            >
                 <span class="caret"></span>
-                {{selectedValuesNamesString? selectedValuesNamesString : name}}
+                {{ selectedValuesNamesString ? selectedValuesNamesString : name }}
             </a>
             <ul class="dropdown-menu" v-if="this.name != 'Used Products'">
                 <li v-for="option in options">
                     <div class="grey-checkbox">
                         <label>
                             <input type="checkbox"
-                                   @click="checkboxClick(option.value)"
-                                   :id="blockId + option.value"
-                                   :checked="selectedValues.indexOf(option.value) !== -1"
+                                @click="checkboxClick(option.value)"
+                                :id="blockId + option.value"
+                                :checked="selectedValues.indexOf(option.value) !== -1"
                             >
                             <span class="borders"></span>
                             <span class="remember_text">{{option.label}}</span>
@@ -29,7 +33,10 @@
                             :id="blockId + parentProduct.id"
                             :checked="childProductSelected(parentProduct.id)"
                         >
-                        <span @click="parentCheckboxClick($event, parentProduct.id, i)" :class="['product-check', {'half-transparent': !checkIfAllChildsSelected(i)}]" data-parent-checkbox></span>
+                        <span @click="parentCheckboxClick($event, parentProduct.id, i)" 
+                            :class="['product-check', {'half-transparent': !checkIfAllChildsSelected(i)}]"
+                            data-parent-checkbox
+                        ></span>
                         <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
                             <img class="parent-product-image" :src="parentProduct.image" alt="" v-if="parentProduct.image">
                             <img class="parent-product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
@@ -115,7 +122,6 @@
                 let dropClass = '.drp-' + i;
                 let down = 'fa-angle-down';
                 let up = 'fa-angle-up';
-
                 let dropdownContainer = $(dropClass);
 
                 if(dropdownContainer.hasClass('show-child-dropdown')) {
@@ -127,9 +133,7 @@
                     dropdownContainer.find('[data-caret]').removeClass(down).addClass(up);
                 }
             },
-
             checkboxClick: function (selectedValue, i) {
-
                 let index = this.selectedValues.indexOf(selectedValue);
 
                 if (index === -1) {
@@ -139,56 +143,44 @@
                     this.selectedValues.splice(index, 1);
                 }
 
-                if (i != undefined) {                    
-                    if (this.checkIfAllChildsSelected(i)) {
-                        $('.drp-' + i).find('[data-parent-checkbox]').removeClass('half-transparent');
-                    } else {
-                        $('.drp-' + i).find('[data-parent-checkbox]').addClass('half-transparent');
-                    }
-                }
-
                 this.notifyParentComponent();
             },
-
             parentCheckboxClick: function ($event, selectedValue, index) {
                 let parent = this.relationalProducts.find(el => el.id === selectedValue);
                 let selected = [];
-                let newSelected = [];
                 let old = this.selectedIds;
                 let isChildSelected = false;
+
                 parent.childProducts.forEach(function (item) {
                     if (old.indexOf(item.id) > -1) {
                         isChildSelected = true;
                     }
                     selected.push(item.id);
                 });
+
                 if (isChildSelected) {
                     let delIndexes = [];
+                    
                     old.forEach((element, i) => {
                         if (selected.indexOf(element) > -1) {
                             delIndexes.push(i);
                         }
                     });
+
                     while(delIndexes.length) {
                         old.splice(delIndexes.pop(), 1);
                     }
+
                     this.selectedValues = old;
                 } else {
                     if ( ! old.length) {
                         old = selected;
-
                     } else {
                         selected.forEach(function (item) {
                             old.push(item);
                         })
                     }
                     this.selectedValues = old;
-                }
-
-                if (this.checkIfAllChildsSelected(index)) {
-                    $('.drp-' + index).find('[data-parent-checkbox]').removeClass('half-transparent');
-                } else {
-                    $('.drp-' + index).find('[data-parent-checkbox]').addClass('half-transparent');
                 }
 
                 this.notifyParentComponent();
@@ -205,11 +197,9 @@
 
                 return isChildSelected;
             },
-
             notifyParentComponent: function () {
                 this.$emit('changed', JSON.parse(JSON.stringify(this.selectedValues)));
             },
-
             setIdForCurrentComponent: function () {
                 this.blockId = this.name.replace(/[^A-Za-z0-9]/g,'').toLowerCase() + Math.round(Math.random()*100);
             },
@@ -229,6 +219,7 @@
                 let parent = this.relationalProducts[parentIndex];
                 let selected = this.selectedIds;
                 let isAll = [];
+
                 for (let k = 0; k < parent.childProducts.length; k++) {
                     if (selected.indexOf(parent.childProducts[k].id) > -1) {
                         isAll.push(1);
@@ -236,6 +227,7 @@
                         isAll.push(0);
                     }
                 }
+
                 return isAll.indexOf(0) > -1 ? false : true;
             }
         },

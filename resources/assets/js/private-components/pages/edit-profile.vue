@@ -164,7 +164,7 @@
                             >
                                 Save password
                             </button>
-                            <a href="#" class="ep-forgot-password-link" @click.prevent>I forgot my password</a>
+                            <!-- <a href="#" class="ep-forgot-password-link" @click.prevent>I forgot my password</a> -->
                         </div>
                     </div>
                 </div>
