@@ -29,7 +29,7 @@
                             :id="blockId + parentProduct.id"
                             :checked="childProductSelected(parentProduct.id)"
                         >
-                        <span @click="parentCheckboxClick($event, parentProduct.id, i)" class="product-check"></span>
+                        <span @click="parentCheckboxClick($event, parentProduct.id, i)" :class="['product-check', {'half-transparent': !checkIfAllChildsSelected(i)}]" data-parent-checkbox></span>
                         <a class="dropdown-child-products-link" @click.prevent="toogleChildDropdown($event, i)" href="#">
                             <img class="parent-product-image" :src="parentProduct.image" alt="" v-if="parentProduct.image">
                             <img class="parent-product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
@@ -40,10 +40,10 @@
                         </a>
                     </div>
                     <ul class="child-products-list">
-                        <li @click="checkboxClick(childProduct.id)" v-for="childProduct in parentProduct.childProducts">
+                        <li @click="checkboxClick(childProduct.id, i)" v-for="childProduct in parentProduct.childProducts">
                             <input type="checkbox"
-                                   :id="blockId + childProduct.id"
-                                   :checked="selectedValues.indexOf(childProduct.id) !== -1"
+                                :id="blockId + childProduct.id"
+                                :checked="selectedValues.indexOf(childProduct.id) !== -1"
                             >
                             <span  class="product-check"></span>
                             <span>
@@ -128,7 +128,7 @@
                 }
             },
 
-            checkboxClick: function (selectedValue) {
+            checkboxClick: function (selectedValue, i) {
 
                 let index = this.selectedValues.indexOf(selectedValue);
 
@@ -137,6 +137,14 @@
                 }
                 else {
                     this.selectedValues.splice(index, 1);
+                }
+
+                if (i != undefined) {                    
+                    if (this.checkIfAllChildsSelected(i)) {
+                        $('.drp-' + i).find('[data-parent-checkbox]').removeClass('half-transparent');
+                    } else {
+                        $('.drp-' + i).find('[data-parent-checkbox]').addClass('half-transparent');
+                    }
                 }
 
                 this.notifyParentComponent();
@@ -177,6 +185,12 @@
                     this.selectedValues = old;
                 }
 
+                if (this.checkIfAllChildsSelected(index)) {
+                    $('.drp-' + index).find('[data-parent-checkbox]').removeClass('half-transparent');
+                } else {
+                    $('.drp-' + index).find('[data-parent-checkbox]').addClass('half-transparent');
+                }
+
                 this.notifyParentComponent();
             },
             childProductSelected: function (id) {
@@ -210,6 +224,19 @@
                 }
 
                 this.selectedValues = this.selected.map(el => parseInt(el));
+            },
+            checkIfAllChildsSelected: function (parentIndex) {
+                let parent = this.relationalProducts[parentIndex];
+                let selected = this.selectedIds;
+                let isAll = [];
+                for (let k = 0; k < parent.childProducts.length; k++) {
+                    if (selected.indexOf(parent.childProducts[k].id) > -1) {
+                        isAll.push(1);
+                    } else {
+                        isAll.push(0);
+                    }
+                }
+                return isAll.indexOf(0) > -1 ? false : true;
             }
         },
 
@@ -328,6 +355,10 @@
     [type=checkbox]:checked + .product-check {
         background: #4081df;
         border-color: #4081df;
+    }
+    
+    [type=checkbox]:checked + .product-check.half-transparent {
+        opacity: 0.5;
     }
 
     [type=checkbox]:checked + .product-check:before {
