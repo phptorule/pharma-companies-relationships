@@ -151,8 +151,11 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
-                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
                                 <p v-if="k > 0" v-for="(address, k) in person.addresses">
                                     {{ address.name }}
                                 </p>
@@ -182,8 +185,11 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
-                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
                                 <p v-if="k > 0" v-for="(address, k) in person.addresses">
                                     {{ address.name }}
                                 </p>
@@ -215,8 +221,11 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" v-tooltip="{ html: 'tooltipContent' + i }" v-if="person.addresses.length > 1">and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
-                            <div v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
                                 <p v-if="k > 0" v-for="(address, k) in person.addresses">
                                     {{ address.name }}
                                 </p>
@@ -267,10 +276,22 @@
                     <img class="product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
                     <div class="product-description-block">
                         <span class="product-description">
-                            {{product.name? product.company + ': ' + product.name : product.company}}
+                            {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
 
-                        <span class="product-also-use" v-html="productAlsoUse(product)"></span>
+                        <span class="product-also-use">
+                            at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">
+                                {{ product.addresses[0].name }}
+                            </a>
+                            <span v-if="product.addresses.length > 1" v-tooltip="{ html: 'tooltipProductContent' + i }">
+                                and {{ product.addresses.length - 1 }} other
+                            </span>
+                            <div class="product-tooltip" v-if="product.addresses.length > 1" :id="'tooltipProductContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in product.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
+                        </span>
                     </div>
 
 
@@ -307,7 +328,18 @@
                             {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
 
-                        <span class="product-also-use" v-html="productAlsoUse(product)"></span>
+                        <span class="product-also-use">
+                            at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">{{ product.addresses[0].name }}</a>
+                            <span v-if="product.addresses.length > 1" v-tooltip="{ html: 'tooltipProductContent' + i }">
+                                and {{ product.addresses.length - 1 }} other
+                            </span>
+
+                            <div class="product-tooltip" v-if="product.addresses.length > 1" :id="'tooltipProductContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in product.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
+                        </span>
                     </div>
 
 
@@ -431,7 +463,7 @@
             },
 
             productsPageChanged: function(pageNumber) {
-                this.loadClusterStaffPaginated(pageNumber)
+                this.loadClusterProductsPaginated(pageNumber)
             },
 
             showProductsPaginated: function() {
@@ -668,6 +700,56 @@
 
     span.worked-at-other {
         cursor: pointer;
+    }
+
+    .product-tooltip {
+        height: 100%;
+        width: 100%;
+        max-height: 100px; 
+        max-width: 200px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .product-tooltip::-webkit-scrollbar-button {
+        background-image:url('');
+        background-repeat:no-repeat;
+        width:4px;
+        height:0px
+    }
+
+    .product-tooltip::-webkit-scrollbar-track {
+        background-color:#ecedee;
+    }
+
+    .product-tooltip::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+        background-color: rgba(1, 60, 104, 0.1);
+    }
+
+    .product-tooltip::-webkit-scrollbar-thumb:hover{
+        background-color:#56999f;
+    }
+
+    .product-tooltip::-webkit-resizer{
+        background-image:url('');
+        background-repeat:no-repeat;
+        width:4px;
+        height:0px
+    }
+
+    .product-tooltip::-webkit-scrollbar{
+        width: 10px;
+    }
+
+    .product-also-use .product-at-link {
+        color: #3a444f;
+        font-weight: 700;
+    }
+    
+    .product-also-use .product-at-link:hover {
+        color: #4a90e2;
     }
 
 </style>

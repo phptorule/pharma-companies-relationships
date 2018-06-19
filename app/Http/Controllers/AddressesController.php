@@ -277,7 +277,11 @@ class AddressesController extends Controller
 
     function getClusterProductsPaginated(Address $address)
     {
-        $products = Product::with('addresses')
+        $products = Product::with([
+                'addresses' => function ($query) use ($address) {
+                    $query->where('cluster_id', $address->cluster_id);
+                }
+            ])
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
