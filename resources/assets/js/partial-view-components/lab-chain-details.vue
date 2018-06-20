@@ -151,7 +151,7 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
                                                                     v-tooltip="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
@@ -185,7 +185,7 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
                                                                     v-tooltip="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
@@ -221,7 +221,7 @@
                             </a>
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
-                            at {{ person.addresses[0].name }} <span class="worked-at-other" 
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
                                                                     v-tooltip="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
@@ -743,12 +743,12 @@
         width: 10px;
     }
 
-    .product-also-use .product-at-link {
+    .product-also-use .product-at-link, .personal-info .product-at-link {
         color: #3a444f;
         font-weight: 700;
     }
     
-    .product-also-use .product-at-link:hover {
+    .product-also-use .product-at-link:hover, .personal-info .product-at-link:hover {
         color: #4a90e2;
     }
 
