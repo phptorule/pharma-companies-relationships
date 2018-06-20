@@ -39,7 +39,7 @@
                         type="password"
                         name="password"
                         class="form-control"
-                        placeholder="Password"
+                        placeholder="Password (min 6 characters)"
                         required
                         minlength="6"
                     >
@@ -71,7 +71,7 @@
 
                 <div class="row">
                     <!-- /.col -->
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 reset-btn-block">
                         <a href="javascript:void(0)"
                             @click.prevent="doResetPassword()"
                             :disabled=" ! isDataValid"
@@ -140,5 +140,7 @@
 </script>
 
 <style scoped>
-
+    .reset-btn-block {
+        margin-bottom: 10px;
+    }
 </style>

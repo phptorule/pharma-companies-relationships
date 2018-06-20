@@ -143,7 +143,7 @@
                             <input id="ep-edit-profile-new-password" 
                                 type="password" 
                                 class="form-control"
-                                placeholder="New password"
+                                placeholder="New password (min 6 characters)"
                                 v-model="newPassword"
                             >
                         </div>
@@ -164,7 +164,7 @@
                             >
                                 Save password
                             </button>
-                            <!-- <a href="#" class="ep-forgot-password-link" @click.prevent>I forgot my password</a> -->
+                            <a href="#" class="ep-forgot-password-link" @click.prevent="redirectToForgotPasswordForm">I forgot my password</a>
                         </div>
                     </div>
                 </div>
@@ -319,7 +319,12 @@
                     .catch(error => {
                         alertify.notify(error.data.message, 'error', 3);
                     })
-            }, 400)
+            }, 400),
+            redirectToForgotPasswordForm: function () {
+                localStorage.removeItem("auth-token");
+                localStorage.removeItem("logged-user");
+                window.location.assign('/forgot-password');
+            }
         },
 
         mounted: function () {
