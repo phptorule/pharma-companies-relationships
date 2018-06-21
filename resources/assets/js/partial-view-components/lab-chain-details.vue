@@ -16,14 +16,6 @@
 
         <div v-if="isClusterEdit">
             <div class="form-group edit-name-input-block">
-                <!-- <input 
-                    type="text" 
-                    autocomplete="off"
-                    class="form-control lab-chain-name-input"
-                    v-model="addressData.cluster.name"
-                    placeholder="Lab chain name"
-                > -->
-
                 <div-editable 
                     @updateEdit="updateCluster"
                     :content.sync="addressData.cluster.name"
@@ -152,7 +144,7 @@
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
                             at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
-                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
                             <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
@@ -186,7 +178,7 @@
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
                             at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
-                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
                             <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
@@ -222,7 +214,7 @@
                         </p>
                         <p class="occupation" v-if="person.addresses.length">
                             at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
-                                                                    v-tooltip="{ html: 'tooltipContent' + i }" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
                                                                 >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
                             <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
@@ -283,7 +275,7 @@
                             at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">
                                 {{ product.addresses[0].name }}
                             </a>
-                            <span v-if="product.addresses.length > 1" v-tooltip="{ html: 'tooltipProductContent' + i }">
+                            <span v-if="product.addresses.length > 1" v-tooltip.bottom="{ html: 'tooltipProductContent' + i }">
                                 and {{ product.addresses.length - 1 }} other
                             </span>
                             <div class="product-tooltip" v-if="product.addresses.length > 1" :id="'tooltipProductContent' + i">
@@ -330,7 +322,7 @@
 
                         <span class="product-also-use">
                             at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">{{ product.addresses[0].name }}</a>
-                            <span v-if="product.addresses.length > 1" v-tooltip="{ html: 'tooltipProductContent' + i }">
+                            <span v-if="product.addresses.length > 1" v-tooltip.bottom="{ html: 'tooltipProductContent' + i }">
                                 and {{ product.addresses.length - 1 }} other
                             </span>
 
@@ -698,17 +690,16 @@
         margin-left: 15px;
     }
 
-    span.worked-at-other {
-        cursor: pointer;
-    }
-
     .product-tooltip {
         height: 100%;
         width: 100%;
         max-height: 100px; 
-        max-width: 200px;
         overflow-y: auto;
         overflow-x: auto;
+    }
+
+    .product-tooltip p {
+        padding-right: 10px;
     }
 
     .product-tooltip::-webkit-scrollbar-button {
