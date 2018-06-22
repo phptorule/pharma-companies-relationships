@@ -230,6 +230,13 @@
                         </div>
                     </div>
                     <div class="modal-body">
+                        <div class="add-new-relation">
+                            <div v-if="showAddRelation">
+                                <autocomplete
+                                    :items="''"
+                                />
+                            </div>
+                        </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
                                 <li :class="{'active': activeTab == 'career'}">
@@ -249,7 +256,7 @@
                                     <a v-if="isEditing" 
                                         class="add-relation" 
                                         href="#" 
-                                        @click.prevent><i class="fa fa-plus"></i></a>
+                                        @click.prevent="toggleAddRelation"><i class="fa fa-plus"></i></a>
                                 </li>
                             </ul>
 
@@ -338,9 +345,13 @@
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import addressHelpers from '../mixins/address-helpers';
+    import autocomplete from './autocomplete';
 
     export default {
         mixins: [http, getPersonInitials, addressHelpers],
+        components: {
+            autocomplete
+        },
 
         data: function () {
             return {
@@ -373,7 +384,8 @@
                 },
                 maxRoleLength: 1000,
                 maxSocialLength: 1000,
-                isSocialEditing: false
+                isSocialEditing: false,
+                showAddRelation: false,
             }
         },
 
@@ -669,6 +681,9 @@
             },
             setSocialEdit: function (social) {
                 this.isSocialEditing = social;
+            },
+            toggleAddRelation: function () {
+                this.showAddRelation = !this.showAddRelation;
             }
         },
 
@@ -842,8 +857,14 @@
         margin: 0;
     }
 
-    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover, #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover {
         background: #4a90e3;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
+        background: #bbbec2;
         border: none;
         cursor: pointer;
     }
@@ -852,5 +873,17 @@
         cursor: pointer;
         position: absolute;
         top: 5px;
+        left: 5px;
+    }
+
+    .add-new-relation {
+        position: absolute;
+        z-index: 1;
+        min-height: 200px;
+        background: #fff;
+        border-radius: 5px;
+        -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
     }
 </style>
