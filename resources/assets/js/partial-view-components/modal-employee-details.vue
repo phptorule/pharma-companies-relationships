@@ -230,15 +230,15 @@
                         </div>
                     </div>
                     <div class="modal-body">
-                        <div class="add-new-relation">
-                            <div v-if="showAddRelation && isEditing">
+                        <div class="add-new-relation" v-if="showAddRelation && isEditing">
+                            
                                 <autocomplete
                                     :items="peopleItems"
                                     :onChange="getPeopleAutocomplete"
                                     :itemsTotal="peopleItemsTotal"
                                     :itemsType="'People'"
                                 />
-                            </div>
+                            
                         </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
@@ -904,13 +904,18 @@
     }
 
     .add-new-relation {
-        position: absolute;
-        z-index: 1;
+        /* position: absolute; */
+        /* z-index: 1; */
+        /* width: 500px; */
+        /* overflow-y: auto; */
+        /* max-height: 100px; */
+        width: 100%;
         min-height: 200px;
         background: #fff;
-        border-radius: 5px;
-        -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-        -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
-        box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
+        /* border-radius: 5px; */
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        margin-bottom: 10px;
     }
 </style>

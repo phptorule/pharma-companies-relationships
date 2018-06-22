@@ -1,18 +1,26 @@
 <template>
     <div>
-        <input v-model="searchQuery" type="search" @input="onChange(searchQuery)">
+        <input 
+            class="search-input form-control"
+            v-model="searchQuery" 
+            type="search" 
+            @input="onChange(searchQuery)"
+            :placeholder="placeholder ? placeholder : 'Search'"
+        >
         <ul>
             <li v-if="isItems && searchQuery && itemsType=='People'" v-for="item in items">
-                <span>
-                    {{ item.name }}
-                </span>
-                <span>
-                    {{ item.town }}
-                </span>
-                <span>
-                    {{ item.description }}
-                </span>
-                <span></span>
+                <div>
+                    Name: {{ item.name }}
+                </div>
+                <div>
+                    City: {{ item.town }}
+                </div>
+                <div>
+                    Role: {{ item.description }}
+                </div>
+                <div v-if="item.addresses.length">
+                    Addresses: {{ getAddressesString(item.addresses) }}
+                </div>
             </li>
             <li v-if=" ! isItems && searchQuery.length >= 3">
                 <span>
@@ -36,7 +44,7 @@
     import http from '../mixins/http';
     export default {
         name: "autocomplete",
-        props: ['items', 'onChange', 'itemsTotal', 'itemsType'],
+        props: ['items', 'onChange', 'itemsTotal', 'itemsType', 'placeholder'],
         mixins: [http],
         data: function () {
             return {
@@ -46,6 +54,18 @@
         methods: {
             peoplePageChanged: function (pageNumber) {
                 this.onChange(this.searchQuery, pageNumber);
+            },
+            getAddressesString: function (addresses) {
+                let str = '';
+                let names = [];
+                if (addresses.length) {
+                    names = addresses.map(element => {
+                        return element.name;
+                    });
+                    str = names.join(', ');
+                }
+
+                return str;
             }
         },
         mounted: function () {
@@ -63,5 +83,9 @@
 </script>
 
 <style scoped>
-
+    .search-input {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #d2d6de;
+    }
 </style>
