@@ -231,14 +231,20 @@
                     </div>
                     <div class="modal-body">
                         <div class="add-new-relation" v-if="showAddRelation && isEditing">
-                            
-                                <autocomplete
-                                    :items="peopleItems"
-                                    :onChange="getPeopleAutocomplete"
-                                    :itemsTotal="peopleItemsTotal"
-                                    :itemsType="'People'"
-                                />
-                            
+                            <autocomplete
+                                :items="peopleItems"
+                                :onChange="getPeopleAutocomplete"
+                                :itemsTotal="peopleItemsTotal"
+                                :itemsType="'People'"
+                            />
+                            <v-select 
+                                :options="connectionTypes"
+                                :label="'name'"
+                                :class="'connection-types'"
+                                :searchable="false"
+                                :placeholder="'Choose connection type'"
+                                v-model="selectedConnectionType"
+                            />
                         </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
@@ -259,7 +265,7 @@
                                     <a v-if="isEditing" 
                                         class="add-relation" 
                                         href="#" 
-                                        @click.prevent="toggleAddRelation"><i class="fa fa-plus"></i></a>
+                                        @click.prevent><i class="fa fa-plus"></i></a>
                                 </li>
                             </ul>
 
@@ -390,7 +396,8 @@
                 isSocialEditing: false,
                 showAddRelation: false,
                 peopleItems: [],
-                peopleItemsTotal: 0
+                peopleItemsTotal: 0,
+                selectedConnectionType: null
             }
         },
 
@@ -904,18 +911,13 @@
     }
 
     .add-new-relation {
-        /* position: absolute; */
-        /* z-index: 1; */
-        /* width: 500px; */
-        /* overflow-y: auto; */
-        /* max-height: 100px; */
         width: 100%;
         min-height: 200px;
         background: #fff;
-        /* border-radius: 5px; */
         -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
         -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
         box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        margin-bottom: 10px;
+        margin-bottom: 20px;
+        padding: 10px 15px;
     }
 </style>
