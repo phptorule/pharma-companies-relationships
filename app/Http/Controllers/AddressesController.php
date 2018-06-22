@@ -397,7 +397,7 @@ class AddressesController extends Controller
 
         AddressProduct::where('address_id', $address->id)->delete();
 
-        if (count($selectedProducts > 0)) {
+        if ( ! empty($selectedProducts)) {
             foreach ($selectedProducts as $productId) {
                 $addressProduct = new AddressProduct();
                 $addressProduct->address_id = $address->id;

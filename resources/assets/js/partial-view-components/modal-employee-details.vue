@@ -239,7 +239,18 @@
                                 <li :class="{'active': activeTab == 'publications'}">
                                     <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
                                 <li :class="{'active': activeTab == 'relationships'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('relationships')" data-toggle="tab" aria-expanded="false">Relationships</a></li>
+                                    <a href="javascript:void(0)" 
+                                        @click="setTabActive('relationships')" 
+                                        data-toggle="tab" 
+                                        aria-expanded="false"
+                                    >
+                                        Relationships
+                                    </a>
+                                    <a v-if="isEditing" 
+                                        class="add-relation" 
+                                        href="#" 
+                                        @click.prevent><i class="fa fa-plus"></i></a>
+                                </li>
                             </ul>
 
                             <div class="tab-content">
@@ -813,5 +824,33 @@
 
     .social-input:focus {
         outline: none;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation {
+        position: absolute;
+        cursor: pointer;
+        top: 7px;
+        right: -20px;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        border: none;
+        display: flex;
+        justify-content: center;
+        background: #bbbec2;
+        color: #fff;
+        margin: 0;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover, #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
+        background: #4a90e3;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation .fa {
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
     }
 </style>
