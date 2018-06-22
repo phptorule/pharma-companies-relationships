@@ -2,10 +2,17 @@
     <div>
         <input v-model="searchQuery" type="search" @input="onChange(searchQuery)">
         <ul>
-            <li v-if="isItems && searchQuery" v-for="item in items">
+            <li v-if="isItems && searchQuery && itemsType=='People'" v-for="item in items">
                 <span>
                     {{ item.name }}
                 </span>
+                <span>
+                    {{ item.town }}
+                </span>
+                <span>
+                    {{ item.description }}
+                </span>
+                <span></span>
             </li>
             <li v-if=" ! isItems && searchQuery.length >= 3">
                 <span>
@@ -13,7 +20,7 @@
                 </span>
             </li>
         </ul>
-        <div class="pagination-box">
+        <div class="pagination-box" v-if="isItems && searchQuery.length >= 3">
             <pagination 
                 :records="itemsTotal" 
                 :class="'pagination pagination-sm no-margin pull-right'" 
@@ -29,7 +36,7 @@
     import http from '../mixins/http';
     export default {
         name: "autocomplete",
-        props: ['items', 'onChange', 'itemsTotal'],
+        props: ['items', 'onChange', 'itemsTotal', 'itemsType'],
         mixins: [http],
         data: function () {
             return {

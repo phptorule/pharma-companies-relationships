@@ -236,6 +236,7 @@
                                     :items="peopleItems"
                                     :onChange="getPeopleAutocomplete"
                                     :itemsTotal="peopleItemsTotal"
+                                    :itemsType="'People'"
                                 />
                             </div>
                         </div>
