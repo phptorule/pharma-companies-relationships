@@ -231,10 +231,11 @@
                     </div>
                     <div class="modal-body">
                         <div class="add-new-relation">
-                            <div v-if="showAddRelation">
+                            <div v-if="showAddRelation && isEditing">
                                 <autocomplete
                                     :items="peopleItems"
                                     :onChange="getPeopleAutocomplete"
+                                    :itemsTotal="peopleItemsTotal"
                                 />
                             </div>
                         </div>
@@ -387,7 +388,8 @@
                 maxSocialLength: 1000,
                 isSocialEditing: false,
                 showAddRelation: false,
-                peopleItems: []
+                peopleItems: [],
+                peopleItemsTotal: 0
             }
         },
 
@@ -429,6 +431,12 @@
             $route: function (to) {
                 if(window.location.hash.indexOf('person-') === -1 && $('#personal-modal').hasClass('in')){
                     $('#personal-modal').modal('hide');
+                }
+            },
+            isEditing: function () {
+                if ( ! this.isEditing) {
+                    this.showAddRelation = false;
+                    this.peopleItems = [];
                 }
             },
             "personData.name": function() {
@@ -687,12 +695,14 @@
             toggleAddRelation: function () {
                 this.showAddRelation = !this.showAddRelation;
             },
-            getPeopleAutocomplete: _.debounce(function (searchQuery) {
+            getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
+                let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {
-                    this.httpGet('/api/people/autocomplete/' + searchQuery)
+                    this.httpGet('/api/people/autocomplete/' + searchQuery + '?page=' + p)
                         .then(data => {
                             console.log(data);
-                            this.peopleItems = data;
+                            this.peopleItems = data.data;
+                            this.peopleItemsTotal = data.total;
                         })
                         .catch(error => {
                             alertify.notify('Error occured', 'error', 3);
