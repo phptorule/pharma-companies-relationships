@@ -165,4 +165,10 @@ class PeopleController extends Controller
         return response()->json($roles);
     }
 
+    function getPeopleAutocomplete ($searchQuery)
+    {
+        $people = People::where('name', 'like', "%$searchQuery%")->orderBy('name')->get();
+        return response()->json($people);
+    }
+
 }

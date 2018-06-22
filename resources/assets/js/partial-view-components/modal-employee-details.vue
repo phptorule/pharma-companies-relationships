@@ -233,7 +233,8 @@
                         <div class="add-new-relation">
                             <div v-if="showAddRelation">
                                 <autocomplete
-                                    :items="''"
+                                    :items="peopleItems"
+                                    :onChange="getPeopleAutocomplete"
                                 />
                             </div>
                         </div>
@@ -386,6 +387,7 @@
                 maxSocialLength: 1000,
                 isSocialEditing: false,
                 showAddRelation: false,
+                peopleItems: []
             }
         },
 
@@ -684,7 +686,21 @@
             },
             toggleAddRelation: function () {
                 this.showAddRelation = !this.showAddRelation;
-            }
+            },
+            getPeopleAutocomplete: _.debounce(function (searchQuery) {
+                if (searchQuery.length >= 3) {
+                    this.httpGet('/api/people/autocomplete/' + searchQuery)
+                        .then(data => {
+                            console.log(data);
+                            this.peopleItems = data;
+                        })
+                        .catch(error => {
+                            alertify.notify('Error occured', 'error', 3);
+                        })
+                } else {
+                    this.peopleItems = [];
+                }
+            }, 400)
         },
 
         mounted: function(){
