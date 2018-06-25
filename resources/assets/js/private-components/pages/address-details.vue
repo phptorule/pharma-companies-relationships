@@ -602,12 +602,15 @@
                     this.isExpanded = true;
                 }
                 this.sideComponentToDisplay = componentToDisplay;
+                this.$root.logData('detail', 'show slided box', JSON.stringify(componentToDisplay));
             },
             showContactsChain: function (addressData) {
                 this.$eventGlobal.$emit('showModalContactsChain', addressData)
+                this.$root.logData('detail', 'show modal contacts chain', JSON.stringify(addressData));
             },
             showOnMap: function () {
                 this.$eventGlobal.$emit('showSpecificItem', [this.addressData])
+                this.$root.logData('detail', 'show specific item', JSON.stringify(this.addressData));
             },
             showModalIfPersonHashDetected: function () {
                 if(this.$route.hash.indexOf('#person-') !== -1) {
@@ -629,6 +632,7 @@
             },
             toggleEditing: function () {
                 this.isEditing = !this.isEditing;
+                this.$root.logData('detail', 'toggle edit address', JSON.stringify(this.isEditing));
                 if ( ! this.isEditing) {
                     this.addressData.name = this.old.name;
                     this.addressData.address = this.old.address;
@@ -642,9 +646,17 @@
             },
             toggleEditingInput: function (input) {
                 this.editingInput = input;
+                this.$root.logData('detail', 'toggle editing input', JSON.stringify(input));
             },
             updateAddress: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('detail', 'update address', JSON.stringify({
+                        name: this.addressData.name,
+                        address: this.addressData.address,
+                        url: this.addressData.url,
+                        phone: this.addressData.phone,
+                        tags: this.addressData.tags
+                    }));
                     this.httpPut('/api/address-details/' + this.addressData.id + '/update-details', {
                         name: this.addressData.name,
                         address: this.addressData.address,
@@ -676,20 +688,26 @@
                 });
 
                 this.addressData.tags = tags;
+                this.$root.logData('detail', 'remove selected tag', JSON.stringify(name));
             },
             closeChain: function () {
                 this.chainSelect = false;
+                this.$root.logData('detail', 'close chain', JSON.stringify(this.chainSelect));
             },
             toggleChain: function () {
                 this.chainSelect = !this.chainSelect
+                this.$root.logData('detail', 'toggle chain select', JSON.stringify(this.chainSelect));
             },
             closeProducts: function () {
                 this.isProductsEditing = false;
+                this.$root.logData('detail', 'close edit products', JSON.stringify(this.isProductsEditing));
             },
             toggleProducts: function () {
                 this.isProductsEditing = !this.isProductsEditing;
+                this.$root.logData('detail', 'toggle edit products', JSON.stringify(this.isProductsEditing));
             },
             updateProducts: function (selectedProducts) {
+                this.$root.logData('detail', 'update products', JSON.stringify(selectedProducts));
                 this.httpPost('/api/products/' + this.addressData.id + '/update', {
                         selectedProducts: selectedProducts
                     })
@@ -705,6 +723,7 @@
                     })
             },
             addNewProduct: function (newItem) {
+                this.$root.logData('detail', 'add new product', JSON.stringify(newItem));
                 let formData = new FormData();
                 formData.append('company', newItem.company);
                 formData.append('name', newItem.name);
@@ -728,6 +747,7 @@
             },
             toggleShowAllProducts: function () {
                 this.showAllProducts = !this.showAllProducts;
+                this.$root.logData('detail', 'toggle showAll products', JSON.stringify(this.showAllProducts));
             },
             productName: function (company, name) {
                 return name ? company + ': ' + name : company;
@@ -735,6 +755,7 @@
             onCloseSlidedBox: function () {
                 this.isExpanded = false;
                 this.sideComponentToDisplay = '';
+                this.$root.logData('detail', 'close slided box', JSON.stringify(''));
             },
             returnToPreviousDashboard: function () {
                 let url = localStorage.getItem('previous-dashboard') ? localStorage.getItem('previous-dashboard') : '/dashboard';
@@ -750,6 +771,7 @@
                 this.saveBtnDisabled = true;
             },
             createNewChain: _.debounce(function () {
+                this.$root.logData('detail', 'create new chain', JSON.stringify(this.addressData.name));
                 this.httpPost('/api/clusters/create/' + this.addressData.id,
                     {
                         name: this.addressData.name
@@ -802,6 +824,8 @@
             }
 
             this.showModalIfPersonHashDetected();
+
+            this.$root.logData('detail', 'open', JSON.stringify(''));
         }
     }
 </script>

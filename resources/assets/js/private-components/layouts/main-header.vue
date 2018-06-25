@@ -97,6 +97,8 @@
                     }
 
                 },1000)
+
+                this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
             },
             getUser: function () {
                 let url = '/api/logged-user';

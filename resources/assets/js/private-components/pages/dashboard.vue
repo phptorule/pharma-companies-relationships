@@ -283,7 +283,7 @@
 
             this.checkLocalStoragePreviousDashboard();
 
-            this.$root.logData('overview', 'open', '');
+            this.$root.logData('overview', 'open', JSON.stringify(''));
 
         },
 
