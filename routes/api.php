@@ -116,4 +116,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/tenders/{tender}', 'TendersController@show');
 
     Route::get('/get-product-list-by-address/{address}', 'ProductsController@getProductListForAddress');
+
+    Route::get('/tenders/{address}/products-graph', 'TendersController@getGraphDataForProductsByTendersAndAddress');
 });

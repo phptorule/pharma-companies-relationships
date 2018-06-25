@@ -255,4 +255,74 @@ class TendersController extends Controller {
 		return $tenders;
 	}
 
+
+	private function queryOtherProductsCost($addressId)
+    {
+        $sql = "SELECT 
+                        GROUP_CONCAT(DISTINCT(atpp.product_id) SEPARATOR ', ') AS product_ids,
+                        SUM(atp.total_price) AS purchases_total_price,
+                        at.tender_date
+                    FROM rl_address_tenders AS at
+                    LEFT JOIN rl_address_tenders_purchase AS atp
+                        ON atp.tender_id = at.id
+                    LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                        ON atpp.tender_id = at.id
+                    WHERE at.address_id = $addressId
+                    GROUP BY at.tender_date, atpp.product_id
+                    HAVING product_ids IS NOT NULL
+                    ORDER BY at.tender_date ASC";
+
+        return DB::select(DB::raw($sql));
+    }
+
+
+    function queryDefinedProductCosts($addressId)
+    {
+        $sql = "SELECT 
+                        GROUP_CONCAT(DISTINCT(atpp.product_id) SEPARATOR ', ') AS product_id,
+                        SUM(atp.total_price) AS purchases_total_price,
+                        at.tender_date
+                    FROM rl_address_tenders AS at
+                    LEFT JOIN rl_address_tenders_purchase AS atp
+                        ON atp.tender_id = at.id
+                    LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                        ON atpp.tender_id = at.id
+                    WHERE at.address_id = $addressId
+                    GROUP BY at.tender_date, atpp.product_id
+                    HAVING product_id IS NOT NULL
+                    ORDER BY at.tender_date ASC";
+
+        return DB::select(DB::raw($sql));
+    }
+
+
+    function queryDefinedProductIds($addressId)
+    {
+        $sql = "SELECT 
+                    atpp.product_id,
+                    CONCAT(p.company, ': ', IF(p.name != '', p.name, 'unspecified')) as product_name
+                FROM rl_address_tenders AS at
+                LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                    ON atpp.tender_id = at.id
+                LEFT JOIN rl_products AS p
+                    ON p.id = atpp.product_id
+                WHERE at.address_id = $addressId
+                AND atpp.product_id IS NOT NULL
+                GROUP BY atpp.product_id
+                ORDER BY atpp.product_id ASC";
+
+        return DB::select(DB::raw($sql));
+    }
+
+
+	function getGraphDataForProductsByTendersAndAddress($address)
+    {
+        $others = $this->queryOtherProductsCost($address);
+
+        $definedProducts = $this->queryDefinedProductCosts($address);
+
+        $definedProductIds = $this->queryDefinedProductIds($address);
+
+        return response()->json($definedProductIds);
+    }
 }
