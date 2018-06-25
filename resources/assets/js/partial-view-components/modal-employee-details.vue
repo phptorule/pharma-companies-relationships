@@ -595,6 +595,7 @@
             },
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+                this.$root.logData('person', 'open', JSON.stringify(tabName + ' tab'));
             },
 
             showContactsChain: function() {
@@ -604,6 +605,8 @@
                 addressData['isPersonChain'] = true;
 
                 this.$eventGlobal.$emit('showModalContactsChain', addressData);
+
+                this.$root.logData('person', 'show contacts chain', JSON.stringify(this.personId));
             },
 
             openRelationshipTabIfHashDetected: function () {
@@ -712,6 +715,7 @@
             },
             setSocialEdit: function (social) {
                 this.isSocialEditing = social;
+                this.$root.logData('person', 'set social edit', JSON.stringify(social));
             },
             toggleAddRelation: function () {
                 this.showAddRelation = !this.showAddRelation;
