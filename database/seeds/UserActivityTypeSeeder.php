@@ -13,6 +13,11 @@ class UserActivityTypeSeeder extends Seeder
      */
     public function run()
     {
+        $components = [
+            'login' => [
+                
+            ]
+        ];
         UserActivityType::truncate();
         DB::beginTransaction();
         DB::commit();

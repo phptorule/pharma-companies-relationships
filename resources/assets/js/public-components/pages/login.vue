@@ -73,6 +73,8 @@
                             return;
                         }
 
+                        this.$root.logData('123123');
+                        
                         AuthService.isLoggedIn = true;
 
                         localStorage.setItem('auth-token', data.data.token);

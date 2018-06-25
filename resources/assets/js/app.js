@@ -5,6 +5,7 @@ import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
 import vSelect from 'vue-select';
 import Tooltip from 'vue-directive-tooltip';
+import logger from './mixins/logger';
 
 window.Vue = require('vue');
 
@@ -40,6 +41,7 @@ Vue.component('div-editable', require('./partial-view-components/div-editable'))
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 
 const app = new Vue({
+    mixins: [logger],
     el: '#app',
     router: router
 });
