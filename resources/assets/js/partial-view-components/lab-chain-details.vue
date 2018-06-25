@@ -420,6 +420,7 @@
             showLabChainMembersPaginated: function() {
                 this.isShowLabChainMembersCollapsed = false;
                 this.loadClusterDetails();
+                this.$root.logData('labchain', 'show labchain members paginated', JSON.stringify(''));
             },
 
             loadClusterDetails: function (page) {
@@ -434,15 +435,18 @@
 
             pageChanged: function(pageNumber) {
                 this.loadClusterDetails(pageNumber);
+                this.$root.logData('labchain', 'labchain members page changed', JSON.stringify(pageNumber));
             },
 
             showLabChainStaffPaginated: function() {
                 this.isShowLabChainStaffCollapsed = false;
                 this.loadClusterStaffPaginated();
+                this.$root.logData('labchain', 'show labchain staff paginated', JSON.stringify(''));
             },
 
             staffPageChanged: function(pageNumber) {
                 this.loadClusterStaffPaginated(pageNumber)
+                this.$root.logData('labchain', 'labchain staff page changed', JSON.stringify(pageNumber));
             },
 
             loadClusterStaffPaginated: function (page) {
@@ -456,11 +460,13 @@
 
             productsPageChanged: function(pageNumber) {
                 this.loadClusterProductsPaginated(pageNumber)
+                this.$root.logData('labchain', 'labchain products page changed', JSON.stringify(pageNumber));
             },
 
             showProductsPaginated: function() {
                 this.isProductCollapsed = false;
                 this.loadClusterProductsPaginated();
+                this.$root.logData('labchain', 'show labchain products paginated', JSON.stringify(this.addressData.cluster.name));
             },
 
             loadClusterProductsPaginated: function (page) {
@@ -474,6 +480,7 @@
 
             closeSlidedBox: function () {
                 this.$emit('closeSlidedBox')
+                this.$root.logData('labchain', 'close slided box', JSON.stringify(''));
             },
 
             productAlsoUse: function (product) {
@@ -500,7 +507,11 @@
                         this.filtered = this.empList;
                     })
             },
-            handleSearch: function (e) {
+            handleSearch: _.debounce(function (e) {
+                this.$root.logData('labchain', 'search', JSON.stringify({
+                    searchQuery: this.query,
+                    selectedRole: this.selectedRole
+                }));
                 this.filtered = this.empList.filter((item) => {
                     if (this.canSearch && this.canSearchByRole) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
@@ -511,7 +522,7 @@
                         return item.type_id == this.selectedRole.id
                     }
                 });
-            },
+            }, 400),
             toggleClusterEdit: function () {
                 this.isClusterEdit = !this.isClusterEdit;
                 if ( ! this.isClusterEdit) {
@@ -519,9 +530,11 @@
                 } else {
                     this.checkIfChangesMade();
                 }
+                this.$root.logData('labchain', 'toggle cluster edit', JSON.stringify(this.isClusterEdit));
             },
             updateCluster: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('labchain', 'update labchain name', JSON.stringify(this.addressData.cluster.name));
                     this.httpPut('/api/address-details/'+this.addressData.id+'/update-cluster-name', {
                         clusterName: this.addressData.cluster.name.trim()
                     })
@@ -547,6 +560,7 @@
         },
 
         mounted: function () {
+            this.$root.logData('labchain', 'open', JSON.stringify(''));
             this.loadClusterStaffPaginated();
             this.loadClusterProductsPaginated();
 

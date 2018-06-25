@@ -615,6 +615,7 @@
             },
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+                this.$root.logData('person_relationship', 'page changed', JSON.stringify(page));
             },
             toggleEditing: function() {
                 this.isEditing = !this.isEditing;
@@ -632,6 +633,8 @@
                 } else {
                     this.checkIfChangesMade();
                 }
+
+                this.$root.logData('person', 'toggle edit person', JSON.stringify(this.isEditing));
             },
             checkIfInputsEmpty: function() {
                 if (
@@ -661,6 +664,16 @@
             },
             updateEmploye: function() {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('person', 'update person data', JSON.stringify({
+                        name: this.personData.name,
+                        description: this.personData.description,
+                        role: this.personData.role,
+                        linkedin_url: this.personData.linkedin_url,
+                        twitter: this.personData.twitter,
+                        facebook: this.personData.facebook,
+                        instagram: this.personData.instagram,
+                        telegram: this.personData.telegram
+                    }));
                     this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
@@ -729,6 +742,7 @@
 
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
                 this.init(data.personId, data.addressId, data.address);
+                this.$root.logData('person', 'open', JSON.stringify(data.personId));
             });
 
             this.openRelationshipTabIfHashDetected('relationships');

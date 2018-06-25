@@ -567,6 +567,9 @@
                     })
             },
             addChain: function (id) {
+                this.$root.logData('detail', 'add chain', JSON.stringify({
+                        cluster_id: id
+                    }));
                 this.httpPut('/api/clusters/' + this.addressId, {
                         cluster_id: id
                     })
@@ -583,6 +586,7 @@
                     })
             },
             updateCustomerStatus: function (status) {
+                this.$root.logData('detail', 'update customer status', JSON.stringify(status));
                 this.httpPut('/api/address-details/' + this.addressId + '/update-status', {
                         status: status
                     })
