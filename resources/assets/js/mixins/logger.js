@@ -3,13 +3,13 @@ import http from './http.js';
 const logger = {
     mixins: [http],
     methods: {
-        logData: function (componentName, componentAction, userId, payload) {
+        logData: function (componentName, componentAction, payload) {
             let url = '/api/logger/log-data';
             this.httpPost(url, {
                 'componentName': componentName,
-                'componentAction': componentAction
+                'componentAction': componentAction,
+                'payload': payload
             });
-            console.log('123123');
         }
     }
 

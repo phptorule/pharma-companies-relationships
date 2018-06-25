@@ -209,6 +209,7 @@
         
         methods: {
             onFileInputClick: function () {
+                this.$root.logData('edit_profile', 'click on image input', JSON.stringify(''));
                 this.$refs.avatarInput.click();
             },
             getUser: function () {
@@ -225,6 +226,7 @@
                     })
             },
             onFileSelect: function () {
+                this.$root.logData('edit_profile', 'image selected', JSON.stringify(''));
                 let file = this.$refs.avatarInput.files[0];
 
                 if (file) {
@@ -247,6 +249,7 @@
                 }
             },
             updateProfilePicture: _.debounce(function () {
+                this.$root.logData('edit_profile', 'update profile picture', JSON.stringify(''));
                 let formData = new FormData();
                 formData.append('profile-picture', this.profileImage);
                 let url = '/api/user/update-profile-picture';
@@ -266,6 +269,7 @@
                     })
             }, 400),
             removeAvatar: _.debounce(function () {
+                this.$root.logData('edit_profile', 'remove avatar', JSON.stringify(''));
                 let url = '/api/user/remove-avatar';
                 this.httpPost(url)
                     .then(data => {
@@ -281,6 +285,7 @@
                     })
             }, 400),
             updateProfileSettings: _.debounce(function () {
+                this.$root.logData('edit_profile', 'update profile settings', JSON.stringify(''));
                 let url = '/api/user/update-profile-settings';
                 this.httpPut(url, {
                     name: this.name,
@@ -300,6 +305,7 @@
                     })
             }, 400),
             changePassword: _.debounce(function () {
+                this.$root.logData('edit_profile', 'change password', JSON.stringify(''));
                 let url = '/api/user/change-password';
                 this.httpPost(url, {
                     current_password: this.currentPassword,
@@ -321,6 +327,7 @@
                     })
             }, 400),
             redirectToForgotPasswordForm: function () {
+                this.$root.logData('edit_profile', 'click on forgot password', JSON.stringify(''));
                 localStorage.removeItem("auth-token");
                 localStorage.removeItem("logged-user");
                 window.location.assign('/forgot-password');
@@ -329,6 +336,7 @@
 
         mounted: function () {
             this.getUser();
+            this.$root.logData('edit_profile', 'open', JSON.stringify(''));
         },
 
         computed: {

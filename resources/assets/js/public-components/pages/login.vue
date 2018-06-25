@@ -78,7 +78,7 @@
                         localStorage.setItem('auth-token', data.data.token);
                         localStorage.setItem('logged-user', JSON.stringify(data.data.user));
 
-                        this.$root.logData('login', 'sign in');
+                        this.$root.logData('login', 'sign in', JSON.stringify(''));
                         // this.$router.push('/dashboard');
                         window.location.assign('/dashboard')
                     })

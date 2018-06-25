@@ -283,6 +283,8 @@
 
             this.checkLocalStoragePreviousDashboard();
 
+            this.$root.logData('overview', 'open', '');
+
         },
 
         methods: {
@@ -311,21 +313,25 @@
             applyTypeFilter: function (data) {
                 this.appliedFilters.type = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by type', JSON.stringify(data));
             },
 
             applyUsedProductsFilter: function (data) {
                 this.appliedFilters.usedProducts = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by used products', JSON.stringify(data));
             },
 
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by tags', JSON.stringify(data));
             },
 
             applySortByFilter: function (data) {
                 this.appliedFilters.sortBy = data;
                 this.applyFilters(true);
+                this.$root.logData('overview', 'apply filter by sort', JSON.stringify(data));
             },
 
             listenToTotalPointsDisplayedOnMapChanged: function () {
@@ -431,6 +437,7 @@
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
                 this.loadAddressesPaginated();
+                this.$root.logData('overview', 'page changed', JSON.stringify(pageNumber));
             },
 
             loadFilterObject: function() {
@@ -473,6 +480,7 @@
                 }
 
                 this.applyFilters();
+                this.$root.logData('overview', 'reset filters', JSON.stringify(''));
             },
 
             scrollFunction: function() {
