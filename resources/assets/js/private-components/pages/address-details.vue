@@ -690,7 +690,7 @@
                 this.isProductsEditing = !this.isProductsEditing;
             },
             updateProducts: function (selectedProducts) {
-                this.httpPut('/api/products/' + this.addressData.id, {
+                this.httpPost('/api/products/' + this.addressData.id + '/update', {
                         selectedProducts: selectedProducts
                     })
                     .then(data => {
