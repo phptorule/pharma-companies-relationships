@@ -256,44 +256,6 @@ class TendersController extends Controller {
 	}
 
 
-	private function queryOtherProductsCost($addressId)
-    {
-        $sql = "SELECT 
-                    at.tender_date,
-                    IF(GROUP_CONCAT(DISTINCT(atpp.product_id) SEPARATOR ', ') IS NULL, SUM(at.budgeted_cost),(SUM(at.budgeted_cost) - SUM(atp.total_price))) AS other
-                FROM rl_address_tenders AS at
-                LEFT JOIN rl_address_tenders_purchase AS atp
-                    ON atp.tender_id = at.id
-                LEFT JOIN rl_address_tenders_purchase_products AS atpp
-                    ON atpp.tender_id = at.id
-                WHERE at.address_id = $addressId
-                GROUP BY at.tender_date
-                ORDER BY at.tender_date  ASC";
-
-        return DB::select(DB::raw($sql));
-    }
-
-
-    function queryDefinedProductCosts($addressId)
-    {
-        $sql = "SELECT 
-                        GROUP_CONCAT(DISTINCT(atpp.product_id) SEPARATOR ', ') AS product_id,
-                        SUM(atp.total_price) AS purchases_total_price,
-                        at.tender_date
-                    FROM rl_address_tenders AS at
-                    LEFT JOIN rl_address_tenders_purchase AS atp
-                        ON atp.tender_id = at.id
-                    LEFT JOIN rl_address_tenders_purchase_products AS atpp
-                        ON atpp.tender_id = at.id
-                    WHERE at.address_id = $addressId
-                    GROUP BY at.tender_date, atpp.product_id
-                    HAVING product_id IS NOT NULL
-                    ORDER BY at.tender_date ASC";
-
-        return DB::select(DB::raw($sql));
-    }
-
-
     function queryDefinedProductIds($addressId)
     {
         $sql = "SELECT 
@@ -312,6 +274,7 @@ class TendersController extends Controller {
         return DB::select(DB::raw($sql));
     }
 
+
     function search($items, $needle, $propName) {
         foreach ($items as $i => $item) {
             if($item->$propName == $needle) {
@@ -322,32 +285,52 @@ class TendersController extends Controller {
         return null;
     }
 
+
+    function queryChartDataForProducts($addressId)
+    {
+        $sql = "SELECT 
+                    atpp.product_id,
+                    SUM(at.budgeted_cost) AS tender_total_budget,
+                    SUM(atp.total_price) AS purchases_total_price, 
+                    (SUM(at.budgeted_cost) - SUM(atp.total_price)) AS other,
+                    at.tender_date
+                FROM rl_address_tenders AS at
+                LEFT JOIN rl_address_tenders_purchase AS atp
+                    ON atp.tender_id = at.id
+                LEFT JOIN rl_address_tenders_purchase_products AS atpp
+                    ON atpp.tender_id = at.id
+                WHERE at.address_id = $addressId
+                GROUP BY at.tender_date, atpp.product_id
+                ORDER BY at.tender_date  ASC";
+
+        return DB::select(DB::raw($sql));
+    }
+
+
 	function getGraphDataForProductsByTendersAndAddress($address)
     {
-        $others = $this->queryOtherProductsCost($address);
-
-        $definedProducts = $this->queryDefinedProductCosts($address);
+        $sqlResults = $this->queryChartDataForProducts($address);
 
         $definedProductIds = $this->queryDefinedProductIds($address);
-
 
         $titles = [];
         $preData = [];
 
-
-        foreach ($others as $i => $other) {
-
-            $preData[$other->tender_date] = array_fill(0, count($definedProductIds) + 2, 0);
-
-            $preData[$other->tender_date][0] = $other->tender_date;
-            $preData[$other->tender_date][1] = $other->other;
+        foreach ($sqlResults as $i => $result) {
+            $preData[$result->tender_date] = array_fill(0, count($definedProductIds) + 2, 0);
         }
 
+        foreach ($sqlResults as $i => $result) {
 
-        foreach ($definedProducts as $product) {
-            $indexPlus2 = $this->search($definedProductIds, $product->product_id, 'product_id') + 2;
+            $preData[$result->tender_date][0] = $result->tender_date;
+            $preData[$result->tender_date][1] += floatval($result->other);
 
-            $preData[$product->tender_date][$indexPlus2] = $product->purchases_total_price;
+            if(!is_null($index = $this->search($definedProductIds, $result->product_id, 'product_id'))) {
+
+                $indexPlus2 = $index + 2;
+
+                $preData[$result->tender_date][$indexPlus2] += floatval($result->purchases_total_price);
+            }
         }
 
         foreach ($definedProductIds as $definedProduct) {
