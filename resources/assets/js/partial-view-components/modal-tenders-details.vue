@@ -33,31 +33,35 @@
 
                                         <div class="col-md-12">
 
-                                            <div class="pull-left filter-label">
-                                                Used Products:
-                                            </div>
+                                            <div class="filter-container">
 
-                                            <multiple-dropdown-select
-                                                    class="form-control select-filter pull-left"
-                                                    :name="'Used Products'"
-                                                    :options="usedProductOptionsForDropDown"
-                                                    :selected="appliedFilters.usedProducts"
-                                                    @changed="applyUsedProductsFilter"
-                                                    ref="productsMultipleDropdownSelect"
-                                                    style="max-width: 200px"
-                                            ></multiple-dropdown-select>
-
-                                            <div class="pull-left filter-label include-others-label-box">
-                                                <div class="grey-checkbox">
-                                                    <label>
-                                                        <input type="checkbox"
-                                                               @click="includeOthersProduct()"
-                                                               :checked="isOthersIncluded"
-                                                        >
-                                                        <span class="borders"></span>
-                                                        <span class="remember_text">Include other (non-specified) products</span>
-                                                    </label>
+                                                <div class="pull-left filter-label">
+                                                    Used Products:
                                                 </div>
+
+                                                <multiple-dropdown-select
+                                                        class="form-control select-filter pull-left"
+                                                        :name="'Used Products'"
+                                                        :options="usedProductOptionsForDropDown"
+                                                        :selected="appliedFilters.usedProducts"
+                                                        @changed="applyUsedProductsFilter"
+                                                        ref="productsMultipleDropdownSelect"
+                                                        style="max-width: 200px"
+                                                ></multiple-dropdown-select>
+
+                                                <div class="pull-left filter-label include-others-label-box">
+                                                    <div class="grey-checkbox">
+                                                        <label>
+                                                            <input type="checkbox"
+                                                                   @click="includeOthersProduct()"
+                                                                   :checked="isOthersIncluded"
+                                                            >
+                                                            <span class="borders"></span>
+                                                            <span class="remember_text">Include other (non-specified) products</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
                                             </div>
 
                                         </div>
@@ -116,7 +120,8 @@
                 isOthersIncluded: true,
                 isGoogleChartCoreLoaded: false,
                 isGraphLoading: true,
-                isFilterEmpty: false
+                isFilterEmpty: false,
+                chartWidth: null
             }
         },
 
@@ -207,7 +212,16 @@
                     .then((data) => {
 
                         this.isGraphLoading = true;
-                        this.drawChart(data.chart_data, data.delimiter_key);
+
+                        if(this.chartWidth) {
+                            this.drawChart(data.chart_data, data.delimiter_key);
+                        }
+                        else {
+                            setTimeout(()=>{
+                                this.drawChart(data.chart_data, data.delimiter_key);
+                            },200);
+                        }
+
                     });
             },
 
@@ -253,8 +267,8 @@
                 let colors = this.defineChartColors(data);
 
                 let options = {
-                    width: 830,
-                    height: 200,
+                    width: this.chartWidth,
+                    height: 400,
                     title: 'Sales',
                     colors: colors,
                     tooltip: {isHtml: true},
@@ -262,6 +276,10 @@
                     hAxis: {baselineColor: 'none', ticks: []},
                     legend: 'none',
                     animation: {startup: true},
+                    chartArea:{
+                        right:40,
+                        width:"85%",
+                    }
                 };
 
                 let visualizationData = google.visualization.arrayToDataTable(data);
@@ -273,6 +291,10 @@
 
                     chart.draw(visualizationData, options);
                 }, 0);
+            },
+
+            defineChartWidth: function () {
+                this.chartWidth = $('#tenders-modal .modal-body').width();
             }
         },
 
@@ -291,7 +313,11 @@
                         this.markAllProductItemsAsSelected();
 
                         this.applyFilters();
-                    })
+                    });
+
+                setTimeout(()=>{
+                    this.defineChartWidth();
+                },200)
             });
 
             this.loadGoogleChartCore();

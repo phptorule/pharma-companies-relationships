@@ -3563,8 +3563,8 @@ ul.staff-list li .prod-info .amount{
 
 #tenders-modal .modal-body {
     position: initial;
-    padding-left: 140px;
-    padding-right: 140px;
+    padding-left: 20px;
+    padding-right: 20px;
     padding-bottom: 50px;
 }
 
@@ -3572,6 +3572,12 @@ ul.staff-list li .prod-info .amount{
     display: flex;
     align-items: center;
     justify-content: space-around;
+    margin-left: 140px;
+    margin-right: 140px;
+}
+
+#tenders-modal .filter-container{
+    padding-left: 140px;
 }
 
 #tenders-modal ul.person-tabs li {
@@ -4006,6 +4012,6 @@ ul.tenders-list li.open .item > .tag-list {
     color: #8F8F8F;
     font-size: 24px;
     text-align: center;
-    height: 200px;
-    line-height: 200px;
+    height: 400px;
+    line-height: 400px;
 }
