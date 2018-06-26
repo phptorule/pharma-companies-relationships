@@ -69,6 +69,9 @@
                                     <div v-if="isGraphLoading" class="loading-header">
                                         <h3>Loading...</h3>
                                     </div>
+                                    <div v-if="isFilterEmpty" class="loading-header">
+                                        <h3>Please apply any filter</h3>
+                                    </div>
                                     <div id="address-products-chart"></div>
                                 </div>
 
@@ -111,7 +114,8 @@
                 queryUrl: '',
                 isOthersIncluded: true,
                 isGoogleChartCoreLoaded: false,
-                isGraphLoading: true
+                isGraphLoading: true,
+                isFilterEmpty: false
             }
         },
 
@@ -210,6 +214,15 @@
             drawChart: function (data, delimetrKey, singleChart) {
 
                 $('#address-products-chart').html('');
+
+                if(data[0].length === 1) {
+                    this.isFilterEmpty = true;
+                    this.isGraphLoading = false;
+                    return;
+                }
+                else {
+                    this.isFilterEmpty = false;
+                }
 
                 let options = {
                     width: 830,

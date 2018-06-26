@@ -258,6 +258,10 @@ class TendersController extends Controller {
 
     function queryDefinedProductIds($addressId, $usedProductsIds)
     {
+        if(is_null($usedProductsIds)) {
+            return [];
+        }
+
         $sql = "SELECT 
                     atpp.product_id,
                     CONCAT(p.company, ': ', IF(p.name != '', p.name, 'unspecified')) as product_name
@@ -289,6 +293,10 @@ class TendersController extends Controller {
 
     function queryChartDataForProducts($addressId, $usedProductsIds)
     {
+        if(is_null($usedProductsIds)) {
+            $usedProductsIds = -1;
+        }
+
         $sql = "SELECT 
                     atpp.product_id,
                     SUM(at.budgeted_cost) AS tender_total_budget,
@@ -312,10 +320,11 @@ class TendersController extends Controller {
 	function getGraphDataForProductsByTendersAndAddress($address)
     {
         $requestParams = request()->all();
+        $usedProductIds = isset($requestParams['used-products']) ? $requestParams['used-products'] : null;
 
-        $sqlResults = $this->queryChartDataForProducts($address, $requestParams['used-products']);
+        $sqlResults = $this->queryChartDataForProducts($address, $usedProductIds);
 
-        $definedProductIds = $this->queryDefinedProductIds($address, $requestParams['used-products']);
+        $definedProductIds = $this->queryDefinedProductIds($address, $usedProductIds);
 
         $titles = [];
         $preData = [];
