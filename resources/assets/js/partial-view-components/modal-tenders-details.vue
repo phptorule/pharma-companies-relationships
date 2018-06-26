@@ -95,10 +95,11 @@
 <script>
 
     import http from '../mixins/http';
+    import helpers from '../mixins/helpers';
 
     export default {
 
-        mixins: [http],
+        mixins: [http, helpers],
 
         data: function () {
             return {
@@ -121,9 +122,17 @@
 
         computed: {
             usedProductOptionsForDropDown: function () {
-                return this.productList.map(product => {
+
+                let colors = JSON.parse(JSON.stringify(this.GOOGLE_CHART_DEFAULT_COLORS));
+
+                colors.shift();
+
+                return this.productList.map((product, i) => {
+
+                    let icon = `<i class="oval" style="background-color: ${colors[i]}"></i> `;
+
                     return {
-                        label: product.company + (product.name? ': ' + product.name : ': unspecified product'),
+                        label: icon + product.company + (product.name? ': ' + product.name : ': unspecified product'),
                         value: product.id
                     }
                 })
@@ -193,8 +202,6 @@
             },
 
             loadGraphData: function () {
-                //ajax query will be here
-                console.log('queryUrl', this.queryUrl);
 
                 this.httpGet('/api/tenders/' + this.addressId + '/products-graph' +  this.queryUrl)
                     .then((data) => {
@@ -211,6 +218,25 @@
                     })
             },
 
+            defineChartColors: function(chartData) {
+                let allColors = JSON.parse(JSON.stringify(this.GOOGLE_CHART_DEFAULT_COLORS));
+
+                let usedColors = [allColors[0]];
+
+                this.appliedFilters.usedProducts.forEach(id => {
+
+                    let i = this.productList.findIndex(el => el.id == id);
+
+                    usedColors.push(allColors[i+1]);
+                });
+
+                if(chartData[0].indexOf('Other') === -1) {
+                    usedColors.shift();
+                }
+
+                return usedColors;
+            },
+
             drawChart: function (data, delimetrKey, singleChart) {
 
                 $('#address-products-chart').html('');
@@ -224,15 +250,17 @@
                     this.isFilterEmpty = false;
                 }
 
+                let colors = this.defineChartColors(data);
+
                 let options = {
                     width: 830,
                     height: 200,
                     title: 'Sales',
-                    // colors: colorPallette,
+                    colors: colors,
                     tooltip: {isHtml: true},
                     vAxis: {title: 'Budget', format: "###,###"},
                     hAxis: {baselineColor: 'none', ticks: []},
-                    legend: 'bottom',
+                    legend: 'none',
                     animation: {startup: true},
                 };
 

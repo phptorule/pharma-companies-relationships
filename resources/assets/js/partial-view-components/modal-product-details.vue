@@ -427,6 +427,8 @@
                 //todo: temp override colorPallette for excluding "Total"
                 // colorPallette.unshift('#0099c6');
 
+                console.log('colorPallette',colorPallette);
+
                 var options = {
                     width: 830,
                     height: 200,

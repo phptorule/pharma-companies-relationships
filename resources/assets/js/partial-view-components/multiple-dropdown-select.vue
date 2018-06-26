@@ -16,7 +16,7 @@
                                    :checked="selectedValues.indexOf(option.value) !== -1"
                             >
                             <span class="borders"></span>
-                            <span class="remember_text">{{option.label}}</span>
+                            <span class="remember_text" v-html="option.label"></span>
                         </label>
                     </div>
                 </li>
@@ -41,7 +41,7 @@
                 this.selectedValues.forEach((id, index) => {
                     let option = this.options.find(el => el.value == id);
 
-                    str += option.label
+                    str += option.label.replace(/<(?:.|\n)*?>/gm, '');
 
                     if(++index !== this.selectedValues.length) {
                         str += ', ';
