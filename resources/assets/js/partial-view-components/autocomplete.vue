@@ -8,18 +8,24 @@
             :placeholder="placeholder ? placeholder : 'Search'"
         >
         <ul>
-            <li v-if="isItems && searchQuery && itemsType=='People'" v-for="item in items">
-                <div>
-                    Name: {{ item.name }}
+            <li v-if="isItems && searchQuery && itemsType=='People'" 
+                v-for="(item, i) in items" 
+                @click.prevent="onItemClick(item)"
+                class="person-for-relation"
+            >
+                <div class="image">
+                    <a href="javascript:void(0)">
+                        <span class="person-initials">{{getPersonInitials(item.name)}}</span>
+                        <img :src="'/images/mask-'+i+'.png'" alt="">
+                    </a>
                 </div>
                 <div>
-                    City: {{ item.town }}
-                </div>
-                <div>
-                    Role: {{ item.description }}
-                </div>
-                <div v-if="item.addresses.length">
-                    Addresses: {{ getAddressesString(item.addresses) }}
+                    <div>Name: {{ item.name }}</div>
+                    <div>City: {{ item.town }}</div>
+                    <div>Role: {{ item.description }}</div>
+                    <div v-if="item.addresses.length">
+                        Addresses: {{ getAddressesString(item.addresses) }}
+                    </div>
                 </div>
             </li>
             <li v-if=" ! isItems && searchQuery.length >= 3">
@@ -42,13 +48,22 @@
 
 <script>
     import http from '../mixins/http';
+    import getPersonInitials from '../mixins/get-person-initials';
     export default {
         name: "autocomplete",
         props: ['items', 'onChange', 'onClick', 'itemsTotal', 'itemsType', 'placeholder'],
-        mixins: [http],
+        mixins: [http, getPersonInitials],
         data: function () {
             return {
-                searchQuery: ''
+                searchQuery: '',
+                selected: null
+            }
+        },
+        watch: {
+            selected: function () {
+                if (this.selected) {
+                    this.searchQuery = '';
+                }
             }
         },
         methods: {
@@ -66,6 +81,10 @@
                 }
 
                 return str;
+            },
+            onItemClick: function (item) {
+                this.selected = item;
+                this.onClick(item);
             }
         },
         mounted: function () {
@@ -87,5 +106,15 @@
         width: 100%;
         border: none;
         border-bottom: 2px solid #d2d6de;
+    }
+
+    ul {
+        margin: 15px 0;
+    }
+
+    li.person-for-relation {
+        display: flex;
+        cursor: pointer;
+        margin-bottom: 10px
     }
 </style>

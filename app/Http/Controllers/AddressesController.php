@@ -572,6 +572,10 @@ class AddressesController extends Controller
 
         $edgeType = request('edgeType');
 
+        $edgeComment = request('edgeComment');
+
+        $user = JWTAuth::user();
+
         $addressConnection = new AddressConnection();
 
         $addressConnection->from_person_id = $fromPersonId;
@@ -586,12 +590,14 @@ class AddressesController extends Controller
 
         $addressConnection->edge_type = $edgeType;
 
-        $addressConnection->edge_comment = '';
+        $addressConnection->edge_comment = $edgeComment;
 
         $addressConnection->edge_source = null;
 
+        $addressConnection->user_id = $user->id;
+
         $addressConnection->save();
-        
+
         return response()->json([
             'success' => true
         ]);

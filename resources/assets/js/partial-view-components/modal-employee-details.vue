@@ -234,9 +234,21 @@
                             <autocomplete
                                 :items="peopleItems"
                                 :onChange="getPeopleAutocomplete"
+                                :onClick="selectConnectionPerson"
                                 :itemsTotal="peopleItemsTotal"
                                 :itemsType="'People'"
                             />
+                            <div v-if="selectedConnectionPerson">
+                                <span>Connect with:</span>
+                                <div>
+                                    Name: {{ selectedConnectionPerson.name }}
+                                </div>
+                            </div>
+                            <div>
+                                <label for="edge-comment">Remark
+                                    <input id="edge-comment" type="text" v-model="edgeComment">
+                                </label>
+                            </div>
                             <v-select 
                                 :options="connectionTypes"
                                 :label="'name'"
@@ -248,7 +260,7 @@
 
                             <div class="confirm-add-relation-block">
                                 <button class="btn" @click.prevent="closeAddRelation">Cancel</button>
-                                <button class="btn">Add</button>
+                                <button class="btn" @click.prevent="createPersonRelation">Add</button>
                             </div>
                         </div>
                         <div>
@@ -403,7 +415,8 @@
                 peopleItems: [],
                 peopleItemsTotal: 0,
                 selectedConnectionType: null,
-                selectedConnectionPerson: []
+                selectedConnectionPerson: null,
+                edgeComment: ''
             }
         },
 
@@ -745,15 +758,20 @@
                     this.peopleItems = [];
                 }
             }, 400),
+            selectConnectionPerson: function (selectedPerson) {
+                this.selectedConnectionPerson = selectedPerson;
+            },
             createPersonRelation: function () {
                 let url = '/api/address-details/create-person-relation';
                 this.httpPost(url, {
-                    fromPersonId: 1,
-                    toPersonId: 1,
-                    edgeType: 4
+                    fromPersonId: this.personId,
+                    toPersonId: this.selectedConnectionPerson.id,
+                    edgeType: this.selectedConnectionType.id,
+                    edgeComment: this.edgeComment
                 })
                     .then(data => {
                         console.log(data);
+                        this.$eventGlobal.$emit('person realtion created');
                         alertify.notify('Person relation created', 'success', 3);
                     })
                     .catch(error => {
