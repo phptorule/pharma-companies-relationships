@@ -567,19 +567,31 @@ class AddressesController extends Controller
     public function createPersonRelation (Request $request)
     {
         $fromPersonId = request('fromPersonId');
+
         $toPersonId = request('toPersonId');
+
         $edgeType = request('edgeType');
 
         $addressConnection = new AddressConnection();
+
         $addressConnection->from_person_id = $fromPersonId;
+
         $addressConnection->from_address_id = null;
+
         $addressConnection->to_person_id = $toPersonId;
+
         $addressConnection->to_address_id = null;
+
         $addressConnection->edge_weight = 1;
+
         $addressConnection->edge_type = $edgeType;
+
         $addressConnection->edge_comment = '';
+
         $addressConnection->edge_source = null;
+
         $addressConnection->save();
+        
         return response()->json([
             'success' => true
         ]);

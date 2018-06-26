@@ -44,7 +44,7 @@
     import http from '../mixins/http';
     export default {
         name: "autocomplete",
-        props: ['items', 'onChange', 'itemsTotal', 'itemsType', 'placeholder'],
+        props: ['items', 'onChange', 'onClick', 'itemsTotal', 'itemsType', 'placeholder'],
         mixins: [http],
         data: function () {
             return {

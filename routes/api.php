@@ -104,4 +104,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/people/autocomplete/{searchQuery}', 'PeopleController@getPeopleAutocomplete');
 
     Route::post('/logger/log-data', 'LogController@logData');
+
+    Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
 });

@@ -245,6 +245,11 @@
                                 :placeholder="'Choose connection type'"
                                 v-model="selectedConnectionType"
                             />
+
+                            <div class="confirm-add-relation-block">
+                                <button class="btn" @click.prevent="closeAddRelation">Cancel</button>
+                                <button class="btn">Add</button>
+                            </div>
                         </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
@@ -265,7 +270,7 @@
                                     <a v-if="isEditing" 
                                         class="add-relation" 
                                         href="#" 
-                                        @click.prevent><i class="fa fa-plus"></i></a>
+                                        @click.prevent="toggleAddRelation"><i class="fa fa-plus"></i></a>
                                 </li>
                             </ul>
 
@@ -397,7 +402,8 @@
                 showAddRelation: false,
                 peopleItems: [],
                 peopleItemsTotal: 0,
-                selectedConnectionType: null
+                selectedConnectionType: null,
+                selectedConnectionPerson: []
             }
         },
 
@@ -720,6 +726,9 @@
             toggleAddRelation: function () {
                 this.showAddRelation = !this.showAddRelation;
             },
+            closeAddRelation: function () {
+                this.showAddRelation = false;
+            },
             getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
                 let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {
@@ -735,7 +744,22 @@
                 } else {
                     this.peopleItems = [];
                 }
-            }, 400)
+            }, 400),
+            createPersonRelation: function () {
+                let url = '/api/address-details/create-person-relation';
+                this.httpPost(url, {
+                    fromPersonId: 1,
+                    toPersonId: 1,
+                    edgeType: 4
+                })
+                    .then(data => {
+                        console.log(data);
+                        alertify.notify('Person relation created', 'success', 3);
+                    })
+                    .catch(error => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
+            }
         },
 
         mounted: function(){
