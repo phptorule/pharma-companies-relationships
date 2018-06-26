@@ -256,7 +256,7 @@ class TendersController extends Controller {
 	}
 
 
-    function queryDefinedProductIds($addressId)
+    function queryDefinedProductIds($addressId, $usedProductsIds)
     {
         $sql = "SELECT 
                     atpp.product_id,
@@ -268,6 +268,7 @@ class TendersController extends Controller {
                     ON p.id = atpp.product_id
                 WHERE at.address_id = $addressId
                 AND atpp.product_id IS NOT NULL
+                AND atpp.product_id IN ($usedProductsIds)
                 GROUP BY atpp.product_id
                 ORDER BY atpp.product_id ASC";
 
@@ -286,7 +287,7 @@ class TendersController extends Controller {
     }
 
 
-    function queryChartDataForProducts($addressId)
+    function queryChartDataForProducts($addressId, $usedProductsIds)
     {
         $sql = "SELECT 
                     atpp.product_id,
@@ -300,6 +301,7 @@ class TendersController extends Controller {
                 LEFT JOIN rl_address_tenders_purchase_products AS atpp
                     ON atpp.tender_id = at.id
                 WHERE at.address_id = $addressId
+                AND (atpp.product_id IN ($usedProductsIds) OR atpp.product_id IS NULL)
                 GROUP BY at.tender_date, atpp.product_id
                 ORDER BY at.tender_date  ASC";
 
@@ -311,11 +313,9 @@ class TendersController extends Controller {
     {
         $requestParams = request()->all();
 
-//        Log::info('$requestParams ---> ' . print_r($requestParams,1));
+        $sqlResults = $this->queryChartDataForProducts($address, $requestParams['used-products']);
 
-        $sqlResults = $this->queryChartDataForProducts($address);
-
-        $definedProductIds = $this->queryDefinedProductIds($address);
+        $definedProductIds = $this->queryDefinedProductIds($address, $requestParams['used-products']);
 
         $titles = [];
         $preData = [];
