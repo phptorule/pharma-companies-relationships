@@ -238,10 +238,23 @@
                                 :itemsTotal="peopleItemsTotal"
                                 :itemsType="'People'"
                             />
-                            <div v-if="selectedConnectionPerson">
-                                <span>Connect with:</span>
-                                <div>
-                                    Name: {{ selectedConnectionPerson.name }}
+                            <div v-if="selectedConnectionPerson" class="connect-with-block">
+                                <div class="connect-with-title">Connect with:</div>
+                                <div class="connect-with-data">
+                                    <div class="image">
+                                        <a href="javascript:void(0)">
+                                            <span class="person-initials">{{getPersonInitials(selectedConnectionPerson.name)}}</span>
+                                            <img :src="'/images/mask-'+0+'.png'" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="person-info">
+                                        <div>Name: {{ selectedConnectionPerson.name }}</div>
+                                        <div>City: {{ selectedConnectionPerson.town }}</div>
+                                        <div>Role: {{ selectedConnectionPerson.description }}</div>
+                                        <div v-if="selectedConnectionPerson.addresses.length">
+                                            Addresses: {{ getAddressesString(selectedConnectionPerson.addresses) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div v-if="selectedConnectionPerson" class="relation-fields-block">
@@ -743,6 +756,18 @@
             closeAddRelation: function () {
                 this.showAddRelation = false;
             },
+            getAddressesString: function (addresses) {
+                let str = '';
+                let names = [];
+                if (addresses.length) {
+                    names = addresses.map(element => {
+                        return element.name;
+                    });
+                    str = names.join(', ');
+                }
+
+                return str;
+            },
             getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
                 let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {
@@ -999,5 +1024,43 @@
 
     .connection-type-block {
         width: 30%
+    }
+
+    .connect-with-block {
+
+    }
+
+    .connect-with-title {
+        text-align: center;
+        width: 100%;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .connect-with-data {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+    }
+
+    .connect-with-data .image {
+        margin-left: 15px;
+    }
+
+    .connect-with-data .image a {
+        position: relative;
+    }
+    
+    .connect-with-data .image a .person-initials {
+        position: absolute;
+        font-family: Montserrat;
+        font-size: 21px;
+        line-height: 21px;
+        height: 21px;
+        font-weight: 600;
+        color: #ffffff;
+        top: calc(50% - 11px);
+        width: 100%;
+        text-align: center;
     }
 </style>

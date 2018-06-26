@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="autocomplete-block">
         <input 
             class="search-input form-control"
             v-model="searchQuery" 
@@ -102,6 +102,10 @@
 </script>
 
 <style scoped>
+    .autocomplete-block {
+        margin-bottom: 15px;
+    }
+
     .search-input {
         width: 100%;
         border: none;
@@ -152,5 +156,9 @@
     .no-matches {
         padding: 15px 0 0 0;
         text-align: center;
+    }
+
+    .pagination-box {
+        margin-top: 15px;
     }
 </style>
