@@ -3997,3 +3997,15 @@ ul.tenders-list li.open .item > .tag-list {
     margin-right: 0;
     padding-left: 50px;
 }
+
+.loading-header{
+
+}
+
+.loading-header h3{
+    color: #8F8F8F;
+    font-size: 24px;
+    text-align: center;
+    height: 200px;
+    line-height: 200px;
+}

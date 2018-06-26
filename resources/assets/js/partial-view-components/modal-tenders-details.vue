@@ -66,6 +66,9 @@
                                 </div>
 
                                 <div class="chart-container">
+                                    <div v-if="isGraphLoading" class="loading-header">
+                                        <h3>Loading...</h3>
+                                    </div>
                                     <div id="address-products-chart"></div>
                                 </div>
 
@@ -107,7 +110,8 @@
 
                 queryUrl: '',
                 isOthersIncluded: true,
-                isGoogleChartCoreLoaded: false
+                isGoogleChartCoreLoaded: false,
+                isGraphLoading: true
             }
         },
 
@@ -191,6 +195,7 @@
                 this.httpGet('/api/tenders/' + this.addressId + '/products-graph' +  this.queryUrl)
                     .then((data) => {
 
+                        this.isGraphLoading = true;
                         this.drawChart(data);
                     });
             },
@@ -203,9 +208,6 @@
             },
 
             drawChart: function (data, delimetrKey, singleChart) {
-                // if (this.graphLoadedModal) {
-                //     return;
-                // }
 
                 $('#address-products-chart').html('');
 
@@ -223,11 +225,13 @@
 
                 let visualizationData = google.visualization.arrayToDataTable(data);
 
-                let chart = new google.visualization.LineChart(document.getElementById('address-products-chart'));
+                setTimeout(()=>{
+                    this.isGraphLoading = false;
 
-                chart.draw(visualizationData, options);
+                    let chart = new google.visualization.LineChart(document.getElementById('address-products-chart'));
 
-                // this.graphLoadedModal = true;
+                    chart.draw(visualizationData, options);
+                }, 0);
             }
         },
 

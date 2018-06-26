@@ -309,6 +309,10 @@ class TendersController extends Controller {
 
 	function getGraphDataForProductsByTendersAndAddress($address)
     {
+        $requestParams = request()->all();
+
+//        Log::info('$requestParams ---> ' . print_r($requestParams,1));
+
         $sqlResults = $this->queryChartDataForProducts($address);
 
         $definedProductIds = $this->queryDefinedProductIds($address);
@@ -317,17 +321,29 @@ class TendersController extends Controller {
         $preData = [];
 
         foreach ($sqlResults as $i => $result) {
-            $preData[$result->tender_date] = array_fill(0, count($definedProductIds) + 2, 0);
+            if($requestParams['include-others'] == 1) {
+                $preData[$result->tender_date] = array_fill(0, count($definedProductIds) + 2, 0);
+            }
+            else {
+                $preData[$result->tender_date] = array_fill(0, count($definedProductIds) + 1, 0);
+            }
         }
 
         foreach ($sqlResults as $i => $result) {
 
             $preData[$result->tender_date][0] = $result->tender_date;
-            $preData[$result->tender_date][1] += floatval($result->other);
+
+            if($requestParams['include-others'] == 1) {
+                $preData[$result->tender_date][1] += floatval($result->other);
+            }
 
             if(!is_null($index = $this->search($definedProductIds, $result->product_id, 'product_id'))) {
 
-                $indexPlus2 = $index + 2;
+                $indexPlus2 = $index + 1;
+
+                if($requestParams['include-others'] == 1) {
+                    $indexPlus2 = $index + 2;
+                }
 
                 $preData[$result->tender_date][$indexPlus2] += floatval($result->purchases_total_price);
             }
@@ -336,7 +352,11 @@ class TendersController extends Controller {
         foreach ($definedProductIds as $definedProduct) {
             $titles[] = $definedProduct->product_name;
         }
-        array_unshift($titles, 'Other');
+
+        if($requestParams['include-others'] == 1) {
+            array_unshift($titles, 'Other');
+        }
+
         array_unshift($titles, 'Date');
 
         $data = array_values($preData);
