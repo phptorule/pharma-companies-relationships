@@ -1356,6 +1356,24 @@ ul.tag-list li {
     display: none;
 }
 
+.v-select.connection-types.unsearchable input[type=search] {
+    opacity: 1;
+}
+
+.v-select.connection-types ul.dropdown-menu {
+    font-family: Montserrat;
+    font-size: 13px;
+    overflow-y: hidden;
+}
+
+.v-select.connection-types span.selected-tag{
+    position: absolute;
+}
+
+.v-select.connection-types .dropdown-toggle .clear {
+    bottom: 6px;
+}
+
 /** remove after implementing **/
 .without-handler {
     opacity: 0.5 !important;

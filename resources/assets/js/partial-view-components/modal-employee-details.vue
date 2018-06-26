@@ -259,7 +259,13 @@
                             </div>
                             <div v-if="selectedConnectionPerson" class="relation-fields-block">
                                 <div class="remark-block">
-                                    <input id="edge-comment" type="text" v-model="edgeComment" placeholder="Remark">
+                                    <input 
+                                        id="edge-comment" 
+                                        type="text" 
+                                        v-model="edgeComment" 
+                                        placeholder="Remark"
+                                        class="form-control"
+                                    >
                                 </div>
                                 <div class="connection-type-block">
                                     <v-select 
@@ -273,8 +279,8 @@
                                 </div>
                             </div>
                             <div class="confirm-add-relation-block">
-                                <button class="btn" @click.prevent="closeAddRelation">Cancel</button>
-                                <button class="btn" @click.prevent="createPersonRelation">Add</button>
+                                <button class="btn cancel-add-relation-btn" @click.prevent="closeAddRelation">Cancel</button>
+                                <button class="btn add-relation-btn" @click.prevent="createPersonRelation">Add</button>
                             </div>
                         </div>
                         <div>
@@ -478,6 +484,16 @@
                 if ( ! this.isEditing) {
                     this.showAddRelation = false;
                     this.peopleItems = [];
+                    this.selectedConnectionType = null;
+                    this.selectedConnectionPerson = null;
+                }
+            },
+            showAddRelation: function () {
+                if ( ! this.showAddRelation) {
+                    this.showAddRelation = false;
+                    this.peopleItems = [];
+                    this.selectedConnectionType = null;
+                    this.selectedConnectionPerson = null;
                 }
             },
             "personData.name": function() {
@@ -787,23 +803,38 @@
             selectConnectionPerson: function (selectedPerson) {
                 this.selectedConnectionPerson = selectedPerson;
             },
-            createPersonRelation: function () {
-                let url = '/api/address-details/create-person-relation';
-                this.httpPost(url, {
-                    fromPersonId: this.personId,
-                    toPersonId: this.selectedConnectionPerson.id,
-                    edgeType: this.selectedConnectionType.id,
-                    edgeComment: this.edgeComment
-                })
-                    .then(data => {
-                        console.log(data);
-                        this.$eventGlobal.$emit('person realtion created');
-                        alertify.notify('Person relation created', 'success', 3);
+            createPersonRelation: _.debounce(function () {
+                if ( ! this.selectedConnectionPerson) {
+                    alertify.notify('Person not selected', 'error', 3);
+                } else if ( ! this.selectedConnectionType) {
+                    alertify.notify('Connection type not selected', 'error', 3);
+                } else {
+                    let url = '/api/address-details/create-person-relation';
+                    this.httpPost(url, {
+                        fromPersonId: this.personId,
+                        toPersonId: this.selectedConnectionPerson.id,
+                        edgeType: this.selectedConnectionType.id,
+                        edgeComment: this.edgeComment
                     })
-                    .catch(error => {
-                        alertify.notify('Error occured', 'error', 3);
-                    })
-            }
+                        .then(data => {
+                            if (data.success) {
+                                this.$eventGlobal.$emit('personRelationCreated', {
+                                    personId: this.personId,
+                                    addressId: this.currentAddressId,
+                                    address: this.currentAddress
+                                });
+                                alertify.notify('Person relation created', 'success', 3);
+                            } else {
+                                alertify.notify(data.message, 'error', 3);
+                            }
+                            
+                        })
+                        .catch(error => {
+                            alertify.notify('Error occured', 'error', 3);
+                        })
+                }
+
+            }, 400)
         },
 
         mounted: function(){
@@ -815,6 +846,10 @@
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
                 this.init(data.personId, data.addressId, data.address);
                 this.$root.logData('person', 'open', JSON.stringify(data.personId));
+            });
+            
+            this.$eventGlobal.$on('personRelationCreated', (data) => {
+                this.init(data.personId, data.addressId, data.address);
             });
 
             this.openRelationshipTabIfHashDetected('relationships');
@@ -998,7 +1033,7 @@
 
     .add-new-relation {
         width: 100%;
-        min-height: 200px;
+        /* min-height: 200px; */
         background: #fff;
         -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
         -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
@@ -1020,14 +1055,17 @@
 
     .remark-block input {
         width: 100%;
+        border: none;
+        border-bottom: 2px solid #d2d6de
     }
 
     .connection-type-block {
-        width: 30%
+        width: 35%
     }
 
-    .connect-with-block {
-
+    .confirm-add-relation-block {
+        display: flex;
+        justify-content: flex-end;
     }
 
     .connect-with-title {
@@ -1044,7 +1082,7 @@
     }
 
     .connect-with-data .image {
-        margin-left: 15px;
+        margin: 0 15px;
     }
 
     .connect-with-data .image a {
@@ -1062,5 +1100,28 @@
         top: calc(50% - 11px);
         width: 100%;
         text-align: center;
+    }
+
+    .cancel-add-relation-btn {
+        background: #fff;
+        font-family: Montserrat;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .add-relation-btn {
+        background: #4a90e3;
+        color: #fff !important;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        text-align: left;
+        margin: 0;
+    }
+
+    .add-relation-btn:hover {
+        background: #5ba3f4;
+        transition: background-color 0.1s linear;
     }
 </style>

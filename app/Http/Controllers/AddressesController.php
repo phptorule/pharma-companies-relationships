@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Image;
 use File;
 use Storage;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AddressesController extends Controller
 {
@@ -576,6 +577,17 @@ class AddressesController extends Controller
 
         $user = JWTAuth::user();
 
+        $addressConnection = AddressConnection::where('from_person_id', $fromPersonId)
+            ->where('to_person_id', $toPersonId)
+            ->first();
+
+        if ( ! empty($addressConnection)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This connection already exists!'
+            ]);
+        }
+
         $addressConnection = new AddressConnection();
 
         $addressConnection->from_person_id = $fromPersonId;
@@ -599,7 +611,8 @@ class AddressesController extends Controller
         $addressConnection->save();
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'message' => 'ok'
         ]);
     }
 }
