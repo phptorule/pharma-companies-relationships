@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\AddressConnection;
 use App\Models\AddressTag;
 use App\Models\AddressProduct;
 use App\Models\Cluster;
@@ -560,5 +561,27 @@ class AddressesController extends Controller
                 'cluster' => $cluster
             ]);
         }
+    }
+
+    // create new relation from person to person
+    public function createPersonRelation (Request $request)
+    {
+        $fromPersonId = request('fromPersonId');
+        $toPersonId = request('toPersonId');
+        $edgeType = request('edgeType');
+
+        $addressConnection = new AddressConnection();
+        $addressConnection->from_person_id = $fromPersonId;
+        $addressConnection->from_address_id = null;
+        $addressConnection->to_person_id = $toPersonId;
+        $addressConnection->to_address_id = null;
+        $addressConnection->edge_weight = 1;
+        $addressConnection->edge_type = $edgeType;
+        $addressConnection->edge_comment = '';
+        $addressConnection->edge_source = null;
+        $addressConnection->save();
+        return response()->json([
+            'success' => true
+        ]);
     }
 }
