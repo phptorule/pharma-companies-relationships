@@ -244,20 +244,21 @@
                                     Name: {{ selectedConnectionPerson.name }}
                                 </div>
                             </div>
-                            <div>
-                                <label for="edge-comment">Remark
-                                    <input id="edge-comment" type="text" v-model="edgeComment">
-                                </label>
+                            <div v-if="selectedConnectionPerson" class="relation-fields-block">
+                                <div class="remark-block">
+                                    <input id="edge-comment" type="text" v-model="edgeComment" placeholder="Remark">
+                                </div>
+                                <div class="connection-type-block">
+                                    <v-select 
+                                        :options="connectionTypes"
+                                        :label="'name'"
+                                        :class="'connection-types'"
+                                        :searchable="false"
+                                        :placeholder="'Choose connection type'"
+                                        v-model="selectedConnectionType"
+                                    />
+                                </div>
                             </div>
-                            <v-select 
-                                :options="connectionTypes"
-                                :label="'name'"
-                                :class="'connection-types'"
-                                :searchable="false"
-                                :placeholder="'Choose connection type'"
-                                v-model="selectedConnectionType"
-                            />
-
                             <div class="confirm-add-relation-block">
                                 <button class="btn" @click.prevent="closeAddRelation">Cancel</button>
                                 <button class="btn" @click.prevent="createPersonRelation">Add</button>
@@ -979,5 +980,24 @@
         box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
         margin-bottom: 20px;
         padding: 10px 15px;
+    }
+
+    .relation-fields-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px 0;
+    }
+
+    .remark-block {
+        width: 60%;
+    }
+
+    .remark-block input {
+        width: 100%;
+    }
+
+    .connection-type-block {
+        width: 30%
     }
 </style>

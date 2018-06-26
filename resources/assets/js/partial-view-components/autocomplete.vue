@@ -7,11 +7,11 @@
             @input="onChange(searchQuery)"
             :placeholder="placeholder ? placeholder : 'Search'"
         >
-        <ul>
+        <ul class="person-list">
             <li v-if="isItems && searchQuery && itemsType=='People'" 
                 v-for="(item, i) in items" 
                 @click.prevent="onItemClick(item)"
-                class="person-for-relation"
+                class="person-item"
             >
                 <div class="image">
                     <a href="javascript:void(0)">
@@ -19,7 +19,7 @@
                         <img :src="'/images/mask-'+i+'.png'" alt="">
                     </a>
                 </div>
-                <div>
+                <div class="person-info">
                     <div>Name: {{ item.name }}</div>
                     <div>City: {{ item.town }}</div>
                     <div>Role: {{ item.description }}</div>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </li>
-            <li v-if=" ! isItems && searchQuery.length >= 3">
+            <li v-if=" ! isItems && searchQuery.length >= 3" class="no-matches">
                 <span>
                     No matches
                 </span>
@@ -108,13 +108,49 @@
         border-bottom: 2px solid #d2d6de;
     }
 
-    ul {
+    #person-modal ul.person-list {
         margin: 15px 0;
     }
 
-    li.person-for-relation {
+    li.person-item {
         display: flex;
         cursor: pointer;
-        margin-bottom: 10px
+        padding-top: 15px;
+        padding-bottom: 15px;
+        align-items: center;
+    }
+
+    li.person-item .image {
+        margin-left: 15px;
+    }
+
+    li.person-item a {
+        position: relative;
+    }
+
+    .person-initials {
+        position: absolute;
+        font-family: Montserrat;
+        font-size: 21px;
+        line-height: 21px;
+        height: 21px;
+        font-weight: 600;
+        color: #ffffff;
+        top: calc(50% - 11px);
+        width: 100%;
+        text-align: center;
+    }
+
+    li.person-item:hover {
+        background: #d2d6de;
+    }
+
+    .person-info {
+        margin-left: 15px;
+    }
+
+    .no-matches {
+        padding: 15px 0 0 0;
+        text-align: center;
     }
 </style>
