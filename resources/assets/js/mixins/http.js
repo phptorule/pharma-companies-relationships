@@ -37,6 +37,11 @@ const http = {
                 .catch(err => {
                     this.hideLoader();
                     console.log('Handled Error ', err.response);
+
+                    if (err.response.status == 401) {
+                        this.logout();
+                    }
+
                     throw err.response;
                 })
         },
@@ -114,6 +119,12 @@ const http = {
             else {
                 delete axios.defaults.headers.common['Authorization'];
             }
+        },
+
+        logout: function () {
+            localStorage.clear();
+
+            window.location.assign('/login');
         }
     }
 };
