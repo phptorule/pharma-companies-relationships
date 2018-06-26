@@ -207,7 +207,7 @@
                     .then((data) => {
 
                         this.isGraphLoading = true;
-                        this.drawChart(data);
+                        this.drawChart(data.chart_data, data.delimiter_key);
                     });
             },
 
@@ -237,7 +237,7 @@
                 return usedColors;
             },
 
-            drawChart: function (data, delimetrKey, singleChart) {
+            drawChart: function (data, delimiterKey) {
 
                 $('#address-products-chart').html('');
 
@@ -258,7 +258,7 @@
                     title: 'Sales',
                     colors: colors,
                     tooltip: {isHtml: true},
-                    vAxis: {title: 'Budget', format: "###,###"},
+                    vAxis: {title: 'Budget', format: "###,###"+delimiterKey},
                     hAxis: {baselineColor: 'none', ticks: []},
                     legend: 'none',
                     animation: {startup: true},

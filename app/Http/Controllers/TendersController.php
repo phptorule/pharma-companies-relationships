@@ -302,7 +302,7 @@ class TendersController extends Controller {
                     SUM(at.budgeted_cost) AS tender_total_budget,
                     SUM(atp.total_price) AS purchases_total_price, 
                     (SUM(at.budgeted_cost) - SUM(atp.total_price)) AS other,
-                    at.tender_date
+                    DATE_FORMAT(at.tender_date, '%d/%m/%Y') as tender_date
                 FROM rl_address_tenders AS at
                 LEFT JOIN rl_address_tenders_purchase AS atp
                     ON atp.tender_id = at.id
@@ -317,12 +317,37 @@ class TendersController extends Controller {
     }
 
 
+    function calculateDelimiterValues($values)
+    {
+        $maxVal = max($values);
+
+        $delimiter = 1;
+        $key = '';
+
+        if ($maxVal < 100000000) {
+            $delimiter = 1000;
+            $key = 'K';
+        }
+        elseif ($maxVal < 100000000000) {
+            $delimiter = 1000000;
+            $key = 'M';
+        }
+
+        return [
+            'key' => $key,
+            'delimiter' => $delimiter
+        ];
+    }
+
+
 	function getGraphDataForProductsByTendersAndAddress($address)
     {
         $requestParams = request()->all();
         $usedProductIds = isset($requestParams['used-products']) ? $requestParams['used-products'] : null;
 
         $sqlResults = $this->queryChartDataForProducts($address, $usedProductIds);
+
+        $delimiterValues = $this->calculateDelimiterValues(array_column($sqlResults, 'purchases_total_price'));
 
         $definedProductIds = $this->queryDefinedProductIds($address, $usedProductIds);
 
@@ -343,7 +368,7 @@ class TendersController extends Controller {
             $preData[$result->tender_date][0] = $result->tender_date;
 
             if($requestParams['include-others'] == 1) {
-                $preData[$result->tender_date][1] += floatval($result->other);
+                $preData[$result->tender_date][1] += round(floatval($result->other)/$delimiterValues['delimiter'], 2);
             }
 
             if(!is_null($index = $this->search($definedProductIds, $result->product_id, 'product_id'))) {
@@ -354,7 +379,7 @@ class TendersController extends Controller {
                     $indexPlus2 = $index + 2;
                 }
 
-                $preData[$result->tender_date][$indexPlus2] += floatval($result->purchases_total_price);
+                $preData[$result->tender_date][$indexPlus2] += round(floatval($result->purchases_total_price)/$delimiterValues['delimiter'], 2);
             }
         }
 
@@ -372,6 +397,9 @@ class TendersController extends Controller {
 
         array_unshift($data, $titles);
 
-        return response()->json(array_values($data), 200, [], JSON_NUMERIC_CHECK);
+        return response()->json([
+            'chart_data' => $data,
+            'delimiter_key' => $delimiterValues['key']
+        ], 200, [], JSON_NUMERIC_CHECK);
     }
 }
