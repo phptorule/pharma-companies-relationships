@@ -41,7 +41,7 @@
                 this.selectedValues.forEach((id, index) => {
                     let option = this.options.find(el => el.value == id);
 
-                    str += option.label.replace(/<(?:.|\n)*?>/gm, '');
+                    str += option? option.label.replace(/<(?:.|\n)*?>/gm, '') : '';
 
                     if(++index !== this.selectedValues.length) {
                         str += ', ';
