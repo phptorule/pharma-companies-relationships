@@ -1,8 +1,5 @@
 <template>
     <header class="main-header">
-        <!-- Logo -->
-
-
 
         <nav class="navbar navbar-static-top">
 
@@ -26,6 +23,10 @@
                             @keyup="makeGlobalSearch()"
                             placeholder="Search by laboratory, people or location"
                         >
+
+                        <i v-if="globalSearchInput"
+                           @click="resetGlobalSearch()"
+                           class="fa fa-remove clear-global-search-input"></i>
                     </li>
                 </ul>
             </div>
@@ -80,6 +81,7 @@
                     if(this.globalSearchInput == '') {
 
                         this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
+                        this.$router.push(this.$route.path);
 
                         return;
                     }
@@ -112,7 +114,12 @@
                 GlobalSearch.resultCounter = data;
 
                 this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
-            }
+            },
+
+            resetGlobalSearch: function () {
+                this.globalSearchInput = '';
+                this.makeGlobalSearch();
+            },
         },
 
         created: function () {
