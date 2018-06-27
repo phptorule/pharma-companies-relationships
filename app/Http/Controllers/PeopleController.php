@@ -179,16 +179,20 @@ class PeopleController extends Controller
     }
 
 
-    function composeConditions($query, $params) {
+    function composeConditions($query, $params)
+    {
         if (isset($params['person-type-id'])) {
             $query->where('type_id', $params['person-type-id']);
         }
 
         if (isset($params['sort-by'])) {
-
             $direction = $params['sort-by'] == 'name-asc' ? 'ASC' : 'DESC';
 
             $query->orderBy('name', $direction);
+        }
+
+        if(isset($params['role'])) {
+            $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
         }
 
         return $query;

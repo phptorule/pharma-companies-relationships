@@ -21,7 +21,11 @@
                             ></single-dropdown-select>
 
                             <div class="person-role-filter-box">
-                                <input type="text" placeholder="Person Role...">
+                                <input v-model="appliedFilters.roleInput"
+                                       @keyup="applyRoleFilter"
+                                       type="text"
+                                       placeholder="Person Role..."
+                                >
                             </div>
 
                             <single-dropdown-select
@@ -148,8 +152,10 @@
                     isOnlySortingChanged: false,
                     globalSearch: this.$route.query['global-search'] || '',
                     addressIds: this.$route.query['address-ids'] || '',
-                    personTypes: this.$route.query['person-type-id'] || ''
+                    personTypes: this.$route.query['person-type-id'] || '',
+                    roleInput: null
                 },
+                roleInputTimeoutId: null,
                 pagination: {
                     currentPage: 1
                 },
@@ -238,6 +244,17 @@
                 this.applyFilters(true);
             },
 
+            applyRoleFilter: function() {
+
+                if(this.roleInputTimeoutId) {
+                    clearTimeout(this.roleInputTimeoutId);
+                }
+
+                this.roleInputTimeoutId = setTimeout(()=>{
+                    this.applyFilters();
+                },500)
+            },
+
             listenToTotalPointsDisplayedOnMapChanged: function () {
                 this.$eventGlobal.$on('totalPointsDisplayedOnMapChanged', (totalPoints) => {
                     this.totalPointsInCurrentMap = totalPoints
@@ -249,6 +266,10 @@
 
                 if (this.appliedFilters.personTypes) {
                     queryStr += '&person-type-id=' + this.appliedFilters.personTypes;
+                }
+
+                if (this.appliedFilters.roleInput) {
+                    queryStr += '&role=' + this.appliedFilters.roleInput;
                 }
 
                 if (this.appliedFilters.globalSearch) {
@@ -352,7 +373,6 @@
             applyFilters: function (isOnlySortingChanged) {
 
                 this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
-
 
                 this.composeQueryUrl();
 
