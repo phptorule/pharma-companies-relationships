@@ -92,13 +92,21 @@
                 return this.httpGet('/api/addresses/pre-process-global-search?global-search='+ encodeURIComponent(this.globalSearchInput))
                     .then(data => {
 
-                        this.notifyGlobalSearchResults(data);
+                        this.notifyGlobalSearchPerformed(data);
 
                         return data;
                     })
             },
 
-            notifyGlobalSearchResults: function (data) {
+            notifyGlobalSearchPerformed: function (data) {
+
+                if(data.count_addresses === null && data.count_people === null ) {
+                    localStorage.removeItem('global-search-result-counter');
+                }
+                else {
+                    localStorage.setItem('global-search-result-counter', JSON.stringify(data));
+                }
+
                 this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             }
         },

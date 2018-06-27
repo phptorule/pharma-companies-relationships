@@ -37,14 +37,21 @@
             }
         },
 
+        methods: {
+            fillCounterProps: function (counterData) {
+                this.countAddresses = counterData.count_addresses;
+                this.countPeople = counterData.count_people;
+            }
+        },
 
         mounted: function () {
+
             this.$eventGlobal.$on('notifyGlobalSearchCountResults', data =>{
-
-                this.countAddresses = data.count_addresses;
-                this.countPeople = data.count_people;
-
+                this.fillCounterProps(data);
             });
+
+            if(localStorage.hasOwnProperty('global-search-result-counter'))
+            this.fillCounterProps(JSON.parse(localStorage.getItem('global-search-result-counter')));
         },
 
         beforeDestroy: function () {
