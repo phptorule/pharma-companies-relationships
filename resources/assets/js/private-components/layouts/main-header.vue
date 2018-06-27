@@ -60,6 +60,14 @@
             }
         },
 
+        watch: {
+
+            globalSearchInput: function (newVal) {
+                GlobalSearch.globalSearchInput = newVal;
+            }
+
+        },
+
         methods: {
             makeGlobalSearch: function () {
 
@@ -84,7 +92,12 @@
                         return;
                     }
 
-                    this.preProcessGlobalSearchQuery();
+                    this.preProcessGlobalSearchQuery()
+                        .then(data => {
+                            if(+data.count_addresses === 0 && +data.count_people > 0) {
+                                this.$router.push('/people-dashboard?global-search=' + encodeURIComponent(this.globalSearchInput))
+                            }
+                        })
 
                 },1000)
             },
