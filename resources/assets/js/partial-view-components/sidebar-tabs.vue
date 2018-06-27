@@ -7,7 +7,7 @@
                     {{countAddresses}}
                 </span>
 
-                <router-link to="/dashboard"><i class="fa fa-building"></i> Organisations</router-link>
+                <router-link :to="globalSearch.globalSearchInput ? '/dashboard?global-search=' + globalSearchQueryStr : '/dashboard'"><i class="fa fa-building"></i> Organisations</router-link>
             </li>
             <li :class="{active: activeTab === 'people-dashboard' }">
 
@@ -15,7 +15,7 @@
                     {{countPeople}}
                 </span>
 
-                <router-link to="/people-dashboard"><i class="fa fa-group"></i> People</router-link>
+                <router-link :to="globalSearch.globalSearchInput ? '/people-dashboard?global-search=' + globalSearchQueryStr : '/people-dashboard'"><i class="fa fa-group"></i> People</router-link>
             </li>
         </ul>
     </div>
@@ -30,13 +30,18 @@
         data: function() {
             return {
                 countAddresses: null,
-                countPeople: null
+                countPeople: null,
+                globalSearch: GlobalSearch
             }
         },
 
         computed: {
             activeTab: function () {
                 return this.$route.path.replace('/', '')
+            },
+
+            globalSearchQueryStr: function () {
+                return encodeURIComponent(this.globalSearch.globalSearchInput);
             }
         },
 
