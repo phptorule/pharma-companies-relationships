@@ -65,6 +65,13 @@
 
             globalSearchInput: function (newVal) {
                 GlobalSearch.globalSearchInput = newVal;
+            },
+
+            $route: function (to, from) {
+                if (!to.query['global-search']) {
+                    this.globalSearchInput = '';
+                    this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
+                }
             }
 
         },
