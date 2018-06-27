@@ -184,6 +184,13 @@ class PeopleController extends Controller
             $query->where('type_id', $params['person-type-id']);
         }
 
+        if (isset($params['sort-by'])) {
+
+            $direction = $params['sort-by'] == 'name-asc' ? 'ASC' : 'DESC';
+
+            $query->orderBy('name', $direction);
+        }
+
         return $query;
     }
 }
