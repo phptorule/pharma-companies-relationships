@@ -8,7 +8,7 @@
             :placeholder="placeholder ? placeholder : 'Search'"
         >
         <ul class="person-list">
-            <li v-if="isItems && searchQuery && itemsType=='People'" 
+            <li v-if="isItems && searchQuery.length >= 3 && itemsType=='People'" 
                 v-for="(item, i) in items" 
                 @click.prevent="onItemClick(item)"
                 class="person-item"
