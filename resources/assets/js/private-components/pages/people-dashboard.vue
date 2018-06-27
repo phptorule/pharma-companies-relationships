@@ -77,7 +77,9 @@
                             </div>
 
                             <h3>
-                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+person.id)">
+                                <a  href="javascript:void(0)"
+                                    @click="proceedToEmployeeDetailsModal(person)"
+                                >
                                     {{ person.name }}
                                 </a>
 
@@ -125,11 +127,12 @@
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
     import getPersonInitials from '../../mixins/get-person-initials';
+    import employeeModal from '../../mixins/show-employee-details-modal';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers, getPersonInitials],
+        mixins: [http,addressHelpers, getPersonInitials, employeeModal],
 
         data: function () {
             return {
@@ -442,6 +445,14 @@
 
                 return type? type.name : '';
             },
+
+            proceedToEmployeeDetailsModal: function (person) {
+
+                this.httpGet('/api/address-details/'+person.addresses[0].id)
+                    .then(addressData => {
+                        this.showEmployeeDetailsModal(person.id, addressData.id, addressData);
+                    });
+            }
         },
 
         mounted: function () {
