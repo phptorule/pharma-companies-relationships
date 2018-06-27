@@ -1384,6 +1384,30 @@ ul.tag-list li {
     height: calc(100vh - 152px);
 }
 
+#personal-modal .search-sort ul {
+    width: 100%;
+}
+
+#personal-modal .search-block ul.select-filter > li > a {
+    padding: 10px;
+    color: #555555;
+    background: transparent !important;
+    border: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0;
+    transition: color 0s linear;
+}
+
+#personal-modal .search-block ul.select-filter > li.open {
+    background: #4081df;
+}
+
+#personal-modal .search-block ul.select-filter > li.open a {
+    color: #fff;
+}
+
 .wrapper {
     /* position: fixed;
     top: 0;

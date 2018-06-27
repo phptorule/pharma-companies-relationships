@@ -2,71 +2,147 @@
     <div>
         <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
 
-        <ul class="staff-list staff-with-publication-list" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length && relationshipsCollapsed">
+        <div class="search-block">
+            <div class="search-name">
+                <i class="fa fa-search icon" aria-hidden="true"></i>
+                <input 
+                    v-model="query"
+                    type="search" 
+                    class="form-control" 
+                    placeholder="Person name" 
+                    @input="handleSearch">
+            </div>
+            <div class="search-type">
+                <multiple-dropdown-select
+                    class="form-control select-filter select-types"
+                    :name="'Types'"
+                    :options="typesOptionsForDropDown"
+                    :selected="[]"
+                    @changed="onChangeType"
+                    ref="tagMultipleDropdownSelect"
+                ></multiple-dropdown-select>
+            </div>
+            <div class="search-sort">
+                <single-dropdown-select
+                    class="form-control select-filter type-filter"
+                    :options="sortByOptionsForFilter"
+                    :selected="[]"
+                    :isHiddenEmptyOption="true"
+                    @changed="onChangeSort"
+                    :name="'Sort By'"
+                    ref="sortBySingleDropdownSelect"
+                 ></single-dropdown-select>
+            </div>
+        </div>
 
-            <li v-if="i < 3" v-for="(relation, i) in relationshipsCollapsedData">
-                <div class="image">
-                    <a href="javascript:void(0)" @click="loadAnotherUser(relation)">
-                        <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
-                        <img :src="'/images/mask-'+i+'.png'" alt="">
-                    </a>
-                </div>
-                <div class="personal-info">
-                    <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
-                    <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">
-                        <a href="javascript:void(0)" @click="loadRelationship(relation)">
-                            {{connectionNameForPagination(relation)}}
-                        </a>
-                    </p>
-                </div>
+        <div v-if="canSearch || canSearchByType">
+            <ul class="staff-list staff-with-publication-list">
 
-                <div style="clear: both"></div>
-
-                <publication-list
-                        class="publication-list relation-row-class"
-                        style="display: none;"
-                        :id="'relation-row-'+relation.id"
-                        :coAuthoredPublications="publications.co_authored_paper"
-                        :citedPublications="publications.cited_paper"
-                ></publication-list>
-            </li>
-        </ul>
-
-        <ul class="staff-list staff-with-publication-list" v-if="person.relationships && person.relationships.length && !relationshipsCollapsed">
-
-            <li v-for="(relation, i) in person.relationships">
-                <div class="image">
-                    <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
-                        <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
-                        <img :src="'/images/mask-'+i+'.png'" alt="">
-                    </a>
-                </div>
-                <div class="personal-info">
-                    <p class="name">
+                <li v-for="(relation, i) in filtered" v-if="filtered && filtered.length > 0">
+                    <div class="image">
                         <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
-                            {{relation.name}}
+                            <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
+                            <img :src="'/images/mask-'+i+'.png'" alt="">
                         </a>
-                    </p>
-                    <p class="occupation" style="text-align: left">{{relation.description}}</p>
-                    <p class="connection-type" style="text-align: left">
-                        <a href="javascript:void(0)" @click="loadRelationship(relation)">
-                            {{connectionNameForPagination(relation)}}
+                    </div>
+                    <div class="personal-info">
+                        <p class="name">
+                            <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
+                                {{relation.name}}
+                            </a>
+                        </p>
+                        <p class="occupation" style="text-align: left">{{relation.description}}</p>
+                        <p class="connection-type" style="text-align: left">
+                            <a href="javascript:void(0)" @click="loadRelationship(relation)">
+                                {{connectionNameForPagination(relation)}}
+                            </a>
+                        </p>
+                    </div>
+
+                    <div style="clear: both"></div>
+
+                    <publication-list
+                            class="publication-list relation-row-class"
+                            style="display: none;"
+                            :id="'relation-row-'+relation.id"
+                            :coAuthoredPublications="publications.co_authored_paper"
+                            :citedPublications="publications.cited_paper"
+                    ></publication-list>
+                </li>
+
+                <li v-if="filtered && ! filtered.length">
+                    No matches
+                </li>
+            </ul>
+        </div>
+
+        <div v-if="!canSearch && !canSearchByType">
+            <ul class="staff-list staff-with-publication-list" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length && relationshipsCollapsed">
+
+                <li v-if="i < 3" v-for="(relation, i) in relationshipsCollapsedData">
+                    <div class="image">
+                        <a href="javascript:void(0)" @click="loadAnotherUser(relation)">
+                            <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
+                            <img :src="'/images/mask-'+i+'.png'" alt="">
                         </a>
-                    </p>
-                </div>
+                    </div>
+                    <div class="personal-info">
+                        <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
+                        <p class="occupation" style="text-align: left">{{relation.description}}</p>
+                        <p class="connection-type" style="text-align: left">
+                            <a href="javascript:void(0)" @click="loadRelationship(relation)">
+                                {{connectionNameForPagination(relation)}}
+                            </a>
+                        </p>
+                    </div>
 
-                <div style="clear: both"></div>
+                    <div style="clear: both"></div>
 
-                <publication-list
-                        class="publication-list relation-row-class"
-                        style="display: none;"
-                        :id="'relation-row-'+relation.id"
-                        :coAuthoredPublications="publications.co_authored_paper"
-                        :citedPublications="publications.cited_paper"
-                ></publication-list>
-            </li>
-        </ul>
+                    <publication-list
+                            class="publication-list relation-row-class"
+                            style="display: none;"
+                            :id="'relation-row-'+relation.id"
+                            :coAuthoredPublications="publications.co_authored_paper"
+                            :citedPublications="publications.cited_paper"
+                    ></publication-list>
+                </li>
+            </ul>
+
+            <ul class="staff-list staff-with-publication-list" v-if="person.relationships && person.relationships.length && !relationshipsCollapsed">
+
+                <li v-for="(relation, i) in person.relationships">
+                    <div class="image">
+                        <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
+                            <span class="person-initials">{{getPersonInitials(relation.name)}}</span>
+                            <img :src="'/images/mask-'+i+'.png'" alt="">
+                        </a>
+                    </div>
+                    <div class="personal-info">
+                        <p class="name">
+                            <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
+                                {{relation.name}}
+                            </a>
+                        </p>
+                        <p class="occupation" style="text-align: left">{{relation.description}}</p>
+                        <p class="connection-type" style="text-align: left">
+                            <a href="javascript:void(0)" @click="loadRelationship(relation)">
+                                {{connectionNameForPagination(relation)}}
+                            </a>
+                        </p>
+                    </div>
+
+                    <div style="clear: both"></div>
+
+                    <publication-list
+                            class="publication-list relation-row-class"
+                            style="display: none;"
+                            :id="'relation-row-'+relation.id"
+                            :coAuthoredPublications="publications.co_authored_paper"
+                            :citedPublications="publications.cited_paper"
+                    ></publication-list>
+                </li>
+            </ul>
+        </div>
 
         <div class="pagination-box" style="margin-top: 20px" v-if="!relationshipsCollapsed">
             <pagination :records="relationshipsTotal"
@@ -79,7 +155,7 @@
 
         <div style="clear: both"></div>
 
-        <div class="text-center" style="margin-top: 20px" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length > 3">
+        <div class="text-center" style="margin-top: 20px" v-if="relationshipsCollapsedData && relationshipsCollapsedData.length > 3 && !canSearch && !canSearchByType">
             <a href="javascript:void(0)"
                v-if="relationshipsCollapsed"
                @click="loadPersonRelationshipsPaginated()"
@@ -117,7 +193,11 @@
                 relationshipsTotal: 0,
                 relationshipsCollapsed: true,
                 publications: {},
-                relationshipPage: 1
+                relationshipPage: 1,
+                query: '',
+                filtered: [],
+                selectedTypes: null,
+                selectedSort: null
             }
         },
 
@@ -304,6 +384,86 @@
                     relationPage: relationPage
                 }
             },
+            onChangeType: function (data) {
+                this.selectedTypes = data;
+            },
+            onChangeSort: function (data) {
+                this.selectedSort = data;
+            },
+            handleSearch: function () {
+                let allRelations = this.getAllRelationships;
+
+                this.filtered = allRelations.filter((item) => {
+                    console.log(item.pivot.edge_type);
+                    if (this.canSearch && this.canSearchByType) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
+                            this.selectedTypes.indexOf(parseInt(item.pivot.edge_type)) + 1
+                    } else if (this.canSearch && ! this.canSearchByType) {
+                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
+                    } else if ( ! this.canSearch && this.canSearchByType) {
+                        return this.selectedTypes.indexOf(parseInt(item.pivot.edge_type)) + 1
+                    }
+                });
+
+                
+                
+            },
+            sortBy: function () {
+                if (this.canSort) {
+                    if (this.selectedSort == 'name-asc') {
+                        this.filtered.sort(function (a, b) {
+                            if (a.name > b.name) {
+                                return 1;
+                            }
+                            if (a.name < b.name) {
+                                return -1;
+                            }
+                        });
+                    } else if (this.selectedSort == 'name-desc') {
+                        this.filtered.sort(function (a, b) {
+                            if (a.name < b.name) {
+                                return 1;
+                            }
+                            if (a.name > b.name) {
+                                return -1;
+                            }
+                        });
+                    }
+                }
+            }
+        },
+
+        computed: {
+            typesOptionsForDropDown: function () {
+                return this.connectionTypes.map(type => {
+                    return {
+                        label: type.name,
+                        value: type.id
+                    }
+                })
+            },
+            sortByOptionsForFilter: function () {
+                return [
+                    {value: 'name-asc', label: 'Name &uarr;'},
+                    {value: 'name-desc', label: 'Name &darr;'},
+                    {value: 'count-asc', label: 'Number of interactions &uarr;'},
+                    {value: 'count-desc', label: 'Number of interactions &darr;'},
+                    {value: 'date-asc', label: 'Date of last cooperation &uarr;'},
+                    {value: 'date-desc', label: 'Date of last cooperation &darr;'},
+                ]
+            },
+            getAllRelationships: function () {
+                return this.personData.relationships;
+            },
+            canSearch: function () {
+                return this.query.trim() === '' ? false : true
+            },
+            canSearchByType: function () {
+                return this.selectedTypes && this.selectedTypes.length > 0 ? true : false
+            },
+            canSort: function () {
+                return this.selectedSort && this.selectedSort.length > 0 ? true : false
+            }
         },
 
 
@@ -313,6 +473,21 @@
                 this.relationshipsCollapsed = true;
                 this.person = newPersonData;
             },
+
+            query: function () {
+                if ( ! this.query) {
+                    this.filtered = [];
+                }
+                this.sortBy();
+            },
+
+            selectedTypes: function () {
+                this.handleSearch();
+            },
+
+            selectedSort: function () {
+                this.sortBy();
+            }
 
         },
 
@@ -327,5 +502,28 @@
 </script>
 
 <style scoped>
+    .search-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
 
+    .search-name {
+        width: 35%;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-name i {
+        margin-right: 10px;
+    }
+
+    .search-type {
+        width: 35%;
+    }
+
+    .search-sort {
+        width: 20%;
+    }
 </style>
