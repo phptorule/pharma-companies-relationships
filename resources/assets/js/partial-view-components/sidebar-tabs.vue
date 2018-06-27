@@ -22,6 +22,9 @@
 </template>
 
 <script>
+
+    import GlobalSearch from '../services/global-search';
+
     export default {
 
         data: function() {
@@ -50,9 +53,9 @@
                 this.fillCounterProps(data);
             });
 
-            if (localStorage.hasOwnProperty('global-search-result-counter')) {
-                this.fillCounterProps(JSON.parse(localStorage.getItem('global-search-result-counter')));
-            }
+
+            this.fillCounterProps(GlobalSearch.resultCounter);
+
         },
 
         beforeDestroy: function () {

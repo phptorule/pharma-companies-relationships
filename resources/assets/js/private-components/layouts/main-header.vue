@@ -45,6 +45,7 @@
 
 <script>
 
+    import GlobalSearch from '../../services/global-search';
     import http from '../../mixins/http';
 
     export default {
@@ -100,12 +101,7 @@
 
             notifyGlobalSearchPerformed: function (data) {
 
-                if(data.count_addresses === null && data.count_people === null ) {
-                    localStorage.removeItem('global-search-result-counter');
-                }
-                else {
-                    localStorage.setItem('global-search-result-counter', JSON.stringify(data));
-                }
+                GlobalSearch.resultCounter = data;
 
                 this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             }
