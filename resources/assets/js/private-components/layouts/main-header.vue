@@ -44,7 +44,13 @@
 </template>
 
 <script>
+
+    import http from '../../mixins/http';
+
     export default {
+
+        mixins: [http],
+
         data: function () {
             return {
                 user: {},
@@ -52,9 +58,9 @@
                 timeOutId: null
             }
         },
+
         methods: {
             makeGlobalSearch: function () {
-
 
                 if(this.timeOutId){
                     clearTimeout(this.timeOutId)
@@ -62,20 +68,35 @@
 
                 this.timeOutId = setTimeout(()=>{
 
-                    if(this.$route.path != '/dashboard') {
-                        this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                        // this.$eventGlobal.$emit('notifyMapMainGlobalSearchPerformed', encodeURIComponent(this.globalSearchInput));
-                    }
-                    else{
-                        this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                        // this.$eventGlobal.$emit('globalSearchPerformed', encodeURIComponent(this.globalSearchInput));
-                    }
+                    this.preProcessGlobalSearchQuery();
 
-                    if(this.globalSearchInput == '') {
-                        this.$router.push('/dashboard');
-                    }
+                    // if(this.$route.path != '/dashboard') {
+                    //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
+                    // }
+                    // else{
+                    //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
+                    // }
+                    //
+                    // if(this.globalSearchInput == '') {
+                    //     this.$router.push('/dashboard');
+                    // }
 
                 },1000)
+            },
+
+            preProcessGlobalSearchQuery: function () {
+                return this.httpGet('/api/addresses/pre-process-global-search?global-search='+ encodeURIComponent(this.globalSearchInput))
+                    .then(data => {
+                        console.log('data', data);
+
+                        this.notifyGlobalSearchResults(data);
+
+                        return data;
+                    })
+            },
+
+            notifyGlobalSearchResults: function (data) {
+                this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             }
         },
 

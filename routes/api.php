@@ -90,4 +90,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
 
     Route::post('/products/create', 'AddressesController@createProduct');
+
+    Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 });

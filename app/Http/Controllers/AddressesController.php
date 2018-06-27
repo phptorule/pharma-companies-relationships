@@ -50,6 +50,20 @@ class AddressesController extends Controller
     }
 
 
+    function preProcessGlobalSearch()
+    {
+        $searchStr = request()->all()['global-search'];
+
+        $addressesCount = $this->prepareAddressesQuery()->count();
+        $peopleCount = People::where('name', 'like', '%'.$searchStr.'%')->count();
+
+        return response()->json([
+            'count_addresses' => $addressesCount,
+            'count_people' => $peopleCount
+        ]);
+    }
+
+
     function prepareAddressesQuery()
     {
         $query = Address::with('tags')
