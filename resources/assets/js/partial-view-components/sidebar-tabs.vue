@@ -50,8 +50,9 @@
                 this.fillCounterProps(data);
             });
 
-            if(localStorage.hasOwnProperty('global-search-result-counter'))
-            this.fillCounterProps(JSON.parse(localStorage.getItem('global-search-result-counter')));
+            if (localStorage.hasOwnProperty('global-search-result-counter')) {
+                this.fillCounterProps(JSON.parse(localStorage.getItem('global-search-result-counter')));
+            }
         },
 
         beforeDestroy: function () {

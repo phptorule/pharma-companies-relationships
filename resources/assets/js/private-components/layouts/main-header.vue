@@ -78,7 +78,7 @@
 
                     if(this.globalSearchInput == '') {
 
-                        this.notifyGlobalSearchResults({count_addresses: null, count_people: null});
+                        this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
 
                         return;
                     }
