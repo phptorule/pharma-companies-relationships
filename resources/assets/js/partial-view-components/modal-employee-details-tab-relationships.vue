@@ -262,6 +262,8 @@
 
                         this.relationshipsTotal = data.total;
 
+                        this.sortBy();
+
                         return data;
                     });
             },
@@ -394,7 +396,6 @@
                 let allRelations = this.getAllRelationships;
 
                 this.filtered = allRelations.filter((item) => {
-                    console.log(item.pivot.edge_type);
                     if (this.canSearch && this.canSearchByType) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
                             this.selectedTypes.indexOf(parseInt(item.pivot.edge_type)) + 1
@@ -405,29 +406,80 @@
                     }
                 });
 
-                
-                
+                this.sortBy();
+            },
+            getAllRelations: function () {
+                let url = '';
+                this.httpGet();
             },
             sortBy: function () {
                 if (this.canSort) {
                     if (this.selectedSort == 'name-asc') {
-                        this.filtered.sort(function (a, b) {
-                            if (a.name > b.name) {
-                                return 1;
-                            }
-                            if (a.name < b.name) {
-                                return -1;
-                            }
-                        });
+                        if (this.filtered  && this.filtered.length) {
+                            this.filtered.sort(function (a, b) {
+                                if (a.name > b.name) {
+                                    return 1;
+                                }
+                                if (a.name < b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
+
+                        if (this.person.relationships  && this.person.relationships.length) {
+                            this.person.relationships.sort(function (a, b) {
+                                if (a.name > b.name) {
+                                    return 1;
+                                }
+                                if (a.name < b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
+
+                        if (this.relationshipsCollapsedData  && this.relationshipsCollapsedData.length) {
+                            this.relationshipsCollapsedData.sort(function (a, b) {
+                                if (a.name > b.name) {
+                                    return 1;
+                                }
+                                if (a.name < b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
                     } else if (this.selectedSort == 'name-desc') {
-                        this.filtered.sort(function (a, b) {
-                            if (a.name < b.name) {
-                                return 1;
-                            }
-                            if (a.name > b.name) {
-                                return -1;
-                            }
-                        });
+                        if (this.filtered && this.filtered.length) {
+                            this.filtered.sort(function (a, b) {
+                                if (a.name < b.name) {
+                                    return 1;
+                                }
+                                if (a.name > b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
+
+                        if (this.person.relationships && this.person.relationships.length) {
+                            this.person.relationships.sort(function (a, b) {
+                                if (a.name < b.name) {
+                                    return 1;
+                                }
+                                if (a.name > b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
+
+                        if (this.relationshipsCollapsedData && this.relationshipsCollapsedData.length) {
+                            this.relationshipsCollapsedData.sort(function (a, b) {
+                                if (a.name < b.name) {
+                                    return 1;
+                                }
+                                if (a.name > b.name) {
+                                    return -1;
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -475,7 +527,7 @@
             },
 
             query: function () {
-                if ( ! this.query) {
+                if ( ! this.canSearch && ! this.canSearchByType) {
                     this.filtered = [];
                 }
                 this.sortBy();
@@ -495,6 +547,7 @@
         props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes'],
 
         mounted: function () {
+            this.getAllRelations();
             this.openRelationIfHashDetected()
         }
 
