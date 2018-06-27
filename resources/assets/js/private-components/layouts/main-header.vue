@@ -121,7 +121,16 @@
         mounted: function () {
             this.$eventGlobal.$on('resetedAllFilters', () => {
                 this.globalSearchInput = '';
-            })
+                this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
+            });
+
+            if(this.globalSearchInput) {
+                this.makeGlobalSearch();
+            }
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('resetedAllFilters');
         }
     }
 </script>
