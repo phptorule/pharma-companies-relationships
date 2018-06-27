@@ -33,6 +33,7 @@ class AddressesController extends Controller
             $addressesForResponse[$i]['lat'] = $address['lat'];
             $addressesForResponse[$i]['lon'] = $address['lon'];
             $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+            $addressesForResponse[$i]['people_count'] = $address['people_count'];
         }
 
         return response()->json($addressesForResponse);
