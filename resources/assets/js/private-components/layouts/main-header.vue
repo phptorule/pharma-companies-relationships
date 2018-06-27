@@ -68,8 +68,6 @@
 
                 this.timeOutId = setTimeout(()=>{
 
-                    this.preProcessGlobalSearchQuery();
-
                     // if(this.$route.path != '/dashboard') {
                     //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
                     // }
@@ -77,9 +75,15 @@
                     //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
                     // }
                     //
-                    // if(this.globalSearchInput == '') {
-                    //     this.$router.push('/dashboard');
-                    // }
+
+                    if(this.globalSearchInput == '') {
+
+                        this.notifyGlobalSearchResults({count_addresses: null, count_people: null});
+
+                        return;
+                    }
+
+                    this.preProcessGlobalSearchQuery();
 
                 },1000)
             },
@@ -87,7 +91,6 @@
             preProcessGlobalSearchQuery: function () {
                 return this.httpGet('/api/addresses/pre-process-global-search?global-search='+ encodeURIComponent(this.globalSearchInput))
                     .then(data => {
-                        console.log('data', data);
 
                         this.notifyGlobalSearchResults(data);
 
