@@ -824,6 +824,12 @@
                                     address: this.currentAddress
                                 });
                                 alertify.notify('Person relation created', 'success', 3);
+                                this.$root.logData('person', 'created new relation', JSON.stringify({
+                                    fromPersonId: this.personId,
+                                    toPersonId: this.selectedConnectionPerson.id,
+                                    edgeType: this.selectedConnectionType.id,
+                                    edgeComment: this.edgeComment
+                                }));
                             } else {
                                 alertify.notify(data.message, 'error', 3);
                             }
