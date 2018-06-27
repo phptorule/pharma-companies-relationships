@@ -195,6 +195,10 @@ class PeopleController extends Controller
             $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
         }
 
+        if(isset($params['global-search'])) {
+            $query->where('rl_people.name', 'like', '%'.$params['global-search'].'%');
+        }
+
         return $query;
     }
 }

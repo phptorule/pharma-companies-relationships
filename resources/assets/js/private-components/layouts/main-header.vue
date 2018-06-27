@@ -77,14 +77,6 @@
 
                 this.timeOutId = setTimeout(()=>{
 
-                    // if(this.$route.path != '/dashboard') {
-                    //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                    // }
-                    // else{
-                    //     this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                    // }
-                    //
-
                     if(this.globalSearchInput == '') {
 
                         this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
