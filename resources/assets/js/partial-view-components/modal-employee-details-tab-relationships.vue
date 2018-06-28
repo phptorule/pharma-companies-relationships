@@ -2,7 +2,7 @@
     <div>
         <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
 
-        <div class="search-block">
+        <div class="search-block" v-if="personData.relationships.length">
             <div class="search-name">
                 <i class="fa fa-search icon" aria-hidden="true"></i>
                 <input 
@@ -398,89 +398,114 @@
                 this.filtered = allRelations.filter((item) => {
                     if (this.canSearch && this.canSearchByType) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
-                            this.selectedTypes.indexOf(parseInt(item.pivot.edge_type)) + 1
+                            this.selectedTypes.indexOf(parseInt(item.edge_type)) + 1
                     } else if (this.canSearch && ! this.canSearchByType) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
                     } else if ( ! this.canSearch && this.canSearchByType) {
-                        return this.selectedTypes.indexOf(parseInt(item.pivot.edge_type)) + 1
+                        return this.selectedTypes.indexOf(parseInt(item.edge_type)) + 1
                     }
                 });
 
                 this.sortBy();
             },
-            getAllRelations: function () {
-                let url = '';
-                this.httpGet();
+            specificSort: function (items) {
+                let _this = this;
+                if (items  && items.length) {
+                    if (_this.selectedSort == 'name-asc') {
+                        items.sort(function (a, b) {
+                            if (a.name > b.name) {
+                                return 1;
+                            }
+                            if (a.name < b.name) {
+                                return -1;
+                            }
+                        });
+                    } else if (_this.selectedSort == 'name-desc') {
+                        items.sort(function (a, b) {
+                            if (a.name < b.name) {
+                                return 1;
+                            }
+                            if (a.name > b.name) {
+                                return -1;
+                            }
+                        });
+                    } else if (_this.selectedSort == 'count-asc') {
+                        items.sort(function (a, b) {
+                            let aPapers = 0, aCited = 0, aTotal = 0, bPapers = 0, bCited = 0, bTotal = 0;
+                            
+                            if(a.co_authored_paper) {
+                                aPapers = a.co_authored_paper.split(',').length;
+                            }
+
+                            if(a.cited_paper) {
+                                let ids = a.cited_paper.replace(/ cites /g, ',');
+
+                                aCited = _this.getUniqueArrayElements(ids.split(',')).length;
+                            }
+
+                            aTotal = parseInt(aPapers) + parseInt(aCited);
+
+                            if(b.co_authored_paper) {
+                                bPapers = b.co_authored_paper.split(',').length;
+                            }
+
+                            if(b.cited_paper) {
+                                let ids = b.cited_paper.replace(/ cites /g, ',');
+
+                                bCited = _this.getUniqueArrayElements(ids.split(',')).length;
+                            }
+
+                            bTotal = parseInt(bPapers) + parseInt(bCited);
+                            
+                            return aTotal - bTotal;
+                        });
+                    } else if (_this.selectedSort == 'count-desc') {
+                        items.sort(function (a, b) {
+                            let aPapers = 0, aCited = 0, aTotal = 0, bPapers = 0, bCited = 0, bTotal = 0;
+                            
+                            if(a.co_authored_paper) {
+                                aPapers = a.co_authored_paper.split(',').length;
+                            }
+
+                            if(a.cited_paper) {
+                                let ids = a.cited_paper.replace(/ cites /g, ',');
+
+                                aCited = _this.getUniqueArrayElements(ids.split(',')).length;
+                            }
+
+                            aTotal = parseInt(aPapers) + parseInt(aCited);
+
+                            if(b.co_authored_paper) {
+                                bPapers = b.co_authored_paper.split(',').length;
+                            }
+
+                            if(b.cited_paper) {
+                                let ids = b.cited_paper.replace(/ cites /g, ',');
+
+                                bCited = _this.getUniqueArrayElements(ids.split(',')).length;
+                            }
+
+                            bTotal = parseInt(bPapers) + parseInt(bCited);
+                            
+                            return bTotal - aTotal;
+                        });
+                    } else if (_this.selectedSort == 'date-asc') {
+                        items.sort(function (a, b) {
+                            return a.lastCooperationYear[0].year - b.lastCooperationYear[0].year;
+                        });
+                    } else if (_this.selectedSort == 'date-desc') {
+                        items.sort(function (a, b) {
+                            return b.lastCooperationYear[0].year - a.lastCooperationYear[0].year;
+                        });
+                    }
+                }
             },
             sortBy: function () {
-                if (this.canSort) {
-                    if (this.selectedSort == 'name-asc') {
-                        if (this.filtered  && this.filtered.length) {
-                            this.filtered.sort(function (a, b) {
-                                if (a.name > b.name) {
-                                    return 1;
-                                }
-                                if (a.name < b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-
-                        if (this.person.relationships  && this.person.relationships.length) {
-                            this.person.relationships.sort(function (a, b) {
-                                if (a.name > b.name) {
-                                    return 1;
-                                }
-                                if (a.name < b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-
-                        if (this.relationshipsCollapsedData  && this.relationshipsCollapsedData.length) {
-                            this.relationshipsCollapsedData.sort(function (a, b) {
-                                if (a.name > b.name) {
-                                    return 1;
-                                }
-                                if (a.name < b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-                    } else if (this.selectedSort == 'name-desc') {
-                        if (this.filtered && this.filtered.length) {
-                            this.filtered.sort(function (a, b) {
-                                if (a.name < b.name) {
-                                    return 1;
-                                }
-                                if (a.name > b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-
-                        if (this.person.relationships && this.person.relationships.length) {
-                            this.person.relationships.sort(function (a, b) {
-                                if (a.name < b.name) {
-                                    return 1;
-                                }
-                                if (a.name > b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-
-                        if (this.relationshipsCollapsedData && this.relationshipsCollapsedData.length) {
-                            this.relationshipsCollapsedData.sort(function (a, b) {
-                                if (a.name < b.name) {
-                                    return 1;
-                                }
-                                if (a.name > b.name) {
-                                    return -1;
-                                }
-                            });
-                        }
-                    }
+                let _this = this;
+                if (_this.canSort) {
+                    _this.specificSort(_this.filtered);
+                    _this.specificSort(_this.person.relationships);
+                    _this.specificSort(_this.relationshipsCollapsedData);
                 }
             }
         },
@@ -505,7 +530,9 @@
                 ]
             },
             getAllRelationships: function () {
-                return this.personData.relationships;
+                if (this.personData && this.personData.relationships && this.personData.relationships.length) {
+                    return this.personData.relationships;
+                }
             },
             canSearch: function () {
                 return this.query.trim() === '' ? false : true
@@ -547,7 +574,6 @@
         props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes'],
 
         mounted: function () {
-            this.getAllRelations();
             this.openRelationIfHashDetected()
         }
 
