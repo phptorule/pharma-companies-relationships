@@ -58,6 +58,9 @@
                 this.fillCounterProps(data);
             });
 
+            if (this.$route.query['global-search']) {
+                this.globalSearch.globalSearchInput = this.$route.query['global-search'];
+            }
 
             this.fillCounterProps(GlobalSearch.resultCounter);
 
