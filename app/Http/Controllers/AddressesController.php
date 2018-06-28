@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\AddressConnection;
 use App\Models\AddressTag;
 use App\Models\AddressProduct;
 use App\Models\Cluster;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Image;
 use File;
 use Storage;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AddressesController extends Controller
 {
@@ -577,5 +579,57 @@ class AddressesController extends Controller
                 'cluster' => $cluster
             ]);
         }
+    }
+
+    // create new relation from person to person
+    public function createPersonRelation (Request $request)
+    {
+        $fromPersonId = request('fromPersonId');
+
+        $toPersonId = request('toPersonId');
+
+        $edgeType = request('edgeType');
+
+        $edgeComment = request('edgeComment');
+
+        $user = JWTAuth::user();
+
+        $addressConnection = AddressConnection::where('from_person_id', $fromPersonId)
+            ->where('to_person_id', $toPersonId)
+            ->first();
+
+        if ( ! empty($addressConnection)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This connection already exists!'
+            ]);
+        }
+
+        $addressConnection = new AddressConnection();
+
+        $addressConnection->from_person_id = $fromPersonId;
+
+        $addressConnection->from_address_id = null;
+
+        $addressConnection->to_person_id = $toPersonId;
+
+        $addressConnection->to_address_id = null;
+
+        $addressConnection->edge_weight = 1;
+
+        $addressConnection->edge_type = $edgeType;
+
+        $addressConnection->edge_comment = $edgeComment;
+
+        $addressConnection->edge_source = null;
+
+        $addressConnection->user_id = $user->id;
+
+        $addressConnection->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ok'
+        ]);
     }
 }

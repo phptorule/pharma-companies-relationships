@@ -23,8 +23,32 @@ class PeopleController extends Controller
         $person->load(['addresses' => function($q){
             return $q->orderBy('id', 'desc');
         }]);
-        $person->load('publications','relationships');
-        return response()->json($person);
+        $person->load('publications');
+        $person->relationships = DB::table('rl_address_connections AS rl1')
+            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type,
+            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1') as co_authored_paper,
+            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2') as cited_paper,
+            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3') as signatory_at_company,
+            COUNT(to_person_id) AS count_types, 
+            rl_people.*"))
+            ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
+            ->where('from_person_id', $person->id)
+            ->groupBy('to_person_id')
+            ->orderBy('name', 'ASC')
+            ->get();
+
+            $person->relationships->each(function ($relation, $key) {
+                $sqlQuery = "
+                    SELECT MAX(year) as year FROM `rl_publications` 
+                    JOIN rl_people_publications 
+                    ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_publications.id = rl_people_publications.publication_id
+                ";
+                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
+                $relation->lastCooperationYear = $lastCooperationYear;
+            });
+
+            return response()->json($person);
     }
 
 
@@ -49,9 +73,19 @@ class PeopleController extends Controller
             ->orderBy('edge_weight', 'DESC')
             ->paginate(10);
 
+            $relationships->each(function ($relation, $key) {
+                $sqlQuery = "
+                    SELECT MAX(year) as year FROM `rl_publications` 
+                    JOIN rl_people_publications 
+                    ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_publications.id = rl_people_publications.publication_id
+                ";
+                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
+                $relation->lastCooperationYear = $lastCooperationYear;
+            });
+
         return response()->json($relationships);
     }
-
 
     function getPersonGraphInfo($mainPersonId)
     {

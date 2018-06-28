@@ -107,5 +107,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/logger/log-data', 'LogController@logData');
 
+    Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
+    
     Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 });
