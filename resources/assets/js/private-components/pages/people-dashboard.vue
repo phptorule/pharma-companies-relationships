@@ -105,12 +105,20 @@
 
                                     <a href="javascript:void(0)"
                                        class="person-more-companies"
-                                       :title="titleListOfAddressNames(person.addresses)"
+                                       v-tooltip.bottom="{ html: 'tooltipContent' + person.id }"
                                     >
                                         + {{person.addresses.length - 1}} more
                                         <span v-if="person.addresses.length - 1 === 1">company</span>
                                         <span v-if="person.addresses.length - 1 > 1">companies</span>
                                     </a>
+
+                                    <span class="product-tooltip" :id="'tooltipContent' + person.id" style="display: block">
+                                        <ul style="margin: 0">
+                                            <li v-for="add of person.addresses">
+                                                {{add.name}}
+                                            </li>
+                                        </ul>
+                                    </span>
 
                                     <br>
                                 </span>
