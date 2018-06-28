@@ -1044,7 +1044,7 @@ ul.tag-list li + li{
 .item-image {
     float: right;
     width: 120px;
-    height: 100px;
+    height: 145px;
     position: relative;
     padding-top: 4px;
 }
@@ -2837,4 +2837,11 @@ ul.staff-with-publication-list .box-body h4{
     display: block;
     width: 100%;
     text-align: center;
+}
+
+.address .person-first-address-name{
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    text-overflow: ellipsis;
 }

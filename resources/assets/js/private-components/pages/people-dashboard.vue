@@ -94,15 +94,28 @@
                             <p class="address">Role: <strong>{{ person.role }}</strong></p>
 
                             <p class="address">
-                                {{ person.addresses.length ? person.addresses[0].address : 0 }}
+
+                                <span class="person-first-address-name" :title="person.addresses[0].name">
+                                    {{person.addresses[0].name}}
+                                </span>
 
                                 <span v-if="person.addresses.length > 1">
-                                    <br>
-                                    <a href="javascript:void(0)" class="person-more-companies">+ {{person.addresses.length - 1}} more
+
+                                    <a href="javascript:void(0)"
+                                       class="person-more-companies"
+                                       :title="titleListOfAddressNames(person.addresses)"
+                                    >
+                                        + {{person.addresses.length - 1}} more
                                         <span v-if="person.addresses.length - 1 === 1">company</span>
                                         <span v-if="person.addresses.length - 1 > 1">companies</span>
                                     </a>
+
+                                    <br>
                                 </span>
+
+
+
+                                {{ person.addresses.length ? person.addresses[0].address : 0 }}
                             </p>
 
 
@@ -456,6 +469,21 @@
                     .then(addressData => {
                         this.showEmployeeDetailsModal(person.id, addressData.id, addressData);
                     });
+            },
+
+            titleListOfAddressNames: function (addressList) {
+
+                let titleStr = '';
+
+                addressList.forEach((add, i) => {
+                    titleStr += add.name;
+
+                    if(i+1 !== addressList.length) {
+                        titleStr += '; ';
+                    }
+                });
+
+                return titleStr;
             }
         },
 
@@ -466,11 +494,6 @@
             $('ul.sidebar-list').height(window.innerHeight - 359);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
-
-            // this.loadAddressesPaginated()
-            //     .then((data) => {
-            //         this.scrollToSidebarListItem();
-            //     });
 
             this.loadPersonsPaginated();
 
