@@ -15,7 +15,7 @@
                     {{countPeople}}
                 </span>
 
-                <router-link :to="globalSearch.globalSearchInput ? '/people-dashboard?global-search=' + globalSearchQueryStr : '/people-dashboard'"><i class="fa fa-group"></i> People</router-link>
+                <router-link :to="globalSearch.globalSearchInput ? '/people-dashboard?global-search=' + globalSearchQueryStr : '/people-dashboard'"><i class="fa fa-group"></i> People <sup>&beta;</sup></router-link>
             </li>
         </ul>
     </div>
