@@ -156,7 +156,7 @@
         data: function () {
             return {
                 people: [{
-                    addresses: []
+                    addresses: [{}]
                 }],
                 isFirstLoad: true,
                 user: {},
@@ -493,7 +493,7 @@
 
             document.title = 'Labscape People';
 
-            $('ul.sidebar-list').height(window.innerHeight - 359);
+            $('ul.sidebar-list').height(window.innerHeight - 315);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 

@@ -262,7 +262,7 @@
 
             document.title = 'Labscape';
 
-            $('ul.sidebar-list').height(window.innerHeight - 310);
+            $('ul.sidebar-list').height(window.innerHeight - 315);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 
