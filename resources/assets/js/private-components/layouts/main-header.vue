@@ -117,11 +117,11 @@
                             else {
                                 this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput))
                             }
-                        })
+                        });
+
+                    this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
 
                 },1000);
-
-                this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
             },
 
             preProcessGlobalSearchQuery: function () {
