@@ -16,14 +16,6 @@
 
         <div v-if="isClusterEdit">
             <div class="form-group edit-name-input-block">
-                <!-- <input 
-                    type="text" 
-                    autocomplete="off"
-                    class="form-control lab-chain-name-input"
-                    v-model="addressData.cluster.name"
-                    placeholder="Lab chain name"
-                > -->
-
                 <div-editable 
                     @updateEdit="updateCluster"
                     :content.sync="addressData.cluster.name"
@@ -150,6 +142,17 @@
                                 {{ person.name }}
                             </a>
                         </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
+                        </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
                 </li>
@@ -172,6 +175,17 @@
                             >
                                 {{ person.name }}
                             </a>
+                        </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
                         </p>
                         <p class="occupation">{{person.description}}</p>
                     </div>
@@ -197,6 +211,17 @@
                             >
                                 {{ person.name }}
                             </a>
+                        </p>
+                        <p class="occupation" v-if="person.addresses.length">
+                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
+                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
+                                                                    v-if="person.addresses.length > 1"
+                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
+                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
                         </p>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
@@ -243,10 +268,22 @@
                     <img class="product-image" :src="'/images/mask-'+i+'.png'" alt="" v-else>
                     <div class="product-description-block">
                         <span class="product-description">
-                            {{product.name? product.company + ': ' + product.name : product.company}}
+                            {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
 
-                        <span class="product-also-use" v-html="productAlsoUse(product)"></span>
+                        <span class="product-also-use">
+                            at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">
+                                {{ product.addresses[0].name }}
+                            </a>
+                            <span v-if="product.addresses.length > 1" v-tooltip.bottom="{ html: 'tooltipProductContent' + i }">
+                                and {{ product.addresses.length - 1 }} other
+                            </span>
+                            <div class="product-tooltip" v-if="product.addresses.length > 1" :id="'tooltipProductContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in product.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
+                        </span>
                     </div>
 
 
@@ -283,7 +320,18 @@
                             {{ product.name ? product.company + ': ' + product.name : product.company }}
                         </span>
 
-                        <span class="product-also-use" v-html="productAlsoUse(product)"></span>
+                        <span class="product-also-use">
+                            at <a class="product-at-link" :href="'/address-details/' + product.addresses[0].id">{{ product.addresses[0].name }}</a>
+                            <span v-if="product.addresses.length > 1" v-tooltip.bottom="{ html: 'tooltipProductContent' + i }">
+                                and {{ product.addresses.length - 1 }} other
+                            </span>
+
+                            <div class="product-tooltip" v-if="product.addresses.length > 1" :id="'tooltipProductContent' + i">
+                                <p v-if="k > 0" v-for="(address, k) in product.addresses">
+                                    {{ address.name }}
+                                </p>
+                            </div>
+                        </span>
                     </div>
 
 
@@ -372,6 +420,7 @@
             showLabChainMembersPaginated: function() {
                 this.isShowLabChainMembersCollapsed = false;
                 this.loadClusterDetails();
+                this.$root.logData('labchain', 'show labchain members paginated', JSON.stringify(''));
             },
 
             loadClusterDetails: function (page) {
@@ -386,15 +435,18 @@
 
             pageChanged: function(pageNumber) {
                 this.loadClusterDetails(pageNumber);
+                this.$root.logData('labchain', 'labchain members page changed', JSON.stringify(pageNumber));
             },
 
             showLabChainStaffPaginated: function() {
                 this.isShowLabChainStaffCollapsed = false;
                 this.loadClusterStaffPaginated();
+                this.$root.logData('labchain', 'show labchain staff paginated', JSON.stringify(''));
             },
 
             staffPageChanged: function(pageNumber) {
                 this.loadClusterStaffPaginated(pageNumber)
+                this.$root.logData('labchain', 'labchain staff page changed', JSON.stringify(pageNumber));
             },
 
             loadClusterStaffPaginated: function (page) {
@@ -407,12 +459,14 @@
             },
 
             productsPageChanged: function(pageNumber) {
-                this.loadClusterStaffPaginated(pageNumber)
+                this.loadClusterProductsPaginated(pageNumber)
+                this.$root.logData('labchain', 'labchain products page changed', JSON.stringify(pageNumber));
             },
 
             showProductsPaginated: function() {
                 this.isProductCollapsed = false;
                 this.loadClusterProductsPaginated();
+                this.$root.logData('labchain', 'show labchain products paginated', JSON.stringify(this.addressData.cluster.name));
             },
 
             loadClusterProductsPaginated: function (page) {
@@ -426,6 +480,7 @@
 
             closeSlidedBox: function () {
                 this.$emit('closeSlidedBox')
+                this.$root.logData('labchain', 'close slided box', JSON.stringify(''));
             },
 
             productAlsoUse: function (product) {
@@ -452,7 +507,11 @@
                         this.filtered = this.empList;
                     })
             },
-            handleSearch: function (e) {
+            handleSearch: _.debounce(function (e) {
+                this.$root.logData('labchain', 'search', JSON.stringify({
+                    searchQuery: this.query,
+                    selectedRole: this.selectedRole
+                }));
                 this.filtered = this.empList.filter((item) => {
                     if (this.canSearch && this.canSearchByRole) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
@@ -463,7 +522,7 @@
                         return item.type_id == this.selectedRole.id
                     }
                 });
-            },
+            }, 400),
             toggleClusterEdit: function () {
                 this.isClusterEdit = !this.isClusterEdit;
                 if ( ! this.isClusterEdit) {
@@ -471,9 +530,11 @@
                 } else {
                     this.checkIfChangesMade();
                 }
+                this.$root.logData('labchain', 'toggle cluster edit', JSON.stringify(this.isClusterEdit));
             },
             updateCluster: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('labchain', 'update labchain name', JSON.stringify(this.addressData.cluster.name));
                     this.httpPut('/api/address-details/'+this.addressData.id+'/update-cluster-name', {
                         clusterName: this.addressData.cluster.name.trim()
                     })
@@ -499,6 +560,7 @@
         },
 
         mounted: function () {
+            this.$root.logData('labchain', 'open', JSON.stringify(''));
             this.loadClusterStaffPaginated();
             this.loadClusterProductsPaginated();
 
@@ -641,4 +703,58 @@
     .products-list .product-description-block {
         margin-left: 15px;
     }
+
+    .product-tooltip {
+        height: 100%;
+        width: 100%;
+        max-height: 100px; 
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .product-tooltip p {
+        padding-right: 10px;
+    }
+
+    .product-tooltip::-webkit-scrollbar-button {
+        background-image:url('');
+        background-repeat:no-repeat;
+        width:4px;
+        height:0px
+    }
+
+    .product-tooltip::-webkit-scrollbar-track {
+        background-color:#ecedee;
+    }
+
+    .product-tooltip::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+        background-color: rgba(1, 60, 104, 0.1);
+    }
+
+    .product-tooltip::-webkit-scrollbar-thumb:hover{
+        background-color:#56999f;
+    }
+
+    .product-tooltip::-webkit-resizer{
+        background-image:url('');
+        background-repeat:no-repeat;
+        width:4px;
+        height:0px
+    }
+
+    .product-tooltip::-webkit-scrollbar{
+        width: 10px;
+    }
+
+    .product-also-use .product-at-link, .personal-info .product-at-link {
+        color: #3a444f;
+        font-weight: 700;
+    }
+    
+    .product-also-use .product-at-link:hover, .personal-info .product-at-link:hover {
+        color: #4a90e2;
+    }
+
 </style>

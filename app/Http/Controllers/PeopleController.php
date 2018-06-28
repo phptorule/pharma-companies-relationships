@@ -159,7 +159,6 @@ class PeopleController extends Controller
         return response()->json($person);
     }
 
-
     function getRoles ()
     {
         $roles = PeopleType::get();
@@ -201,4 +200,17 @@ class PeopleController extends Controller
 
         return $query;
     }
+
+
+    function getPeopleAutocomplete ($searchQuery)
+    {
+        $people = People::with([
+                        'addresses'
+                    ])
+                    ->where('name', 'like', "%$searchQuery%")
+                    ->orderBy('name')
+                    ->paginate(5);
+        return response()->json($people);
+    }
+
 }

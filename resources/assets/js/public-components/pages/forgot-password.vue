@@ -1,7 +1,7 @@
 <template>
     <div class="login-box">
         <div class="login-logo">
-            <a href="#"><b>Sporta</b>Leave</a>
+            <a href="javascript:void(0)"><b>Labscape</b>&beta;</a>
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">
@@ -16,13 +16,13 @@
                 <form name="loginForm">
                     <div class="form-group has-feedback" :class="{'has-error': errorMessage !== ''}">
                         <input
-                                class="form-control"
-                                placeholder="Email"
-                                type="email"
-                                name="email"
-                                required
-                                v-model="email"
-                                @keyup="resetErrorMessage()"
+                            class="form-control"
+                            placeholder="Email"
+                            type="email"
+                            name="email"
+                            required
+                            v-model="email"
+                            @keyup="resetErrorMessage()"
                         >
                         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                         <span class="help-block" v-show="errorMessage !== ''">{{errorMessage}}</span>

@@ -26,6 +26,7 @@
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
                                     :selected="appliedFilters.usedProducts"
+                                    :relationalProducts="filterObject.relational_products"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -156,7 +157,8 @@
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
-                    customer_types: []
+                    customer_types: [],
+                    relational_products: []
                 },
                 appliedFilters: {
                     usedProducts: this.$route.query['used-product-ids[]'] || [],
@@ -228,12 +230,13 @@
             },
 
             usedProductOptionsForDropDown: function () {
-                return this.filterObject.used_product_list.map(product => {
-                    return {
-                        label: product.company + (product.name? ': ' + product.name: ''),
-                        value: product.id
-                    }
-                })
+                // return this.filterObject.used_product_list.map(product => {
+                //     return {
+                //         label: product.company + (product.name? ': ' + product.name: ''),
+                //         value: product.id
+                //     }
+                // })
+                return this.filterObject.used_product_list;
             },
             tagOptionsForDropDown: function () {
                 return this.filterObject.tag_list.map(tag => {
@@ -269,6 +272,8 @@
 
             this.checkLocalStoragePreviousDashboard();
 
+            this.$root.logData('overview', 'open', JSON.stringify(''));
+
         },
 
         methods: {
@@ -297,21 +302,25 @@
             applyTypeFilter: function (data) {
                 this.appliedFilters.type = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by type', JSON.stringify(data));
             },
 
             applyUsedProductsFilter: function (data) {
                 this.appliedFilters.usedProducts = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by used products', JSON.stringify(data));
             },
 
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by tags', JSON.stringify(data));
             },
 
             applySortByFilter: function (data) {
                 this.appliedFilters.sortBy = data;
                 this.applyFilters(true);
+                this.$root.logData('overview', 'apply filter by sort', JSON.stringify(data));
             },
 
             listenToTotalPointsDisplayedOnMapChanged: function () {
@@ -417,6 +426,7 @@
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
                 this.loadAddressesPaginated();
+                this.$root.logData('overview', 'page changed', JSON.stringify(pageNumber));
             },
 
             loadFilterObject: function() {
@@ -429,7 +439,6 @@
             applyFilters: function (isOnlySortingChanged) {
 
                 this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
-
 
                 this.composeQueryUrl();
 
@@ -460,6 +469,7 @@
                 }
 
                 this.applyFilters();
+                this.$root.logData('overview', 'reset filters', JSON.stringify(''));
             },
 
             scrollFunction: function() {

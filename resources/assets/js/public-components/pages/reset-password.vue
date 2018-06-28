@@ -1,7 +1,7 @@
 <template>
     <div class="login-box">
         <div class="login-logo">
-            <a href="#"><b>Sporta</b> Leave</a>
+            <a href="javascript:void(0)"><b>Labscape</b>&beta;</a>
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">
@@ -20,12 +20,12 @@
             <form name="loginForm" v-if="!isPasswordSet">
                 <div class="form-group has-feedback"  >
                     <input
-                            v-model="email"
-                            class="form-control"
-                            placeholder="Email"
-                            type="email"
-                            name="email"
-                            required
+                        v-model="email"
+                        class="form-control"
+                        placeholder="Email"
+                        type="email"
+                        name="email"
+                        required
                     >
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     <div v-if="false">
@@ -35,13 +35,13 @@
                 </div>
                 <div class="form-group has-feedback" >
                     <input
-                            v-model="password"
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Password"
-                            required
-                            minlength="6"
+                        v-model="password"
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Password (min 6 characters)"
+                        required
+                        minlength="6"
                     >
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     <div v-if="false">
@@ -53,12 +53,12 @@
 
                 <div class="form-group has-feedback" :class="{'has-error': password !== password_confirmation && password != '' && password_confirmation != ''}">
                     <input
-                            v-model="password_confirmation"
-                            type="password"
-                            name="password_confirmation"
-                            class="form-control"
-                            placeholder="Password confirmation"
-                            required
+                        v-model="password_confirmation"
+                        type="password"
+                        name="password_confirmation"
+                        class="form-control"
+                        placeholder="Password confirmation"
+                        required
                     >
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                     <div v-if="false">
@@ -70,15 +70,12 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-7">
-
-                    </div>
                     <!-- /.col -->
-                    <div class="col-xs-12 col-md-5">
+                    <div class="col-xs-12 reset-btn-block">
                         <a href="javascript:void(0)"
-                                @click="doResetPassword()"
-                                :disabled="(password !== password_confirmation) || password == '' || password_confirmation == ''"
-                                class="btn btn-primary btn-block btn-flat"
+                            @click.prevent="doResetPassword()"
+                            :disabled=" ! isDataValid"
+                            class="btn btn-primary btn-block btn-flat"
                         >Reset Password</a>
                     </div>
                     <!-- /.col -->
@@ -122,20 +119,28 @@
                     password_confirmation: this.password_confirmation,
                     token: this.token
                 };
-
-                this.httpPost('/api/password/reset/'+this.token, data)
-                    .then(data => {
-
-                        this.isPasswordSet = true;
-                    })
-                    .catch(err => {
-                        this.errorMessage = err.data.message;
-                    })
+                if (this.isDataValid) {
+                    this.httpPost('/api/password/reset/'+this.token, data)
+                        .then(data => {
+                            this.errorMessage = '';
+                            this.isPasswordSet = true;
+                        })
+                        .catch(err => {
+                            this.errorMessage = err.data.message;
+                        })
+                }
+            }
+        },
+        computed: {
+            isDataValid: function () {
+                return (this.password !== this.password_confirmation) || this.password == '' || this.password_confirmation == '' ? false : true;
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .reset-btn-block {
+        margin-bottom: 10px;
+    }
 </style>

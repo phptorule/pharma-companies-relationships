@@ -28,6 +28,15 @@
 
         created: function () {
 
+        },
+
+        mounted: function () {
+            this.$eventGlobal.$on('userLogout', () => {
+                this.isLoggedIn = false;
+                localStorage.removeItem("auth-token");
+                localStorage.removeItem("logged-user");
+                window.location = '/login';
+            });
         }
     }
 </script>

@@ -188,6 +188,7 @@
 
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+                this.$root.logData('person_relationship', 'page changed', JSON.stringify(page));
             },
 
 
@@ -216,6 +217,7 @@
 
             slideUpAllPublications: function() {
                 $('.relation-row-class').slideUp(0);
+                this.$root.logData('person_relationship', 'slideup publications', JSON.stringify(''));
             },
 
             checkIfShouldBeSlidedUp: function(relationId) {

@@ -328,6 +328,8 @@
                             ids.push(allFeatures[i].properties.id);
                         }
 
+                        this.$root.logData('overview', 'map click', JSON.stringify(ids));
+
                         if(ids.length){
                             this.$router.push('/dashboard?address-ids='+ids.toString());
                         }

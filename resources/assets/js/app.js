@@ -4,10 +4,13 @@ import VueRouter from 'vue-router';
 import AuthService from './services/auth-service';
 import {Pagination} from 'vue-pagination-2';
 import vSelect from 'vue-select';
+import Tooltip from 'vue-directive-tooltip';
+import logger from './mixins/logger';
 
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
+window.Vue.use(Tooltip);
 
 AuthService.defineIsLoggedIn();
 
@@ -39,6 +42,7 @@ Vue.component('sidebar-tabs', require('./partial-view-components/sidebar-tabs'))
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 
 const app = new Vue({
+    mixins: [logger],
     el: '#app',
     router: router
 });

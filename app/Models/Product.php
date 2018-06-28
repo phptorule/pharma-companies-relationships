@@ -14,5 +14,5 @@ class Product extends Model
     {
         return $this->belongsToMany(Address::class, 'rl_address_products', 'product_id','address_id');
     }
-
+    
 }

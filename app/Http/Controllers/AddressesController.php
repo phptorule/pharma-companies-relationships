@@ -133,6 +133,12 @@ class AddressesController extends Controller
     {
         $tags = Tag::get(['id', 'name']);
         $products = Product::orderByRaw('company, name')->get();
+        $relationalProducts = Product::where('name', '')->orderByRaw('company, name')->get();
+        $relationalProducts->each(function ($product) {
+            $product->childProducts = Product::where('company', $product->company)
+                                        ->orderByRaw('company, name')
+                                        ->get();
+        });
         $customerTypes = CustomerType::visible()->get();
         $personTypes = DB::table('rl_people_types')->get();
 
@@ -140,7 +146,8 @@ class AddressesController extends Controller
             'tag_list' => $tags,
             'used_product_list' => $products,
             'customer_types' => $customerTypes,
-            'person_types' => $personTypes
+            'person_types' => $personTypes,
+            'relational_products' => $relationalProducts
         ];
 
         return response()->json($filters);
@@ -287,7 +294,11 @@ class AddressesController extends Controller
 
     function getClusterProductsPaginated(Address $address)
     {
-        $products = Product::with('addresses')
+        $products = Product::with([
+                'addresses' => function ($query) use ($address) {
+                    $query->where('cluster_id', $address->cluster_id);
+                }
+            ])
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
@@ -369,10 +380,19 @@ class AddressesController extends Controller
      */
     public function updateClusters(Address $address)
     {
+        $oldClusterId = $address->cluster_id;
         $address->cluster_id = request()->get('cluster_id');
         $address->update();
         $address->load('cluster');
         $address->load('cluster.addresses');
+        $cluster = Cluster::with('addresses')
+                    ->whereId($oldClusterId)
+                    ->first();
+        if ($cluster) {
+            if ($cluster->addresses->count() < 1) {
+                $cluster->delete();
+            }
+        }
         return response()->json($address);
     }
 
@@ -394,7 +414,7 @@ class AddressesController extends Controller
 
         AddressProduct::where('address_id', $address->id)->delete();
 
-        if (count($selectedProducts > 0)) {
+        if ( ! empty($selectedProducts)) {
             foreach ($selectedProducts as $productId) {
                 $addressProduct = new AddressProduct();
                 $addressProduct->address_id = $address->id;
@@ -523,5 +543,39 @@ class AddressesController extends Controller
         $cluster->save();
         
         return response()->json($cluster);
+    }
+
+    /**
+     * create new cluster if not exist
+     */
+    public function createCluster (Address $address)
+    {
+        $name = trim(request('name'));
+
+        $cluster = Cluster::where('name', $name)->first();
+
+        if ($cluster) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lab chain already exists'
+            ]);
+        } else {
+            $cluster = new Cluster();
+
+            $cluster->name = $name;
+
+            $cluster->save();
+
+            $address->cluster_id = $cluster->id;
+
+            $address->save();
+
+            $cluster->load('addresses');
+
+            return response()->json([
+                'status' => 'success',
+                'cluster' => $cluster
+            ]);
+        }
     }
 }

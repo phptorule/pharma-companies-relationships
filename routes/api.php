@@ -33,6 +33,16 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/logged-user', 'UserController@showLoggedUserData')->name('user.showLoggedUserData');
 
+    Route::post('/user/update-profile-picture', 'UserController@updateProfilePicture');
+
+    Route::post('/user/remove-avatar', 'UserController@removeAvatar');
+
+    Route::put('/user/update-profile-settings', 'UserController@updateProfileSettings');
+
+    Route::post('/user/change-password', 'UserController@changePassword');
+
+    Route::post('/user/logout', 'AuthController@logout');
+
     Route::get('/addresses', 'AddressesController@index')->name('address.index');
 
     Route::get('/addresses-paginated', 'AddressesController@loadAddressesPaginated')->name('address.loadAddressesPaginated');
@@ -87,9 +97,15 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/products', 'AddressesController@getProducts')->name('address.getProducts');
 
-    Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
+    Route::post('/products/{address}/update', 'AddressesController@updateProducts')->name('address.updateProducts');
 
     Route::post('/products/create', 'AddressesController@createProduct');
+
+    Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
+
+    Route::get('/people/autocomplete/{searchQuery}', 'PeopleController@getPeopleAutocomplete');
+
+    Route::post('/logger/log-data', 'LogController@logData');
 
     Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 });

@@ -230,6 +230,22 @@
                         </div>
                     </div>
                     <div class="modal-body">
+                        <div class="add-new-relation" v-if="showAddRelation && isEditing">
+                            <autocomplete
+                                :items="peopleItems"
+                                :onChange="getPeopleAutocomplete"
+                                :itemsTotal="peopleItemsTotal"
+                                :itemsType="'People'"
+                            />
+                            <v-select 
+                                :options="connectionTypes"
+                                :label="'name'"
+                                :class="'connection-types'"
+                                :searchable="false"
+                                :placeholder="'Choose connection type'"
+                                v-model="selectedConnectionType"
+                            />
+                        </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
                                 <li :class="{'active': activeTab == 'career'}">
@@ -239,7 +255,18 @@
                                 <li :class="{'active': activeTab == 'publications'}">
                                     <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
                                 <li :class="{'active': activeTab == 'relationships'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('relationships')" data-toggle="tab" aria-expanded="false">Relationships</a></li>
+                                    <a href="javascript:void(0)" 
+                                        @click="setTabActive('relationships')" 
+                                        data-toggle="tab" 
+                                        aria-expanded="false"
+                                    >
+                                        Relationships
+                                    </a>
+                                    <a v-if="isEditing" 
+                                        class="add-relation" 
+                                        href="#" 
+                                        @click.prevent><i class="fa fa-plus"></i></a>
+                                </li>
                             </ul>
 
                             <div class="tab-content">
@@ -327,9 +354,13 @@
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import addressHelpers from '../mixins/address-helpers';
+    import autocomplete from './autocomplete';
 
     export default {
         mixins: [http, getPersonInitials, addressHelpers],
+        components: {
+            autocomplete
+        },
 
         data: function () {
             return {
@@ -362,7 +393,11 @@
                 },
                 maxRoleLength: 1000,
                 maxSocialLength: 1000,
-                isSocialEditing: false
+                isSocialEditing: false,
+                showAddRelation: false,
+                peopleItems: [],
+                peopleItemsTotal: 0,
+                selectedConnectionType: null
             }
         },
 
@@ -404,6 +439,12 @@
             $route: function (to) {
                 if(window.location.hash.indexOf('person-') === -1 && $('#personal-modal').hasClass('in')){
                     $('#personal-modal').modal('hide');
+                }
+            },
+            isEditing: function () {
+                if ( ! this.isEditing) {
+                    this.showAddRelation = false;
+                    this.peopleItems = [];
                 }
             },
             "personData.name": function() {
@@ -554,6 +595,7 @@
             },
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+                this.$root.logData('person', 'open', JSON.stringify(tabName + ' tab'));
             },
 
             showContactsChain: function() {
@@ -563,6 +605,8 @@
                 addressData['isPersonChain'] = true;
 
                 this.$eventGlobal.$emit('showModalContactsChain', addressData);
+
+                this.$root.logData('person', 'show contacts chain', JSON.stringify(this.personId));
             },
 
             openRelationshipTabIfHashDetected: function () {
@@ -574,6 +618,7 @@
             },
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+                this.$root.logData('person_relationship', 'page changed', JSON.stringify(page));
             },
             toggleEditing: function() {
                 this.isEditing = !this.isEditing;
@@ -591,6 +636,8 @@
                 } else {
                     this.checkIfChangesMade();
                 }
+
+                this.$root.logData('person', 'toggle edit person', JSON.stringify(this.isEditing));
             },
             checkIfInputsEmpty: function() {
                 if (
@@ -620,6 +667,16 @@
             },
             updateEmploye: function() {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('person', 'update person data', JSON.stringify({
+                        name: this.personData.name,
+                        description: this.personData.description,
+                        role: this.personData.role,
+                        linkedin_url: this.personData.linkedin_url,
+                        twitter: this.personData.twitter,
+                        facebook: this.personData.facebook,
+                        instagram: this.personData.instagram,
+                        telegram: this.personData.telegram
+                    }));
                     this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
@@ -658,7 +715,27 @@
             },
             setSocialEdit: function (social) {
                 this.isSocialEditing = social;
-            }
+                this.$root.logData('person', 'set social edit', JSON.stringify(social));
+            },
+            toggleAddRelation: function () {
+                this.showAddRelation = !this.showAddRelation;
+            },
+            getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
+                let p = pageNumber || 1;
+                if (searchQuery.length >= 3) {
+                    this.httpGet('/api/people/autocomplete/' + searchQuery + '?page=' + p)
+                        .then(data => {
+                            console.log(data);
+                            this.peopleItems = data.data;
+                            this.peopleItemsTotal = data.total;
+                        })
+                        .catch(error => {
+                            alertify.notify('Error occured', 'error', 3);
+                        })
+                } else {
+                    this.peopleItems = [];
+                }
+            }, 400)
         },
 
         mounted: function(){
@@ -669,6 +746,7 @@
 
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
                 this.init(data.personId, data.addressId, data.address);
+                this.$root.logData('person', 'open', JSON.stringify(data.personId));
             });
 
             this.openRelationshipTabIfHashDetected('relationships');
@@ -813,5 +891,51 @@
 
     .social-input:focus {
         outline: none;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation {
+        position: absolute;
+        cursor: pointer;
+        top: 7px;
+        right: -20px;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        border: none;
+        display: flex;
+        justify-content: center;
+        background: #bbbec2;
+        color: #fff;
+        margin: 0;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover {
+        background: #4a90e3;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
+        background: #bbbec2;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation .fa {
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+    }
+
+    .add-new-relation {
+        width: 100%;
+        min-height: 200px;
+        background: #fff;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        margin-bottom: 20px;
+        padding: 10px 15px;
     }
 </style>
