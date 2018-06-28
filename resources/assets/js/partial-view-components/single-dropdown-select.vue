@@ -10,7 +10,7 @@
 
                 <span class="caret"></span>
 
-                <i v-if="name === 'Type' && selectedValue !== null"
+                <i v-if="showCircle && selectedValue !== null"
                    class="oval"
                    :class="{
                         both: !selectedValue || selectedValue === '',
@@ -122,7 +122,7 @@
             this.presetSelectedValue();
         },
 
-        props: ['options', 'selected', 'name', 'isHiddenEmptyOption']
+        props: ['options', 'selected', 'name', 'isHiddenEmptyOption', 'showCircle']
 
     }
 </script>

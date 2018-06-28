@@ -16,6 +16,7 @@
                                     :options="customerTypesForFilter"
                                     :selected="appliedFilters.type"
                                     :isHiddenEmptyOption="true"
+                                    :showCircle="true"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"

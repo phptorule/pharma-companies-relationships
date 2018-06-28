@@ -16,7 +16,7 @@
                                     :options="personTypesForFilter"
                                     :selected="appliedFilters.personTypes"
                                     @changed="applyPersonTypeFilter"
-                                    :name="'Person Type'"
+                                    :name="'Type'"
                                     ref="personTypeSingleDropdownSelect"
                             ></single-dropdown-select>
 
