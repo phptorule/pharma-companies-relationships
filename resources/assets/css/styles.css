@@ -521,7 +521,7 @@ a{
     font-size: 14px;
     background: transparent;
     border: 0;
-    width: calc(100% - 35px);
+    width: calc(100% - 55px);
     height: 1.5em;
     color: #ffffff;
     padding: 3px;
@@ -802,19 +802,30 @@ ul.select-filter > li > ul > li .grey-checkbox [type=checkbox]:checked + span:be
 }
 
 .oval {
-    width: 8px;
-    height: 8px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-right: 8px;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+    margin-right: 8px !important;
 }
 
-.my-customers .oval{
-    background-color: #34cc8c;
+.my-customers .oval,
+.my-customers.oval{
+    background-color: #34cc8c !important;
 }
 
-.potential-customers .oval{
-    background-color: #ff894f;
+.potential-customers .oval,
+.potential-customers.oval{
+    background-color: #ff894f !important;
+}
+
+.oval.both{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#34cc8c+0,34cc8c+50,ff894f+51,ff894f+100 */
+    background: #34cc8c !important; /* Old browsers */
+    background: -moz-linear-gradient(-45deg, #34cc8c 0%, #34cc8c 50%, #ff894f 51%, #ff894f 100%) !important; /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, #34cc8c 0%,#34cc8c 50%,#ff894f 51%,#ff894f 100%) !important; /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, #34cc8c 0%,#34cc8c 50%,#ff894f 51%,#ff894f 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#34cc8c', endColorstr='#ff894f',GradientType=1 ) !important; /* IE6-9 fallback on horizontal gradient */
 }
 
 .nav-links{
@@ -891,6 +902,10 @@ ul.sidebar-list > li:hover{
 
 ul.sidebar-list li:first-child .item{
     padding-top: 0px;
+}
+
+ul.sidebar-list.people-list li .item{
+    min-height: 160px;
 }
 
 ul.sidebar-list li h3{
@@ -1029,7 +1044,7 @@ ul.tag-list li + li{
 .item-image {
     float: right;
     width: 120px;
-    height: 100px;
+    height: 145px;
     position: relative;
     padding-top: 4px;
 }
@@ -1042,6 +1057,7 @@ ul.tag-list li + li{
     position: absolute;
     overflow: hidden;
     background: #e6ecf3;
+    margin-top: 25px;
 }
 
 .item-image .main-image img.addr-img{
@@ -1057,6 +1073,7 @@ ul.tag-list li + li{
     z-index: 99;
     border-radius: 50px;
     background: #d7e1ec;
+    margin-top: 25px;
 }
 
 .item-image .circle-2{
@@ -1067,6 +1084,7 @@ ul.tag-list li + li{
     z-index: 98;
     border-radius: 50px;
     background: #eaeff4;
+    margin-top: 25px;
 }
 
 .pagination-box {
@@ -2648,6 +2666,11 @@ ul.staff-list li .personal-info .name a:hover{
     top: calc(50% - 20px);
 }
 
+.sidebar-list .item-image .main-image .box-p span.people-count.person-initials{
+    font-size: 29px;
+    top: calc(50% - 22px);
+}
+
 .modal-open .main-header,
 .modal-open .main-sidebar,
 .modal-open #map-element,
@@ -2749,6 +2772,126 @@ ul.staff-with-publication-list .box-body h4{
     margin-top: 0;
 }
 
-ul.staff-with-publication-list h3.box-title {
+.sidebar-tabs.nav-tabs-custom{
+    margin-bottom: 0;
+}
 
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs{
+    border: 0;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li{
+    width: 50%;
+    margin: 0;
+    border: 0;
+    position: relative;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li .global-search-result-counter{
+    position: absolute;
+    z-index: 11;
+    background: #dd4b39;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    height: 20px;
+    text-align: center;
+    border-radius: 15px;
+    line-height: 20px;
+    padding-left: 5px;
+    min-width: 20px;
+    padding-right: 5px;
+    right: 10px;
+    top: calc(50% - 10px);
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li>a{
+    text-align: center;
+    letter-spacing: 0.5px;
+    color: #999999;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li>a:hover{
+    color: #3a444f;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li.active{
+    border-top-color: transparent;
+}
+
+.sidebar-tabs.nav-tabs-custom>.nav-tabs>li.active>a {
+    background: #eaeff4;
+    color: #3e7fdf;
+}
+
+.skin-blue .sidebar-form .person-role-filter-box {
+    float: left;
+    margin-left: 4px;
+    width: calc(51% - 4px);
+}
+
+.skin-blue .sidebar-form .person-role-filter-box input{
+    color: #555555;
+    background: #fff;
+    border: 1px solid #d2d6de;
+    padding: 10px;
+    border-radius: 6px;
+    line-height: 41px;
+    height: 41px;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+    width: 100%;
+}
+
+.skin-blue .sidebar-form .person-role-filter-box + .select-filter{
+    margin-left: 4px;
+}
+
+.skin-blue .sidebar a.person-more-companies{
+    color: #4a90e2;
+}
+
+.skin-blue .sidebar a.person-more-companies:hover{
+    text-decoration: underline;
+}
+
+.clear-global-search-input {
+    font-size: 16px;
+    color: #ffffff;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.clear-global-search-input:hover {
+    opacity: 1;
+}
+.clear-global-search-input:active{
+    opacity: 1;
+}
+
+.person-type-span {
+    font-size: 11px;
+    line-height: 25px;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.address .person-first-address-name{
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    text-overflow: ellipsis;
+}
+
+.address .person-first-address-name a{
+    color: #3a444f;
+}
+
+.address .person-first-address-name a:hover{
+    color: #4a90e2;
 }

@@ -75,6 +75,8 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/customer-statuses', 'CustomerStatusesController@show')->name('customerStatus.show');
 
+    Route::get('/people-paginated', 'PeopleController@getPeoplePaginated')->name('people.getPeoplePaginated');
+
     Route::get('/people/{person}/relationships', 'PeopleController@getPersonRelationships')->name('people.getPersonRelationships');
 
     Route::get('/people/{person}/relationship-details', 'PeopleController@getRelationshipDetails')->name('people.getRelationshipDetails');
@@ -106,4 +108,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::post('/logger/log-data', 'LogController@logData');
 
     Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
+    
+    Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 });

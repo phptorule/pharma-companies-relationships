@@ -35,6 +35,7 @@ class AddressesController extends Controller
             $addressesForResponse[$i]['lat'] = $address['lat'];
             $addressesForResponse[$i]['lon'] = $address['lon'];
             $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+            $addressesForResponse[$i]['people_count'] = $address['people_count'];
         }
 
         return response()->json($addressesForResponse);
@@ -48,6 +49,20 @@ class AddressesController extends Controller
         $addresses = $query->paginate(20);
 
         return response()->json($addresses);
+    }
+
+
+    function preProcessGlobalSearch()
+    {
+        $searchStr = request()->all()['global-search'];
+
+        $addressesCount = $this->prepareAddressesQuery()->count();
+        $peopleCount = People::where('name', 'like', '%'.$searchStr.'%')->count();
+
+        return response()->json([
+            'count_addresses' => $addressesCount,
+            'count_people' => $peopleCount
+        ]);
     }
 
 
@@ -127,11 +142,13 @@ class AddressesController extends Controller
                                         ->get();
         });
         $customerTypes = CustomerType::visible()->get();
+        $personTypes = DB::table('rl_people_types')->get();
 
         $filters = [
             'tag_list' => $tags,
             'used_product_list' => $products,
             'customer_types' => $customerTypes,
+            'person_types' => $personTypes,
             'relational_products' => $relationalProducts
         ];
 
@@ -538,7 +555,7 @@ class AddressesController extends Controller
         $name = trim(request('name'));
 
         $cluster = Cluster::where('name', $name)->first();
-        
+
         if ($cluster) {
             return response()->json([
                 'status' => 'error',

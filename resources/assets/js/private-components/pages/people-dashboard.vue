@@ -13,33 +13,20 @@
 
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
-                                    :options="customerTypesForFilter"
-                                    :selected="appliedFilters.type"
-                                    :isHiddenEmptyOption="true"
-                                    :showCircle="true"
-                                    @changed="applyTypeFilter"
+                                    :options="personTypesForFilter"
+                                    :selected="appliedFilters.personTypes"
+                                    @changed="applyPersonTypeFilter"
                                     :name="'Type'"
-                                    ref="typeSingleDropdownSelect"
+                                    ref="personTypeSingleDropdownSelect"
                             ></single-dropdown-select>
 
-                            <multiple-dropdown-select
-                                    class="form-control select-filter used-products-filter"
-                                    :name="'Used Products'"
-                                    :options="usedProductOptionsForDropDown"
-                                    :selected="appliedFilters.usedProducts"
-                                    :relationalProducts="filterObject.relational_products"
-                                    @changed="applyUsedProductsFilter"
-                                    ref="productsMultipleDropdownSelect"
-                            ></multiple-dropdown-select>
-
-                            <multiple-dropdown-select
-                                    class="form-control select-filter tags-filter"
-                                    :name="'Tags'"
-                                    :options="tagOptionsForDropDown"
-                                    :selected="appliedFilters.tags"
-                                    @changed="applyTagsFilter"
-                                    ref="tagMultipleDropdownSelect"
-                            ></multiple-dropdown-select>
+                            <div class="person-role-filter-box">
+                                <input v-model="appliedFilters.roleInput"
+                                       @keyup="applyRoleFilter"
+                                       type="text"
+                                       placeholder="Person Role..."
+                                >
+                            </div>
 
                             <single-dropdown-select
                                     class="form-control select-filter type-filter"
@@ -64,72 +51,98 @@
             <div class="sidebar-list-box">
 
                 <div class="found-result-statistics">
-                    Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
+                    Found {{peopleTotal}}
+                    <span v-if="peopleTotal == 1">person</span>
+                    <span v-if="peopleTotal != 1">people</span>.
                 </div>
 
-                <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
-                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
-                        <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
+                <ul class="sidebar-list people-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
+                    <li v-for="(person, i) in people" @mouseover="setAddressMouseOverListener(person)" class="sidebar-list-item">
+                        <div class="item">
 
-                            <div class="item-image" v-show="address.people_count > 0">
+                            <div class="item-image">
+
+                                <span class="pull-right person-type-span">
+                                    {{ personType(person.type_id) }}
+                                </span>
+
                                 <div class="main-image">
-                                    <!--<router-link :to="'/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : '')" >-->
-                                    <a href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id+ (address.people_count ? '?all-employees=1' : ''))" >
+                                    <a href="javascript:void(0)">
                                         <div class="box-p">
-                                            <span class="people-count" v-if="address.people_count">
-                                                See {{address.people_count}} employee{{address.people_count > 1? 's': ''}}
+                                            <span class="people-count person-initials">
+                                                {{getPersonInitials(person.name)}}
                                             </span>
 
                                             <img class="addr-img" :src="'/images/mask-'+i+'.png'" alt="">
                                         </div>
                                     </a>
-                                    <!--</router-link>-->
                                 </div>
                                 <div class="circle-1"></div>
                                 <div class="circle-2"></div>
                             </div>
 
                             <h3>
-                                <!--<router-link :to="'/address-details/'+address.id">
-                                    {{ address.name }}
-                                </router-link>-->
-                                <a  href="javascript:void(0)" @click="GoToAddressDetails('/address-details/'+address.id)">
-                                    {{ address.name }}
+                                <a  href="javascript:void(0)"
+                                    @click="proceedToEmployeeDetailsModal(person)"
+                                >
+                                    {{ person.name }}
                                 </a>
-
-                                <span class="oval"></span>
                             </h3>
 
-                            <p class="address">{{ address.address }}</p>
+                            <!--<p class="address">Type: {{ personType(person.type_id) }}</p>-->
 
-                            <p class="lab-chain-p" v-if="address.cluster">Lab Chain: <strong>{{address.cluster.name}}</strong></p>
+                            <p class="address">Role: <strong>{{ person.role }}</strong></p>
 
-                            <ul class="tag-list" v-if="address.tags && address.tags.length">
-                                <li v-for="tag in address.tags">
-                                    <a href="#" @click.prevent>{{tag.name}}</a>
-                                </li>
-                            </ul>
+                            <p class="address">
 
-                            <div class="info-block" v-if="false"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
-                                <div class="lightening-icon">
-                                    <img src="/images/blue-lightening.png" alt="">
-                                </div>
+                                <span v-if="person.addresses.length > 1"
+                                      class="person-first-address-name"
+                                      :title="person.addresses[0].name"
+                                >
+                                    <router-link :to="'/address-details/'+person.addresses[0].id">
+                                        {{person.addresses[0].name}}
+                                    </router-link>
+                                </span>
 
-                                <div class="news-label">
-                                    New employer <a href="#" @click.prevent class="news-link without-handler">Jina James</a> joined the lab
-                                </div>
+                                <span v-if="person.addresses.length > 1">
 
-                                <a href="#" @click.prevent class="news-link more-news-link without-handler">
-                                    +3 more news
-                                </a>
-                            </div>
+                                    <a href="javascript:void(0)"
+                                       class="person-more-companies"
+                                       v-tooltip.bottom="{ html: 'tooltipContent' + person.id }"
+                                    >
+                                        + {{person.addresses.length - 1}} more
+                                        <span v-if="person.addresses.length - 1 === 1">company</span>
+                                        <span v-if="person.addresses.length - 1 > 1">companies</span>
+                                    </a>
+
+                                    <span class="product-tooltip" :id="'tooltipContent' + person.id" style="display: block">
+                                        <ul style="margin: 0">
+                                            <li v-for="add of person.addresses">
+                                                {{add.name}}
+                                            </li>
+                                        </ul>
+                                    </span>
+
+                                    <br>
+                                </span>
+
+
+
+                                {{ person.addresses.length ? person.addresses[0].address : '' }}
+                            </p>
+
 
                         </div>
                     </li>
                 </ul>
 
                 <div class="pagination-box">
-                    <pagination :records="addressesTotal" ref="paginationDirective" :class="'pagination pagination-sm no-margin pull-right'" :per-page="20" @paginate="pageChanged"></pagination>
+                    <pagination
+                            :records="peopleTotal"
+                            ref="paginationDirective"
+                            :class="'pagination pagination-sm no-margin pull-right'"
+                            :per-page="20"
+                            @paginate="pageChanged"></pagination>
                 </div>
 
             </div>
@@ -143,33 +156,39 @@
 
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
+    import getPersonInitials from '../../mixins/get-person-initials';
+    import employeeModal from '../../mixins/show-employee-details-modal';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers],
+        mixins: [http,addressHelpers, getPersonInitials, employeeModal],
 
         data: function () {
             return {
+                people: [{
+                    addresses: [{}]
+                }],
                 isFirstLoad: true,
                 user: {},
                 addressList: [],
                 addressesTotal: 0,
+                peopleTotal: 0,
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
                     customer_types: [],
-                    relational_products: []
+                    person_types: []
                 },
                 appliedFilters: {
-                    usedProducts: this.$route.query['used-product-ids[]'] || [],
-                    tags: this.$route.query['tag-ids[]'] || [],
-                    type:  this.$route.query['type-id'] || '',
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
                     globalSearch: this.$route.query['global-search'] || '',
-                    addressIds: this.$route.query['address-ids'] || ''
+                    addressIds: this.$route.query['address-ids'] || '',
+                    personTypes: this.$route.query['person-type-id'] || '',
+                    roleInput: null
                 },
+                roleInputTimeoutId: null,
                 pagination: {
                     currentPage: 1
                 },
@@ -195,9 +214,6 @@
                 }
 
                 this.$refs.paginationDirective.setPage(1);
-
-
-
             }
         },
 
@@ -207,37 +223,28 @@
                 return [
                     {value: 'name-asc', label: 'Name &uarr;'},
                     {value: 'name-desc', label: 'Name &darr;'},
-                    {value: 'people-asc', label: 'Employee &uarr;'},
-                    {value: 'people-desc', label: 'Employee &darr;'},
-                    {value: 'products-asc', label: 'Products &uarr;'},
-                    {value: 'products-desc', label: 'Products &darr;'},
                 ]
             },
 
             customerTypesForFilter: function () {
-                let arr = this.filterObject.customer_types.map(el => {
-                    return {
-                        label: `<i class="oval ${el.id == 1? 'potential-customers' : ''} ${el.id == 2? 'my-customers' : ''}"></i>${el.name}`,
-                        value: el.id
-                    };
-                });
+                return this.filterObject.customer_types.map(el => {
+                    return {label: el.name, value: el.id};
+                })
+            },
 
-                arr.unshift({
-                    label: `<i class="oval both"></i> All`,
-                    value: ''
-                });
-
-                return arr;
+            personTypesForFilter: function() {
+                return this.filterObject.person_types.map(el => {
+                    return {label: el.name, value: el.id};
+                })
             },
 
             usedProductOptionsForDropDown: function () {
-                // return this.filterObject.used_product_list.map(product => {
-                //     return {
-                //         label: product.company + (product.name? ': ' + product.name: ''),
-                //         value: product.id
-                //     }
-                // })
-                return this.filterObject.used_product_list;
+                return this.filterObject.used_product_list.map(product => {
+                    return {
+                        label: product.company + (product.name? ': ' + product.name: ''),
+                        value: product.id
+                    }
+                })
             },
             tagOptionsForDropDown: function () {
                 return this.filterObject.tag_list.map(tag => {
@@ -249,79 +256,36 @@
             }
         },
 
-        created: function () {
-
-            this.initFilters();
-
-            this.composeQueryUrl();
-
-            this.loadFilterObject();
-        },
-
-        mounted: function () {
-
-            document.title = 'Labscape';
-
-            $('ul.sidebar-list').height(window.innerHeight - 315);
-
-            this.listenToTotalPointsDisplayedOnMapChanged();
-
-            this.loadAddressesPaginated()
-                .then((data) => {
-                    this.scrollToSidebarListItem();
-                });
-
-            this.checkLocalStoragePreviousDashboard();
-
-            this.$root.logData('overview', 'open', JSON.stringify(''));
-
-        },
 
         methods: {
 
             initFilters: function () {
 
-                this.appliedFilters.usedProducts = this.$route.query['used-product-ids[]'] || [];
-
-                if(typeof this.appliedFilters.usedProducts === 'string') {
-                    this.appliedFilters.usedProducts = [this.appliedFilters.usedProducts ];
-                }
-
-                this.appliedFilters.tags = this.$route.query['tag-ids[]'] || [];
-
-                if(typeof this.appliedFilters.tags === 'string') {
-                    this.appliedFilters.tags = [this.appliedFilters.tags ];
-                }
-
-                this.appliedFilters.type =  this.$route.query['type-id'] || '';
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
                 this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
-                this.appliedFilters.addressIds = this.$route.query['address-ids'] || '';
+                this.appliedFilters.personTypes = this.$route.query['person-type-id'] || '';
 
             },
 
-            applyTypeFilter: function (data) {
-                this.appliedFilters.type = data;
+            applyPersonTypeFilter: function (data) {
+                this.appliedFilters.personTypes = data;
                 this.applyFilters();
-                this.$root.logData('overview', 'apply filter by type', JSON.stringify(data));
-            },
-
-            applyUsedProductsFilter: function (data) {
-                this.appliedFilters.usedProducts = data;
-                this.applyFilters();
-                this.$root.logData('overview', 'apply filter by used products', JSON.stringify(data));
-            },
-
-            applyTagsFilter: function (data) {
-                this.appliedFilters.tags = data;
-                this.applyFilters();
-                this.$root.logData('overview', 'apply filter by tags', JSON.stringify(data));
             },
 
             applySortByFilter: function (data) {
                 this.appliedFilters.sortBy = data;
                 this.applyFilters(true);
-                this.$root.logData('overview', 'apply filter by sort', JSON.stringify(data));
+            },
+
+            applyRoleFilter: function() {
+
+                if(this.roleInputTimeoutId) {
+                    clearTimeout(this.roleInputTimeoutId);
+                }
+
+                this.roleInputTimeoutId = setTimeout(()=>{
+                    this.applyFilters();
+                },500)
             },
 
             listenToTotalPointsDisplayedOnMapChanged: function () {
@@ -333,28 +297,16 @@
             composeQueryUrl: function () {
                 let queryStr = '';
 
-                if (this.appliedFilters.type) {
-                    queryStr += '&type-id=' + this.appliedFilters.type;
+                if (this.appliedFilters.personTypes) {
+                    queryStr += '&person-type-id=' + this.appliedFilters.personTypes;
+                }
+
+                if (this.appliedFilters.roleInput) {
+                    queryStr += '&role=' + this.appliedFilters.roleInput;
                 }
 
                 if (this.appliedFilters.globalSearch) {
                     queryStr += '&global-search=' + this.appliedFilters.globalSearch;
-                }
-
-                if (this.appliedFilters.usedProducts.length) {
-                    this.appliedFilters.usedProducts.forEach(id => {
-                        queryStr += '&used-product-ids[]=' + id;
-                    });
-                }
-
-                if (this.appliedFilters.tags.length) {
-                    this.appliedFilters.tags.forEach(id => {
-                        queryStr += '&tag-ids[]=' + id;
-                    });
-                }
-
-                if(this.$route.query['address-ids']){
-                    queryStr += '&address-ids=' + this.$route.query['address-ids'];
                 }
 
                 if (this.appliedFilters.sortBy) {
@@ -364,6 +316,21 @@
                 this.queryUrl = queryStr;
 
                 return queryStr;
+            },
+
+            loadPersonsPaginated: function() {
+
+                let url = '/api/people-paginated?page=' + this.pagination.currentPage + this.queryUrl;
+
+                this.httpGet(url)
+                    .then(data => {
+                        this.people = data.data;
+                        this.peopleTotal = data.total;
+
+                        this.oldQueryUrl = this.queryUrl;
+
+                        this.people.forEach(p => this.unifyAddressesWithDuplicatedNames(p.addresses));
+                    })
             },
 
             loadAddressesPaginated: function () {
@@ -426,8 +393,7 @@
 
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
-                this.loadAddressesPaginated();
-                this.$root.logData('overview', 'page changed', JSON.stringify(pageNumber));
+                this.loadPersonsPaginated()
             },
 
             loadFilterObject: function() {
@@ -443,15 +409,12 @@
 
                 this.composeQueryUrl();
 
-                this.$router.push('/dashboard?'+this.queryUrl);
+                this.$router.push('/people-dashboard?'+this.queryUrl);
             },
 
             resetFilters: function () {
 
-                this.$refs.typeSingleDropdownSelect.resetSelectedValues();
-                this.$refs.productsMultipleDropdownSelect.resetSelectedValues();
-                this.$refs.tagMultipleDropdownSelect.resetSelectedValues();
-                this.$refs.sortBySingleDropdownSelect.resetSelectedValues();
+                this.$refs.personTypeSingleDropdownSelect.resetSelectedValues();
 
                 this.appliedFilters = {
                     usedProducts: [],
@@ -460,7 +423,8 @@
                     sortBy: '',
                     isOnlySortingChanged: false,
                     globalSearch: '',
-                    addressIds: ''
+                    addressIds: '',
+                    personTypes: ''
                 };
 
                 this.$eventGlobal.$emit('resetedAllFilters');
@@ -470,7 +434,6 @@
                 }
 
                 this.applyFilters();
-                this.$root.logData('overview', 'reset filters', JSON.stringify(''));
             },
 
             scrollFunction: function() {
@@ -505,8 +468,60 @@
                 if(localStorage.getItem('previous-dashboard')){
                     localStorage.removeItem('previous-dashboard');
                 }
+            },
+
+            personType: function (typeId) {
+                let type = this.filterObject.person_types.find(el => el.id == typeId);
+
+                return type? type.name : '';
+            },
+
+            proceedToEmployeeDetailsModal: function (person) {
+
+                this.httpGet('/api/address-details/'+person.addresses[0].id)
+                    .then(addressData => {
+                        this.showEmployeeDetailsModal(person.id, addressData.id, addressData);
+                    });
+            },
+
+            titleListOfAddressNames: function (addressList) {
+
+                let titleStr = '';
+
+                addressList.forEach((add, i) => {
+                    titleStr += add.name;
+
+                    if(i+1 !== addressList.length) {
+                        titleStr += '; ';
+                    }
+                });
+
+                return titleStr;
             }
-        }
+        },
+
+        mounted: function () {
+
+            document.title = 'Labscape People';
+
+            $('ul.sidebar-list').height(window.innerHeight - 315);
+
+            this.listenToTotalPointsDisplayedOnMapChanged();
+
+            this.loadPersonsPaginated();
+
+            this.checkLocalStoragePreviousDashboard();
+
+        },
+
+        created: function () {
+
+            this.initFilters();
+
+            this.composeQueryUrl();
+
+            this.loadFilterObject();
+        },
     }
 </script>
 

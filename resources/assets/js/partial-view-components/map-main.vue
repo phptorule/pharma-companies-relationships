@@ -10,10 +10,11 @@
 
     import http from '../mixins/http';
     import bouncingMarker from '../mixins/bouncing-marker';
+    import employeeModal from '../mixins/show-employee-details-modal';
 
     export default {
 
-        mixins: [http, bouncingMarker],
+        mixins: [http, bouncingMarker, employeeModal],
 
         data: function () {
             return {
@@ -89,6 +90,7 @@
                             "felt": null,
                             "tsunami": 0,
                             "name": adr.name,
+                            "people_count": adr.people_count,
                             "customer_status_color": adr.customer_status == 2 ? '#34cc8c' : '#ff894f',
                         },
                         "geometry": {
@@ -274,6 +276,30 @@
                 }
             },
 
+            handleClickOnUnclusteredFeature: function(feature) {
+                let id = feature.properties.id;
+
+                if (this.$route.path === '/people-dashboard') {
+
+                    if (+feature.properties.people_count === 1) {
+
+                        this.httpGet('/api/address-details/' + id)
+                            .then(addressData => {
+                                let personId = addressData.people[0].id;
+
+                                this.showEmployeeDetailsModal(personId, addressData.id, addressData);
+                            })
+
+                    }
+                    else if (+feature.properties.people_count > 1) {
+                        this.$router.push('/address-details/'+id + '?all-employees=1');
+                    }
+                }
+                else {
+                    this.$router.push('/address-details/'+id);
+                }
+            },
+
             listenToMarkerClicks: function () {
                 this.map.on('click', (e) => {
 
@@ -285,9 +311,10 @@
                         layers: ['clusters']
                     });
 
-                    if(unclusteredFeatures.length){
-                        let id = unclusteredFeatures[0].properties.id;
-                        this.$router.push('/address-details/'+id);
+                    if (unclusteredFeatures.length) {
+
+                        this.handleClickOnUnclusteredFeature(unclusteredFeatures[0]);
+
                     }
                     else if(clusteredFeatures.length){
 

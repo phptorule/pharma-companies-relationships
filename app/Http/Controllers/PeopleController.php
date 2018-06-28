@@ -199,6 +199,43 @@ class PeopleController extends Controller
         return response()->json($roles);
     }
 
+
+    function getPeoplePaginated() {
+
+        $query = People::with('addresses');
+
+        $query = $this->composeConditions($query, request()->all());
+
+        $people = $query->paginate(20);
+
+        return response()->json($people);
+    }
+
+
+    function composeConditions($query, $params)
+    {
+        if (isset($params['person-type-id'])) {
+            $query->where('type_id', $params['person-type-id']);
+        }
+
+        if (isset($params['sort-by'])) {
+            $direction = $params['sort-by'] == 'name-asc' ? 'ASC' : 'DESC';
+
+            $query->orderBy('name', $direction);
+        }
+
+        if(isset($params['role'])) {
+            $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
+        }
+
+        if(isset($params['global-search'])) {
+            $query->where('rl_people.name', 'like', '%'.$params['global-search'].'%');
+        }
+
+        return $query;
+    }
+
+
     function getPeopleAutocomplete ($searchQuery)
     {
         $people = People::with([

@@ -1,8 +1,5 @@
 <template>
     <header class="main-header">
-        <!-- Logo -->
-
-
 
         <nav class="navbar navbar-static-top">
 
@@ -26,6 +23,10 @@
                             @keyup="makeGlobalSearch()"
                             placeholder="Search by laboratory, people or location"
                         >
+
+                        <i v-if="globalSearchInput"
+                           @click="resetGlobalSearch()"
+                           class="fa fa-remove clear-global-search-input"></i>
                     </li>
                 </ul>
             </div>
@@ -42,7 +43,7 @@
             <div class="profile-avatar-block">
                 <div class="avatar-image-block" v-if="isUserLoaded && user.avatar">
                     <router-link to="/user/edit-profile" class="avatar-link">
-                        <img class="avatar-image" 
+                        <img class="avatar-image"
                             :src="user.avatar" alt=""
                         >
                     </router-link>
@@ -59,10 +60,12 @@
 
 <script>
 
-    import http from '../../mixins/http.js';
+    import GlobalSearch from '../../services/global-search';
+    import http from '../../mixins/http';
     import AuthService from '../../services/auth-service.js';
 
     export default {
+
         mixins: [http],
 
         data: function () {
@@ -73,9 +76,24 @@
                 isUserLoaded: false
             }
         },
+
+        watch: {
+
+            globalSearchInput: function (newVal) {
+                GlobalSearch.globalSearchInput = newVal;
+            },
+
+            $route: function (to, from) {
+                if (!to.query['global-search']) {
+                    this.globalSearchInput = '';
+                    this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
+                }
+            }
+
+        },
+
         methods: {
             makeGlobalSearch: function () {
-
 
                 if(this.timeOutId){
                     clearTimeout(this.timeOutId)
@@ -83,26 +101,54 @@
 
                 this.timeOutId = setTimeout(()=>{
 
-                    if(this.$route.path != '/dashboard') {
-                        this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                        // this.$eventGlobal.$emit('notifyMapMainGlobalSearchPerformed', encodeURIComponent(this.globalSearchInput));
-                    }
-                    else{
-                        this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput));
-                        // this.$eventGlobal.$emit('globalSearchPerformed', encodeURIComponent(this.globalSearchInput));
-                    }
-
                     if(this.globalSearchInput == '') {
-                        this.$router.push('/dashboard');
+
+                        this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
+                        this.$router.push(this.$route.path);
+
+                        return;
                     }
 
-                },1000)
+                    this.preProcessGlobalSearchQuery()
+                        .then(data => {
+                            if(+data.count_addresses === 0 && +data.count_people > 0) {
+                                this.$router.push('/people-dashboard?global-search=' + encodeURIComponent(this.globalSearchInput))
+                            }
+                            else {
+                                this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput))
+                            }
+                        });
 
-                this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
+                    this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
+
+                },1000);
             },
+
+            preProcessGlobalSearchQuery: function () {
+                return this.httpGet('/api/addresses/pre-process-global-search?global-search='+ encodeURIComponent(this.globalSearchInput))
+                    .then(data => {
+
+                        this.notifyGlobalSearchPerformed(data);
+
+                        return data;
+                    })
+            },
+
+            notifyGlobalSearchPerformed: function (data) {
+
+                GlobalSearch.resultCounter = data;
+
+                this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
+            },
+
+            resetGlobalSearch: function () {
+                this.globalSearchInput = '';
+                this.makeGlobalSearch();
+            },
+
             getUser: function () {
                 let url = '/api/logged-user';
-                
+
                 this.httpGet(url)
                     .then(data => {
                         this.user = data.data;
@@ -114,7 +160,7 @@
             },
             logout: function () {
                 let url = '/api/user/logout';
-                console.log(localStorage.getItem('auth-token'));
+
                 this.httpPost(url, {
                     token: localStorage.getItem('auth-token')
                 })
@@ -135,11 +181,21 @@
             this.getUser();
             this.$eventGlobal.$on('resetedAllFilters', () => {
                 this.globalSearchInput = '';
+                this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
             });
+
+            if(this.globalSearchInput) {
+                this.makeGlobalSearch();
+            }
 
             this.$eventGlobal.$on('userProfileUpdated', (user) => {
                 this.user = user;
             })
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('resetedAllFilters');
+            this.$eventGlobal.$off('userProfileUpdated');
         }
     }
 </script>

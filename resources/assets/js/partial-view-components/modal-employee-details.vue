@@ -45,8 +45,8 @@
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
                             worked at
                             <span v-for="(address, i) in personData.addresses" :key="address.id">
-                                <a :href="'/address-details/' + address.id" >
-                                    {{ address.name }}</a><span v-if="++i !== personData.addresses.length">, </span>
+                                <router-link :to="'/address-details/' + address.id" >
+                                    {{ address.name }}</router-link><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
                         </p>
 
