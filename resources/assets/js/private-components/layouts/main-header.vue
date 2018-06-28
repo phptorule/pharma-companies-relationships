@@ -160,7 +160,7 @@
             },
             logout: function () {
                 let url = '/api/user/logout';
-                console.log(localStorage.getItem('auth-token'));
+
                 this.httpPost(url, {
                     token: localStorage.getItem('auth-token')
                 })
