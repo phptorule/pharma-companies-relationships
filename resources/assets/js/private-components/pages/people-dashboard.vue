@@ -61,6 +61,11 @@
                         <div class="item">
 
                             <div class="item-image">
+
+                                <span class="pull-right person-type-span">
+                                    {{ personType(person.type_id) }}
+                                </span>
+
                                 <div class="main-image">
                                     <a href="javascript:void(0)">
                                         <div class="box-p">
@@ -82,10 +87,9 @@
                                 >
                                     {{ person.name }}
                                 </a>
-
                             </h3>
 
-                            <p class="address">Type: {{ personType(person.type_id) }}</p>
+                            <!--<p class="address">Type: {{ personType(person.type_id) }}</p>-->
 
                             <p class="address">Role: <strong>{{ person.role }}</strong></p>
 

@@ -1057,6 +1057,7 @@ ul.tag-list li + li{
     position: absolute;
     overflow: hidden;
     background: #e6ecf3;
+    margin-top: 25px;
 }
 
 .item-image .main-image img.addr-img{
@@ -1072,6 +1073,7 @@ ul.tag-list li + li{
     z-index: 99;
     border-radius: 50px;
     background: #d7e1ec;
+    margin-top: 25px;
 }
 
 .item-image .circle-2{
@@ -1082,6 +1084,7 @@ ul.tag-list li + li{
     z-index: 98;
     border-radius: 50px;
     background: #eaeff4;
+    margin-top: 25px;
 }
 
 .pagination-box {
@@ -2826,4 +2829,12 @@ ul.staff-with-publication-list .box-body h4{
 }
 .clear-global-search-input:active{
     opacity: 1;
+}
+
+.person-type-span {
+    font-size: 11px;
+    line-height: 25px;
+    display: block;
+    width: 100%;
+    text-align: center;
 }
