@@ -1402,8 +1402,12 @@ ul.tag-list li {
     height: calc(100vh - 152px);
 }
 
-#personal-modal .search-sort ul {
+#personal-modal .search-sort ul.type-filter {
     width: 100%;
+}
+
+#personal-modal .search-sort ul.type-filter li.dropdown ul {
+    width: 320px;
 }
 
 #personal-modal .search-block ul.select-filter > li > a {
