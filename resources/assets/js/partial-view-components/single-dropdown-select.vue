@@ -5,7 +5,7 @@
                @click="toogleDropdown($event)"
                data-toggle="dropdown"
                href="#"
-               :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name"
+               :title="selectedValuesNamesStringForTitle? name +': '+ selectedValuesNamesStringForTitle : name"
             >
 
                 <span class="caret"></span>
@@ -19,7 +19,8 @@
                    }"
                 ></i>
 
-                {{selectedValuesNamesString ? selectedValuesNamesString : name}}
+                <span v-html="selectedValuesNamesString ? selectedValuesNamesString : name"></span>
+
             </a>
             <ul class="dropdown-menu">
                 <li @click="selectValue('', name)" :class="{'hidden': isHiddenEmptyOption, selected: !selectedValue}">
@@ -63,10 +64,24 @@
             }
         },
 
+        computed: {
+            selectedValuesNamesStringForTitle: function () {
+                if(this.selectedValuesNamesString.indexOf('&uarr;') !== -1) {
+                    return this.selectedValuesNamesString.replace('&uarr;', 'asc')
+                }
+                else if(this.selectedValuesNamesString.indexOf('&darr;') !== -1) {
+                    return this.selectedValuesNamesString.replace('&darr;', 'desc')
+                }
+                else {
+                    return this.selectedValuesNamesString;
+                }
+            }
+        },
+
         methods: {
 
             selectValue: function (value, displayedLabel) {
-                this.selectedValuesNamesString = displayedLabel.replace(/<(?:.|\n)*?>/gm, '');;
+                this.selectedValuesNamesString = displayedLabel.replace(/<(?:.|\n)*?>/gm, '');
                 this.selectedValue = value;
                 $('#'+this.blockId+' li.open').removeClass('open');
                 this.notifyParentComponent();
@@ -74,7 +89,7 @@
 
             toogleDropdown: function ($event) {
 
-                let dropdownContainer = $($event.target).parent();
+                let dropdownContainer = $($event.target).parent().hasClass('dropdown') ? $($event.target).parent() : $($event.target).parent().parent();
 
                 if(dropdownContainer.hasClass('open')) {
                     dropdownContainer.removeClass('open');
