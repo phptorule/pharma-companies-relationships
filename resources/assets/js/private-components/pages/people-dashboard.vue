@@ -478,10 +478,15 @@
 
             proceedToEmployeeDetailsModal: function (person) {
 
-                this.httpGet('/api/address-details/'+person.addresses[0].id)
-                    .then(addressData => {
-                        this.showEmployeeDetailsModal(person.id, addressData.id, addressData);
-                    });
+                if(person.addresses.length) {
+                    this.httpGet('/api/address-details/'+person.addresses[0].id)
+                        .then(addressData => {
+                            this.showEmployeeDetailsModal(person.id, addressData.id, addressData);
+                        });
+                }
+                else {
+                    this.showEmployeeDetailsModal(person.id, null, {});
+                }
             },
 
             goToAddressDetailsPage: function (addressId) {
