@@ -17,6 +17,8 @@ Route::get('/test', function (){
     return response()->json(['test-data'=>'all is ok!']);
 });
 
+Route::get('/people/map', 'PeopleController@getDataForMap');
+
 Route::post('login', 'AuthController@login');
 //Route::post('register', 'AuthController@register');
 Route::post('recover', 'AuthController@recover');
@@ -110,4 +112,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
     
     Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
+
+
 });

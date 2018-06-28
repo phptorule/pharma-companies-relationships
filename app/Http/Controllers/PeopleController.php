@@ -247,4 +247,16 @@ class PeopleController extends Controller
         return response()->json($people);
     }
 
+
+    function getDataForMap()
+    {
+        $result = Address::select(['id', 'lat', 'lon'])
+                            ->with(['people' => function($q) {
+                                $q->select(['rl_people.name']);
+                            }])
+                            ->get();
+
+        return response()->json($result);
+    }
+
 }

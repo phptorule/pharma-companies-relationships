@@ -62,15 +62,22 @@
         methods: {
 
             loadAddresses: function (queryString, isGlobalSearchInitiator) {
+                return this.makeHttpCall('addresses', queryString, isGlobalSearchInitiator);
+            },
 
+            loadPeople: function (queryString, isGlobalSearchInitiator) {
+                return this.makeHttpCall('people/map', queryString, isGlobalSearchInitiator);
+            },
+
+            makeHttpCall: function(baseUrl, queryString, isGlobalSearchInitiator) {
                 if (isGlobalSearchInitiator) {
 
-                    let url = '/api/addresses?global-search=' + encodeURIComponent(this.$route.query['global-search']);
+                    let url = '/api/'+baseUrl+'?global-search=' + encodeURIComponent(this.$route.query['global-search']);
 
                     return this.httpGet(url);
                 }
 
-                return this.httpGet('/api/addresses' + (queryString || ''));
+                return this.httpGet('/api/'+ baseUrl + (queryString || ''));
             },
 
             composeMapData: function (data) {
@@ -495,6 +502,26 @@
                 if (zoom != this.mapZoom || centerLng != this.mapCenterLng || centerLat != this.mapCenterLat) {
                     this.map.flyTo({center: [centerLng, centerLat], zoom: zoom});
                 }
+            },
+
+            proceedMapPreparationsForCurrentPage: function (data) {
+                this.initDataSource(data);
+
+                this.cluster.load(this.FeatureCollection.features);
+
+                this.listenToMouseMoves();
+
+                this.listenToMarkerClicks();
+
+                this.detectMapMoveEnds();
+
+                this.listenToHoveringOverAddressAtSidebar();
+
+                this.listenToHoverOutFromSidebar();
+
+                this.setInitialMapViewFromQueryStr();
+
+                this.isFirstLoad = false;
             }
 
         },
@@ -511,32 +538,23 @@
 
                     let queryUrl = '';
 
-                    if(this.$route.path == '/dashboard') {
+                    if(this.$route.path === '/dashboard') {
                         queryUrl = this.$route.fullPath.replace('/dashboard', '');
+
+                        this.loadAddresses(queryUrl)
+                            .then(data => {
+                                this.proceedMapPreparationsForCurrentPage(data)
+                            });
+                    }
+                    else if(this.$route.path === '/people-dashboard') {
+                        queryUrl = this.$route.fullPath.replace('/people-dashboard', '');
+
+                        this.loadPeople(queryUrl)
+                            .then(data => {
+                                this.proceedMapPreparationsForCurrentPage(data)
+                            });
                     }
 
-                    this.loadAddresses(queryUrl)
-                        .then(data => {
-
-                            this.initDataSource(data);
-
-                            this.cluster.load(this.FeatureCollection.features);
-
-                            this.listenToMouseMoves();
-
-                            this.listenToMarkerClicks();
-
-                            this.detectMapMoveEnds();
-
-                            this.listenToHoveringOverAddressAtSidebar();
-
-                            this.listenToHoverOutFromSidebar();
-
-                            this.setInitialMapViewFromQueryStr();
-
-                            this.isFirstLoad = false;
-
-                        });
                 });
 
                 this.$eventGlobal.$on('filtersHaveBeenApplied', (queryStr) => {
