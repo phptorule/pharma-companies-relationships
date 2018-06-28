@@ -96,7 +96,9 @@
                             <p class="address">
 
                                 <span class="person-first-address-name" :title="person.addresses[0].name">
-                                    {{person.addresses[0].name}}
+                                    <router-link :to="'/address-details/'+person.addresses[0].id">
+                                        {{person.addresses[0].name}}
+                                    </router-link>
                                 </span>
 
                                 <span v-if="person.addresses.length > 1">

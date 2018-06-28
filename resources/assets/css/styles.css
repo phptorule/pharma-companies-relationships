@@ -2845,3 +2845,11 @@ ul.staff-with-publication-list .box-body h4{
     display: block;
     text-overflow: ellipsis;
 }
+
+.address .person-first-address-name a{
+    color: #3a444f;
+}
+
+.address .person-first-address-name a:hover{
+    color: #4a90e2;
+}
