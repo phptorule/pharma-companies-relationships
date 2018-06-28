@@ -459,7 +459,7 @@
                 let hashFromPerson = (from.hash.split('&'))[0];
 
                 if( ! this.isFirstLoad && hashToPerson !== hashFromPerson) {
-                    this.showModalIfPersonHashDetected();
+                    this.showModalIfPersonHashDetected(this.addressId, this.addressData);
                 }
             },
             isEditing: function () {
@@ -615,12 +615,6 @@
             showOnMap: function () {
                 this.$eventGlobal.$emit('showSpecificItem', [this.addressData])
                 this.$root.logData('detail', 'show specific item', JSON.stringify(this.addressData));
-            },
-            showModalIfPersonHashDetected: function () {
-                if(this.$route.hash.indexOf('#person-') !== -1) {
-                    let personId = this.$route.hash.replace('#person-', '');
-                    this.showEmployeeDetailsModal(personId, this.addressId, this.addressData);
-                }
             },
             loadAllTags: function () {
                 this.httpGet('/api/address-details/' + this.addressId + '/get-all-tags')
@@ -814,7 +808,7 @@
 
             this.loadAddressDetails()
                 .then(() => {
-                    this.showModalIfPersonHashDetected();
+                    this.showModalIfPersonHashDetected(this.addressId, this.addressData);
                     this.mapAddressPropertiesToForm();
                     this.isFirstLoad = false;
                 });
@@ -826,8 +820,6 @@
                     this.showSlidedBox('all-employee');
                 }, 0)
             }
-
-            this.showModalIfPersonHashDetected();
 
             this.$root.logData('detail', 'open', JSON.stringify(''));
         }

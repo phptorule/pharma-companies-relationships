@@ -56,8 +56,8 @@
                     <span v-if="peopleTotal != 1">people</span>.
                 </div>
 
-                <ul class="sidebar-list people-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
-                    <li v-for="(person, i) in people" @mouseover="setAddressMouseOverListener(person)" class="sidebar-list-item">
+                <ul class="sidebar-list people-list" v-on:scroll="scrollFunction">
+                    <li v-for="(person, i) in people" class="sidebar-list-item">
                         <div class="item">
 
                             <div class="item-image">
@@ -198,16 +198,23 @@
                 oldQueryUrl: '',
                 hoveredAddress: {},
                 mouseOverTimeoutId: null,
-                scrollTimoutId: null
+                scrollTimoutId: null,
             }
         },
 
         watch: {
-            $route: function (to) {
+            $route: function (to, from) {
 
                 this.initFilters();
 
                 this.composeQueryUrl();
+
+                let hashToPerson = (to.hash.split('&'))[0];
+                let hashFromPerson = (from.hash.split('&'))[0];
+
+                if( ! this.isFirstLoad && hashToPerson !== hashFromPerson) {
+                    this.showModalIfPersonHashDetected(null, {});
+                }
 
                 if(this.oldQueryUrl == this.queryUrl) {
                     return;
@@ -322,7 +329,7 @@
 
                 let url = '/api/people-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
-                this.httpGet(url)
+                return this.httpGet(url)
                     .then(data => {
                         this.people = data.data;
                         this.peopleTotal = data.total;
@@ -330,31 +337,9 @@
                         this.oldQueryUrl = this.queryUrl;
 
                         this.people.forEach(p => this.unifyAddressesWithDuplicatedNames(p.addresses));
-                    })
-            },
-
-            loadAddressesPaginated: function () {
-
-                let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
-
-                return this.httpGet(url)
-                    .then(data => {
-                        this.addressesTotal = data.total;
-                        this.addressList = data.data;
-
-                        if(!this.appliedFilters.isOnlySortingChanged){
-                            this.notifyFiltersHaveBeenApplied();
-                        }
-
-                        this.isFirstLoad = false;
-
-                        this.oldQueryUrl = this.queryUrl;
-
-                        this.unifyAddressesWithDuplicatedNames(this.addressList);
 
                         return data;
                     })
-
             },
 
             setAddressMouseOverListener: function(address) {
@@ -375,16 +360,6 @@
                     this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
                 }, 100);
 
-            },
-
-            setAddressMouseLeaveListener: function () {
-                this.hoveredAddress = {};
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
             },
 
             notifyFiltersHaveBeenApplied: function () {
@@ -503,7 +478,10 @@
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 
-            this.loadPersonsPaginated();
+            this.loadPersonsPaginated()
+                .then(data =>{
+                    this.isFirstLoad = false;
+                });
 
             this.checkLocalStoragePreviousDashboard();
 
