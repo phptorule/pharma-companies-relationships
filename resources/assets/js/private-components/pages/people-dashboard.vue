@@ -99,9 +99,9 @@
                                       class="person-first-address-name"
                                       :title="person.addresses[0].name"
                                 >
-                                    <router-link :to="'/address-details/'+person.addresses[0].id">
+                                    <a href="javascript:void(0)" @click="goToAddressDetailsPage(person.addresses[0].id)">
                                         {{person.addresses[0].name}}
-                                    </router-link>
+                                    </a>
                                 </span>
 
                                 <span v-if="person.addresses.length > 1">
@@ -484,19 +484,9 @@
                     });
             },
 
-            titleListOfAddressNames: function (addressList) {
-
-                let titleStr = '';
-
-                addressList.forEach((add, i) => {
-                    titleStr += add.name;
-
-                    if(i+1 !== addressList.length) {
-                        titleStr += '; ';
-                    }
-                });
-
-                return titleStr;
+            goToAddressDetailsPage: function (addressId) {
+                localStorage.setItem('previous-dashboard', this.$route.fullPath);
+                this.$router.push('/address-details/'+addressId);
             }
         },
 
