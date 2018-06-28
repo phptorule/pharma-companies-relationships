@@ -295,12 +295,6 @@
                 },500)
             },
 
-            listenToTotalPointsDisplayedOnMapChanged: function () {
-                this.$eventGlobal.$on('totalPointsDisplayedOnMapChanged', (totalPoints) => {
-                    this.totalPointsInCurrentMap = totalPoints
-                });
-            },
-
             composeQueryUrl: function () {
                 let queryStr = '';
 
@@ -476,11 +470,11 @@
 
             $('ul.sidebar-list').height(window.innerHeight - 315);
 
-            this.listenToTotalPointsDisplayedOnMapChanged();
-
             this.loadPersonsPaginated()
                 .then(data =>{
                     this.isFirstLoad = false;
+
+                    this.showModalIfPersonHashDetected(null, {});
                 });
 
             this.checkLocalStoragePreviousDashboard();
