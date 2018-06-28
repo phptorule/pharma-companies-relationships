@@ -95,7 +95,7 @@
 
                             <p class="address">
 
-                                <span v-if="person.addresses.length > 1"
+                                <span v-if="person.addresses.length"
                                       class="person-first-address-name"
                                       :title="person.addresses[0].name"
                                 >
