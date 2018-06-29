@@ -258,7 +258,7 @@
                     <div class="header">
                         <h3>
                             Used Products 
-                            <a href="#" @click.prevent="toggleProducts">
+                            <a href="#" @click.prevent="toggleProducts" v-if="false">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </h3>
