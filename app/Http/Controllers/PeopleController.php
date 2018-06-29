@@ -9,6 +9,7 @@ use App\Models\Publication;
 use App\Models\PeopleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\Persistable;
 
 class PeopleController extends Controller
@@ -253,8 +254,8 @@ class PeopleController extends Controller
         $addresses = Address::select(['id', 'lat', 'lon', 'name', 'customer_status'])
                             ->with(['people' => function($q) {
                                 $q->select(['rl_people.id','rl_people.name']);
+                                $this->composeConditions($q, request()->all());
                             }])
-                            ->limit(1000)
                             ->get();
 
         $responseData = [];

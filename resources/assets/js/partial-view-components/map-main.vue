@@ -66,7 +66,7 @@
             },
 
             loadPeople: function (queryString, isGlobalSearchInitiator) {
-                return this.makeHttpCall('people/map', queryString, isGlobalSearchInitiator);
+                return this.makeHttpCall('people-for-map', queryString, isGlobalSearchInitiator);
             },
 
             makeHttpCall: function(baseUrl, queryString, isGlobalSearchInitiator) {
@@ -568,9 +568,6 @@
                             })
                     }
                     else if(this.$route.path === '/people-dashboard') {
-
-                        console.log('filtersHaveBeenApplied', queryStr);
-
                         this.loadPeople(queryStr)
                             .then(data => {
                                 this.updateMapLayers(data);
