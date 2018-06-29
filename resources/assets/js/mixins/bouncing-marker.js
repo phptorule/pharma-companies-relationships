@@ -51,9 +51,7 @@ const bouncingMarker = {
             this.map.addSource("earthquakes2", {
                 type: "geojson",
                 data: featureCollection,
-                cluster: true,
-                clusterMaxZoom: 14, // Max zoom to cluster points on
-                clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+                cluster: false
             });
 
             this.map.addLayer({
