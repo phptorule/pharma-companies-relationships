@@ -84,9 +84,9 @@ const bouncingMarker = {
         },
 
         listenToHoveringOverAddressAtSidebar: function () {
-            this.$eventGlobal.$on('hover-over-address-at-the-sidebar', (address) => {
+            this.$eventGlobal.$on('hover-over-address-at-the-sidebar', (addresses) => {
 
-                this.addHoveredPoint([address]);
+                this.addHoveredPoint(addresses);
 
                 this.animateMarker(0);
             })

@@ -68,7 +68,7 @@
                 </div>
 
                 <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
-                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
+                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener([address])" class="sidebar-list-item">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
                             <div class="item-image" v-show="address.people_count > 0">
@@ -144,11 +144,12 @@
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
     import mapNotified from '../../mixins/notify-map-that-filters-updated';
+    import mapHoveringNotified from '../../mixins/notify-map-that-hovering-over-list-item';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers, mapNotified],
+        mixins: [http,addressHelpers, mapNotified, mapHoveringNotified],
 
         data: function () {
             return {
@@ -178,8 +179,6 @@
                 multipleDropdownSelects: [],
                 queryUrl: '',
                 oldQueryUrl: '',
-                hoveredAddress: {},
-                mouseOverTimeoutId: null,
                 scrollTimoutId: null
             }
         },
@@ -390,40 +389,6 @@
                     })
 
             },
-
-            setAddressMouseOverListener: function(address) {
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.mouseOverTimeoutId = setTimeout(()=>{
-                    if(this.hoveredAddress.id == address.id) {
-                        return;
-                    }
-
-                    this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
-
-                    this.hoveredAddress = address;
-
-                    this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
-                }, 100);
-
-            },
-
-            setAddressMouseLeaveListener: function () {
-                this.hoveredAddress = {};
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
-            },
-
-            // notifyFiltersHaveBeenApplied: function () {
-            //     this.$eventGlobal.$emit('filtersHaveBeenApplied', this.queryUrl.replace('&','?'));
-            // },
 
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;

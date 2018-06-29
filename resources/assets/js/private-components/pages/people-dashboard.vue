@@ -56,8 +56,13 @@
                     <span v-if="peopleTotal != 1">people</span>.
                 </div>
 
-                <ul class="sidebar-list people-list" v-on:scroll="scrollFunction">
-                    <li v-for="(person, i) in people" class="sidebar-list-item">
+                <ul class="sidebar-list people-list"
+                    @mouseleave="setAddressMouseLeaveListener()"
+                    v-on:scroll="scrollFunction"
+                >
+                    <li v-for="(person, i) in people"
+                        @mouseover="setAddressMouseOverListener(person.addresses.length ? person.addresses : null)"
+                        class="sidebar-list-item">
                         <div class="item">
 
                             <div class="item-image">
@@ -159,11 +164,12 @@
     import getPersonInitials from '../../mixins/get-person-initials';
     import employeeModal from '../../mixins/show-employee-details-modal';
     import mapNotified from '../../mixins/notify-map-that-filters-updated';
+    import mapHoveringNotified from '../../mixins/notify-map-that-hovering-over-list-item';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http, addressHelpers, getPersonInitials, employeeModal, mapNotified],
+        mixins: [http, addressHelpers, getPersonInitials, employeeModal, mapNotified, mapHoveringNotified],
 
         data: function () {
             return {
@@ -337,26 +343,6 @@
 
                         return data;
                     })
-            },
-
-            setAddressMouseOverListener: function(address) {
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.mouseOverTimeoutId = setTimeout(()=>{
-                    if(this.hoveredAddress.id == address.id) {
-                        return;
-                    }
-
-                    this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
-
-                    this.hoveredAddress = address;
-
-                    this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
-                }, 100);
-
             },
 
             pageChanged: function (pageNumber) {
