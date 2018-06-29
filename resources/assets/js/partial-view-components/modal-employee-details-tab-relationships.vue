@@ -250,7 +250,7 @@
 
                 let p = page || 1;
 
-                let url = '/api/people/'+this.personId+'/relationships?page='+p;
+                let url = '/api/people/'+this.personData.id+'/relationships?page='+p;
 
                 this.relationshipPage = p;
 
@@ -321,7 +321,7 @@
 
                 this.slideUpAllPublications();
 
-                let url = '/api/people/'+this.personId+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
+                let url = '/api/people/'+this.personData.id+'/relationship-details?' + this.composeRelationshipDetailsUrl(relation);
 
                 return this.httpGet(url)
                     .then(data => {
