@@ -274,6 +274,7 @@
 
                 this.getTendersByProduct(this.productId);
 
+                this.loadAvailableTags();
             },
 
             getTendersByProduct: function (product_id) {
@@ -460,6 +461,13 @@
                     })
             },
 
+            loadAvailableTags: function () {
+                this.httpGet('/api/get-used-consumables-by-address-and-product?address_id='+this.addressId+'&product_id='+this.productId)
+                    .then(data => {
+
+                    })
+            }
+
         },
 
         mounted: function () {
@@ -473,6 +481,10 @@
             });
 
             this.loadGoogleChart();
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('showModalProductDetails');
         }
     }
 </script>

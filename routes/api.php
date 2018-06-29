@@ -118,4 +118,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/get-product-list-by-address/{address}', 'ProductsController@getProductListForAddress');
 
     Route::get('/tenders/{address}/products-graph', 'TendersController@getGraphDataForProductsByTendersAndAddress');
+
+    Route::get('/get-used-consumables-by-address-and-product', 'ProductsController@getUsedConsumablesByAddressAndProduct');
 });

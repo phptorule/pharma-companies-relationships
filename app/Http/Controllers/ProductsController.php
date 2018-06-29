@@ -432,4 +432,21 @@ class ProductsController extends Controller {
 	    return response()->json($products);
     }
 
+
+    function getUsedConsumablesByAddressAndProduct()
+    {
+        $prodId = request()->get('product_id');
+        $addressId = request()->get('address_id');
+
+        $tags = DB::select(DB::raw("select GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
+            from rl_address_tenders_purchase_products as atpp
+            left join rl_address_tenders as at on at.id = atpp.tender_id
+            where atpp.product_id = $prodId
+            and at.address_id = $addressId
+            group by atpp.product_id
+		"));
+
+        return response()->json($tags);
+    }
+
 }
