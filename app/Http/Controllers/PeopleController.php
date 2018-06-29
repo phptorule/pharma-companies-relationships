@@ -233,6 +233,10 @@ class PeopleController extends Controller
             $query->where('rl_people.name', 'like', '%'.$params['global-search'].'%');
         }
 
+        if(isset($params['only-people-with-addresses'])) {
+            $query->whereHas('addresses');
+        }
+
         return $query;
     }
 

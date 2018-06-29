@@ -9,6 +9,24 @@
             <div class="sidebar-form">
                 <div class="row">
                     <div class="col-md-12">
+                        <div class="grey-checkbox only-people-with-addresses-checkbox">
+                            <label>
+                                <!--<input type="checkbox"
+                                       @click="checkboxClick(option.value)"
+                                       :id="blockId + option.value"
+                                       :checked="selectedValues.indexOf(option.value) !== -1"
+                                >-->
+                                <input type="checkbox"
+                                       @click="applyOnlyPeopleWithAddressesFilter"
+                                       :checked="appliedFilters.onlyPeopleWithAddresses"
+                                >
+                                <span class="borders"></span>
+                                <span class="remember_text">Only people with related addresses</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
                         <div class="form-group filter-panel">
 
                             <single-dropdown-select
@@ -193,7 +211,8 @@
                     globalSearch: this.$route.query['global-search'] || '',
                     addressIds: this.$route.query['address-ids'] || '',
                     personTypes: this.$route.query['person-type-id'] || '',
-                    roleInput: null
+                    roleInput: null,
+                    onlyPeopleWithAddresses: this.$route.query['only-people-with-addresses'] || false
                 },
                 roleInputTimeoutId: null,
                 pagination: {
@@ -302,6 +321,12 @@
                 },500)
             },
 
+            applyOnlyPeopleWithAddressesFilter: function () {
+                this.appliedFilters.onlyPeopleWithAddresses = !this.appliedFilters.onlyPeopleWithAddresses;
+
+                this.applyFilters();
+            },
+
             composeQueryUrl: function () {
                 let queryStr = '';
 
@@ -319,6 +344,10 @@
 
                 if (this.appliedFilters.sortBy) {
                     queryStr += '&sort-by=' + this.appliedFilters.sortBy;
+                }
+
+                if (this.appliedFilters.onlyPeopleWithAddresses) {
+                    queryStr += '&only-people-with-addresses=' + this.appliedFilters.onlyPeopleWithAddresses;
                 }
 
                 this.queryUrl = queryStr;

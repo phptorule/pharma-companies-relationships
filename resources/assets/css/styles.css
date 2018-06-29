@@ -2899,3 +2899,17 @@ ul.staff-with-publication-list .box-body h4{
 .address .person-first-address-name a:hover{
     color: #4a90e2;
 }
+
+.grey-checkbox.only-people-with-addresses-checkbox {}
+
+.grey-checkbox.only-people-with-addresses-checkbox span.remember_text{
+    font-weight: 500;
+    color: #999999;
+    background: transparent;
+    border: none;
+}
+
+.grey-checkbox.only-people-with-addresses-checkbox label span {
+    border: 1px solid #999999;
+    border-radius: 5px;
+}
