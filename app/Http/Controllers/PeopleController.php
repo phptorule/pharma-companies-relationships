@@ -255,22 +255,40 @@ class PeopleController extends Controller
 
     function getDataForMap()
     {
-        $addresses = Address::select(['id', 'lat', 'lon', 'name', 'customer_status'])
-                            ->with(['people' => function($q) {
-                                $q->select(['rl_people.id','rl_people.name']);
-                                $this->composeConditions($q, request()->all());
-                            }])
-                            ->get();
+        $conditions = $this->composeConditionsForMap(request()->all());
 
-        $responseData = [];
+        $sql = "SELECT a.id, a.lat, a.lon, a.name, a.customer_status 
+                FROM rl_addresses AS a
+                INNER JOIN rl_address_people AS ap
+                    ON ap.address_id = a.id
+                INNER JOIN rl_people AS p
+                    ON p.id = ap.person_id
+                $conditions
+                GROUP BY a.id";
 
-        foreach ($addresses as $i => $address) {
-            if(count($address->people)) {
-                $responseData[] = $address;
-            }
+        $addresses = DB::select(DB::raw($sql));
+
+        return response()->json($addresses);
+    }
+
+
+    function composeConditionsForMap($params)
+    {
+        $conditionStr = 'WHERE a.id != -1';
+
+        if (isset($params['person-type-id'])) {
+            $conditionStr .= ' AND p.type_id = '.$params['person-type-id'] . ' ';
         }
 
-        return response()->json($responseData);
+        if(isset($params['role'])) {
+            $conditionStr .= " AND p.role LIKE '%".$params['role']."%' ";
+        }
+
+        if(isset($params['global-search'])) {
+            $conditionStr .= " AND p.name LIKE '%".$params['global-search']."%' ";
+        }
+
+        return $conditionStr;
     }
 
 }
