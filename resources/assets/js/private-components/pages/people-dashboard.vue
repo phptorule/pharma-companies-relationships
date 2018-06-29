@@ -158,11 +158,12 @@
     import addressHelpers from '../../mixins/address-helpers';
     import getPersonInitials from '../../mixins/get-person-initials';
     import employeeModal from '../../mixins/show-employee-details-modal';
+    import mapNotified from '../../mixins/notify-map-that-filters-updated';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers, getPersonInitials, employeeModal],
+        mixins: [http, addressHelpers, getPersonInitials, employeeModal, mapNotified],
 
         data: function () {
             return {
@@ -332,6 +333,8 @@
 
                         this.people.forEach(p => this.unifyAddressesWithDuplicatedNames(p.addresses));
 
+                        this.notifyFiltersHaveBeenApplied(this.queryUrl.replace('&','?'));
+
                         return data;
                     })
             },
@@ -354,10 +357,6 @@
                     this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
                 }, 100);
 
-            },
-
-            notifyFiltersHaveBeenApplied: function () {
-                this.$eventGlobal.$emit('filtersHaveBeenApplied', this.queryUrl.replace('&','?'));
             },
 
             pageChanged: function (pageNumber) {

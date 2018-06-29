@@ -39,7 +39,7 @@
         },
 
         watch: {
-            $route: function (to) {
+            $route: function (to, from) {
 
                 let zoom = this.$route.query['zoom'];
                 let centerLng = this.$route.query['center-lng'];
@@ -561,10 +561,21 @@
 
                     this.isMapMovedBecauseOfSearch = true;
 
-                    this.loadAddresses(queryStr)
-                        .then((data) => {
-                            this.updateMapLayers(data);
-                        })
+                    if(this.$route.path === '/dashboard') {
+                        this.loadAddresses(queryStr)
+                            .then((data) => {
+                                this.updateMapLayers(data);
+                            })
+                    }
+                    else if(this.$route.path === '/people-dashboard') {
+
+                        console.log('filtersHaveBeenApplied', queryStr);
+
+                        this.loadPeople(queryStr)
+                            .then(data => {
+                                this.updateMapLayers(data);
+                            });
+                    }
                 });
 
                 this.$eventGlobal.$on('showSpecificItem', (data)=>{

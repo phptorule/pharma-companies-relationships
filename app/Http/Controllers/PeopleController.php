@@ -250,13 +250,22 @@ class PeopleController extends Controller
 
     function getDataForMap()
     {
-        $result = Address::select(['id', 'lat', 'lon'])
+        $addresses = Address::select(['id', 'lat', 'lon', 'name', 'customer_status'])
                             ->with(['people' => function($q) {
-                                $q->select(['rl_people.name']);
+                                $q->select(['rl_people.id','rl_people.name']);
                             }])
+                            ->limit(1000)
                             ->get();
 
-        return response()->json($result);
+        $responseData = [];
+
+        foreach ($addresses as $i => $address) {
+            if(count($address->people)) {
+                $responseData[] = $address;
+            }
+        }
+
+        return response()->json($responseData);
     }
 
 }

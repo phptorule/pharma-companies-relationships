@@ -12,6 +12,8 @@ class People extends Model
 
     public $timestamps = false;
 
+    protected $hidden = ['pivot'];
+
     function addresses()
     {
         return $this->belongsToMany(Address::class, 'rl_address_people', 'person_id','address_id');

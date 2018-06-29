@@ -143,11 +143,12 @@
 
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
+    import mapNotified from '../../mixins/notify-map-that-filters-updated';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers],
+        mixins: [http,addressHelpers, mapNotified],
 
         data: function () {
             return {
@@ -376,7 +377,7 @@
                         this.addressList = data.data;
 
                         if(!this.appliedFilters.isOnlySortingChanged){
-                            this.notifyFiltersHaveBeenApplied();
+                            this.notifyFiltersHaveBeenApplied(this.queryUrl.replace('&','?'));
                         }
 
                         this.isFirstLoad = false;
@@ -420,9 +421,9 @@
                 this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
             },
 
-            notifyFiltersHaveBeenApplied: function () {
-                this.$eventGlobal.$emit('filtersHaveBeenApplied', this.queryUrl.replace('&','?'));
-            },
+            // notifyFiltersHaveBeenApplied: function () {
+            //     this.$eventGlobal.$emit('filtersHaveBeenApplied', this.queryUrl.replace('&','?'));
+            // },
 
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
