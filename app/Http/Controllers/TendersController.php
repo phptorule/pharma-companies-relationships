@@ -223,6 +223,10 @@ class TendersController extends Controller {
 			$query->whereIn( 'consumable_id', $requestParams['tag-cons'] );
 		}
 
+        if ( isset( $requestParams['tag-prod'] ) ) {
+            $query->whereIn( 'atpp.product_id', $requestParams['tag-prod'] );
+        }
+
 		return $query;
 	}
 

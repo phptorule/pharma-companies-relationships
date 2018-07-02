@@ -97,6 +97,15 @@
                             </div>
 
                             <ul class="tag-list">
+
+                                <li v-if="tender.product_name"
+                                    v-for="product in makeTagArray(tender.product_name)"
+                                >
+                                    <a href="javascript:void(0)" class="tags product-tag">
+                                        {{ product }}
+                                    </a>
+                                </li>
+
                                 <li v-if="tender.tag_name"
                                     v-for="tag in makeTagArray(tender.tag_name)"
                                 >
