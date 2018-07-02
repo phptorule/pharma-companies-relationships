@@ -438,15 +438,28 @@ class ProductsController extends Controller {
         $prodId = request()->get('product_id');
         $addressId = request()->get('address_id');
 
-        $tags = DB::select(DB::raw("select GROUP_CONCAT(DISTINCT atpp.consumable_id SEPARATOR ', ') as tag_ids
+        $sql = "select atpp.consumable_id as id, pc.name
             from rl_address_tenders_purchase_products as atpp
-            left join rl_address_tenders as at on at.id = atpp.tender_id
-            where atpp.product_id = $prodId
-            and at.address_id = $addressId
-            group by atpp.product_id
-		"));
+            left join rl_address_tenders as at 
+              on at.id = atpp.tender_id
+            left join rl_product_consumables as pc 
+              on pc.id = atpp.consumable_id
+            where atpp.product_id = ?
+            and at.address_id = ?
+            and atpp.consumable_id IS NOT NULL
+            group by atpp.consumable_id";
 
-        return response()->json($tags);
+        $tags = DB::select(DB::raw($sql), [$prodId, $addressId]);
+
+
+        $tagsWithColor = [];
+
+        foreach ( $tags as $tag ) {
+            $tag->color  = sprintf( '#%02X%02X%02X', rand( 0, 255 ), rand( 0, 255 ), rand( 0, 255 ) );
+            $tagsColor[] = $tag;
+        }
+
+        return response()->json($tagsWithColor);
     }
 
 }

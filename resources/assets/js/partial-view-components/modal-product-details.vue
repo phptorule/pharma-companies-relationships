@@ -85,6 +85,7 @@
                                     <tender-list-partial
                                             :initalParams="tenderListParams"
                                             :isListVisible="activeTab == 'tender'"
+                                            :tagList="tag_list"
                                     ></tender-list-partial>
                                 </div>
                             </div>
@@ -204,11 +205,6 @@
 
         },
 
-        created: function () {
-
-            this.loadTagsFilter();
-        },
-
         components: {
             vueSlider
         },
@@ -320,15 +316,6 @@
                 this.activeTab = tabName;
 
                 this.showTenderCost = tabName == 'tender';
-            },
-
-            loadTagsFilter: function () {
-                return this.httpGet('/api/product-load-tags')
-                    .then(data => {
-
-                        this.tag_list = data;
-
-                    })
             },
 
             checkIfNoSpentOnOthers: function(chartData)
@@ -465,6 +452,9 @@
                 this.httpGet('/api/get-used-consumables-by-address-and-product?address_id='+this.addressId+'&product_id='+this.productId)
                     .then(data => {
 
+                        this.tag_list = data;
+
+                        this.tag_list.push(othersTag);
                     })
             }
 

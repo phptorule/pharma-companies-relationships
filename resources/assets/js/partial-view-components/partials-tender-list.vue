@@ -272,6 +272,10 @@
 
         watch: {
 
+            tagList: function(newVal) {
+                this.tag_list = newVal;
+            },
+
             isListVisible: function(isTrue){
 
                 this.isSliderVisible = false;
@@ -568,7 +572,7 @@
                 return this.httpGet('/api/product-load-tags')
                     .then(data => {
 
-                        this.tag_list = data;
+                        // this.tag_list = data;
 
                     })
             },
@@ -664,7 +668,7 @@
 
         },
 
-        props: ['initalParams', 'isListVisible'],
+        props: ['initalParams', 'isListVisible', 'tagList'],
 
         mounted: function() {
 
