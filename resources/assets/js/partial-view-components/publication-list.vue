@@ -30,9 +30,6 @@
                     {{signatoryAtSameCompany.address}}
                 </h3>
             </div>
-            <div class="box-body">
-
-            </div>
         </div>
     </div>
 </template>
