@@ -3165,7 +3165,7 @@ ul.tenders-list li h3 .oval{
 ul.tenders-list li .item{
     margin-left: 20px;
     margin-right: 20px;
-    margin-top: 5px;
+    padding-top: 5px;
     border-bottom: solid 1px #f7f7f7;;
     position: relative;
 }
