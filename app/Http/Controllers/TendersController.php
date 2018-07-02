@@ -402,4 +402,22 @@ class TendersController extends Controller {
             'delimiter_key' => $delimiterValues['key']
         ], 200, [], JSON_NUMERIC_CHECK);
     }
+
+
+    function getUsedConsumablesByAddressAndTender ($addressId) {
+
+        $sql = "select atpp.consumable_id as id, pc.name
+            from rl_address_tenders_purchase_products as atpp
+            left join rl_address_tenders as at 
+              on at.id = atpp.tender_id
+            left join rl_product_consumables as pc 
+              on pc.id = atpp.consumable_id
+            where at.address_id = ?
+            and atpp.consumable_id IS NOT NULL
+            group by atpp.consumable_id";
+
+        $tags = DB::select(DB::raw($sql), [$addressId]);
+
+        return response()->json($tags);
+    }
 }

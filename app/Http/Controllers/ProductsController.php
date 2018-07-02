@@ -456,7 +456,7 @@ class ProductsController extends Controller {
 
         foreach ( $tags as $tag ) {
             $tag->color  = sprintf( '#%02X%02X%02X', rand( 0, 255 ), rand( 0, 255 ), rand( 0, 255 ) );
-            $tagsColor[] = $tag;
+            $tagsWithColor[] = $tag;
         }
 
         return response()->json($tagsWithColor);

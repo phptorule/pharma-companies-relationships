@@ -85,6 +85,7 @@
                                 <tender-list-partial
                                         :initalParams="tenderListParams"
                                         :isListVisible="activeTab == 'tender'"
+                                        :tagList="tag_list"
                                 ></tender-list-partial>
                             </div>
                         </div>
@@ -121,7 +122,8 @@
                 isGoogleChartCoreLoaded: false,
                 isGraphLoading: true,
                 isFilterEmpty: false,
-                chartWidth: null
+                chartWidth: null,
+                tag_list: []
             }
         },
 
@@ -295,6 +297,14 @@
 
             defineChartWidth: function () {
                 this.chartWidth = $('#tenders-modal .modal-body').width();
+            },
+
+            loadAvailableTags: function () {
+                this.httpGet('/api/get-used-consumables-by-address/'+this.addressId)
+                    .then(data => {
+
+                        this.tag_list = data;
+                    })
             }
         },
 
@@ -305,6 +315,8 @@
 
                 this.tenderListParams = data;
                 this.addressId = data.addressId;
+
+                this.loadAvailableTags();
 
                 $('#tenders-modal').modal('show');
 

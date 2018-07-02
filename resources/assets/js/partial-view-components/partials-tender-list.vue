@@ -568,15 +568,6 @@
 
             },
 
-            loadTagsFilter: function () {
-                return this.httpGet('/api/product-load-tags')
-                    .then(data => {
-
-                        // this.tag_list = data;
-
-                    })
-            },
-
             exportToExcel: function (product_id) {
 
                 let url = '/api/tenders-by-product-and-address-to-excel/' + product_id + '/' + this.addressId + '?' + this.composeQueryUrl();
@@ -672,11 +663,6 @@
 
         mounted: function() {
 
-        },
-
-        created: function () {
-
-            this.loadTagsFilter();
         },
 
         components: {
