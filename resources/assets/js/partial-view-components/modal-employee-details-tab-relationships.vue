@@ -104,6 +104,7 @@
                             :id="'relation-row-'+relation.id"
                             :coAuthoredPublications="publications.co_authored_paper"
                             :citedPublications="publications.cited_paper"
+                            :signatoryAtSameCompany="publications.signatory_at_company"
                     ></publication-list>
                 </li>
             </ul>
@@ -139,6 +140,7 @@
                             :id="'relation-row-'+relation.id"
                             :coAuthoredPublications="publications.co_authored_paper"
                             :citedPublications="publications.cited_paper"
+                            :signatoryAtSameCompany="publications.signatory_at_company"
                     ></publication-list>
                 </li>
             </ul>
@@ -315,6 +317,8 @@
 
             loadRelationship: function (relation) {
 
+                this.publications = {};
+
                 if (this.checkIfShouldBeSlidedUp(relation.id)) {
                     return;
                 }
@@ -327,6 +331,10 @@
                     .then(data => {
 
                         this.publications = data;
+
+                        if (this.connectionNameForPagination(relation).indexOf('Signatory at the same company') !== -1) {
+                            this.publications['signatory_at_company'] = {name: this.addressData.name, address: this.addressData.address};
+                        }
 
                         setTimeout(()=>{
                             $('#relation-row-'+relation.id).slideDown('slow');
@@ -571,7 +579,7 @@
         },
 
 
-        props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes'],
+        props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes', 'addressData'],
 
         mounted: function () {
             this.openRelationIfHashDetected()

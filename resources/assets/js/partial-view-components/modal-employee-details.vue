@@ -372,6 +372,7 @@
                                             :personData="personData"
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
+                                            :addressData="currentAddress"
                                             @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
