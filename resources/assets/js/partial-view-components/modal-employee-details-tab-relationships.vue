@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="modal-employee-details-tab-relationship">
         <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
 
         <div class="search-block" v-if="personData.relationships.length">
@@ -589,28 +589,5 @@
 </script>
 
 <style scoped>
-    .search-block {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-    .search-name {
-        width: 35%;
-        display: flex;
-        align-items: center;
-    }
-
-    .search-name i {
-        margin-right: 10px;
-    }
-
-    .search-type {
-        width: 35%;
-    }
-
-    .search-sort {
-        width: 20%;
-    }
+    
 </style>

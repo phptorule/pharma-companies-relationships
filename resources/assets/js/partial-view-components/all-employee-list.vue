@@ -1,5 +1,5 @@
 <template>
-    <div class="slided-box-content">
+    <div class="slided-box-content all-employee-list">
 
         <a href="javascript:void(0)" class="close-icon-a" @click="closeSlidedBox()">
             <img src="/images/x.png" alt="">
@@ -200,19 +200,5 @@
 </script>
 
 <style scoped>
-
-    .people-search-input {
-        width: 200px;
-        height: 36px;
-        padding: 0 .5em;
-        border-bottom: 2px solid #EAEFF4;
-        outline: none;
-        border-top: none;
-        border-left: none;
-        border-right: none;
-        margin-bottom: 20px;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
 
 </style>
