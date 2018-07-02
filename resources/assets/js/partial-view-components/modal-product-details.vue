@@ -86,6 +86,7 @@
                                             :initalParams="tenderListParams"
                                             :isListVisible="activeTab == 'tender'"
                                             :tagList="tag_list"
+                                            :shouldHideProductTags="true"
                                     ></tender-list-partial>
                                 </div>
                             </div>

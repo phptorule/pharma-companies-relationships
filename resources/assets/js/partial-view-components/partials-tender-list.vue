@@ -98,7 +98,7 @@
 
                             <ul class="tag-list">
 
-                                <li v-if="tender.product_name"
+                                <li v-if="!shouldHideProductTags && tender.product_name"
                                     v-for="product in makeTagArray(tender.product_name)"
                                 >
                                     <a href="javascript:void(0)" class="tags product-tag">
@@ -678,7 +678,7 @@
 
         },
 
-        props: ['initalParams', 'isListVisible', 'tagList'],
+        props: ['initalParams', 'isListVisible', 'tagList', 'shouldHideProductTags'],
 
         mounted: function() {
 
