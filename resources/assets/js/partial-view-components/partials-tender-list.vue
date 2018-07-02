@@ -483,6 +483,16 @@
 
             },
 
+            splitConsumablesFromProductForQueryUrl: function(id) {
+
+                if((''+id).indexOf('product-') === -1) {
+                    return'&tag-cons[]=' + id
+                }
+                else {
+                    return'&tag-prod[]=' + id.replace('product-', '');
+                }
+            },
+
             composeQueryUrl: function () {
                 let queryStr = '';
 
@@ -494,11 +504,11 @@
                 if (this.appliedFilters.tags.length) {
 
                     if (typeof this.appliedFilters.tags === 'string') {
-                        queryStr += '&tag-cons[]=' + this.appliedFilters.tags;
+                        queryStr += this.splitConsumablesFromProductForQueryUrl(this.appliedFilters.tags);
                     }
                     else {
                         this.appliedFilters.tags.forEach(id => {
-                            queryStr += '&tag-cons[]=' + id;
+                            queryStr += this.splitConsumablesFromProductForQueryUrl(id);
                         });
                     }
                 }

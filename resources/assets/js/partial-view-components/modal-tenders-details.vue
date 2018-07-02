@@ -85,7 +85,7 @@
                                 <tender-list-partial
                                         :initalParams="tenderListParams"
                                         :isListVisible="activeTab == 'tender'"
-                                        :tagList="tag_list"
+                                        :tagList="tagListForPartialTenderList"
                                 ></tender-list-partial>
                             </div>
                         </div>
@@ -143,6 +143,25 @@
                         value: product.id
                     }
                 })
+            },
+
+            tagListForPartialTenderList: function () {
+
+                let props = [];
+
+                this.tag_list.forEach(el => props.push(el));
+
+                this.productList.forEach(el => {
+
+                    let newItem = {
+                        id: 'product-'+el.id,
+                        name: "Product: "+  el.company + (el.name ? ' :' + el.name : '')
+                    };
+
+                    props.push(newItem);
+                });
+
+                return props;
             }
         },
 
