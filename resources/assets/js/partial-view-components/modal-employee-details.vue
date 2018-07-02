@@ -409,7 +409,8 @@
                     name: '',
                     careers: [],
                     publications: [],
-                    relationships: []
+                    relationships: [],
+                    description: ''
                 },
                 activeTab: 'career',
                 connectionTypes: [],
@@ -606,6 +607,15 @@
                     return career.address_name_override;
                 }
             },
+
+            convertNullPropsToEmptyString: function() {
+                for(let prop in this.personData) {
+                    if(this.personData[prop] === null) {
+                        this.personData[prop] = '';
+                    }
+                }
+            },
+
             init: function (personId, addressId, address) {
 
                 window.location.hash = 'person-' + personId;
@@ -622,12 +632,14 @@
                     .then(data => {
                         this.personData = data;
 
+                        this.convertNullPropsToEmptyString();
+
                         this.unifyAddressesWithDuplicatedNames(this.personData.addresses);
 
                         this.httpGet('/api/people/'+personId+'/relationships?page=1')
                             .then(data => {
                                 this.relationshipsCollapsedData = data.data;
-                            })
+                            });
                             
                         this.old.name = this.personData.name;
                         this.old.description = this.personData.description;
