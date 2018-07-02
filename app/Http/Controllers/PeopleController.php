@@ -25,16 +25,46 @@ class PeopleController extends Controller
             return $q->orderBy('id', 'desc');
         }]);
         $person->load('publications');
-        $person->relationships = DB::table('rl_address_connections AS rl1')
-            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type, from_address_id, to_address_id,
-            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
-            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
-            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
-            COUNT(to_person_id) AS count_types, 
-            rl_people.*"))
+        // $person->relationships = DB::table('rl_address_connections AS rl1')
+        //     ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type, from_address_id, to_address_id,
+        //     (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
+        //     (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
+        //     (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
+        //     COUNT(to_person_id) AS count_types, 
+        //     rl_people.*"))
+        // $sql = "
+        //     SELECT 
+        //     rl1.from_person_id, 
+        //     rl1.to_person_id, 
+        //     SUM(rl1.edge_weight) as edge_weight, 
+        //     rl1.edge_type,
+        //     ( case when rl1.edge_type = '1' then rl1.edge_comment end ) as 'co_authored_paper',
+        //     ( case when rl1.edge_type = '2' then rl1.edge_comment end ) as 'cited_paper',
+        //     ( case when rl1.edge_type = '3' then rl1.edge_comment end ) as 'signatory_at_company',
+        //     ( case when rl1.edge_type = '4' then rl1.edge_comment end ) as 'manual',
+        //     COUNT(rl1.to_person_id) AS count_types, 
+        //     rl_people.*
+        //     FROM `rl_address_connections` rl1
+        //     JOIN rl_people on rl1.to_person_id = rl_people.id
+        //     WHERE rl1.from_person_id = $person->id
+        //     group by rl1.to_person_id
+        // ";
+        $person->relationships = DB::table('rl_address_connections as rl1')
+            ->select(DB::raw("
+                rl1.from_person_id, 
+                rl1.to_person_id, 
+                SUM(rl1.edge_weight) as edge_weight, 
+                rl1.edge_type,
+                ( case when rl1.edge_type = '1' then rl1.edge_comment end ) as 'co_authored_paper',
+                ( case when rl1.edge_type = '2' then rl1.edge_comment end ) as 'cited_paper',
+                ( case when rl1.edge_type = '3' then rl1.edge_comment end ) as 'signatory_at_company',
+                ( case when rl1.edge_type = '4' then rl1.edge_comment end ) as 'manual',
+                COUNT(rl1.to_person_id) AS count_types, 
+                rl_people.*
+            "))
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
-            ->where('from_person_id', $person->id)
-            ->groupBy('to_person_id')
+            ->where('rl1.from_person_id', $person->id)
+            ->groupBy('rl1.to_person_id')
             ->orderBy('name', 'ASC')
             ->get();
 
@@ -61,16 +91,29 @@ class PeopleController extends Controller
 
     function getPersonRelationships(People $person)
     {
-        $relationships = DB::table('rl_address_connections AS rl1')
-            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
-            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
-            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
-            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
-            COUNT(to_person_id) AS count_types, 
-            rl_people.*"))
+        // $relationships = DB::table('rl_address_connections AS rl1')
+        //     ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
+        //     (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
+        //     (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
+        //     (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
+        //     COUNT(to_person_id) AS count_types, 
+        //     rl_people.*"))
+        $relationships = DB::table('rl_address_connections as rl1')
+            ->select(DB::raw("
+            rl1.from_person_id, 
+            rl1.to_person_id, 
+            SUM(rl1.edge_weight) as edge_weight, 
+            rl1.edge_type,
+            ( case when rl1.edge_type = '1' then rl1.edge_comment end ) as 'co_authored_paper',
+            ( case when rl1.edge_type = '2' then rl1.edge_comment end ) as 'cited_paper',
+            ( case when rl1.edge_type = '3' then rl1.edge_comment end ) as 'signatory_at_company',
+            ( case when rl1.edge_type = '4' then rl1.edge_comment end ) as 'manual',
+            COUNT(rl1.to_person_id) AS count_types, 
+            rl_people.*
+            "))
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
-            ->where('from_person_id', $person->id)
-            ->groupBy('to_person_id')
+            ->where('rl1.from_person_id', $person->id)
+            ->groupBy('rl1.to_person_id')
             ->orderBy('edge_weight', 'DESC')
             ->paginate(10);
 
