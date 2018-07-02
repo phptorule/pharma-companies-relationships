@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\AddressConnection;
 use App\Models\AddressTag;
 use App\Models\AddressProduct;
 use App\Models\Cluster;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Image;
 use File;
 use Storage;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AddressesController extends Controller
 {
@@ -33,6 +35,7 @@ class AddressesController extends Controller
             $addressesForResponse[$i]['lat'] = $address['lat'];
             $addressesForResponse[$i]['lon'] = $address['lon'];
             $addressesForResponse[$i]['customer_status'] = $address['customer_status'];
+            $addressesForResponse[$i]['people_count'] = $address['people_count'];
         }
 
         return response()->json($addressesForResponse);
@@ -46,6 +49,20 @@ class AddressesController extends Controller
         $addresses = $query->paginate(20);
 
         return response()->json($addresses);
+    }
+
+
+    function preProcessGlobalSearch()
+    {
+        $searchStr = request()->all()['global-search'];
+
+        $addressesCount = $this->prepareAddressesQuery()->count();
+        $peopleCount = People::where('name', 'like', '%'.$searchStr.'%')->count();
+
+        return response()->json([
+            'count_addresses' => $addressesCount,
+            'count_people' => $peopleCount
+        ]);
     }
 
 
@@ -118,12 +135,21 @@ class AddressesController extends Controller
     {
         $tags = Tag::get(['id', 'name']);
         $products = Product::orderByRaw('company, name')->get();
+        $relationalProducts = Product::where('name', '')->orderByRaw('company, name')->get();
+        $relationalProducts->each(function ($product) {
+            $product->childProducts = Product::where('company', $product->company)
+                                        ->orderByRaw('company, name')
+                                        ->get();
+        });
         $customerTypes = CustomerType::visible()->get();
+        $personTypes = DB::table('rl_people_types')->get();
 
         $filters = [
             'tag_list' => $tags,
             'used_product_list' => $products,
-            'customer_types' => $customerTypes
+            'customer_types' => $customerTypes,
+            'person_types' => $personTypes,
+            'relational_products' => $relationalProducts
         ];
 
         return response()->json($filters);
@@ -292,7 +318,11 @@ class AddressesController extends Controller
 
     function getClusterProductsPaginated(Address $address)
     {
-        $products = Product::with('addresses')
+        $products = Product::with([
+                'addresses' => function ($query) use ($address) {
+                    $query->where('cluster_id', $address->cluster_id);
+                }
+            ])
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
             })
@@ -374,10 +404,19 @@ class AddressesController extends Controller
      */
     public function updateClusters(Address $address)
     {
+        $oldClusterId = $address->cluster_id;
         $address->cluster_id = request()->get('cluster_id');
         $address->update();
         $address->load('cluster');
         $address->load('cluster.addresses');
+        $cluster = Cluster::with('addresses')
+                    ->whereId($oldClusterId)
+                    ->first();
+        if ($cluster) {
+            if ($cluster->addresses->count() < 1) {
+                $cluster->delete();
+            }
+        }
         return response()->json($address);
     }
 
@@ -399,7 +438,7 @@ class AddressesController extends Controller
 
         AddressProduct::where('address_id', $address->id)->delete();
 
-        if (count($selectedProducts > 0)) {
+        if ( ! empty($selectedProducts)) {
             foreach ($selectedProducts as $productId) {
                 $addressProduct = new AddressProduct();
                 $addressProduct->address_id = $address->id;
@@ -528,5 +567,91 @@ class AddressesController extends Controller
         $cluster->save();
         
         return response()->json($cluster);
+    }
+
+    /**
+     * create new cluster if not exist
+     */
+    public function createCluster (Address $address)
+    {
+        $name = trim(request('name'));
+
+        $cluster = Cluster::where('name', $name)->first();
+
+        if ($cluster) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lab chain already exists'
+            ]);
+        } else {
+            $cluster = new Cluster();
+
+            $cluster->name = $name;
+
+            $cluster->save();
+
+            $address->cluster_id = $cluster->id;
+
+            $address->save();
+
+            $cluster->load('addresses');
+
+            return response()->json([
+                'status' => 'success',
+                'cluster' => $cluster
+            ]);
+        }
+    }
+
+    // create new relation from person to person
+    public function createPersonRelation (Request $request)
+    {
+        $fromPersonId = request('fromPersonId');
+
+        $toPersonId = request('toPersonId');
+
+        $edgeType = request('edgeType');
+
+        $edgeComment = request('edgeComment');
+
+        $user = JWTAuth::user();
+
+        $addressConnection = AddressConnection::where('from_person_id', $fromPersonId)
+            ->where('to_person_id', $toPersonId)
+            ->first();
+
+        if ( ! empty($addressConnection)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This connection already exists!'
+            ]);
+        }
+
+        $addressConnection = new AddressConnection();
+
+        $addressConnection->from_person_id = $fromPersonId;
+
+        $addressConnection->from_address_id = null;
+
+        $addressConnection->to_person_id = $toPersonId;
+
+        $addressConnection->to_address_id = null;
+
+        $addressConnection->edge_weight = 1;
+
+        $addressConnection->edge_type = $edgeType;
+
+        $addressConnection->edge_comment = $edgeComment;
+
+        $addressConnection->edge_source = null;
+
+        $addressConnection->user_id = $user->id;
+
+        $addressConnection->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ok'
+        ]);
     }
 }

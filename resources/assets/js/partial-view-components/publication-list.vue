@@ -21,6 +21,16 @@
 
             </div>
         </div>
+
+        <div class="box box-solid" v-if="signatoryAtSameCompany">
+            <div class="box-header">
+                <h3 class="box-title">
+                    <i class="fa fa-globe" aria-hidden="true" style="color: #989898"></i>
+                    <small>Signatory at:</small> <strong>{{signatoryAtSameCompany.name}}</strong>.
+                    {{signatoryAtSameCompany.address}}
+                </h3>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -28,7 +38,7 @@
     export default {
 
 
-        props: ['coAuthoredPublications', 'citedPublications']
+        props: ['coAuthoredPublications', 'citedPublications', 'signatoryAtSameCompany']
 
     }
 </script>

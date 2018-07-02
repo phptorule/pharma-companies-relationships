@@ -9,11 +9,11 @@
 
             <!--<form>-->
                 <div class="form-group has-feedback">
-                    <input type="email" class="form-control" v-model="email" placeholder="Email">
+                    <input @keydown.enter.prevent="doLogin" type="email" class="form-control" v-model="email" placeholder="Email">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
-                    <input type="password" class="form-control" v-model="password" placeholder="Password">
+                    <input @keydown.enter.prevent="doLogin" type="password" class="form-control" v-model="password" placeholder="Password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
                 <div class="row">
@@ -69,6 +69,7 @@
                 this.httpPost('/api/login', data)
                     .then(data => {
                         if(!data.success || !data.data) {
+                            console.log(data);
                             return;
                         }
 
@@ -77,6 +78,7 @@
                         localStorage.setItem('auth-token', data.data.token);
                         localStorage.setItem('logged-user', JSON.stringify(data.data.user));
 
+                        this.$root.logData('login', 'sign in', JSON.stringify(''));
                         // this.$router.push('/dashboard');
                         window.location.assign('/dashboard')
                     })

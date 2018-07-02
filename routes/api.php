@@ -35,6 +35,16 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/logged-user', 'UserController@showLoggedUserData')->name('user.showLoggedUserData');
 
+    Route::post('/user/update-profile-picture', 'UserController@updateProfilePicture');
+
+    Route::post('/user/remove-avatar', 'UserController@removeAvatar');
+
+    Route::put('/user/update-profile-settings', 'UserController@updateProfileSettings');
+
+    Route::post('/user/change-password', 'UserController@changePassword');
+
+    Route::post('/user/logout', 'AuthController@logout');
+
     Route::get('/addresses', 'AddressesController@index')->name('address.index');
 
     Route::get('/addresses-paginated', 'AddressesController@loadAddressesPaginated')->name('address.loadAddressesPaginated');
@@ -67,6 +77,8 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/customer-statuses', 'CustomerStatusesController@show')->name('customerStatus.show');
 
+    Route::get('/people-paginated', 'PeopleController@getPeoplePaginated')->name('people.getPeoplePaginated');
+
     Route::get('/people/{person}/relationships', 'PeopleController@getPersonRelationships')->name('people.getPersonRelationships');
 
     Route::get('/people/{person}/relationship-details', 'PeopleController@getRelationshipDetails')->name('people.getRelationshipDetails');
@@ -98,7 +110,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 	Route::get('/product-by-address/{address}', 'ProductsController@productByAddressPaginated')->name('products.productByAddressPaginated');
 
 	Route::get('/tenders-by-product-chart/{id}/{address}', 'ProductsController@tenderByProductChart')->name('products.tenderByProductChart');
-    
+
     Route::get('/people/{mainPersonId}/get-person-graph-data', 'PeopleController@getPersonGraphInfo')->name('people.getPersonGraphInfo');
 
     Route::get('/clusters', 'AddressesController@getClusters')->name('address.getClusters');
@@ -107,9 +119,21 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/products', 'AddressesController@getProducts')->name('address.getProducts');
 
-    Route::put('/products/{address}', 'AddressesController@updateProducts')->name('address.updateProducts');
+    Route::post('/products/{address}/update', 'AddressesController@updateProducts')->name('address.updateProducts');
 
     Route::post('/products/create', 'AddressesController@createProduct');
+
+    Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
+
+    Route::get('/people/autocomplete/{searchQuery}', 'PeopleController@getPeopleAutocomplete');
+
+    Route::post('/logger/log-data', 'LogController@logData');
+
+    Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
+
+    Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
+
+    Route::get('/people-for-map', 'PeopleController@getDataForMap');
 
     Route::get('/product-consumables-sum/{addressId}/{productId}', 'ProductsController@getProductConsumableSum');
 

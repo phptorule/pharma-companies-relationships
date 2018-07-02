@@ -45,8 +45,8 @@
                         <p class="place-of-work" v-if="personData.careers && personData.careers.length">
                             worked at
                             <span v-for="(address, i) in personData.addresses" :key="address.id">
-                                <a :href="'/address-details/' + address.id" >
-                                    {{ address.name }}</a><span v-if="++i !== personData.addresses.length">, </span>
+                                <router-link :to="'/address-details/' + address.id" >
+                                    {{ address.name }}</router-link><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
                         </p>
 
@@ -230,6 +230,59 @@
                         </div>
                     </div>
                     <div class="modal-body">
+                        <div class="add-new-relation" v-if="showAddRelation && isEditing">
+                            <autocomplete
+                                :items="peopleItems"
+                                :onChange="getPeopleAutocomplete"
+                                :onClick="selectConnectionPerson"
+                                :itemsTotal="peopleItemsTotal"
+                                :itemsType="'People'"
+                            />
+                            <div v-if="selectedConnectionPerson" class="connect-with-block">
+                                <div class="connect-with-title">Connect with:</div>
+                                <div class="connect-with-data">
+                                    <div class="image">
+                                        <a href="javascript:void(0)">
+                                            <span class="person-initials">{{getPersonInitials(selectedConnectionPerson.name)}}</span>
+                                            <img :src="'/images/mask-'+0+'.png'" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="person-info">
+                                        <div>Name: {{ selectedConnectionPerson.name }}</div>
+                                        <div>City: {{ selectedConnectionPerson.town }}</div>
+                                        <div>Role: {{ selectedConnectionPerson.description }}</div>
+                                        <div v-if="selectedConnectionPerson.addresses.length">
+                                            Addresses: {{ getAddressesString(selectedConnectionPerson.addresses) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="selectedConnectionPerson" class="relation-fields-block">
+                                <div class="remark-block">
+                                    <input 
+                                        id="edge-comment" 
+                                        type="text" 
+                                        v-model="edgeComment" 
+                                        placeholder="Remark"
+                                        class="form-control"
+                                    >
+                                </div>
+                                <div class="connection-type-block">
+                                    <v-select 
+                                        :options="connectionTypes"
+                                        :label="'name'"
+                                        :class="'connection-types'"
+                                        :searchable="false"
+                                        :placeholder="'Choose connection type'"
+                                        v-model="selectedConnectionType"
+                                    />
+                                </div>
+                            </div>
+                            <div class="confirm-add-relation-block">
+                                <button class="btn cancel-add-relation-btn" @click.prevent="closeAddRelation">Cancel</button>
+                                <button class="btn add-relation-btn" @click.prevent="createPersonRelation">Add</button>
+                            </div>
+                        </div>
                         <div>
                             <ul class="nav nav-tabs person-tabs">
                                 <li :class="{'active': activeTab == 'career'}">
@@ -239,7 +292,18 @@
                                 <li :class="{'active': activeTab == 'publications'}">
                                     <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
                                 <li :class="{'active': activeTab == 'relationships'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('relationships')" data-toggle="tab" aria-expanded="false">Relationships</a></li>
+                                    <a href="javascript:void(0)" 
+                                        @click="setTabActive('relationships')" 
+                                        data-toggle="tab" 
+                                        aria-expanded="false"
+                                    >
+                                        Relationships
+                                    </a>
+                                    <a v-if="isEditing" 
+                                        class="add-relation" 
+                                        href="#" 
+                                        @click.prevent="toggleAddRelation"><i class="fa fa-plus"></i></a>
+                                </li>
                             </ul>
 
                             <div class="tab-content">
@@ -308,6 +372,7 @@
                                             :personData="personData"
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
+                                            :addressData="currentAddress"
                                             @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
@@ -327,9 +392,13 @@
     import http from '../mixins/http';
     import getPersonInitials from '../mixins/get-person-initials';
     import addressHelpers from '../mixins/address-helpers';
+    import autocomplete from './autocomplete';
 
     export default {
         mixins: [http, getPersonInitials, addressHelpers],
+        components: {
+            autocomplete
+        },
 
         data: function () {
             return {
@@ -362,7 +431,13 @@
                 },
                 maxRoleLength: 1000,
                 maxSocialLength: 1000,
-                isSocialEditing: false
+                isSocialEditing: false,
+                showAddRelation: false,
+                peopleItems: [],
+                peopleItemsTotal: 0,
+                selectedConnectionType: null,
+                selectedConnectionPerson: null,
+                edgeComment: ''
             }
         },
 
@@ -404,6 +479,22 @@
             $route: function (to) {
                 if(window.location.hash.indexOf('person-') === -1 && $('#personal-modal').hasClass('in')){
                     $('#personal-modal').modal('hide');
+                }
+            },
+            isEditing: function () {
+                if ( ! this.isEditing) {
+                    this.showAddRelation = false;
+                    this.peopleItems = [];
+                    this.selectedConnectionType = null;
+                    this.selectedConnectionPerson = null;
+                }
+            },
+            showAddRelation: function () {
+                if ( ! this.showAddRelation) {
+                    this.showAddRelation = false;
+                    this.peopleItems = [];
+                    this.selectedConnectionType = null;
+                    this.selectedConnectionPerson = null;
                 }
             },
             "personData.name": function() {
@@ -554,6 +645,7 @@
             },
             setTabActive: function (tabName) {
                 this.activeTab = tabName;
+                this.$root.logData('person', 'open', JSON.stringify(tabName + ' tab'));
             },
 
             showContactsChain: function() {
@@ -563,6 +655,8 @@
                 addressData['isPersonChain'] = true;
 
                 this.$eventGlobal.$emit('showModalContactsChain', addressData);
+
+                this.$root.logData('person', 'show contacts chain', JSON.stringify(this.personId));
             },
 
             openRelationshipTabIfHashDetected: function () {
@@ -574,6 +668,7 @@
             },
             relationshipsPageChanged: function(page) {
                 this.loadPersonRelationshipsPaginated(page);
+                this.$root.logData('person_relationship', 'page changed', JSON.stringify(page));
             },
             toggleEditing: function() {
                 this.isEditing = !this.isEditing;
@@ -591,6 +686,8 @@
                 } else {
                     this.checkIfChangesMade();
                 }
+
+                this.$root.logData('person', 'toggle edit person', JSON.stringify(this.isEditing));
             },
             checkIfInputsEmpty: function() {
                 if (
@@ -620,6 +717,16 @@
             },
             updateEmploye: function() {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('person', 'update person data', JSON.stringify({
+                        name: this.personData.name,
+                        description: this.personData.description,
+                        role: this.personData.role,
+                        linkedin_url: this.personData.linkedin_url,
+                        twitter: this.personData.twitter,
+                        facebook: this.personData.facebook,
+                        instagram: this.personData.instagram,
+                        telegram: this.personData.telegram
+                    }));
                     this.httpPut('/api/people/' + this.personId + '/update', {
                         name: this.personData.name,
                         description: this.personData.description,
@@ -658,7 +765,83 @@
             },
             setSocialEdit: function (social) {
                 this.isSocialEditing = social;
-            }
+                this.$root.logData('person', 'set social edit', JSON.stringify(social));
+            },
+            toggleAddRelation: function () {
+                this.showAddRelation = !this.showAddRelation;
+            },
+            closeAddRelation: function () {
+                this.showAddRelation = false;
+            },
+            getAddressesString: function (addresses) {
+                let str = '';
+                let names = [];
+                if (addresses.length) {
+                    names = addresses.map(element => {
+                        return element.name;
+                    });
+                    str = names.join(', ');
+                }
+
+                return str;
+            },
+            getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
+                let p = pageNumber || 1;
+                if (searchQuery.length >= 3) {
+                    this.httpGet('/api/people/autocomplete/' + searchQuery + '?page=' + p)
+                        .then(data => {
+                            console.log(data);
+                            this.peopleItems = data.data;
+                            this.peopleItemsTotal = data.total;
+                        })
+                        .catch(error => {
+                            alertify.notify('Error occured', 'error', 3);
+                        })
+                } else {
+                    this.peopleItems = [];
+                }
+            }, 400),
+            selectConnectionPerson: function (selectedPerson) {
+                this.selectedConnectionPerson = selectedPerson;
+            },
+            createPersonRelation: _.debounce(function () {
+                if ( ! this.selectedConnectionPerson) {
+                    alertify.notify('Person not selected', 'error', 3);
+                } else if ( ! this.selectedConnectionType) {
+                    alertify.notify('Connection type not selected', 'error', 3);
+                } else {
+                    let url = '/api/address-details/create-person-relation';
+                    this.httpPost(url, {
+                        fromPersonId: this.personId,
+                        toPersonId: this.selectedConnectionPerson.id,
+                        edgeType: this.selectedConnectionType.id,
+                        edgeComment: this.edgeComment
+                    })
+                        .then(data => {
+                            if (data.success) {
+                                this.$eventGlobal.$emit('personRelationCreated', {
+                                    personId: this.personId,
+                                    addressId: this.currentAddressId,
+                                    address: this.currentAddress
+                                });
+                                alertify.notify('Person relation created', 'success', 3);
+                                this.$root.logData('person', 'created new relation', JSON.stringify({
+                                    fromPersonId: this.personId,
+                                    toPersonId: this.selectedConnectionPerson.id,
+                                    edgeType: this.selectedConnectionType.id,
+                                    edgeComment: this.edgeComment
+                                }));
+                            } else {
+                                alertify.notify(data.message, 'error', 3);
+                            }
+                            
+                        })
+                        .catch(error => {
+                            alertify.notify('Error occured', 'error', 3);
+                        })
+                }
+
+            }, 400)
         },
 
         mounted: function(){
@@ -668,6 +851,11 @@
                 });
 
             this.$eventGlobal.$on('showModalEmployeeDetails', (data) => {
+                this.init(data.personId, data.addressId, data.address);
+                this.$root.logData('person', 'open', JSON.stringify(data.personId));
+            });
+            
+            this.$eventGlobal.$on('personRelationCreated', (data) => {
                 this.init(data.personId, data.addressId, data.address);
             });
 
@@ -813,5 +1001,134 @@
 
     .social-input:focus {
         outline: none;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation {
+        position: absolute;
+        cursor: pointer;
+        top: 7px;
+        right: -20px;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        border: none;
+        display: flex;
+        justify-content: center;
+        background: #bbbec2;
+        color: #fff;
+        margin: 0;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover {
+        background: #4a90e3;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
+        background: #bbbec2;
+        border: none;
+        cursor: pointer;
+    }
+
+    #personal-modal ul.person-tabs.nav-tabs > li .add-relation .fa {
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+    }
+
+    .add-new-relation {
+        width: 100%;
+        /* min-height: 200px; */
+        background: #fff;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+        margin-bottom: 20px;
+        padding: 10px 15px;
+    }
+
+    .relation-fields-block {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px 0;
+    }
+
+    .remark-block {
+        width: 60%;
+    }
+
+    .remark-block input {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #d2d6de
+    }
+
+    .connection-type-block {
+        width: 35%
+    }
+
+    .confirm-add-relation-block {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .connect-with-title {
+        text-align: center;
+        width: 100%;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .connect-with-data {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+    }
+
+    .connect-with-data .image {
+        margin: 0 15px;
+    }
+
+    .connect-with-data .image a {
+        position: relative;
+    }
+    
+    .connect-with-data .image a .person-initials {
+        position: absolute;
+        font-family: Montserrat;
+        font-size: 21px;
+        line-height: 21px;
+        height: 21px;
+        font-weight: 600;
+        color: #ffffff;
+        top: calc(50% - 11px);
+        width: 100%;
+        text-align: center;
+    }
+
+    .cancel-add-relation-btn {
+        background: #fff;
+        font-family: Montserrat;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .add-relation-btn {
+        background: #4a90e3;
+        color: #fff !important;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-family: Montserrat;
+        font-size: 13px;
+        text-align: left;
+        margin: 0;
+    }
+
+    .add-relation-btn:hover {
+        background: #5ba3f4;
+        transition: background-color 0.1s linear;
     }
 </style>

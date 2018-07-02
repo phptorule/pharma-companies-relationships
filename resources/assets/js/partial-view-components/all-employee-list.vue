@@ -142,12 +142,18 @@
 
             pageChanged: function (pageNumber) {
                 this.loadAddressEmployeesPaginated(this.addressId, pageNumber);
+                this.$root.logData('staff', 'employee page changed', JSON.stringify(pageNumber));
             },
 
             closeSlidedBox: function () {
                 this.$emit('closeSlidedBox')
+                this.$root.logData('staff', 'close slided box', JSON.stringify(''));
             },
-            handleSearch: function (e) {
+            handleSearch: _.debounce(function (e) {
+                this.$root.logData('staff', 'search', JSON.stringify({
+                    searchQuery: this.query,
+                    selectedRole: this.selectedRole
+                }));
                 this.filtered = this.employeeList.filter((item) => {
                     if (this.canSearch && this.canSearchByRole) {
                         return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
@@ -158,7 +164,7 @@
                         return item.type_id == this.selectedRole.id
                     }
                 });
-            }
+            }, 400)
         },
 
         props: ['employeeList', 'isActive', 'addressId', 'address'],
@@ -177,6 +183,8 @@
                 this.filtered = []
                 this.query = ''
             })
+
+            this.$root.logData('staff', 'open', JSON.stringify(''));
         },
         computed: {
             canSearch: function () {

@@ -1,10 +1,26 @@
 <template>
     <ul class="nav nav-tabs single-dropdown-select" :id="blockId">
         <li class="dropdown">
-            <a class="dropdown-toggle" @click="toogleDropdown($event)" data-toggle="dropdown" href="#" :title="selectedValuesNamesString? name +': '+ selectedValuesNamesString : name">
+            <a class="dropdown-toggle"
+               @click="toogleDropdown($event)"
+               data-toggle="dropdown"
+               href="#"
+               :title="selectedValuesNamesStringForTitle? name +': '+ selectedValuesNamesStringForTitle : name"
+            >
 
                 <span class="caret"></span>
-                {{selectedValuesNamesString ? selectedValuesNamesString : name}}
+
+                <i v-if="showCircle && selectedValue !== null"
+                   class="oval"
+                   :class="{
+                        both: !selectedValue || selectedValue === '',
+                        'potential-customers': selectedValue == 1,
+                        'my-customers': selectedValue == 2,
+                   }"
+                ></i>
+
+                <span v-html="selectedValuesNamesString ? selectedValuesNamesString : name"></span>
+
             </a>
             <ul class="dropdown-menu">
                 <li @click="selectValue('', name)" :class="{'hidden': isHiddenEmptyOption, selected: !selectedValue}">
@@ -48,10 +64,24 @@
             }
         },
 
+        computed: {
+            selectedValuesNamesStringForTitle: function () {
+                if(this.selectedValuesNamesString.indexOf('&uarr;') !== -1) {
+                    return this.selectedValuesNamesString.replace('&uarr;', 'asc')
+                }
+                else if(this.selectedValuesNamesString.indexOf('&darr;') !== -1) {
+                    return this.selectedValuesNamesString.replace('&darr;', 'desc')
+                }
+                else {
+                    return this.selectedValuesNamesString;
+                }
+            }
+        },
+
         methods: {
 
             selectValue: function (value, displayedLabel) {
-                this.selectedValuesNamesString = displayedLabel;
+                this.selectedValuesNamesString = displayedLabel.replace(/<(?:.|\n)*?>/gm, '');
                 this.selectedValue = value;
                 $('#'+this.blockId+' li.open').removeClass('open');
                 this.notifyParentComponent();
@@ -59,7 +89,7 @@
 
             toogleDropdown: function ($event) {
 
-                let dropdownContainer = $($event.target).parent();
+                let dropdownContainer = $($event.target).parent().hasClass('dropdown') ? $($event.target).parent() : $($event.target).parent().parent();
 
                 if(dropdownContainer.hasClass('open')) {
                     dropdownContainer.removeClass('open');
@@ -107,7 +137,7 @@
             this.presetSelectedValue();
         },
 
-        props: ['options', 'selected', 'name', 'isHiddenEmptyOption']
+        props: ['options', 'selected', 'name', 'isHiddenEmptyOption', 'showCircle']
 
     }
 </script>

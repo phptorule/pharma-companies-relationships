@@ -10,10 +10,11 @@
 
     import http from '../mixins/http';
     import bouncingMarker from '../mixins/bouncing-marker';
+    import employeeModal from '../mixins/show-employee-details-modal';
 
     export default {
 
-        mixins: [http, bouncingMarker],
+        mixins: [http, bouncingMarker, employeeModal],
 
         data: function () {
             return {
@@ -38,7 +39,7 @@
         },
 
         watch: {
-            $route: function (to) {
+            $route: function (to, from) {
 
                 let zoom = this.$route.query['zoom'];
                 let centerLng = this.$route.query['center-lng'];
@@ -61,15 +62,22 @@
         methods: {
 
             loadAddresses: function (queryString, isGlobalSearchInitiator) {
+                return this.makeHttpCall('addresses', queryString, isGlobalSearchInitiator);
+            },
 
+            loadPeople: function (queryString, isGlobalSearchInitiator) {
+                return this.makeHttpCall('people-for-map', queryString, isGlobalSearchInitiator);
+            },
+
+            makeHttpCall: function(baseUrl, queryString, isGlobalSearchInitiator) {
                 if (isGlobalSearchInitiator) {
 
-                    let url = '/api/addresses?global-search=' + encodeURIComponent(this.$route.query['global-search']);
+                    let url = '/api/'+baseUrl+'?global-search=' + encodeURIComponent(this.$route.query['global-search']);
 
                     return this.httpGet(url);
                 }
 
-                return this.httpGet('/api/addresses' + (queryString || ''));
+                return this.httpGet('/api/'+ baseUrl + (queryString || ''));
             },
 
             composeMapData: function (data) {
@@ -89,6 +97,7 @@
                             "felt": null,
                             "tsunami": 0,
                             "name": adr.name,
+                            "people_count": adr.people_count,
                             "customer_status_color": adr.customer_status == 2 ? '#34cc8c' : '#ff894f',
                         },
                         "geometry": {
@@ -107,7 +116,7 @@
 
                 this.FeatureCollection = {
                     "type": "FeatureCollection",
-                    "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}},
+                    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                     "features": mapData
                 };
 
@@ -191,8 +200,8 @@
                 this.map = new mapboxgl.Map({
                     container: 'map-element',
                     style: 'mapbox://styles/mapbox/light-v9',
-                    center: [93.0296021, 60.3752877],
-                    zoom: 3
+                    center: [8.553399, 46.901604],
+                    zoom: 7
                 });
             },
 
@@ -206,7 +215,7 @@
                         clearTimeout(timeoutId)
                     }
 
-                    timeoutId = setTimeout(() => {
+                    timeoutId = setTimeout(()=>{
 
                         let totalPointsDisplayed = 0;
 
@@ -234,7 +243,7 @@
                                 uniqueClusterIds.push(clusteredFeatures[i].properties.cluster_id);
                             }
                         }
-
+                        
                         this.notifyTotalPointsDisplayedOnMapChanged(totalPointsDisplayed)
 
                     }, 500)
@@ -274,6 +283,30 @@
                 }
             },
 
+            handleClickOnUnclusteredFeature: function(feature) {
+                let id = feature.properties.id;
+
+                if (this.$route.path === '/people-dashboard') {
+
+                    if (+feature.properties.people_count === 1) {
+
+                        this.httpGet('/api/address-details/' + id)
+                            .then(addressData => {
+                                let personId = addressData.people[0].id;
+
+                                this.showEmployeeDetailsModal(personId, addressData.id, addressData);
+                            })
+
+                    }
+                    else if (+feature.properties.people_count > 1) {
+                        this.$router.push('/address-details/'+id + '?all-employees=1');
+                    }
+                }
+                else {
+                    this.$router.push('/address-details/'+id);
+                }
+            },
+
             listenToMarkerClicks: function () {
                 this.map.on('click', (e) => {
 
@@ -286,8 +319,9 @@
                     });
 
                     if (unclusteredFeatures.length) {
-                        let id = unclusteredFeatures[0].properties.id;
-                        this.$router.push('/address-details/' + id);
+
+                        this.handleClickOnUnclusteredFeature(unclusteredFeatures[0]);
+
                     }
                     else if (clusteredFeatures.length) {
 
@@ -301,7 +335,9 @@
                             ids.push(allFeatures[i].properties.id);
                         }
 
-                        if (ids.length) {
+                        this.$root.logData('overview', 'map click', JSON.stringify(ids));
+
+                        if(ids.length){
                             this.$router.push('/dashboard?address-ids=' + ids.toString());
                         }
                     }
@@ -327,8 +363,6 @@
 
                     this.countDisplayedMarkers();
 
-                    if (addressList.length > 499)
-                        alertify.notify('Too many addresses are satisfying your filter settings. Displaying first 500.', 'warning', 3);
                 }
                 else {
                     alertify.notify('No addresses have been found', 'warning', 3);
@@ -469,6 +503,26 @@
                 if (zoom != this.mapZoom || centerLng != this.mapCenterLng || centerLat != this.mapCenterLat) {
                     this.map.flyTo({center: [centerLng, centerLat], zoom: zoom});
                 }
+            },
+
+            proceedMapPreparationsForCurrentPage: function (data) {
+                this.initDataSource(data);
+
+                this.cluster.load(this.FeatureCollection.features);
+
+                this.listenToMouseMoves();
+
+                this.listenToMarkerClicks();
+
+                this.detectMapMoveEnds();
+
+                this.listenToHoveringOverAddressAtSidebar();
+
+                this.listenToHoverOutFromSidebar();
+
+                this.setInitialMapViewFromQueryStr();
+
+                this.isFirstLoad = false;
             }
 
         },
@@ -485,42 +539,41 @@
 
                     let queryUrl = '';
 
-                    if (this.$route.path == '/dashboard') {
+                    if(this.$route.path === '/dashboard') {
                         queryUrl = this.$route.fullPath.replace('/dashboard', '');
+
+                        this.loadAddresses(queryUrl)
+                            .then(data => {
+                                this.proceedMapPreparationsForCurrentPage(data)
+                            });
+                    }
+                    else if(this.$route.path === '/people-dashboard') {
+                        queryUrl = this.$route.fullPath.replace('/people-dashboard', '');
+
+                        this.loadPeople(queryUrl)
+                            .then(data => {
+                                this.proceedMapPreparationsForCurrentPage(data)
+                            });
                     }
 
-                    this.loadAddresses(queryUrl)
-                        .then(data => {
-
-                            this.initDataSource(data);
-
-                            this.cluster.load(this.FeatureCollection.features);
-
-                            this.listenToMouseMoves();
-
-                            this.listenToMarkerClicks();
-
-                            this.detectMapMoveEnds();
-
-                            this.listenToHoveringOverAddressAtSidebar();
-
-                            this.listenToHoverOutFromSidebar();
-
-                            this.setInitialMapViewFromQueryStr();
-
-                            this.isFirstLoad = false;
-
-                        });
                 });
 
                 this.$eventGlobal.$on('filtersHaveBeenApplied', (queryStr) => {
 
                     this.isMapMovedBecauseOfSearch = true;
 
-                    this.loadAddresses(queryStr)
-                        .then((data) => {
-                            this.updateMapLayers(data);
-                        })
+                    if(this.$route.path === '/dashboard') {
+                        this.loadAddresses(queryStr)
+                            .then((data) => {
+                                this.updateMapLayers(data);
+                            })
+                    }
+                    else if(this.$route.path === '/people-dashboard') {
+                        this.loadPeople(queryStr)
+                            .then(data => {
+                                this.updateMapLayers(data);
+                            });
+                    }
                 });
 
                 this.$eventGlobal.$on('showSpecificItem', (data) => {

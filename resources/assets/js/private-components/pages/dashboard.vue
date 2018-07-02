@@ -1,6 +1,8 @@
 <template>
     <div>
 
+        <sidebar-tabs></sidebar-tabs>
+
         <!-- Main content -->
         <section class="sidebar">
 
@@ -13,6 +15,8 @@
                                     class="form-control select-filter type-filter"
                                     :options="customerTypesForFilter"
                                     :selected="appliedFilters.type"
+                                    :isHiddenEmptyOption="true"
+                                    :showCircle="true"
                                     @changed="applyTypeFilter"
                                     :name="'Type'"
                                     ref="typeSingleDropdownSelect"
@@ -23,6 +27,7 @@
                                     :name="'Used Products'"
                                     :options="usedProductOptionsForDropDown"
                                     :selected="appliedFilters.usedProducts"
+                                    :relationalProducts="filterObject.relational_products"
                                     @changed="applyUsedProductsFilter"
                                     ref="productsMultipleDropdownSelect"
                             ></multiple-dropdown-select>
@@ -53,30 +58,6 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group margin-bottom-0">
-                            <ul class="tab-filter">
-                                <li>
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = ''; applyFilters()" :class="{'active': appliedFilters.type == ''}">
-                                        All Labs</a>
-                                </li>
-                                <li class="my-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 2; applyFilters()" :class="{'active': appliedFilters.type == 2}">
-                                        <span class="oval"></span>
-                                        My customers
-                                    </a>
-                                </li>
-                                <li class="potential-customers">
-                                    <a href="javascript:void(0)" @click="appliedFilters.type = 1; applyFilters()" :class="{'active': appliedFilters.type == 1}">
-                                        <span class="oval"></span>
-                                        Potential Customers
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- /.search form -->
 
@@ -87,7 +68,7 @@
                 </div>
 
                 <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
-                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener(address)" class="sidebar-list-item">
+                    <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener([address])" class="sidebar-list-item">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">
 
                             <div class="item-image" v-show="address.people_count > 0">
@@ -162,11 +143,13 @@
 
     import http from '../../mixins/http';
     import addressHelpers from '../../mixins/address-helpers';
+    import mapNotified from '../../mixins/notify-map-that-filters-updated';
+    import mapHoveringNotified from '../../mixins/notify-map-that-hovering-over-list-item';
     var _ = require('lodash');
 
     export default {
 
-        mixins: [http,addressHelpers],
+        mixins: [http,addressHelpers, mapNotified, mapHoveringNotified],
 
         data: function () {
             return {
@@ -177,7 +160,8 @@
                 filterObject: {
                     used_product_list: [],
                     tag_list: [],
-                    customer_types: []
+                    customer_types: [],
+                    relational_products: []
                 },
                 appliedFilters: {
                     usedProducts: this.$route.query['used-product-ids[]'] || [],
@@ -195,8 +179,6 @@
                 multipleDropdownSelects: [],
                 queryUrl: '',
                 oldQueryUrl: '',
-                hoveredAddress: {},
-                mouseOverTimeoutId: null,
                 scrollTimoutId: null
             }
         },
@@ -233,18 +215,29 @@
             },
 
             customerTypesForFilter: function () {
-                return this.filterObject.customer_types.map(el => {
-                    return {label: el.name, value: el.id};
-                })
+                let arr = this.filterObject.customer_types.map(el => {
+                    return {
+                        label: `<i class="oval ${el.id == 1? 'potential-customers' : ''} ${el.id == 2? 'my-customers' : ''}"></i>${el.name}`,
+                        value: el.id
+                    };
+                });
+
+                arr.unshift({
+                    label: `<i class="oval both"></i> All`,
+                    value: ''
+                });
+
+                return arr;
             },
 
             usedProductOptionsForDropDown: function () {
-                return this.filterObject.used_product_list.map(product => {
-                    return {
-                        label: product.company + (product.name? ': ' + product.name: ''),
-                        value: product.id
-                    }
-                })
+                // return this.filterObject.used_product_list.map(product => {
+                //     return {
+                //         label: product.company + (product.name? ': ' + product.name: ''),
+                //         value: product.id
+                //     }
+                // })
+                return this.filterObject.used_product_list;
             },
             tagOptionsForDropDown: function () {
                 return this.filterObject.tag_list.map(tag => {
@@ -269,7 +262,7 @@
 
             document.title = 'Labscape';
 
-            $('ul.sidebar-list').height(window.innerHeight - 325);
+            $('ul.sidebar-list').height(window.innerHeight - 315);
 
             this.listenToTotalPointsDisplayedOnMapChanged();
 
@@ -279,6 +272,8 @@
                 });
 
             this.checkLocalStoragePreviousDashboard();
+
+            this.$root.logData('overview', 'open', JSON.stringify(''));
 
         },
 
@@ -308,21 +303,25 @@
             applyTypeFilter: function (data) {
                 this.appliedFilters.type = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by type', JSON.stringify(data));
             },
 
             applyUsedProductsFilter: function (data) {
                 this.appliedFilters.usedProducts = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by used products', JSON.stringify(data));
             },
 
             applyTagsFilter: function (data) {
                 this.appliedFilters.tags = data;
                 this.applyFilters();
+                this.$root.logData('overview', 'apply filter by tags', JSON.stringify(data));
             },
 
             applySortByFilter: function (data) {
                 this.appliedFilters.sortBy = data;
                 this.applyFilters(true);
+                this.$root.logData('overview', 'apply filter by sort', JSON.stringify(data));
             },
 
             listenToTotalPointsDisplayedOnMapChanged: function () {
@@ -377,7 +376,7 @@
                         this.addressList = data.data;
 
                         if(!this.appliedFilters.isOnlySortingChanged){
-                            this.notifyFiltersHaveBeenApplied();
+                            this.notifyFiltersHaveBeenApplied(this.queryUrl.replace('&','?'));
                         }
 
                         this.isFirstLoad = false;
@@ -391,43 +390,10 @@
 
             },
 
-            setAddressMouseOverListener: function(address) {
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.mouseOverTimeoutId = setTimeout(()=>{
-                    if(this.hoveredAddress.id == address.id) {
-                        return;
-                    }
-
-                    this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
-
-                    this.hoveredAddress = address;
-
-                    this.$eventGlobal.$emit('hover-over-address-at-the-sidebar', address);
-                }, 100);
-
-            },
-
-            setAddressMouseLeaveListener: function () {
-                this.hoveredAddress = {};
-
-                if(this.mouseOverTimeoutId) {
-                    clearTimeout(this.mouseOverTimeoutId);
-                }
-
-                this.$eventGlobal.$emit('hover-out-from-the-sidebar', {});
-            },
-
-            notifyFiltersHaveBeenApplied: function () {
-                this.$eventGlobal.$emit('filtersHaveBeenApplied', this.queryUrl.replace('&','?'));
-            },
-
             pageChanged: function (pageNumber) {
                 this.pagination.currentPage = pageNumber;
                 this.loadAddressesPaginated();
+                this.$root.logData('overview', 'page changed', JSON.stringify(pageNumber));
             },
 
             loadFilterObject: function() {
@@ -440,7 +406,6 @@
             applyFilters: function (isOnlySortingChanged) {
 
                 this.appliedFilters.isOnlySortingChanged = !!isOnlySortingChanged;
-
 
                 this.composeQueryUrl();
 
@@ -471,6 +436,7 @@
                 }
 
                 this.applyFilters();
+                this.$root.logData('overview', 'reset filters', JSON.stringify(''));
             },
 
             scrollFunction: function() {

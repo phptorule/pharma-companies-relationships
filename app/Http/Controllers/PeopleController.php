@@ -9,6 +9,7 @@ use App\Models\Publication;
 use App\Models\PeopleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\Persistable;
 
 class PeopleController extends Controller
@@ -23,8 +24,32 @@ class PeopleController extends Controller
         $person->load(['addresses' => function($q){
             return $q->orderBy('id', 'desc');
         }]);
-        $person->load('publications','relationships');
-        return response()->json($person);
+        $person->load('publications');
+        $person->relationships = DB::table('rl_address_connections AS rl1')
+            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type, from_address_id, to_address_id,
+            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
+            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
+            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
+            COUNT(to_person_id) AS count_types, 
+            rl_people.*"))
+            ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
+            ->where('from_person_id', $person->id)
+            ->groupBy('to_person_id')
+            ->orderBy('name', 'ASC')
+            ->get();
+
+            $person->relationships->each(function ($relation, $key) {
+                $sqlQuery = "
+                    SELECT MAX(year) as year FROM `rl_publications` 
+                    JOIN rl_people_publications 
+                    ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_publications.id = rl_people_publications.publication_id
+                ";
+                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
+                $relation->lastCooperationYear = $lastCooperationYear;
+            });
+
+            return response()->json($person);
     }
 
 
@@ -37,10 +62,10 @@ class PeopleController extends Controller
     function getPersonRelationships(People $person)
     {
         $relationships = DB::table('rl_address_connections AS rl1')
-            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight,
-            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1') as co_authored_paper,
-            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2') as cited_paper,
-            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3') as signatory_at_company,
+            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
+            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
+            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
+            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
             COUNT(to_person_id) AS count_types, 
             rl_people.*"))
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
@@ -49,9 +74,19 @@ class PeopleController extends Controller
             ->orderBy('edge_weight', 'DESC')
             ->paginate(10);
 
+            $relationships->each(function ($relation, $key) {
+                $sqlQuery = "
+                    SELECT MAX(year) as year FROM `rl_publications` 
+                    JOIN rl_people_publications 
+                    ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_publications.id = rl_people_publications.publication_id
+                ";
+                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
+                $relation->lastCooperationYear = $lastCooperationYear;
+            });
+
         return response()->json($relationships);
     }
-
 
     function getPersonGraphInfo($mainPersonId)
     {
@@ -163,6 +198,97 @@ class PeopleController extends Controller
     {
         $roles = PeopleType::get();
         return response()->json($roles);
+    }
+
+
+    function getPeoplePaginated() {
+
+        $query = People::with('addresses');
+
+        $query = $this->composeConditions($query, request()->all());
+
+        $people = $query->paginate(20);
+
+        return response()->json($people);
+    }
+
+
+    function composeConditions($query, $params)
+    {
+        if (isset($params['person-type-id'])) {
+            $query->where('type_id', $params['person-type-id']);
+        }
+
+        if (isset($params['sort-by'])) {
+            $direction = $params['sort-by'] == 'name-asc' ? 'ASC' : 'DESC';
+
+            $query->orderBy('name', $direction);
+        }
+
+        if(isset($params['role'])) {
+            $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
+        }
+
+        if(isset($params['global-search'])) {
+            $query->where('rl_people.name', 'like', '%'.$params['global-search'].'%');
+        }
+
+        if(isset($params['only-people-with-addresses'])) {
+            $query->whereHas('addresses');
+        }
+
+        return $query;
+    }
+
+
+    function getPeopleAutocomplete ($searchQuery)
+    {
+        $people = People::with([
+                        'addresses'
+                    ])
+                    ->where('name', 'like', "%$searchQuery%")
+                    ->orderBy('name')
+                    ->paginate(5);
+        return response()->json($people);
+    }
+
+
+    function getDataForMap()
+    {
+        $conditions = $this->composeConditionsForMap(request()->all());
+
+        $sql = "SELECT a.id, a.lat, a.lon, a.name, a.customer_status 
+                FROM rl_addresses AS a
+                INNER JOIN rl_address_people AS ap
+                    ON ap.address_id = a.id
+                INNER JOIN rl_people AS p
+                    ON p.id = ap.person_id
+                $conditions
+                GROUP BY a.id";
+
+        $addresses = DB::select(DB::raw($sql));
+
+        return response()->json($addresses);
+    }
+
+
+    function composeConditionsForMap($params)
+    {
+        $conditionStr = 'WHERE a.id != -1';
+
+        if (isset($params['person-type-id'])) {
+            $conditionStr .= ' AND p.type_id = '.$params['person-type-id'] . ' ';
+        }
+
+        if(isset($params['role'])) {
+            $conditionStr .= " AND p.role LIKE '%".$params['role']."%' ";
+        }
+
+        if(isset($params['global-search'])) {
+            $conditionStr .= " AND p.name LIKE '%".$params['global-search']."%' ";
+        }
+
+        return $conditionStr;
     }
 
 }

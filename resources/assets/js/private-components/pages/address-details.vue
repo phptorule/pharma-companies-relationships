@@ -64,7 +64,9 @@
                         <div style="clear: both"></div>
 
                         <p class="lab-chain">
-                            <span class="current-chain-name">{{addressData.cluster.name}}</span>
+                            <span class="current-chain-name">
+                                {{addressData.cluster ? addressData.cluster.name : 'No chain'}}
+                            </span>
 
                             <br />
 
@@ -75,16 +77,20 @@
                                 :selected="addressData.cluster" 
                                 :close="closeChain" 
                                 :choose="addChain" 
+                                :createNewChain="createNewChain"
                             />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul class="tag-list">
-                            <li v-for="tag in addressData.tags" :key="tag.id">
+                            <li v-if="addressData.tags.length" v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                 </a>
                             </li>
+                            <span v-show=" ! addressData.tags.length">
+                                No tags
+                            </span>
                         </ul>
 
                         <p class="address-line">
@@ -113,7 +119,9 @@
                         <div style="clear: both"></div>
 
                         <p class="lab-chain">
-                            <span class="current-chain-name">{{addressData.cluster.name}}</span>
+                            <span class="current-chain-name">
+                                {{addressData.cluster ? addressData.cluster.name : 'No chain'}}
+                            </span>
 
                             <br />
 
@@ -124,12 +132,13 @@
                                 :selected="addressData.cluster" 
                                 :close="closeChain" 
                                 :choose="addChain"
+                                :createNewChain="createNewChain"
                             />
                             <a href="#" @click.prevent="toggleChain" class="add-to-chain-link">Add to Chain</a>
                         </p>
 
                         <ul v-if="editingInput !== 'tags'" class="tag-list tags-edit">
-                            <li v-for="tag in addressData.tags" :key="tag.id">
+                            <li v-if="addressData.tags.length" v-for="tag in addressData.tags" :key="tag.id">
                                 <a href="#" @click.prevent>
                                     {{ tag.name }}
                                     <button class="delete-tag" @click="removeSelectedTag(tag.name)">
@@ -228,16 +237,22 @@
                     <p v-if="!addressData.people.length" class="empty-data-p">There are no employees yet.</p>
 
                     <ul class="staff-list">
-                        <li v-if="i < 3" v-for="(person, i) in addressData.people" :key="person.id">
+                        <li v-if="i < 3 && addressData.people.length" v-for="(person, i) in addressData.people" :key="person.id">
                             <div class="image">
-                                <a href="javascript:void(0)" style="cursor: default">
+                                <a href="javascript:void(0)"
+                                   @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                                >
                                     <span class="person-initials">{{ getPersonInitials(person.name) }}</span>
                                     <img :src="'/images/mask-'+i+'.png'" alt="">
                                 </a>
                             </div>
                             <div class="personal-info">
                                 <p class="name">
-                                    {{ person.name }}
+                                    <a href="javascript:void(0)"
+                                        @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
+                                    >
+                                        {{ person.name }}
+                                    </a>
                                 </p>
                                 <p class="occupation">{{ person.email }}</p>
                                 <p class="occupation">{{ person.description }}</p>
@@ -251,14 +266,16 @@
                        v-if="addressData.people && addressData.people.length > 3"
                        @click.prevent="showSlidedBox('all-employee')"
                        class="address-box-show-more-link show-all-employees-link"
-                    >Show all Employees</a>
+                    >
+                        Show all Employees
+                    </a>
                 </div>
 
                 <div class="used-products-overview address-box">
                     <div class="header">
                         <h3>
                             Used Products 
-                            <a href="#" @click.prevent="toggleProducts" v-if="false">
+                            <a href="#" @click.prevent="toggleProducts">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </h3>
@@ -269,7 +286,7 @@
                                 :addressId="addressId">
                         </address-products-overview>
                     </div>
-                    <multiple-autocomplete-select 
+                    <multiple-autocomplete-select
                         v-if="isProductsEditing"
                         :selectedOptions="addressData.products"
                         :type="'products'"
@@ -278,11 +295,73 @@
                         :addNewProduct="addNewProduct"
                     />
 
+                    <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
 
+                    <ul class="products-list" v-if="addressData.products.length">
+                        <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
+                            <img 
+                                v-if="product.image" 
+                                class="image" 
+                                :src="product.image" 
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                            >
+                            <img 
+                                v-else 
+                                class="image" 
+                                :src="'/images/mask-'+i+'.png'" 
+                                alt=""
+                                :title="productName(product.company, product.name)"
+                            >
+                            <span class="product-description">
+                                {{ product.name ? product.company + ': ' + product.name : product.company }}
+                            </span>
+                        </li>
+                    </ul>
+
+                    <a 
+                        href="#" 
+                        @click.prevent="toggleShowAllProducts" 
+                        v-if="addressData.products.length > 3"
+                        class="show-all-products-link"
+                    >
+                        {{ showHideProducts }}
+                    </a>
+                    
+                     <ul class="used-products-list" v-if="addressData.products.length && false"> <!--TODO: remove "... && false" when start to work on address products feature-->
+                        <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
+                            :title="productName(product.company, product.name)"
+                            :key="product.id"
+                        >
+                            <img class="image" :src="product.image" v-if="product.image">
+                            <div class="image" v-else></div>
+                            <span class="prod-name">
+                                {{ productName(product.company, product.name) }}
+                            </span>
+                        </li>
+
+                        <li v-if="showAllProducts" 
+                            v-for="product in addressData.products" 
+                            :title="productName(product.company, product.name)"
+                            :key="product.id"
+                        >
+                            <img class="image" :src="product.image" v-if="product.image">
+                            <div class="image" v-else></div>
+                            <span class="prod-name">
+                                {{ productName(product.company, product.name) }}
+                            </span>
+                        </li>
+                        
+                        <li v-if="addressData.products.length > 3">
+                            <a href="#" @click.prevent="toggleShowAllProducts" class="show-all-link prod-name">
+                                {{ showHideProducts }}
+                            </a>
+                        </li>
+                    </ul>
                     
                 </div>
 
-                <div class="lab-chain-members-overview address-box">
+                <div class="lab-chain-members-overview address-box" v-if="addressData.cluster">
                     <div class="header">
                         <h3>Lab Chain Members 
                             <small :title="'Addresses in chain: ' + addressData.cluster.addresses.length">
@@ -342,7 +421,6 @@
 
     import http from '../../mixins/http';
     import employeeModal from '../../mixins/show-employee-details-modal';
-    // import productsModal from '../../mixins/show-products-all-modal';
     import getPersonInitials from '../../mixins/get-person-initials';
     import autocompleteSelect from '../../partial-view-components/autocomplete-select';
     import multipleAutocompleteSelect from '../../partial-view-components/multiple-autocomplete-select';
@@ -398,7 +476,7 @@
                 let hashFromPerson = (from.hash.split('&'))[0];
 
                 if( ! this.isFirstLoad && hashToPerson !== hashFromPerson) {
-                    this.showModalIfPersonHashDetected();
+                    this.showModalIfPersonHashDetected(this.addressId, this.addressData);
                 }
             },
             isEditing: function () {
@@ -460,25 +538,28 @@
                     sortedTags = this.addressData.tags.slice(),
                     sortedOldTags = this.old.tags.slice();
 
-                sortedTags.sort((tagA, tagB) => {
-                    return tagA.name > tagB.name;
-                });
-                
-                sortedOldTags.sort((tagA, tagB) => {
-                    return tagA.name > tagB.name;
-                });
-                
-                if (sortedTags.length === sortedOldTags.length) {
-                    for (let i = 0; i < sortedTags.length; i++) {
-                        if (sortedTags[i].name !== sortedOldTags[i].name) {
-                            _this.madeChanges = true;
-                            break;
-                        } else {
-                            _this.madeChanges = false;
+                if (this.addressData.tags) {
+
+                    sortedTags.sort((tagA, tagB) => {
+                        return tagA.name > tagB.name;
+                    });
+
+                    sortedOldTags.sort((tagA, tagB) => {
+                        return tagA.name > tagB.name;
+                    });
+
+                    if (sortedTags.length === sortedOldTags.length) {
+                        for (let i = 0; i < sortedTags.length; i++) {
+                            if (sortedTags[i].name !== sortedOldTags[i].name) {
+                                _this.madeChanges = true;
+                                break;
+                            } else {
+                                _this.madeChanges = false;
+                            }
                         }
+                    } else {
+                        _this.madeChanges = true;
                     }
-                } else {
-                    _this.madeChanges = true;
                 }
 
                 return _this.madeChanges ? true : false ;
@@ -508,6 +589,9 @@
                     })
             },
             addChain: function (id) {
+                this.$root.logData('detail', 'add chain', JSON.stringify({
+                        cluster_id: id
+                    }));
                 this.httpPut('/api/clusters/' + this.addressId, {
                         cluster_id: id
                     })
@@ -524,6 +608,7 @@
                     })
             },
             updateCustomerStatus: function (status) {
+                this.$root.logData('detail', 'update customer status', JSON.stringify(status));
                 this.httpPut('/api/address-details/' + this.addressId + '/update-status', {
                         status: status
                     })
@@ -543,12 +628,15 @@
                     this.isExpanded = true;
                 }
                 this.sideComponentToDisplay = componentToDisplay;
+                this.$root.logData('detail', 'show slided box', JSON.stringify(componentToDisplay));
             },
             showContactsChain: function (addressData) {
                 this.$eventGlobal.$emit('showModalContactsChain', addressData)
+                this.$root.logData('detail', 'show modal contacts chain', JSON.stringify(addressData));
             },
             showOnMap: function () {
-                this.$eventGlobal.$emit('showSpecificItem', [this.addressData])
+                this.$eventGlobal.$emit('showSpecificItem', [this.addressData]);
+                this.$root.logData('detail', 'show specific item', JSON.stringify(this.addressData));
             },
             showModalIfPersonHashDetected: function () {
                 if(this.$route.hash.indexOf('#person-') !== -1) {
@@ -574,6 +662,7 @@
             },
             toggleEditing: function () {
                 this.isEditing = !this.isEditing;
+                this.$root.logData('detail', 'toggle edit address', JSON.stringify(this.isEditing));
                 if ( ! this.isEditing) {
                     this.addressData.name = this.old.name;
                     this.addressData.address = this.old.address;
@@ -587,9 +676,17 @@
             },
             toggleEditingInput: function (input) {
                 this.editingInput = input;
+                this.$root.logData('detail', 'toggle editing input', JSON.stringify(input));
             },
             updateAddress: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
+                    this.$root.logData('detail', 'update address', JSON.stringify({
+                        name: this.addressData.name,
+                        address: this.addressData.address,
+                        url: this.addressData.url,
+                        phone: this.addressData.phone,
+                        tags: this.addressData.tags
+                    }));
                     this.httpPut('/api/address-details/' + this.addressData.id + '/update-details', {
                         name: this.addressData.name,
                         address: this.addressData.address,
@@ -621,21 +718,27 @@
                 });
 
                 this.addressData.tags = tags;
+                this.$root.logData('detail', 'remove selected tag', JSON.stringify(name));
             },
             closeChain: function () {
                 this.chainSelect = false;
+                this.$root.logData('detail', 'close chain', JSON.stringify(this.chainSelect));
             },
             toggleChain: function () {
                 this.chainSelect = !this.chainSelect
+                this.$root.logData('detail', 'toggle chain select', JSON.stringify(this.chainSelect));
             },
             closeProducts: function () {
                 this.isProductsEditing = false;
+                this.$root.logData('detail', 'close edit products', JSON.stringify(this.isProductsEditing));
             },
             toggleProducts: function () {
                 this.isProductsEditing = !this.isProductsEditing;
+                this.$root.logData('detail', 'toggle edit products', JSON.stringify(this.isProductsEditing));
             },
             updateProducts: function (selectedProducts) {
-                this.httpPut('/api/products/' + this.addressData.id, {
+                this.$root.logData('detail', 'update products', JSON.stringify(selectedProducts));
+                this.httpPost('/api/products/' + this.addressData.id + '/update', {
                         selectedProducts: selectedProducts
                     })
                     .then(data => {
@@ -650,6 +753,7 @@
                     })
             },
             addNewProduct: function (newItem) {
+                this.$root.logData('detail', 'add new product', JSON.stringify(newItem));
                 let formData = new FormData();
                 formData.append('company', newItem.company);
                 formData.append('name', newItem.name);
@@ -673,6 +777,7 @@
             },
             toggleShowAllProducts: function () {
                 this.showAllProducts = !this.showAllProducts;
+                this.$root.logData('detail', 'toggle showAll products', JSON.stringify(this.showAllProducts));
             },
             productName: function (company, name) {
                 return name ? company + ': ' + name : company;
@@ -680,6 +785,7 @@
             onCloseSlidedBox: function () {
                 this.isExpanded = false;
                 this.sideComponentToDisplay = '';
+                this.$root.logData('detail', 'close slided box', JSON.stringify(''));
             },
             returnToPreviousDashboard: function () {
                 let url = localStorage.getItem('previous-dashboard') ? localStorage.getItem('previous-dashboard') : '/dashboard';
@@ -693,7 +799,32 @@
                 this.old.phone = this.addressData.phone;
                 this.madeChanges = false;
                 this.saveBtnDisabled = true;
-            }
+            },
+            createNewChain: _.debounce(function () {
+                this.$root.logData('detail', 'create new chain', JSON.stringify(this.addressData.name));
+                this.httpPost('/api/clusters/create/' + this.addressData.id,
+                    {
+                        name: this.addressData.name
+                    }
+                )
+                .then(data => {
+                    if (data.status && data.status === 'error') {
+                        alertify.notify(data.message , 'error', 3);
+                    }
+
+                    if (data.status && data.status === 'success') {
+                        this.addressData.cluster = data.cluster;
+                        this.addressData.cluster_id = data.cluster.id;
+                        alertify.notify('New labchain has been added.', 'success', 3);
+                        this.chainSelect = false;
+                        this.$eventGlobal.$emit('addressClusterUpdated');
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    alertify.notify('Error occured', 'error', 3);
+                });
+            }, 400)
         },
         computed: {
             showHideProducts: function () {
@@ -707,14 +838,14 @@
                 this.showSlidedBox(componentToDisplay);
 
             })
-            
+
             this.addressId = this.$route.params.id;
 
             this.loadAllTags();
 
             this.loadAddressDetails()
                 .then(() => {
-                    this.showModalIfPersonHashDetected();
+                    this.showModalIfPersonHashDetected(this.addressId, this.addressData);
                     this.mapAddressPropertiesToForm();
                     this.isFirstLoad = false;
                 });
@@ -727,7 +858,7 @@
                 }, 0)
             }
 
-            this.showModalIfPersonHashDetected();
+            this.$root.logData('detail', 'open', JSON.stringify(''));
         }
     }
 </script>

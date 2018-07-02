@@ -7,16 +7,21 @@ import JsonExcel from 'vue-json-excel'
 import CtkTooltip from 'vue-ctk-tooltip';
 import 'vue-ctk-tooltip/ctk-tooltip.css';
 import vSelect from 'vue-select';
+import Tooltip from 'vue-directive-tooltip';
+import logger from './mixins/logger';
 
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
 window.Vue.use(CtkTooltip);
+window.Vue.use(Tooltip);
 
 AuthService.defineIsLoggedIn();
 
 
 /* Components Registration */
+Vue.component('pagination', Pagination);
+Vue.component('v-select', vSelect);
 Vue.component('main-component', require('./main-component'));
 Vue.component('public-outlet', require('./public-components/public-outlet'));
 Vue.component('private-outlet', require('./private-components/private-outlet'));
@@ -40,15 +45,15 @@ Vue.component('downloadExcel', JsonExcel);
 Vue.component('tab-relationships', require('./partial-view-components/modal-employee-details-tab-relationships'));
 Vue.component('publication-list', require('./partial-view-components/publication-list'));
 Vue.component('publication-list-item', require('./partial-view-components/publication-list-item'));
-Vue.component('pagination', Pagination);
-Vue.component('v-select', vSelect);
 Vue.component('div-editable', require('./partial-view-components/div-editable'));
+Vue.component('sidebar-tabs', require('./partial-view-components/sidebar-tabs'));
 Vue.component('tender-list-partial', require('./partial-view-components/partials-tender-list'));
 Vue.component('purchase-list-of-tender', require('./partial-view-components/purchase-list-of-tender'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 
 const app = new Vue({
+    mixins: [logger],
     el: '#app',
     router: router
 });

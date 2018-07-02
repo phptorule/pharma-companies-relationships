@@ -17,6 +17,6 @@ class Publication extends Model
 
 
     static function fetchArticlesByIds($ids) {
-        return self::whereIn('id', $ids)->get();
+        return self::whereIn('id', $ids)->orderBy('year', 'DESC')->get();
     }
 }

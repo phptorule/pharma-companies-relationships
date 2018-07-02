@@ -51,9 +51,7 @@ const bouncingMarker = {
             this.map.addSource("earthquakes2", {
                 type: "geojson",
                 data: featureCollection,
-                cluster: true,
-                clusterMaxZoom: 14, // Max zoom to cluster points on
-                clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+                cluster: false
             });
 
             this.map.addLayer({
@@ -84,9 +82,9 @@ const bouncingMarker = {
         },
 
         listenToHoveringOverAddressAtSidebar: function () {
-            this.$eventGlobal.$on('hover-over-address-at-the-sidebar', (address) => {
+            this.$eventGlobal.$on('hover-over-address-at-the-sidebar', (addresses) => {
 
-                this.addHoveredPoint([address]);
+                this.addHoveredPoint(addresses);
 
                 this.animateMarker(0);
             })
