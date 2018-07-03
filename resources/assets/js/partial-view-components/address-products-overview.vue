@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ul class="staff-list" v-if="addressData.products">
+        <ul class="staff-list" v-if="addressData.products.length">
             <div class="load-spinner-product"></div>
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
@@ -64,7 +64,9 @@
                 </a>
             </li>
         </ul>
-        <ul v-if="addressData.products.length === 0" class="empty-data-p hidden">No products known at this address</ul>
+
+        <p v-if="addressData.products.length === 0" class="empty-data-p hidden">No products known at this address</p>
+
         <div class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
