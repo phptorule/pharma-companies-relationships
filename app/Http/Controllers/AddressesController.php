@@ -512,19 +512,13 @@ class AddressesController extends Controller
             if ($extension == 'jpg' || $extension == 'jpeg' || $extension == 'png') {
                 $imageName = now()->format('Y-m-d-H-i-s') . '.' . $extension;
 
-                $destinationPath = public_path('product-images');
-                
-                $result = File::makeDirectory($destinationPath, 0777, true, true);
-
-                File::put(public_path("/product-images/.gitignore"), "*\r\n!.gitignore\r\n");
-
                 $img = Image::make($image->getRealPath());
 
                 $img->resize(100, 100, function ($constraint) {
 
                     $constraint->aspectRatio();
-                
-                })->save(public_path("/product-images/$imageName"));
+
+                })->save(storage_path("app/public/product-images/$imageName"));
 
                 $product->image = "/product-images/$imageName";
             } else {

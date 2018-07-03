@@ -20,4 +20,8 @@ class Product extends Model
 		return $this->belongsToMany(TenderPurchase::class, 'rl_address_tenders_purchase_products', 'product_id','purchase_id');
 	}
 
+
+	function getImageAttribute($value) {
+        return '/storage' . $value;
+    }
 }
