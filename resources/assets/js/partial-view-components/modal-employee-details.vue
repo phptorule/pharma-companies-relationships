@@ -290,7 +290,18 @@
                                 <li :class="{'active': activeTab == 'news'}">
                                     <a href="javascript:void(0)" @click="setTabActive('news')" data-toggle="tab" aria-expanded="false">News</a></li>
                                 <li :class="{'active': activeTab == 'publications'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
+                                    <a href="javascript:void(0)" 
+                                        @click="setTabActive('publications')" 
+                                        data-toggle="tab" 
+                                        aria-expanded="false"
+                                    >
+                                        Publications
+                                    </a>
+                                    <a v-if="isEditing" 
+                                        class="add-relation" 
+                                        href="#" 
+                                        @click.prevent="toggleAddPublication"><i class="fa fa-plus"></i></a>
+                                </li>
                                 <li :class="{'active': activeTab == 'relationships'}">
                                     <a href="javascript:void(0)" 
                                         @click="setTabActive('relationships')" 
@@ -437,7 +448,8 @@
                 peopleItemsTotal: 0,
                 selectedConnectionType: null,
                 selectedConnectionPerson: null,
-                edgeComment: ''
+                edgeComment: '',
+                showAddPublication: false
             }
         },
 
@@ -492,11 +504,24 @@
             },
             showAddRelation: function () {
                 if ( ! this.showAddRelation) {
-                    this.showAddRelation = false;
                     this.peopleItems = [];
                     this.selectedConnectionType = null;
                     this.selectedConnectionPerson = null;
                     this.edgeComment = '';
+                } 
+                else {
+                    this.showAddPublication = false;
+                }
+            },
+            showAddPublication: function () {
+                if ( ! this.showAddPublication) {
+                    // this.peopleItems = [];
+                    // this.selectedConnectionType = null;
+                    // this.selectedConnectionPerson = null;
+                    // this.edgeComment = '';
+                } 
+                else {
+                    this.showAddRelation = false;
                 }
             },
             "personData.name": function() {
@@ -774,6 +799,12 @@
             },
             closeAddRelation: function () {
                 this.showAddRelation = false;
+            },
+            toggleAddPublication: function () {
+                this.showAddPublication = !this.showAddPublication;
+            },
+            closeAddPublication: function () {
+                this.showAddPublication = false;
             },
             getAddressesString: function (addresses) {
                 let str = '';
