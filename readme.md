@@ -13,7 +13,8 @@ php artisan key:generate
 
 Create `.env` file (can be based on `.env.example`)
 
-Specify the `DEFUALT_COUNTRY` within the `.env` file in order to enable app features, that are dependant on country 
+Specify the `DEFUALT_COUNTRY` within the `.env` file in order to enable app features, that are dependant on country
+At the moment available countries are: `Switzerland`, `Russia` 
 
 Set DB credentials within .env file
 
