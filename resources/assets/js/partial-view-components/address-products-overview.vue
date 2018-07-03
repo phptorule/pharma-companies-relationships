@@ -67,7 +67,7 @@
 
         <p v-if="addressData.products.length === 0" class="empty-data-p hidden">No products known at this address</p>
 
-        <div class="header">
+        <div v-if="COUNTRY_FEATURES['tenders']" class="header">
             <h3>Tenders</h3>
             <div class="col-md-12 tender-list" v-if="tenderData">
                 <div class="col-md-4 tender" v-if="tenderData.amountOldYear" @click="showTenderDetailsModal(addressId)">

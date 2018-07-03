@@ -12,7 +12,6 @@ import logger from './mixins/logger';
 import COUNTRY_FEATURES from '../../../country-features';
 
 
-window.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content];
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
@@ -54,6 +53,7 @@ Vue.component('tender-list-partial', require('./partial-view-components/partials
 Vue.component('purchase-list-of-tender', require('./partial-view-components/purchase-list-of-tender'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
+Vue.prototype.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content]; //
 
 const app = new Vue({
     mixins: [logger],

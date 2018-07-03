@@ -1,11 +1,14 @@
 const COUNTRY_FEATURES = {
 
     Switzerland: {
-        'employee-details': true
+        'employee-details': true,
+        'editable-side-product-list': true,
+        'editable-side-employee-list': true,
     },
 
     Russia: {
-        'tenders': true
+        'tenders': true,
+        'side-product-list-with-chart': true,
     }
 
 };

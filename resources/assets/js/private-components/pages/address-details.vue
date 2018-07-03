@@ -221,7 +221,11 @@
                 <div class="staff-overview address-box">
                     <div class="header">
                         <h3>Staff 
-                            <a href="#" @click.prevent class="without-handler">
+                            <a href="#"
+                               v-if="COUNTRY_FEATURES['editable-side-employee-list']"
+                               @click.prevent
+                               class="without-handler"
+                            >
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </h3>
@@ -262,7 +266,7 @@
 
                     <div style="clear: both"></div>
 
-                    <a href="#"
+                    <a href="javascript:void(0)"
                        v-if="addressData.people && addressData.people.length > 3"
                        @click.prevent="showSlidedBox('all-employee')"
                        class="address-box-show-more-link show-all-employees-link"
@@ -275,89 +279,96 @@
                     <div class="header">
                         <h3>
                             Used Products 
-                            <a href="#" @click.prevent="toggleProducts">
+                            <a href="javascript:void(0)"
+                               v-if="COUNTRY_FEATURES['editable-side-product-list']"
+                               @click.prevent="toggleProducts">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </h3>
                     </div>
 
-                    <div v-if="addressId">
+                    <div v-if="addressId && COUNTRY_FEATURES['side-product-list-with-chart']">
                         <address-products-overview
                                 :addressId="addressId">
                         </address-products-overview>
                     </div>
-                    <multiple-autocomplete-select
-                        v-if="isProductsEditing"
-                        :selectedOptions="addressData.products"
-                        :type="'products'"
-                        :close="closeProducts"
-                        :update="updateProducts"
-                        :addNewProduct="addNewProduct"
-                    />
 
-                    <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
+                    <div v-if="COUNTRY_FEATURES['editable-side-product-list']">
 
-                    <ul class="products-list" v-if="addressData.products.length">
-                        <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
-                            <img 
-                                v-if="product.image" 
-                                class="image" 
-                                :src="product.image" 
-                                alt=""
-                                :title="productName(product.company, product.name)"
-                            >
-                            <img 
-                                v-else 
-                                class="image" 
-                                :src="'/images/mask-'+i+'.png'" 
-                                alt=""
-                                :title="productName(product.company, product.name)"
-                            >
-                            <span class="product-description">
+                        <multiple-autocomplete-select
+                                v-if="isProductsEditing"
+                                :selectedOptions="addressData.products"
+                                :type="'products'"
+                                :close="closeProducts"
+                                :update="updateProducts"
+                                :addNewProduct="addNewProduct"
+                        />
+
+                        <p v-if=" ! addressData.products.length" class="empty-data-p">There are no used products</p>
+
+                        <ul class="products-list" v-if="addressData.products.length">
+                            <li v-if="( ! showAllProducts && i < 3) || showAllProducts" v-for="(product, i) in addressData.products">
+                                <img
+                                        v-if="product.image"
+                                        class="image"
+                                        :src="product.image"
+                                        alt=""
+                                        :title="productName(product.company, product.name)"
+                                >
+                                <img
+                                        v-else
+                                        class="image"
+                                        :src="'/images/mask-'+i+'.png'"
+                                        alt=""
+                                        :title="productName(product.company, product.name)"
+                                >
+                                <span class="product-description">
                                 {{ product.name ? product.company + ': ' + product.name : product.company }}
                             </span>
-                        </li>
-                    </ul>
+                            </li>
+                        </ul>
 
-                    <a 
-                        href="#" 
-                        @click.prevent="toggleShowAllProducts" 
-                        v-if="addressData.products.length > 3"
-                        class="show-all-products-link"
-                    >
-                        {{ showHideProducts }}
-                    </a>
-                    
-                     <ul class="used-products-list" v-if="addressData.products.length && false"> <!--TODO: remove "... && false" when start to work on address products feature-->
-                        <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products" 
-                            :title="productName(product.company, product.name)"
-                            :key="product.id"
+                        <a
+                                href="#"
+                                @click.prevent="toggleShowAllProducts"
+                                v-if="addressData.products.length > 3"
+                                class="show-all-products-link"
                         >
-                            <img class="image" :src="product.image" v-if="product.image">
-                            <div class="image" v-else></div>
-                            <span class="prod-name">
+                            {{ showHideProducts }}
+                        </a>
+
+                        <ul class="used-products-list" v-if="addressData.products.length && false"> <!--TODO: remove "... && false" when start to work on address products feature-->
+                            <li v-if=" ! showAllProducts && i < 3" v-for="(product, i) in addressData.products"
+                                :title="productName(product.company, product.name)"
+                                :key="product.id"
+                            >
+                                <img class="image" :src="product.image" v-if="product.image">
+                                <div class="image" v-else></div>
+                                <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
                             </span>
-                        </li>
+                            </li>
 
-                        <li v-if="showAllProducts" 
-                            v-for="product in addressData.products" 
-                            :title="productName(product.company, product.name)"
-                            :key="product.id"
-                        >
-                            <img class="image" :src="product.image" v-if="product.image">
-                            <div class="image" v-else></div>
-                            <span class="prod-name">
+                            <li v-if="showAllProducts"
+                                v-for="product in addressData.products"
+                                :title="productName(product.company, product.name)"
+                                :key="product.id"
+                            >
+                                <img class="image" :src="product.image" v-if="product.image">
+                                <div class="image" v-else></div>
+                                <span class="prod-name">
                                 {{ productName(product.company, product.name) }}
                             </span>
-                        </li>
-                        
-                        <li v-if="addressData.products.length > 3">
-                            <a href="#" @click.prevent="toggleShowAllProducts" class="show-all-link prod-name">
-                                {{ showHideProducts }}
-                            </a>
-                        </li>
-                    </ul>
+                            </li>
+
+                            <li v-if="addressData.products.length > 3">
+                                <a href="#" @click.prevent="toggleShowAllProducts" class="show-all-link prod-name">
+                                    {{ showHideProducts }}
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
                     
                 </div>
 
@@ -832,7 +843,7 @@
         },
         computed: {
             showHideProducts: function () {
-                return this.showAllProducts ? 'Hide' : 'Show all';
+                return this.showAllProducts ? 'Show less' : 'Show all';
             }
         },
 
