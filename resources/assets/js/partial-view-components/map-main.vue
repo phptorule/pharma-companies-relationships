@@ -200,8 +200,8 @@
                 this.map = new mapboxgl.Map({
                     container: 'map-element',
                     style: 'mapbox://styles/mapbox/light-v9',
-                    center: [8.553399, 46.901604],
-                    zoom: 7
+                    center: this.COUNTRY_FEATURES['default-map-coords'],
+                    zoom: this.COUNTRY_FEATURES['default-map-zoom']
                 });
             },
 
