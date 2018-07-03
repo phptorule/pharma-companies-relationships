@@ -9,7 +9,10 @@ import 'vue-ctk-tooltip/ctk-tooltip.css';
 import vSelect from 'vue-select';
 import Tooltip from 'vue-directive-tooltip';
 import logger from './mixins/logger';
+import COUNTRY_FEATURES from '../../../country-features';
 
+
+window.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content];
 window.Vue = require('vue');
 
 window.Vue.use(VueRouter);
