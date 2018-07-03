@@ -7,6 +7,7 @@ use App\Models\ConnectionTypes;
 use App\Models\People;
 use App\Models\Publication;
 use App\Models\PeopleType;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,10 +22,13 @@ class PeopleController extends Controller
         $person->load(['careers' => function($q){
             return $q->orderBy('enddate', 'desc');
         }]);
+
         $person->load(['addresses' => function($q){
             return $q->orderBy('id', 'desc');
         }]);
+
         $person->load('publications');
+
         $person->relationships = DB::table('rl_address_connections AS rl1')
             ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type, from_address_id, to_address_id,
             (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
@@ -38,18 +42,9 @@ class PeopleController extends Controller
             ->orderBy('name', 'ASC')
             ->get();
 
-            $person->relationships->each(function ($relation, $key) {
-                $sqlQuery = "
-                    SELECT MAX(year) as year FROM `rl_publications` 
-                    JOIN rl_people_publications 
-                    ON rl_people_publications.person_id = $relation->to_person_id
-                    AND rl_publications.id = rl_people_publications.publication_id
-                ";
-                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
-                $relation->lastCooperationYear = count($lastCooperationYear[0]) ? $lastCooperationYear[0]->year : null;
-            });
+        $this->defineLastCooperationYear($person->relationships);
 
-            return response()->json($person);
+        return response()->json($person);
     }
 
 
@@ -58,6 +53,20 @@ class PeopleController extends Controller
         return response()->json(ConnectionTypes::all());
     }
 
+
+    function defineLastCooperationYear($relationships)
+    {
+        $relationships->each(function ($relation, $key) {
+            $sqlQuery = "
+                    SELECT MAX(year) as year FROM `rl_publications` 
+                    JOIN rl_people_publications 
+                    ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_publications.id = rl_people_publications.publication_id
+                ";
+            $lastCooperationYear = DB::select(DB::raw($sqlQuery));
+            $relation->lastCooperationYear = count($lastCooperationYear[0]) ? $lastCooperationYear[0]->year : null;
+        });
+    }
 
     function getPersonRelationships(People $person)
     {
@@ -74,16 +83,7 @@ class PeopleController extends Controller
             ->orderBy('edge_weight', 'DESC')
             ->paginate(10);
 
-            $relationships->each(function ($relation, $key) {
-                $sqlQuery = "
-                    SELECT MAX(year) as year FROM `rl_publications` 
-                    JOIN rl_people_publications 
-                    ON rl_people_publications.person_id = $relation->to_person_id
-                    AND rl_publications.id = rl_people_publications.publication_id
-                ";
-                $lastCooperationYear = DB::select(DB::raw($sqlQuery));
-                $relation->lastCooperationYear = count($lastCooperationYear[0]) ? $lastCooperationYear[0]->year : null;
-            });
+        $this->defineLastCooperationYear($relationships);
 
         return response()->json($relationships);
     }
