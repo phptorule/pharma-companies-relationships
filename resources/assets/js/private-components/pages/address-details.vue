@@ -774,16 +774,16 @@
                 formData.append('name', newItem.name);
                 formData.append('description', newItem.description);
                 formData.append('image', newItem.image);
-                this.httpPost('/api/products/create',
-                    formData
-                )
+                return this.httpPost('/api/products/create', formData)
                 .then(data => {
                     if (data.status) {
                         alertify.notify(data.message, 'error', 3);
-                        return;
+                        return data;
                     }
                     this.closeProducts();
                     alertify.notify('New product has been added.', 'success', 3);
+
+                    return data;
                 })
                 .catch(error => {
                     console.log(error);
