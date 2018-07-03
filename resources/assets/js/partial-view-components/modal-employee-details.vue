@@ -384,6 +384,8 @@
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
                                             :addressData="currentAddress"
+                                            :isModalEditing="isEditing"
+                                            :deletePersonRelation="deletePersonRelation"
                                             @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
@@ -874,7 +876,35 @@
                         })
                 }
 
-            }, 400)
+            }, 400),
+            deletePersonRelation: _.debounce(function (fromPersonId, toPersonId) {
+                let url = '/api/address-details/delete-person-relation';
+                    this.httpPost(url, {
+                        fromPersonId: fromPersonId,
+                        toPersonId: toPersonId
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            this.$eventGlobal.$emit('personRelationDeleted', {
+                                personId: this.personId,
+                                addressId: this.currentAddressId,
+                                address: this.currentAddress
+                            });
+                            alertify.notify('Person relation deleted', 'success', 3);
+                            this.$root.logData('person', 'deleted relation', JSON.stringify({
+                                fromPersonId: fromPersonId,
+                                toPersonId: toPersonId
+                            }));
+                            
+                        } else {
+                            alertify.notify(data.message, 'error', 3);
+                        }
+                        
+                    })
+                    .catch(error => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
+            }, 400),
         },
 
         mounted: function(){
@@ -889,6 +919,10 @@
             });
             
             this.$eventGlobal.$on('personRelationCreated', (data) => {
+                this.init(data.personId, data.addressId, data.address);
+            });
+            
+            this.$eventGlobal.$on('personRelationDeleted', (data) => {
                 this.init(data.personId, data.addressId, data.address);
             });
 

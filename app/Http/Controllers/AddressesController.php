@@ -632,4 +632,21 @@ class AddressesController extends Controller
             'message' => 'ok'
         ]);
     }
+
+    // delete relation from person to person
+    public function deletePersonRelation (Request $request)
+    {
+        $fromPersonId = request('fromPersonId');
+
+        $toPersonId = request('toPersonId');
+
+        AddressConnection::where('from_person_id', $fromPersonId)
+            ->where('to_person_id', $toPersonId)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ok'
+        ]);
+    }
 }
