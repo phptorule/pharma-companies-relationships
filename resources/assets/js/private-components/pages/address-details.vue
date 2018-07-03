@@ -655,9 +655,10 @@
                     })
             },
             loadSelectedTags: function () {
-                this.httpGet('/api/address-details/' + this.addressId + '/load-selected-tags')
+                return this.httpGet('/api/address-details/' + this.addressId + '/load-selected-tags')
                     .then(data => {
                         this.old.tags = data;
+                        return data;
                     })
             },
             toggleEditing: function () {
@@ -687,7 +688,7 @@
                         phone: this.addressData.phone,
                         tags: this.addressData.tags
                     }));
-                    this.httpPut('/api/address-details/' + this.addressData.id + '/update-details', {
+                    return this.httpPut('/api/address-details/' + this.addressData.id + '/update-details', {
                         name: this.addressData.name,
                         address: this.addressData.address,
                         url: this.addressData.url,
@@ -699,13 +700,14 @@
                         this.old.address = this.addressData.address;
                         this.old.url = this.addressData.url;
                         this.old.phone = this.addressData.phone;
-                        this.loadAllTags();
                         this.loadSelectedTags();
                         this.madeChanges = false;
                         this.saveBtnDisabled = false;
                         this.editingInput = null;
                         this.isEditing = false;
                         alertify.notify('Address has been updated.', 'success', 3);
+
+                        return data;
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);
@@ -738,7 +740,7 @@
             },
             updateProducts: function (selectedProducts) {
                 this.$root.logData('detail', 'update products', JSON.stringify(selectedProducts));
-                this.httpPost('/api/products/' + this.addressData.id + '/update', {
+                return this.httpPost('/api/products/' + this.addressData.id + '/update', {
                         selectedProducts: selectedProducts
                     })
                     .then(data => {
@@ -747,6 +749,8 @@
                         alertify.notify('Used products has been updated.', 'success', 3);
                         this.closeProducts();
                         this.$eventGlobal.$emit('addressProductsUpdated')
+
+                        return data;
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);
