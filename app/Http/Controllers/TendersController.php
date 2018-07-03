@@ -240,17 +240,20 @@ class TendersController extends Controller {
 
 			$suppliers = [];
 
-			for($i = 0;$i < count($suppliers_amount);){
+			if (count($suppliers_data) && $suppliers_data[0]) {
 
-				if(intval($suppliers_amount[$i]) != 0){
+                for ($i = 0;$i < count($suppliers_amount);) {
 
-					$suppliers[$i][] = $suppliers_data[$i];
+                    if (intval($suppliers_amount[$i]) != 0) {
 
-					$suppliers[$i][] = $suppliers_amount[$i];
-				}
+                        $suppliers[$i][] = $suppliers_data[$i];
 
-				$i++;
-			}
+                        $suppliers[$i][] = $suppliers_amount[$i];
+                    }
+
+                    $i++;
+                }
+            }
 
 			$tender->suppliers_data = $suppliers;
 
