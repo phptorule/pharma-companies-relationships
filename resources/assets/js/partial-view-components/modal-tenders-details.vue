@@ -41,7 +41,7 @@
 
                                                 <multiple-dropdown-select
                                                         class="form-control select-filter pull-left"
-                                                        :name="'Used Products'"
+                                                        :name="'Used Products '"
                                                         :options="usedProductOptionsForDropDown"
                                                         :selected="appliedFilters.usedProducts"
                                                         @changed="applyUsedProductsFilter"
