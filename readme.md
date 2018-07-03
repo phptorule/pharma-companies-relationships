@@ -8,14 +8,12 @@
 composer install
 npm install
 bower install
-```
-
-Create `.env` file (can be based on `.env.example`)
-```
 php artisan key:generate
 ```
 
-Create .env file using .env.example as the base.
+Create `.env` file (can be based on `.env.example`)
+
+Specify the `DEFUALT_COUNTRY` within the `.env` file in order to enable app features, that are dependant on country 
 
 Set DB credentials within .env file
 
