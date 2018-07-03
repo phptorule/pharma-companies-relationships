@@ -103,7 +103,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
 
-    Route::get('/people/autocomplete/{searchQuery}', 'PeopleController@getPeopleAutocomplete');
+    Route::get('/people/autocomplete/{searchQuery}/{fromPersonId}', 'PeopleController@getPeopleAutocomplete');
 
     Route::post('/logger/log-data', 'LogController@logData');
 

@@ -140,7 +140,5 @@
 </script>
 
 <style scoped>
-    .reset-btn-block {
-        margin-bottom: 10px;
-    }
+    
 </style>

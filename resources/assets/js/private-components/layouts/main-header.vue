@@ -205,38 +205,4 @@
 
 <style scoped>
 
-.avatar-image {
-    height: 50px;
-}
-
-.avatar-link {
-    border-radius: 50%;
-    background: transparent;
-    /* border: 2px solid white; */
-    /* min-width: 50px; */
-    width: 50px;
-    min-width: 50px;
-    height: 50px;
-}
-
-.avatar-link:hover {
-    /* background-color: #2b579c; */
-    background-color: cornflowerblue;
-}
-
-.avatar-link img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-}
-
-.avatar-image-block {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
 </style>

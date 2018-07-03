@@ -487,6 +487,7 @@
                     this.peopleItems = [];
                     this.selectedConnectionType = null;
                     this.selectedConnectionPerson = null;
+                    this.edgeComment = '';
                 }
             },
             showAddRelation: function () {
@@ -495,6 +496,7 @@
                     this.peopleItems = [];
                     this.selectedConnectionType = null;
                     this.selectedConnectionPerson = null;
+                    this.edgeComment = '';
                 }
             },
             "personData.name": function() {
@@ -788,9 +790,8 @@
             getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
                 let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {
-                    this.httpGet('/api/people/autocomplete/' + searchQuery + '?page=' + p)
+                    this.httpGet('/api/people/autocomplete/' + searchQuery + '/'+ this.personId +'/?page=' + p)
                         .then(data => {
-                            console.log(data);
                             this.peopleItems = data.data;
                             this.peopleItemsTotal = data.total;
                         })
@@ -831,6 +832,7 @@
                                     edgeType: this.selectedConnectionType.id,
                                     edgeComment: this.edgeComment
                                 }));
+                                
                             } else {
                                 alertify.notify(data.message, 'error', 3);
                             }
