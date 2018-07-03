@@ -539,8 +539,10 @@
 
                     let queryUrl = '';
 
-                    if(this.$route.path === '/dashboard') {
-                        queryUrl = this.$route.fullPath.replace('/dashboard', '');
+                    let path = this.$route.path;
+
+                    if(path === '/dashboard' || path.indexOf('/address-details') !== -1) {
+                        queryUrl = path === '/dashboard' ? path.replace('/dashboard', '') : '';
 
                         this.loadAddresses(queryUrl)
                             .then(data => {
