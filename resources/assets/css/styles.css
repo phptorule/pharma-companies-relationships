@@ -4312,3 +4312,9 @@ ul.tenders-list li.open .item > .tag-list {
     height: 400px;
     line-height: 400px;
 }
+
+.last-cooperation-year{
+    text-align: right;
+    padding-top: 20px;
+    opacity: 0.6
+}

@@ -46,7 +46,7 @@ class PeopleController extends Controller
                     AND rl_publications.id = rl_people_publications.publication_id
                 ";
                 $lastCooperationYear = DB::select(DB::raw($sqlQuery));
-                $relation->lastCooperationYear = $lastCooperationYear;
+                $relation->lastCooperationYear = count($lastCooperationYear[0]) ? $lastCooperationYear[0]->year : null;
             });
 
             return response()->json($person);
@@ -82,7 +82,7 @@ class PeopleController extends Controller
                     AND rl_publications.id = rl_people_publications.publication_id
                 ";
                 $lastCooperationYear = DB::select(DB::raw($sqlQuery));
-                $relation->lastCooperationYear = $lastCooperationYear;
+                $relation->lastCooperationYear = count($lastCooperationYear[0]) ? $lastCooperationYear[0]->year : null;
             });
 
         return response()->json($relationships);

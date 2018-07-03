@@ -87,6 +87,12 @@
                         </a>
                     </div>
                     <div class="personal-info">
+                        <p class="pull-right last-cooperation-year" v-if="relation.lastCooperationYear">
+                            <small>
+                                Last Interaction <br>
+                                {{relation.lastCooperationYear}}
+                            </small>
+                        </p>
                         <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
                         <p class="occupation" style="text-align: left">{{relation.description}}</p>
                         <p class="connection-type" style="text-align: left">
@@ -119,6 +125,14 @@
                         </a>
                     </div>
                     <div class="personal-info">
+
+                        <p class="pull-right last-cooperation-year" v-if="relation.lastCooperationYear">
+                            <small>
+                                Last Interaction <br>
+                                {{relation.lastCooperationYear}}
+                            </small>
+                        </p>
+
                         <p class="name">
                             <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
                                 {{relation.name}}
