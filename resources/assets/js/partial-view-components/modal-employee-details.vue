@@ -22,6 +22,9 @@
                                 <a href="#" @click.prevent="toggleEditing"><i class="fa fa-pencil"></i></a>
                             </h4>
 
+                            <p class="occupation" v-if="personData.email && personData.email.length">
+                                {{ personData.email }}
+                            </p>
                             <p class="occupation">{{ personData.description }}</p>
                         </div>
 
