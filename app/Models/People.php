@@ -88,4 +88,8 @@ class People extends Model
         return DB::select(DB::raw($sqlQuery));
     }
 
+
+    static function getAllPersonRelatedAddresses($personId) {
+        return self::where('id', $personId)->with('addresses')->first()->addresses;
+    }
 }

@@ -43,6 +43,7 @@ class PeopleController extends Controller
             ->get();
 
         $this->defineLastCooperationYear($person->relationships);
+        $this->defineRelatedPersonAddresses($person->relationships);
 
         return response()->json($person);
     }
@@ -68,6 +69,15 @@ class PeopleController extends Controller
         });
     }
 
+
+    function defineRelatedPersonAddresses($relationships)
+    {
+        $relationships->each(function ($relation, $k) {
+            $relation->addresses = People::getAllPersonRelatedAddresses($relation->to_person_id);
+        });
+    }
+
+
     function getPersonRelationships(People $person)
     {
         $relationships = DB::table('rl_address_connections AS rl1')
@@ -84,6 +94,7 @@ class PeopleController extends Controller
             ->paginate(10);
 
         $this->defineLastCooperationYear($relationships);
+        $this->defineRelatedPersonAddresses($relationships);
 
         return response()->json($relationships);
     }
