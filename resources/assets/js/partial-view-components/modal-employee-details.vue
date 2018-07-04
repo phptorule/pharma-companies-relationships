@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="modal-employee-details">
         <div class="modal fade" id="personal-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -294,7 +294,18 @@
                                 <li :class="{'active': activeTab == 'news'}">
                                     <a href="javascript:void(0)" @click="setTabActive('news')"  data-toggle="tab" aria-expanded="false">News</a></li>
                                 <li :class="{'active': activeTab == 'publications'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
+                                    <a href="javascript:void(0)" 
+                                        @click="setTabActive('publications')" 
+                                        data-toggle="tab" 
+                                        aria-expanded="false"
+                                    >
+                                        Publications
+                                    </a>
+                                    <a v-if="isEditing" 
+                                        class="add-relation" 
+                                        href="#" 
+                                        @click.prevent="toggleAddPublication"><i class="fa fa-plus"></i></a>
+                                </li>
                                 <li :class="{'active': activeTab == 'relationships'}">
                                     <a href="javascript:void(0)" 
                                         @click="setTabActive('relationships')" 
@@ -377,6 +388,8 @@
                                             :relationshipsCollapsedData="relationshipsCollapsedData"
                                             :connectionTypes="connectionTypes"
                                             :addressData="currentAddress"
+                                            :isModalEditing="isEditing"
+                                            :deletePersonRelation="deletePersonRelation"
                                             @resetTab="activeTab='career'"
                                     ></tab-relationships>
 
@@ -442,7 +455,8 @@
                 peopleItemsTotal: 0,
                 selectedConnectionType: null,
                 selectedConnectionPerson: null,
-                edgeComment: ''
+                edgeComment: '',
+                showAddPublication: false
             }
         },
 
@@ -492,14 +506,29 @@
                     this.peopleItems = [];
                     this.selectedConnectionType = null;
                     this.selectedConnectionPerson = null;
+                    this.edgeComment = '';
                 }
             },
             showAddRelation: function () {
                 if ( ! this.showAddRelation) {
-                    this.showAddRelation = false;
                     this.peopleItems = [];
                     this.selectedConnectionType = null;
                     this.selectedConnectionPerson = null;
+                    this.edgeComment = '';
+                } 
+                else {
+                    this.showAddPublication = false;
+                }
+            },
+            showAddPublication: function () {
+                if ( ! this.showAddPublication) {
+                    // this.peopleItems = [];
+                    // this.selectedConnectionType = null;
+                    // this.selectedConnectionPerson = null;
+                    // this.edgeComment = '';
+                } 
+                else {
+                    this.showAddRelation = false;
                 }
             },
             "personData.name": function() {
@@ -789,6 +818,12 @@
             closeAddRelation: function () {
                 this.showAddRelation = false;
             },
+            toggleAddPublication: function () {
+                this.showAddPublication = !this.showAddPublication;
+            },
+            closeAddPublication: function () {
+                this.showAddPublication = false;
+            },
             getAddressesString: function (addresses) {
                 let str = '';
                 let names = [];
@@ -804,9 +839,8 @@
             getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
                 let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {
-                    this.httpGet('/api/people/autocomplete/' + searchQuery + '?page=' + p)
+                    this.httpGet('/api/people/autocomplete/' + searchQuery + '/'+ this.personId +'/?page=' + p)
                         .then(data => {
-                            console.log(data);
                             this.peopleItems = data.data;
                             this.peopleItemsTotal = data.total;
                         })
@@ -847,6 +881,7 @@
                                     edgeType: this.selectedConnectionType.id,
                                     edgeComment: this.edgeComment
                                 }));
+                                
                             } else {
                                 alertify.notify(data.message, 'error', 3);
                             }
@@ -857,7 +892,35 @@
                         })
                 }
 
-            }, 400)
+            }, 400),
+            deletePersonRelation: _.debounce(function (fromPersonId, toPersonId) {
+                let url = '/api/address-details/delete-person-relation';
+                    this.httpPost(url, {
+                        fromPersonId: fromPersonId,
+                        toPersonId: toPersonId
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            this.$eventGlobal.$emit('personRelationDeleted', {
+                                personId: this.personId,
+                                addressId: this.currentAddressId,
+                                address: this.currentAddress
+                            });
+                            alertify.notify('Person relation deleted', 'success', 3);
+                            this.$root.logData('person', 'deleted relation', JSON.stringify({
+                                fromPersonId: fromPersonId,
+                                toPersonId: toPersonId
+                            }));
+                            
+                        } else {
+                            alertify.notify(data.message, 'error', 3);
+                        }
+                        
+                    })
+                    .catch(error => {
+                        alertify.notify('Error occured', 'error', 3);
+                    })
+            }, 400),
         },
 
         mounted: function(){
@@ -874,6 +937,10 @@
             this.$eventGlobal.$on('personRelationCreated', (data) => {
                 this.init(data.personId, data.addressId, data.address);
             });
+            
+            this.$eventGlobal.$on('personRelationDeleted', (data) => {
+                this.init(data.personId, data.addressId, data.address);
+            });
 
             this.openRelationshipTabIfHashDetected('relationships');
         }
@@ -881,270 +948,5 @@
 </script>
 
 <style scoped>
-    .employe-name-block {
-        font-family: Montserrat;
-        font-size: 28px;
-        text-align: center;
-        color: #3a444f;
-        display: flex;
-        margin-top: 18px;
-        margin-bottom: 7px;
-        justify-content: center;
-        align-items: center;
-        font-weight: 400;
-        line-height: 1.42857143;
-        box-sizing: border-box;
-    }
-
-    .employe-description-block {
-        font-family: Montserrat;
-        font-size: 16px;
-        font-weight: 400;
-        line-height: 1.31;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #3a444f;
-    }
-
-    .confirm-employe-edit-block {
-        display: inline-block;
-    }
-
-    .can-edit div {
-        border-bottom: 2px solid #d2d6de;
-    }
-
-    .cancel-employe-btn {
-        background: transparent;
-        font-family: Montserrat;
-        font-size: 13px;
-    }
-
-    .save-employe-btn {
-        width: 170px;
-        background: #4a90e3;
-        color: #fff;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-family: Montserrat;
-        font-size: 13px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .save-employe-btn-disabled {
-        width: 170px;
-        color: #fff;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-family: Montserrat;
-        font-size: 13px;
-        font-weight: 600;
-        margin: 0;
-        font-size: 13px;
-        background-color: #989da3;
-        opacity: 1;
-    }
-
-    .save-employe-btn:focus,
-    .cancel-employe-btn:focus {
-        outline: none;
-    }
-
-    .save-employe-btn:active,
-    .cancel-employe-btn:active {
-        box-shadow: none;
-    }
-
-    .can-edit div:empty:not(:focus):before {
-        color: #b3b3b3;
-        content: attr(data-placeholder);
-    }
-
-    .role-edit-block {
-        display: flex;
-        justify-content: center;
-    }
-
-    .edit-input {
-        border: none;
-        border-bottom: 2px solid #d2d6de;
-        background-color: transparent;
-        font-family: Montserrat;
-        font-size: 14px;
-        text-align: center;
-    }
-
-    .edit-input:focus {
-        outline: none;
-    }
-
-    #personal-modal ul.social-icons li a.active {
-        background-color: #4a90e3;
-        color: white;
-    }
-
-    #personal-modal ul.social-icons li a {
-        transition: none;
-        position: relative;
-    }
-
-    #personal-modal ul.social-icons li a.editing:after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 0;
-        left: 0;
-        bottom: -6px;
-        border-bottom: 2px solid #d2d6de;
-    }
-
-    .social-edit-block {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 15px 10px 0 0;
-    }
-
-    .social-input {
-        border: none;
-        border-bottom: 2px solid #d2d6de;
-        background-color: transparent;
-        font-family: Montserrat;
-        font-size: 14px;
-    }
-
-    .social-input:focus {
-        outline: none;
-    }
-
-    #personal-modal ul.person-tabs.nav-tabs > li .add-relation {
-        position: absolute;
-        cursor: pointer;
-        top: 7px;
-        right: -20px;
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        border: none;
-        display: flex;
-        justify-content: center;
-        background: #bbbec2;
-        color: #fff;
-        margin: 0;
-    }
-
-    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:hover {
-        background: #4a90e3;
-        border: none;
-        cursor: pointer;
-    }
-
-    #personal-modal ul.person-tabs.nav-tabs > li .add-relation:focus {
-        background: #bbbec2;
-        border: none;
-        cursor: pointer;
-    }
-
-    #personal-modal ul.person-tabs.nav-tabs > li .add-relation .fa {
-        cursor: pointer;
-        position: absolute;
-        top: 5px;
-        left: 5px;
-    }
-
-    .add-new-relation {
-        width: 100%;
-        /* min-height: 200px; */
-        background: #fff;
-        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        margin-bottom: 20px;
-        padding: 10px 15px;
-    }
-
-    .relation-fields-block {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 15px 0;
-    }
-
-    .remark-block {
-        width: 60%;
-    }
-
-    .remark-block input {
-        width: 100%;
-        border: none;
-        border-bottom: 2px solid #d2d6de
-    }
-
-    .connection-type-block {
-        width: 35%
-    }
-
-    .confirm-add-relation-block {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .connect-with-title {
-        text-align: center;
-        width: 100%;
-        display: block;
-        margin-bottom: 15px;
-    }
-
-    .connect-with-data {
-        display: flex;
-        align-items: center;
-        padding: 15px 0;
-    }
-
-    .connect-with-data .image {
-        margin: 0 15px;
-    }
-
-    .connect-with-data .image a {
-        position: relative;
-    }
     
-    .connect-with-data .image a .person-initials {
-        position: absolute;
-        font-family: Montserrat;
-        font-size: 21px;
-        line-height: 21px;
-        height: 21px;
-        font-weight: 600;
-        color: #ffffff;
-        top: calc(50% - 11px);
-        width: 100%;
-        text-align: center;
-    }
-
-    .cancel-add-relation-btn {
-        background: #fff;
-        font-family: Montserrat;
-        font-size: 13px;
-        margin: 0;
-    }
-
-    .add-relation-btn {
-        background: #4a90e3;
-        color: #fff !important;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-family: Montserrat;
-        font-size: 13px;
-        text-align: left;
-        margin: 0;
-    }
-
-    .add-relation-btn:hover {
-        background: #5ba3f4;
-        transition: background-color 0.1s linear;
-    }
 </style>

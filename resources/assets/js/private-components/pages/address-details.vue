@@ -1,5 +1,5 @@
 <template>
-    <section class="sidebar">
+    <section class="sidebar address-details">
         <div class="address-details-container slider-container" :class="{expanded: isExpanded}">
 
             <div class="slided-box">
@@ -879,41 +879,5 @@
 </script>
 
 <style scoped>
-    .products-list li .image {
-        /* width: 70px; */
-        height: 70px;
-        border-radius: 50%;
-        display: inline-block;
-    }
-
-    ul.products-list li span.product-description {
-        display: inline-block;
-        margin-left: 15px;
-        white-space: normal;
-    }
-
-    ul.products-list li {
-        display: flex;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .show-all-products-link {
-        display: inline-block;
-        font-family: Montserrat;
-        font-size: 16px;
-        line-height: 1.31;
-        font-weight: 500;
-        padding: 5px;
-        border-radius: 5px;
-        margin-top: 20px;
-        transition: all 0.1s linear;
-        color: #dde3e8;
-        background: transparent;
-        
-    }
-
-    .show-all-products-link:hover {
-        color: #4a90e2;
-    }
+    
 </style>

@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,11 +123,13 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
 
-    Route::get('/people/autocomplete/{searchQuery}', 'PeopleController@getPeopleAutocomplete');
+    Route::get('/people/autocomplete/{searchQuery}/{fromPersonId}', 'PeopleController@getPeopleAutocomplete');
 
     Route::post('/logger/log-data', 'LogController@logData');
 
     Route::post('/address-details/create-person-relation', 'AddressesController@createPersonRelation');
+
+    Route::post('/address-details/delete-person-relation', 'AddressesController@deletePersonRelation');
 
     Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 

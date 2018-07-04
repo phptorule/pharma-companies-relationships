@@ -4,7 +4,7 @@
         contenteditable="true"
         :data-placeholder="placeholder"
         @input="$emit('update:content', $event.target.innerText)" 
-        class="address-name"
+        class="address-name div-editable"
     ></div>
 </template>
 
@@ -24,11 +24,5 @@
 </script>
 
 <style scoped>
-    .address-name {
-        cursor: text;
-    }
-    .address-name:focus {
-        outline: none;
-        cursor: text;
-    }
+    
 </style>

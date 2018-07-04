@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="modal-employee-details-tab-relationship">
         <p style="text-align: center" v-if="!personData.relationships.length">This person doesn't have relationships yet.</p>
 
         <div class="search-block" v-if="personData.relationships.length">
@@ -50,6 +50,11 @@
                             <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
                                 {{relation.name}}
                             </a>
+                            <button v-if="isModalEditing"
+                                class="delete-relation"
+                                @click.prevent="deletePersonRelation(relation.from_person_id, relation.to_person_id)">
+                                <i class="fa fa-minus"></i>
+                            </button>
                         </p>
                         <p class="occupation" style="text-align: left">{{relation.description}}</p>
                         <p class="connection-type" style="text-align: left">
@@ -93,7 +98,16 @@
                                 {{relation.lastCooperationYear}}
                             </small>
                         </p>
-                        <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
+                        <p class="name">
+                            <a href="javascript:void(0)" @click="loadAnotherUser(relation)">
+                                {{relation.name}}
+                            </a>
+                            <button v-if="isModalEditing"
+                                class="delete-relation"
+                                @click.prevent="deletePersonRelation(relation.from_person_id, relation.to_person_id)">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </p>
                         <p class="occupation" style="text-align: left">
                             {{relation.description}} at
 
@@ -144,7 +158,13 @@
                             <a href="javascript:void(0)" @click.prevent="loadAnotherUser(relation)">
                                 {{relation.name}}
                             </a>
+                            <button v-if="isModalEditing"
+                                class="delete-relation"
+                                @click.prevent="deletePersonRelation(relation.from_person_id, relation.to_person_id)">
+                                <i class="fa fa-minus"></i>
+                            </button>
                         </p>
+
                         <p class="occupation" style="text-align: left">{{relation.description}} at
 
                             <company-and-other-with-tooltip
@@ -153,7 +173,6 @@
                             ></company-and-other-with-tooltip>
 
                         </p>
-
 
                         <p class="connection-type" style="text-align: left">
                             <a href="javascript:void(0)" @click="loadRelationship(relation)">
@@ -580,6 +599,9 @@
             },
             canSort: function () {
                 return this.selectedSort && this.selectedSort.length > 0 ? true : false
+            },
+            deleteRelation: function (id) {
+
             }
         },
 
@@ -589,6 +611,8 @@
             personData: function (newPersonData) {
                 this.relationshipsCollapsed = true;
                 this.person = newPersonData;
+                this.sortBy();
+                this.handleSearch();
             },
 
             query: function () {
@@ -609,7 +633,15 @@
         },
 
 
-        props: ['personData', 'personId', 'relationshipsCollapsedData', 'connectionTypes', 'addressData'],
+        props: [
+            'personData',
+            'personId',
+            'relationshipsCollapsedData',
+            'connectionTypes',
+            'addressData',
+            'isModalEditing',
+            'deletePersonRelation'
+        ],
 
         mounted: function () {
             this.openRelationIfHashDetected()
@@ -619,28 +651,5 @@
 </script>
 
 <style scoped>
-    .search-block {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
 
-    .search-name {
-        width: 35%;
-        display: flex;
-        align-items: center;
-    }
-
-    .search-name i {
-        margin-right: 10px;
-    }
-
-    .search-type {
-        width: 35%;
-    }
-
-    .search-sort {
-        width: 20%;
-    }
 </style>
