@@ -42,7 +42,8 @@
                             </div>
                         </div>
 
-                        <p class="place-of-work" v-if="personData.careers && personData.careers.length">
+                        <p class="place-of-work" v-if="(personData.careers && personData.careers.length)
+                                                        || (personData.addresses && personData.addresses.length)">
                             worked at
                             <span v-for="(address, i) in personData.addresses" :key="address.id">
                                 <router-link :to="'/address-details/' + address.id" >
