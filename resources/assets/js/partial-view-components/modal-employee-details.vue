@@ -54,8 +54,7 @@
                         <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
                             Labscape did not find the current employer of {{personData.name}}.
                             <a href="javascript:void(0)"
-                               v-if="!isEditWorkPlaces"
-                               @click="isEditWorkPlaces = true">Let us know</a>
+                               @click="isEditWorkPlaces = !isEditWorkPlaces">Let us know</a>
                         </p>
 
                         <assign-addresses-to-person v-if="isEditWorkPlaces"></assign-addresses-to-person>
