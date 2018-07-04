@@ -613,7 +613,7 @@
                 }
             },
             "old.facebook": function () {
-                if (this.personoldData.facebook == null) {
+                if (this.old.facebook == null) {
                     this.old.facebook = '';
                 }
             },
