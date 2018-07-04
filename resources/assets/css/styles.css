@@ -2451,6 +2451,10 @@ ul.tag-list li {
     white-space: normal;
 }
 
+.address-details .lab-chain-staff ul.products-list li span.product-description{
+    display: inline;
+}
+
 .address-details ul.products-list li {
     display: flex;
     align-items: center;
