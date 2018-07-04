@@ -9,7 +9,7 @@
                         <img
                                 v-if="product.image"
                                 class="image"
-                                :src="product.image"
+                                :src="'/storage' + product.image"
                                 alt=""
                                 :title="productName(product.company, product.name)"
                         >
