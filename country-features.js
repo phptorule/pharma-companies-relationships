@@ -6,6 +6,10 @@ const COUNTRY_FEATURES = {
         'editable-side-employee-list': true,
         'default-map-zoom': 7,
         'default-map-coords': [8.553399, 46.901604],
+        'employee-modal-career-years': true,
+        'employee-modal-view-contact-chain-btn': true,
+        'employee-modal-tab-content': true,
+
     },
 
     Russia: {

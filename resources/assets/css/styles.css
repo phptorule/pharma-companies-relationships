@@ -4318,3 +4318,7 @@ ul.tenders-list li.open .item > .tag-list {
     padding-top: 20px;
     opacity: 0.6
 }
+
+.modal-body.grey-background{
+    background: #f7f7f7 !important;
+}

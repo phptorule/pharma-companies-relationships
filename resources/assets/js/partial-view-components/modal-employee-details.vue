@@ -160,7 +160,7 @@
                             >
                         </div>
 
-                        <div class="row person-experience">
+                        <div class="row person-experience" v-if="COUNTRY_FEATURES['employee-modal-career-years']">
                             <div :class="yearsAtThisJob? 'col-md-4': 'col-md-6'">
                                 <p class="number">{{experienceYears}}</p>
                                 <p class="text">Years Experience</p>
@@ -194,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="view-contacts-chain-container">
+                        <div class="view-contacts-chain-container" v-if="COUNTRY_FEATURES['employee-modal-view-contact-chain-btn']">
                             <a 
                                 v-show=" ! isEditing"
                                 href="javascript:void(0)" 
@@ -230,7 +230,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" :class="{'grey-background': !COUNTRY_FEATURES['employee-modal-tab-content']}">
                         <div class="add-new-relation" v-if="showAddRelation && isEditing">
                             <autocomplete
                                 :items="peopleItems"
@@ -284,12 +284,12 @@
                                 <button class="btn add-relation-btn" @click.prevent="createPersonRelation">Add</button>
                             </div>
                         </div>
-                        <div>
+                        <div v-if="COUNTRY_FEATURES['employee-modal-tab-content']">
                             <ul class="nav nav-tabs person-tabs">
                                 <li :class="{'active': activeTab == 'career'}">
                                     <a href="javascript:void(0)" @click="setTabActive('career')" data-toggle="tab" aria-expanded="true">Career</a></li>
                                 <li :class="{'active': activeTab == 'news'}">
-                                    <a href="javascript:void(0)" @click="setTabActive('news')" data-toggle="tab" aria-expanded="false">News</a></li>
+                                    <a href="javascript:void(0)" @click="setTabActive('news')"  data-toggle="tab" aria-expanded="false">News</a></li>
                                 <li :class="{'active': activeTab == 'publications'}">
                                     <a href="javascript:void(0)" @click="setTabActive('publications')" data-toggle="tab" aria-expanded="false">Publications</a></li>
                                 <li :class="{'active': activeTab == 'relationships'}">
