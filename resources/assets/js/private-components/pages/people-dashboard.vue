@@ -11,11 +11,6 @@
                     <div class="col-md-12">
                         <div class="grey-checkbox only-people-with-addresses-checkbox">
                             <label>
-                                <!--<input type="checkbox"
-                                       @click="checkboxClick(option.value)"
-                                       :id="blockId + option.value"
-                                       :checked="selectedValues.indexOf(option.value) !== -1"
-                                >-->
                                 <input type="checkbox"
                                        @click="applyOnlyPeopleWithAddressesFilter"
                                        :checked="appliedFilters.onlyPeopleWithAddresses"
@@ -123,6 +118,9 @@
                                         :isRememberPreviousPage="true"
                                 ></company-and-other-with-tooltip>
 
+                                <span v-if="!person.addresses.length">
+                                    (Unknown employer)
+                                </span>
 
 
                                 {{ person.addresses.length ? person.addresses[0].address : '' }}

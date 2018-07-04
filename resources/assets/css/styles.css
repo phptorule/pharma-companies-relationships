@@ -5447,6 +5447,11 @@ ul.staff-with-publication-list .box-body h4{
     color: #999999;
     background: transparent;
     border: none;
+    transition: color ease 0.1s;
+}
+
+.grey-checkbox.only-people-with-addresses-checkbox span.remember_text:hover{
+    color: #666666;
 }
 
 .grey-checkbox.only-people-with-addresses-checkbox label span {

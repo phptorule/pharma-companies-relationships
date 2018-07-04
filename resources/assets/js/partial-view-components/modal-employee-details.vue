@@ -45,14 +45,19 @@
                             </div>
                         </div>
 
-                        <p class="place-of-work" v-if="(personData.careers && personData.careers.length)
-                                                        || (personData.addresses && personData.addresses.length)">
+                        <p class="place-of-work" v-if="personData.addresses && personData.addresses.length">
                             worked at
                             <span v-for="(address, i) in personData.addresses" :key="address.id">
                                 <router-link :to="'/address-details/' + address.id" >
                                     {{ address.name }}</router-link><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
                         </p>
+
+                        <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
+                            Labscape did not find the current employer of {{personData.name}}.
+                            <a href="">Let us know</a>
+                        </p>
+
 
                         <ul class="social-icons" v-if=" ! isEditing">
                             <li v-if="personData.linkedin_url">
