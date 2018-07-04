@@ -1,7 +1,25 @@
 <template>
     <div>
-        <div class="filters">
-            Filters will be here
+        <div class="form-group filter-panel">
+
+            <div class="person-role-filter-box">
+                <input v-model="appliedFilters.nameInput"
+                       @keyup="applyNameFilter"
+                       type="text"
+                       placeholder="Company Name"
+                >
+            </div>
+
+            <single-dropdown-select
+                    class="form-control select-filter type-filter"
+                    :options="sortByOptionsForFilter"
+                    :selected="appliedFilters.sortBy"
+                    :isHiddenEmptyOption="true"
+                    @changed="applySortByFilter"
+                    :name="'Sort By'"
+                    ref="sortBySingleDropdownSelect"
+            ></single-dropdown-select>
+
         </div>
 
         <div>
@@ -38,14 +56,14 @@
                 addressesTotal: 0,
                 addressList: [],
                 appliedFilters: {
-                    usedProducts: [],
-                    tags: [],
-                    sortBy: this.$route.query['sort-by'] || '',
+                    nameInput: null,
+                    sortBy: '',
                 },
                 queryUrl: '',
                 pagination: {
                     currentPage: 1
                 },
+                nameInputTimeoutId: null
             }
         },
 
@@ -53,6 +71,17 @@
             personId: function () {
                 this.init();
             }
+        },
+
+        computed: {
+
+            sortByOptionsForFilter: function () {
+                return [
+                    {value: 'name-asc', label: 'Name &uarr;'},
+                    {value: 'name-desc', label: 'Name &darr;'}
+                ]
+            },
+
         },
 
         methods: {
@@ -85,16 +114,8 @@
             composeQueryUrl: function () {
                 let queryStr = '';
 
-                if (this.appliedFilters.usedProducts.length) {
-                    this.appliedFilters.usedProducts.forEach(id => {
-                        queryStr += '&used-product-ids[]=' + id;
-                    });
-                }
-
-                if (this.appliedFilters.tags.length) {
-                    this.appliedFilters.tags.forEach(id => {
-                        queryStr += '&tag-ids[]=' + id;
-                    });
+                if (this.appliedFilters.nameInput) {
+                    queryStr += '&name=' + this.appliedFilters.nameInput;
                 }
 
                 if (this.appliedFilters.sortBy) {
@@ -106,14 +127,14 @@
                 return queryStr;
             },
 
-            applyUsedProductsFilter: function (data) {
-                this.appliedFilters.usedProducts = data;
-                this.applyFilters();
-            },
+            applyNameFilter: function(){
+                if(this.nameInputTimeoutId) {
+                    clearTimeout(this.nameInputTimeoutId);
+                }
 
-            applyTagsFilter: function (data) {
-                this.appliedFilters.tags = data;
-                this.applyFilters();
+                this.nameInputTimeoutId = setTimeout(()=>{
+                    this.applyFilters();
+                },500)  
             },
 
             applySortByFilter: function (data) {
@@ -122,8 +143,21 @@
             },
 
             applyFilters: function() {
+                this.composeQueryUrl();
                 this.$refs.paginationDirective.setPage(1);
-            }
+            },
+
+            resetFilters: function () {
+
+                this.$refs.sortBySingleDropdownSelect.resetSelectedValues();
+
+                this.appliedFilters = {
+                    nameInput: null,
+                    sortBy: '',
+                };
+
+                this.applyFilters();
+            },
         },
 
         props: ['personId'],

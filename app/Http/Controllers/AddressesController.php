@@ -123,6 +123,10 @@ class AddressesController extends Controller
             $query->where('rl_addresses.name', 'LIKE', '%'.$requestParams['global-search'].'%');
         }
 
+        if (isset($requestParams['name'])) {
+            $query->where('rl_addresses.name', 'LIKE', '%'.$requestParams['name'].'%');
+        }
+
         if (isset($requestParams['address-ids'])) {
             $query->whereIn('rl_addresses.id', explode(',',$requestParams['address-ids']));
         }

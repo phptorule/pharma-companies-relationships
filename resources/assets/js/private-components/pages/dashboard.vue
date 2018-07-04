@@ -231,12 +231,6 @@
             },
 
             usedProductOptionsForDropDown: function () {
-                // return this.filterObject.used_product_list.map(product => {
-                //     return {
-                //         label: product.company + (product.name? ': ' + product.name: ''),
-                //         value: product.id
-                //     }
-                // })
                 return this.filterObject.used_product_list;
             },
             tagOptionsForDropDown: function () {
