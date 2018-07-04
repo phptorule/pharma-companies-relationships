@@ -2329,8 +2329,8 @@ ul.tag-list li {
 }
 
 .multiple-dropdown-select .parent-product-image {
-    height: 70px;
-    width: 70px;
+    height: 35px;
+    width: 35px;
     border-radius: 50%;
     display: inline-block;
 }

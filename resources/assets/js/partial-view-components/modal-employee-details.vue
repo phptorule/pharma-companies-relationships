@@ -14,8 +14,6 @@
                             </a>
                         </div>
 
-                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-
                         <div v-if=" ! isEditing">
                             <h4 class="modal-title">
                                 {{personData.name}}
@@ -55,8 +53,12 @@
 
                         <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
                             Labscape did not find the current employer of {{personData.name}}.
-                            <a href="">Let us know</a>
+                            <a href="javascript:void(0)"
+                               v-if="!isEditWorkPlaces"
+                               @click="isEditWorkPlaces = true">Let us know</a>
                         </p>
+
+                        <assign-addresses-to-person v-if="isEditWorkPlaces"></assign-addresses-to-person>
 
 
                         <ul class="social-icons" v-if=" ! isEditing">
@@ -461,7 +463,8 @@
                 selectedConnectionType: null,
                 selectedConnectionPerson: null,
                 edgeComment: '',
-                showAddPublication: false
+                showAddPublication: false,
+                isEditWorkPlaces: false
             }
         },
 
