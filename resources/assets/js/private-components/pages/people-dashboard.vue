@@ -118,36 +118,10 @@
 
                             <p class="address">
 
-                                <span v-if="person.addresses.length"
-                                      class="person-first-address-name"
-                                      :title="person.addresses[0].name"
-                                >
-                                    <a href="javascript:void(0)" @click="goToAddressDetailsPage(person.addresses[0].id)">
-                                        {{person.addresses[0].name}}
-                                    </a>
-                                </span>
-
-                                <span v-if="person.addresses.length > 1">
-
-                                    <a href="javascript:void(0)"
-                                       class="person-more-companies"
-                                       v-tooltip.bottom="{ html: 'tooltipContent' + person.id }"
-                                    >
-                                        + {{person.addresses.length - 1}} more
-                                        <span v-if="person.addresses.length - 1 === 1">company</span>
-                                        <span v-if="person.addresses.length - 1 > 1">companies</span>
-                                    </a>
-
-                                    <span class="product-tooltip" :id="'tooltipContent' + person.id" style="display: block">
-                                        <ul style="margin: 0">
-                                            <li v-for="add of person.addresses">
-                                                {{add.name}}
-                                            </li>
-                                        </ul>
-                                    </span>
-
-                                    <br>
-                                </span>
+                                <company-and-other-with-tooltip
+                                        :entity="person"
+                                        :isRememberPreviousPage="true"
+                                ></company-and-other-with-tooltip>
 
 
 

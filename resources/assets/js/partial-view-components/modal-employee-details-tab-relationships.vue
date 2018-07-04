@@ -94,7 +94,14 @@
                             </small>
                         </p>
                         <p class="name"><a href="javascript:void(0)" @click="loadAnotherUser(relation)">{{relation.name}}</a></p>
-                        <p class="occupation" style="text-align: left">{{relation.description}}</p>
+                        <p class="occupation" style="text-align: left">
+                            {{relation.description}} at
+
+                            <company-and-other-with-tooltip
+                                    :entity="relation"
+                                    :moreTextWithAND="true"
+                            ></company-and-other-with-tooltip>
+                        </p>
                         <p class="connection-type" style="text-align: left">
                             <a href="javascript:void(0)" @click="loadRelationship(relation)">
                                 {{connectionNameForPagination(relation)}}
@@ -138,7 +145,16 @@
                                 {{relation.name}}
                             </a>
                         </p>
-                        <p class="occupation" style="text-align: left">{{relation.description}}</p>
+                        <p class="occupation" style="text-align: left">{{relation.description}} at
+
+                            <company-and-other-with-tooltip
+                                    :entity="relation"
+                                    :moreTextWithAND="true"
+                            ></company-and-other-with-tooltip>
+
+                        </p>
+
+
                         <p class="connection-type" style="text-align: left">
                             <a href="javascript:void(0)" @click="loadRelationship(relation)">
                                 {{connectionNameForPagination(relation)}}
