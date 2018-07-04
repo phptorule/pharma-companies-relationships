@@ -535,7 +535,7 @@
             updateCluster: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
                     this.$root.logData('labchain', 'update labchain name', JSON.stringify(this.addressData.cluster.name));
-                    this.httpPut('/api/address-details/'+this.addressData.id+'/update-cluster-name', {
+                    return this.httpPut('/api/address-details/'+this.addressData.id+'/update-cluster-name', {
                         clusterName: this.addressData.cluster.name.trim()
                     })
                     .then(data => {
@@ -545,6 +545,8 @@
                         this.old.clusterName = data.name;
                         this.$eventGlobal.$emit('clusterNameUpdated');
                         alertify.notify('Lab Chain name has been updated.', 'success', 3);
+
+                        return data;
                     })
                     .catch(err => {
                         alertify.notify('Error occured', 'error', 3);

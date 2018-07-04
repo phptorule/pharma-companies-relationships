@@ -581,7 +581,7 @@
                         this.addressData = data;
 
                         if(!this.addressData.cluster){
-                            this.addressData.cluster = {addresses: []};
+                            this.addressData.cluster = {addresses: [], name: ''};
                         }
 
                         document.title = this.addressData.name;
