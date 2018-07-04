@@ -15,9 +15,13 @@
         <ul class="staff-list">
             <li v-for="(product, i) in products">
                 <div class="image">
-                    <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
+                    <a v-if="!product.image" href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
-                        <img :src="product.image? product.image : '/images/mask-0.png'" alt="">
+                        <img :src="'/images/mask-'+i+'.png'" alt="">
+                    </a>
+
+                    <a v-if="product.image" href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
+                        <img :src="'/storage' + product.image" alt="" style="border-radius: 35px;">
                     </a>
                 </div>
                 <div class="prod-info">
