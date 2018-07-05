@@ -73,6 +73,10 @@
                             :id="'relation-row-'+relation.id"
                             :coAuthoredPublications="publications.co_authored_paper"
                             :citedPublications="publications.cited_paper"
+                            :signatoryAtSameCompany="publications.signatory_at_company"
+                            :relationAddresses="relation.addresses"
+                            :currentPersonAddresses="personData.addresses"
+                            :personId="personData.id"
                     ></publication-list>
                 </li>
 
@@ -133,6 +137,9 @@
                             :coAuthoredPublications="publications.co_authored_paper"
                             :citedPublications="publications.cited_paper"
                             :signatoryAtSameCompany="publications.signatory_at_company"
+                            :relationAddresses="relation.addresses"
+                            :currentPersonAddresses="personData.addresses"
+                            :personId="personData.id"
                     ></publication-list>
                 </li>
             </ul>
@@ -191,6 +198,9 @@
                             :coAuthoredPublications="publications.co_authored_paper"
                             :citedPublications="publications.cited_paper"
                             :signatoryAtSameCompany="publications.signatory_at_company"
+                            :relationAddresses="relation.addresses"
+                            :currentPersonAddresses="personData.addresses"
+                            :personId="personData.id"
                     ></publication-list>
                 </li>
             </ul>
@@ -334,6 +344,7 @@
 
 
             composeRelationshipDetailsUrl: function(relation) {
+
                 let urlQuery = '';
 
                 if (relation.co_authored_paper) {
@@ -351,6 +362,10 @@
                     ids = this.getUniqueArrayElements(ids.split(','));
 
                     urlQuery += 'cited_paper=' + ids.join(',');
+                }
+
+                if(relation.edge_type == 3) {
+
                 }
 
                 return urlQuery;
