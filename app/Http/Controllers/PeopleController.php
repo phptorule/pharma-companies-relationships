@@ -9,6 +9,8 @@ use App\Models\Publication;
 use App\Models\PeopleType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\Persistable;
@@ -39,7 +41,7 @@ class PeopleController extends Controller
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
             ->where('from_person_id', $person->id)
             ->groupBy('to_person_id')
-            ->orderBy('name', 'ASC')
+            ->orderBy('id', 'ASC')
             ->get();
 
         $this->defineLastCooperationYear($person->relationships);
@@ -62,6 +64,7 @@ class PeopleController extends Controller
                     SELECT MAX(year) as year FROM `rl_publications` 
                     JOIN rl_people_publications 
                     ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_people_publications.person_id  = $relation->from_person_id
                     AND rl_publications.id = rl_people_publications.publication_id
                 ";
             $lastCooperationYear = DB::select(DB::raw($sqlQuery));
@@ -80,24 +83,100 @@ class PeopleController extends Controller
 
     function getPersonRelationships(People $person)
     {
-        $relationships = DB::table('rl_address_connections AS rl1')
-            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
-            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
-            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
-            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
-            COUNT(to_person_id) AS count_types, 
-            rl_people.*"))
-            ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
-            ->where('from_person_id', $person->id)
-            ->groupBy('to_person_id')
-            ->orderBy('edge_weight', 'DESC')
-            ->paginate(10);
+        $params = request()->all();
 
-        $this->defineLastCooperationYear($relationships);
+        $coAuthIdsSql = "SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1'";
+        $citedIdsSql = "SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2'";
+
+        $preliminarySql = "SELECT from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id, edge_type,
+            ($coAuthIdsSql GROUP BY to_person_id) as co_authored_paper,
+            ($citedIdsSql GROUP BY to_person_id) as cited_paper,
+            (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
+            (SELECT MAX(p.year) FROM rl_publications AS p WHERE p.id IN (GROUP_CONCAT(DISTINCT(($coAuthIdsSql)) SEPARATOR ','), GROUP_CONCAT(DISTINCT(($citedIdsSql)) SEPARATOR ','))) as lastCooperationYear,
+            COUNT(to_person_id) AS count_types, 
+            rl_people.*
+            FROM rl_address_connections AS rl1
+            INNER JOIN rl_people ON rl1.to_person_id = rl_people.id
+            WHERE from_person_id = $person->id
+            GROUP BY to_person_id";
+
+        $sql = "SELECT *, 
+                (
+                    IF (co_authored_paper IS NOT NULL, 
+                    LENGTH(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(co_authored_paper,'9',''),'8',''),'7',''),'6',''),'5',''),'4',''),'3',''),'2',''),'1',''),'0',''))+1,
+                    0)
+                +
+                    IF (cited_paper IS NOT NULL, 
+                    LENGTH(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(cited_paper,' cites ', ''),'9',''),'8',''),'7',''),'6',''),'5',''),'4',''),'3',''),'2',''),'1',''),'0',''))+1,
+                    0)
+            
+                ) as interaction_number
+                FROM ($preliminarySql) subq WHERE from_person_id = $person->id " . $this->composeRelationshipQuery($params);
+
+        $result = DB::select(DB::raw($sql));
+
+        $relationships = $this->paginate($result, 10, isset($params['page'])? $params['page'] : 1);
+
         $this->defineRelatedPersonAddresses($relationships);
 
-        return response()->json($relationships);
+        $responseData = json_decode(json_encode($relationships));
+
+        $data = [];
+
+        foreach ($responseData->data as $obj) {
+            $data[] = $obj;
+        }
+
+        $responseData->data = $data;
+
+        return response()->json($responseData);
     }
+
+
+    public function paginate($items, $perPage = 15, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
+
+    public function composeRelationshipQuery($params)
+    {
+        $conditionsSql = '';
+
+        if(isset($params['search'])) {
+            $conditionsSql .= " AND name LIKE '%$params[search]%'";
+        };
+
+        if(isset($params['type-id'])) {
+            $conditionsSql .= 'AND edge_type IN ('.$params['type-id'].')';
+        };
+
+        if (isset($params['sort-by'])) {
+
+            $field = explode('-',$params['sort-by'])[0];
+            $direction = explode('-',$params['sort-by'])[1];
+
+            if($field == 'name') {
+                $field = 'name';
+            }
+            else if($field == 'date') {
+                $field = 'lastCooperationYear';
+            }
+            else if($field == 'count') {
+                $field = 'interaction_number';
+            }
+
+            $conditionsSql .= 'ORDER BY '.$field.' '.$direction;
+        }
+        else {
+            $conditionsSql .= 'ORDER BY edge_weight DESC';
+        }
+
+        return $conditionsSql;
+    }
+
 
     function getPersonGraphInfo($mainPersonId)
     {

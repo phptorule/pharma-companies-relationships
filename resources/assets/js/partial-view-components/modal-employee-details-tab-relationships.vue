@@ -6,11 +6,12 @@
             <div class="search-name">
                 <i class="fa fa-search icon" aria-hidden="true"></i>
                 <input 
-                    v-model="query"
+                    v-model="appliedFilters.searchInput"
                     type="search" 
                     class="form-control" 
-                    placeholder="Person name" 
-                    @input="handleSearch">
+                    placeholder="Person name"
+                    @keyup="applySearchInputFilter"
+                >
             </div>
             <div class="search-type">
                 <multiple-dropdown-select
@@ -18,7 +19,7 @@
                     :name="'Types'"
                     :options="typesOptionsForDropDown"
                     :selected="[]"
-                    @changed="onChangeType"
+                    @changed="applyTypeFilter"
                     ref="tagMultipleDropdownSelect"
                 ></multiple-dropdown-select>
             </div>
@@ -28,7 +29,7 @@
                     :options="sortByOptionsForFilter"
                     :selected="[]"
                     :isHiddenEmptyOption="true"
-                    @changed="onChangeSort"
+                    @changed="applySortByFilter"
                     :name="'Sort By'"
                     ref="sortBySingleDropdownSelect"
                  ></single-dropdown-select>
@@ -200,7 +201,7 @@
                         :class="'pagination pagination-sm no-margin pull-right'"
                         :per-page="10"
                         @paginate="relationshipsPageChanged"
-
+                        ref="paginationDirective"
             ></pagination>
         </div>
 
@@ -241,6 +242,11 @@
                 person: {
                     relationships: []
                 },
+                appliedFilters: {
+                    type:  '',
+                    sortBy: '',
+                    searchInput: ''
+                },
                 relationshipsTotal: 0,
                 relationshipsCollapsed: true,
                 publications: {},
@@ -248,7 +254,9 @@
                 query: '',
                 filtered: [],
                 selectedTypes: null,
-                selectedSort: null
+                selectedSort: null,
+                queryUrl: '',
+                timeoutSearchInputId: null
             }
         },
 
@@ -301,7 +309,7 @@
 
                 let p = page || 1;
 
-                let url = '/api/people/'+this.personData.id+'/relationships?page='+p;
+                let url = '/api/people/'+this.personData.id+'/relationships?page='+p + this.queryUrl;
 
                 this.relationshipPage = p;
 
@@ -443,9 +451,57 @@
                     relationPage: relationPage
                 }
             },
-            onChangeType: function (data) {
-                this.selectedTypes = data;
+
+            applyTypeFilter: function (data) {
+                this.appliedFilters.type = data;
+                this.applyFilters();
             },
+
+            applySortByFilter: function (data) {
+                this.appliedFilters.sortBy = data;
+                this.applyFilters();
+            },
+
+            applySearchInputFilter: function() {
+
+                if(this.timeoutSearchInputId) {
+                    clearTimeout(this.timeoutSearchInputId)
+                }
+
+                this.timeoutSearchInputId = setTimeout(()=>{
+                    this.applyFilters();
+                }, 500)
+
+            },
+
+            applyFilters: function () {
+
+                this.composeQueryUrl();
+
+                this.loadPersonRelationshipsPaginated(1);
+            },
+
+            composeQueryUrl: function()
+            {
+                let queryStr = '';
+
+                if (this.appliedFilters.type) {
+                    queryStr += '&type-id=' + this.appliedFilters.type;
+                }
+
+                if (this.appliedFilters.searchInput) {
+                    queryStr += '&search=' + this.appliedFilters.searchInput;
+                }
+
+                if (this.appliedFilters.sortBy) {
+                    queryStr += '&sort-by=' + this.appliedFilters.sortBy;
+                }
+
+                this.queryUrl = queryStr;
+
+                return queryStr;
+            },
+
             onChangeSort: function (data) {
                 this.selectedSort = data;
             },
@@ -589,6 +645,9 @@
             getAllRelationships: function () {
                 if (this.personData && this.personData.relationships && this.personData.relationships.length) {
                     return this.personData.relationships;
+                }
+                else {
+                    return []
                 }
             },
             canSearch: function () {
