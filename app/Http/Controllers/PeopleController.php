@@ -39,7 +39,7 @@ class PeopleController extends Controller
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
             ->where('from_person_id', $person->id)
             ->groupBy('to_person_id')
-            ->orderBy('name', 'ASC')
+            ->orderBy('id', 'ASC')
             ->get();
 
         $this->defineLastCooperationYear($person->relationships);
@@ -62,6 +62,7 @@ class PeopleController extends Controller
                     SELECT MAX(year) as year FROM `rl_publications` 
                     JOIN rl_people_publications 
                     ON rl_people_publications.person_id = $relation->to_person_id
+                    AND rl_people_publications.person_id  = $relation->from_person_id
                     AND rl_publications.id = rl_people_publications.publication_id
                 ";
             $lastCooperationYear = DB::select(DB::raw($sqlQuery));
@@ -80,11 +81,16 @@ class PeopleController extends Controller
 
     function getPersonRelationships(People $person)
     {
+
+        $coAuthIdsSql = "SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1'";
+        $citedIdsSql = "SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2'";
+
         $relationships = DB::table('rl_address_connections AS rl1')
             ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
-            (SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1' GROUP BY to_person_id) as co_authored_paper,
-            (SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2' GROUP BY to_person_id) as cited_paper,
+            ($coAuthIdsSql GROUP BY to_person_id) as co_authored_paper,
+            ($citedIdsSql GROUP BY to_person_id) as cited_paper,
             (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
+            (SELECT MAX(p.year) FROM rl_publications AS p WHERE p.id IN (GROUP_CONCAT(DISTINCT($coAuthIdsSql) SEPARATOR ','), GROUP_CONCAT(DISTINCT($citedIdsSql) SEPARATOR ','))) as lastCooperationYear,
             COUNT(to_person_id) AS count_types, 
             rl_people.*"))
             ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
@@ -93,7 +99,6 @@ class PeopleController extends Controller
             ->orderBy('edge_weight', 'DESC')
             ->paginate(10);
 
-        $this->defineLastCooperationYear($relationships);
         $this->defineRelatedPersonAddresses($relationships);
 
         return response()->json($relationships);
