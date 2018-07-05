@@ -1,5 +1,6 @@
 <template>
-    <div class="wrapper profile-wrapper" v-if="['Edit Profile'].indexOf($route.name) > -1">
+    <div class="wrapper profile-wrapper" 
+        v-if="['Edit Profile'].indexOf($route.name) > -1 || ['AdminUsers'].indexOf($route.name) > -1">
         <main-header></main-header>
 
         <router-view></router-view>
