@@ -924,6 +924,7 @@
             
             this.$eventGlobal.$on('personRelationDeleted', (data) => {
                 this.init(data.personId, data.addressId, data.address);
+                this.isEditing = true;
             });
 
             this.openRelationshipTabIfHashDetected('relationships');
