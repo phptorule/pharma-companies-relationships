@@ -38,7 +38,9 @@
                     <!-- <li><a href="#" @click.prevent class="without-handler">About</a></li> -->
                     <li><a href="#" @click.prevent class="without-handler">Contact</a></li>
                     <li v-if="user && user.role === 'admin'">
-                        <a href="/admin/users">Admin</a>
+                        <router-link to="/admin/users">
+                            Admin
+                        </router-link>
                     </li>
                 </ul>
             </div>

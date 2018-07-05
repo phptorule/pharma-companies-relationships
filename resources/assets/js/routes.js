@@ -77,6 +77,15 @@ router.beforeEach((to, from, next) => {
     else if (to.path == '/login' && AuthService.isLoggedIn){
         next({ path: '/dashboard'});
     }
+    else if (to.meta.adminAuth) {
+        const authUser = JSON.parse(window.localStorage.getItem('logged-user'));
+
+        if (authUser.role === 'admin') {
+            next();
+        } else {
+            next({ path: '/dashboard' });
+        }
+    }
     else {
         next();
     }

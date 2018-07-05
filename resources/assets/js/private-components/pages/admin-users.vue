@@ -1,6 +1,14 @@
 <template>
     <div class="admin-users">
-        <h1>Admin</h1>
+        <div class="au-container">
+            <div class="au-breadcrumbs">
+                <ul class="au-breadcrumbs-list">
+                    <li>Admin</li>
+                    <li><i class="fa fa-angle-right" aria-hidden="true"></i></li>
+                    <li class="active">Users</li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 
