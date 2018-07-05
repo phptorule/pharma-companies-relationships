@@ -590,6 +590,9 @@
                 if (this.personData && this.personData.relationships && this.personData.relationships.length) {
                     return this.personData.relationships;
                 }
+                else {
+                    return []
+                }
             },
             canSearch: function () {
                 return this.query.trim() === '' ? false : true
