@@ -26,8 +26,9 @@
             <div class="box-header">
                 <h3 class="box-title">
                     <i class="fa fa-globe" aria-hidden="true" style="color: #989898"></i>
-                    <small>Signatory at:</small> <strong>{{signatoryAtSameCompany.name}}</strong>.
-                    {{signatoryAtSameCompany.address}}
+                    <small>Both are/were signatories at: <strong>{{signatoryAtSameCompany.name}}</strong>.
+                        {{signatoryAtSameCompany.address}}
+                    </small>
                 </h3>
             </div>
         </div>
