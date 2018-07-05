@@ -22,13 +22,17 @@
             </div>
         </div>
 
-        <div class="box box-solid" v-if="signatoryAtSameCompany">
+        <div class="box box-solid" v-if="matchedAddresses.length">
             <div class="box-header">
                 <h3 class="box-title">
                     <i class="fa fa-globe" aria-hidden="true" style="color: #989898"></i>
-                    <small>Both are/were signatories at: <strong>{{signatoryAtSameCompany.name}}</strong>.
-                        {{signatoryAtSameCompany.address}}
-                    </small>
+                    <small>Both are/were signatories at: </small>
+
+                    <ul class="list-signatories-at">
+                        <li v-for="add of matchedAddresses">
+                            <small><strong>{{add.name}}</strong>. {{add.address}}</small>
+                        </li>
+                    </ul>
                 </h3>
             </div>
         </div>
@@ -38,8 +42,51 @@
 <script>
     export default {
 
+        data: function() {
+            return {
+                matchedAddresses: []
+            }
+        },
 
-        props: ['coAuthoredPublications', 'citedPublications', 'signatoryAtSameCompany']
+        methods: {
+            updateMatchedAddresses: function () {
+
+                this.matchedAddresses = [];
+
+                if(this.currentPersonAddresses && this.currentPersonAddresses.length && this.relationAddresses && this.relationAddresses.length) {
+
+                    this.currentPersonAddresses.forEach(address => {
+                        let matchedAddress = this.relationAddresses.find(a => a.id == address.id);
+
+                        if(matchedAddress) {
+                            this.matchedAddresses.push(matchedAddress);
+                        }
+                    });
+
+                }
+            }
+        },
+
+        watch: {
+
+            personId: function (newVal) {
+                this.updateMatchedAddresses();
+
+            }
+        },
+
+        props: [
+            'coAuthoredPublications',
+            'citedPublications',
+            'signatoryAtSameCompany',
+            'currentPersonAddresses',
+            'relationAddresses',
+            'personId'
+        ],
+
+        mounted: function () {
+            this.updateMatchedAddresses();
+        }
 
     }
 </script>
