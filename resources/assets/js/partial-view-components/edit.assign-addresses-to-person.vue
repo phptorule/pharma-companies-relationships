@@ -1,24 +1,45 @@
 <template>
-    <div>
-        <div class="form-group filter-panel">
+    <div class="assign-addresses-to-person-container">
+        <div class="row">
 
-            <div class="person-role-filter-box">
-                <input v-model="appliedFilters.nameInput"
-                       @keyup="applyNameFilter"
-                       type="text"
-                       placeholder="Company Name"
-                >
+            <div class="form-group filter-panel">
+
+                <div class="col-md-5">
+                    <div class="person-role-filter-box">
+                        <input v-model="appliedFilters.nameInput"
+                               @keyup="applyNameFilter"
+                               type="text"
+                               placeholder="Company Name"
+                        >
+                    </div>
+                </div>
+
+
+                <div class="col-md-5">
+
+                    <single-dropdown-select
+                            class="form-control select-filter type-filter"
+                            :options="sortByOptionsForFilter"
+                            :selected="appliedFilters.sortBy"
+                            :isHiddenEmptyOption="true"
+                            @changed="applySortByFilter"
+                            :name="'Sort By'"
+                            ref="sortBySingleDropdownSelect"
+                    ></single-dropdown-select>
+
+                </div>
+
+
+                <div class="col-md-2">
+
+                    <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
+                        <i class="fa fa-remove"></i>
+                    </a>
+
+                </div>
+
+
             </div>
-
-            <single-dropdown-select
-                    class="form-control select-filter type-filter"
-                    :options="sortByOptionsForFilter"
-                    :selected="appliedFilters.sortBy"
-                    :isHiddenEmptyOption="true"
-                    @changed="applySortByFilter"
-                    :name="'Sort By'"
-                    ref="sortBySingleDropdownSelect"
-            ></single-dropdown-select>
 
         </div>
 

@@ -5381,6 +5381,7 @@ ul.staff-with-publication-list .box-body h4{
     width: calc(51% - 4px);
 }
 
+.person-role-filter-box input,
 .skin-blue .sidebar-form .person-role-filter-box input{
     color: #555555;
     background: #fff;
@@ -5607,4 +5608,13 @@ ul.tenders-list li.open .item > .tag-list {
 
 .modal-body.grey-background{
     background: #f7f7f7 !important;
+}
+
+.assign-addresses-to-person-container {
+    padding-left: 140px;
+    padding-right: 140px;
+}
+
+.assign-addresses-to-person-container .type-filter{
+    width: 100%;
 }
