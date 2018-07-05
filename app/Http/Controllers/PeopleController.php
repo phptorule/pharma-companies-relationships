@@ -88,25 +88,23 @@ class PeopleController extends Controller
         $coAuthIdsSql = "SELECT a1.edge_comment FROM rl_address_connections as a1 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a1.edge_type = '1'";
         $citedIdsSql = "SELECT a2.edge_comment FROM rl_address_connections as a2 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a2.edge_type = '2'";
 
-        $sqlQuery = DB::table('rl_address_connections AS rl1')
-            ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id,
+        $preliminarySql = "SELECT from_person_id, to_person_id, SUM(edge_weight) as edge_weight, from_address_id, to_address_id, edge_type,
             ($coAuthIdsSql GROUP BY to_person_id) as co_authored_paper,
             ($citedIdsSql GROUP BY to_person_id) as cited_paper,
             (SELECT a3.edge_comment FROM rl_address_connections as a3 WHERE from_person_id = $person->id AND rl1.to_person_id = to_person_id AND a3.edge_type = '3' GROUP BY to_person_id) as signatory_at_company,
             (SELECT MAX(p.year) FROM rl_publications AS p WHERE p.id IN (GROUP_CONCAT(DISTINCT(($coAuthIdsSql)) SEPARATOR ','), GROUP_CONCAT(DISTINCT(($citedIdsSql)) SEPARATOR ','))) as lastCooperationYear,
             COUNT(to_person_id) AS count_types, 
-            rl_people.*"))
-            ->join('rl_people', 'rl1.to_person_id', '=', 'rl_people.id')
-            ->where('from_person_id', $person->id);
+            rl_people.*
+            FROM rl_address_connections AS rl1
+            INNER JOIN rl_people ON rl1.to_person_id = rl_people.id
+            WHERE from_person_id = $person->id
+            GROUP BY to_person_id";
 
-        $sqlQuery = $this->composeRelationshipQuery($sqlQuery, $params)
-            ->groupBy('to_person_id');
+        $sql = "SELECT * FROM ($preliminarySql) subq WHERE from_person_id = $person->id " . $this->composeRelationshipQuery($params);
 
-        $relationships = $this->composeOrderBy($sqlQuery, $params)
-//            ->paginate(10);
-            ->get();
+        $result = DB::select(DB::raw($sql));
 
-        $relationships = $this->paginate($relationships, 10, isset($params['page'])? $params['page'] : 1);
+        $relationships = $this->paginate($result, 10, isset($params['page'])? $params['page'] : 1);
 
         $this->defineRelatedPersonAddresses($relationships);
 
@@ -132,17 +130,37 @@ class PeopleController extends Controller
     }
 
 
-    public function composeRelationshipQuery($q, $params)
+    public function composeRelationshipQuery($params)
     {
+        $conditionsSql = '';
+
         if(isset($params['search'])) {
-            $q->where('rl_people.name', 'like', '%'.$params['search'].'%');
+            $conditionsSql .= " AND name LIKE '%$params[search]%'";
         };
 
         if(isset($params['type-id'])) {
-            $q->whereIn('rl1.edge_type', explode(',', $params['type-id']));
+            $conditionsSql .= 'AND edge_type IN ('.$params['type-id'].')';
         };
 
-        return $q;
+        if (isset($params['sort-by'])) {
+
+            $field = explode('-',$params['sort-by'])[0];
+            $direction = explode('-',$params['sort-by'])[1];
+
+            if($field == 'name') {
+                $field = 'name';
+            }
+            else if($field == 'date') {
+                $field = 'lastCooperationYear';
+            }
+
+            $conditionsSql .= 'ORDER BY '.$field.' '.$direction;
+        }
+        else {
+            $conditionsSql .= 'ORDER BY edge_weight DESC';
+        }
+
+        return $conditionsSql;
     }
 
 
