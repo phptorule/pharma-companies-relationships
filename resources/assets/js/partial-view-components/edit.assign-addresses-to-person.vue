@@ -46,7 +46,24 @@
         <div>
             <ul>
                 <li v-for="address of addressList">
-                    {{address.name}}
+                    <div>
+                        <div class="row">
+                            <div class="col-md-1 text-center">
+                                <div class="grey-checkbox only-people-with-addresses-checkbox">
+                                    <label>
+                                        <input type="checkbox">
+                                        <span class="borders"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-11">
+                                {{address.name}}
+                                <br>
+                                <small>{{address.address}}</small>
+                            </div>
+                        </div>
+                    </div>
                 </li>
             </ul>
 

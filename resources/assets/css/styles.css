@@ -5628,3 +5628,18 @@ ul.tenders-list li.open .item > .tag-list {
     margin-bottom: 0;
     margin-top: 5px;
 }
+
+#personal-modal .filter-panel .nav-tabs>li>a,
+#personal-modal .filter-panel .nav-tabs>li>a:hover{
+    color:#555555;
+    background: transparent;
+    border: 1px solid transparent;
+    padding-top: 9px;
+}
+
+#personal-modal .filter-panel .reset-filters {
+    padding: 10px 15px;
+    color:#555555;
+    border-radius: 6px;
+    background: #ffffff;
+}
