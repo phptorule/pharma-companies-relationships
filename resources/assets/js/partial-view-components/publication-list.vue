@@ -69,9 +69,8 @@
 
         watch: {
 
-            personId: function (newVal) {
+            relationAddresses: function (newVal) {
                 this.updateMatchedAddresses();
-
             }
         },
 
