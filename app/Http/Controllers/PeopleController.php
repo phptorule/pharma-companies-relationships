@@ -100,7 +100,18 @@ class PeopleController extends Controller
             WHERE from_person_id = $person->id
             GROUP BY to_person_id";
 
-        $sql = "SELECT * FROM ($preliminarySql) subq WHERE from_person_id = $person->id " . $this->composeRelationshipQuery($params);
+        $sql = "SELECT *, 
+                (
+                    IF (co_authored_paper IS NOT NULL, 
+                    LENGTH(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(co_authored_paper,'9',''),'8',''),'7',''),'6',''),'5',''),'4',''),'3',''),'2',''),'1',''),'0',''))+1,
+                    0)
+                +
+                    IF (cited_paper IS NOT NULL, 
+                    LENGTH(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(Replace(cited_paper,' cites ', ''),'9',''),'8',''),'7',''),'6',''),'5',''),'4',''),'3',''),'2',''),'1',''),'0',''))+1,
+                    0)
+            
+                ) as interaction_number
+                FROM ($preliminarySql) subq WHERE from_person_id = $person->id " . $this->composeRelationshipQuery($params);
 
         $result = DB::select(DB::raw($sql));
 
@@ -153,6 +164,9 @@ class PeopleController extends Controller
             else if($field == 'date') {
                 $field = 'lastCooperationYear';
             }
+            else if($field == 'count') {
+                $field = 'interaction_number';
+            }
 
             $conditionsSql .= 'ORDER BY '.$field.' '.$direction;
         }
@@ -161,30 +175,6 @@ class PeopleController extends Controller
         }
 
         return $conditionsSql;
-    }
-
-
-    function composeOrderBy($q, $params)
-    {
-        if (isset($params['sort-by'])) {
-
-            $field = explode('-',$params['sort-by'])[0];
-            $direction = explode('-',$params['sort-by'])[1];
-
-            if($field == 'name') {
-                $field = 'rl_people.name';
-            }
-            else if($field == 'date') {
-                $field .= 'lastCooperationYear';
-            }
-
-            $q->orderBy($field,$direction);
-        }
-        else {
-            $q->orderBy('edge_weight', 'DESC');
-        }
-
-        return $q;
     }
 
 
