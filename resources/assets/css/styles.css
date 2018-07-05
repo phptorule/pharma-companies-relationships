@@ -2727,6 +2727,15 @@ ul.tag-list li {
     padding: 0;
 }
 
+.admin-users .au-breadcrumbs-list li {
+    display: inline-block;
+    margin-right: 7px;
+}
+
+.admin-users .au-breadcrumbs-list li.active {
+    font-weight: 600;
+}
+
 .wrapper {
     /* position: fixed;
     top: 0;
