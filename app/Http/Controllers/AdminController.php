@@ -32,7 +32,7 @@ class AdminController extends Controller
 
         $user->name = $name;
         
-        $user->name = $email;
+        $user->email = $email;
 
         $user->role = $role;
 
@@ -43,7 +43,7 @@ class AdminController extends Controller
         $user->save();
 
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => 'ok'
         ]);
     }

@@ -116,9 +116,12 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        // this.currentPassword = '';
-                        // this.newPassword = '';
-                        // this.newPasswordConfirmation = '';
+                        this.name = '';
+                        this.email = '';
+                        this.role = '';
+                        this.password = '';
+                        this.confirmPassword = '';
+                        this.link = '';
                         alertify.notify('New user successfully created', 'success', 3);
                     } else {
                         alertify.notify(data.message, 'error', 3);
@@ -127,6 +130,9 @@
                 .catch(error => {
                     alertify.notify(error.data.message, 'error', 3);
                 })
+            },
+            getUsers: function () {
+                
             }
         }
     }
