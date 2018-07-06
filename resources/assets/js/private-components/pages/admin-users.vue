@@ -111,6 +111,15 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="pagination-box">
+                            <pagination 
+                                :records="totalUsers" 
+                                :class="'pagination pagination-sm no-margin pull-right'" 
+                                :per-page="usersPerPage" 
+                                :options="{'chunk': 5}"
+                                @paginate="usersPageChanged">
+                            </pagination>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,6 +142,8 @@
                 confirmPassword: '',
                 link: '',
                 users: [],
+                totalUsers: 0,
+                usersPerPage: 10,
                 formToShow: ''
             }
         },
@@ -156,6 +167,7 @@
                 .then(data => {
                     if (data.success) {
                         this.clearNewUserForm();
+                        this.$eventGlobal.$emit('newUserCreated');
                         alertify.notify('New user successfully created', 'success', 3);
                     } else {
                         alertify.notify(data.message, 'error', 3);
@@ -165,12 +177,15 @@
                     alertify.notify(error.data.message, 'error', 3);
                 })
             },
-            getUsers: function () {
-                let url = '/api/get-users';
+            getUsers: function (pageNumber) {
+                let p = pageNumber || 1;
+                let url = '/api/get-users' + '/?page=' + p;
                 
                 this.httpGet(url)
                     .then(data => {
+                        console.log(data);
                         this.users = data.data;
+                        this.totalUsers = data.total;
                     })
                     .catch(error => {
                         console.log(error);
@@ -189,10 +204,17 @@
             },
             closeForm: function () {
                 this.formToShow = '';
+            },
+            usersPageChanged: function (pageNumber) {
+                this.getUsers(pageNumber);
             }
         },
         mounted: function () {
             this.getUsers();
+
+            this.$eventGlobal.$on('newUserCreated', () => {
+                this.getUsers();
+            });
         }
     }
 </script>
