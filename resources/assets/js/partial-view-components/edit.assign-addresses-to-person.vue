@@ -46,7 +46,7 @@
                 <div class="col-md-1">
 
                     <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
-                        <i class="fa fa-remove"></i>
+                        <i class="fa fa-refresh"></i>
                     </a>
 
                 </div>
@@ -128,7 +128,12 @@
         watch: {
             personId: function () {
                 this.init();
-            }
+            },
+
+            // personAddresses: function (newVal) {
+            //
+            //     this.addPersonAddressesToSelected();
+            // }
         },
 
         computed: {
@@ -162,11 +167,22 @@
 
             init: function () {
                 this.loadAvailableAddressesPaginated();
+
+                this.addPersonAddressesToSelected();
+            },
+
+            addPersonAddressesToSelected: function() {
+
+                this.selectedAddressIdList = [];
+
+                if(!this.personAddresses || !this.personAddresses.length) {
+                    return;
+                }
+
+                this.personAddresses.forEach(ad => this.selectedAddressIdList.push(ad.id))
             },
 
             loadAvailableAddressesPaginated: function () {
-
-                console.log('here');
 
                 let url = '/api/addresses-paginated?page=' + this.pagination.currentPage + this.queryUrl;
 
@@ -234,13 +250,25 @@
                 this.applyFilters();
             },
 
+            notifyPersonAddressListUpdated: function() {
+                this.$emit('onPersonAddressListUpdated', {});
+            },
+
             assignAddresses: function () {
 
                 let url = '/api/assign-addresses-to-person/' + this.personId;
 
-                this.httpPost(url, this.selectedAddressIdList)
+                return this.httpPost(url, this.selectedAddressIdList)
                     .then(data => {
                         console.log('response' , data);
+                        alertify.notify('Person address list has been successfully updated', 'success', 3);
+
+                        this.notifyPersonAddressListUpdated();
+
+                        return data;
+                    })
+                    .catch(err => {
+                        alertify.notify('Sorry, error occurred', 'danger', 3);
                     })
             }
         },
@@ -248,7 +276,9 @@
         props: ['personId', 'personAddresses'],
 
         mounted: function () {
+            console.log('mounted');
             this.loadAvailableAddressesPaginated();
+            this.addPersonAddressesToSelected();
         }
     }
 </script>

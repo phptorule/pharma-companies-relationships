@@ -49,6 +49,8 @@
                                 <router-link :to="'/address-details/' + address.id" >
                                     {{ address.name }}</router-link><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
+
+                            <a href="#" @click.prevent="isEditWorkPlaces = !isEditWorkPlaces"><i class="fa fa-pencil"></i></a>
                         </p>
 
                         <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
@@ -59,7 +61,9 @@
 
                         <assign-addresses-to-person
                                 :personId="personData.id"
+                                :personAddresses="personData.addresses"
                                 v-if="isEditWorkPlaces"
+                                @onPersonAddressListUpdated="init(personData.id)"
                         ></assign-addresses-to-person>
 
 
