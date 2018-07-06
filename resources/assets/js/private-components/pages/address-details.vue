@@ -891,6 +891,7 @@
             this.$root.logData('detail', 'open', JSON.stringify(''));
         },
         beforeDestroy: function () {
+            this.$eventGlobal.$off('onMapLoadedAndReady');
             this.setAddressMouseLeaveListener();
         }
     }
