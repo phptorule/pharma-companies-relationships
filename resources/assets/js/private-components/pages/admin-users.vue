@@ -8,7 +8,7 @@
                     <li class="active">Users</li>
                 </ul>
             </div>
-            <div class="au-new-user-form">
+            <div v-if="formToShow === 'newUser'" class="au-new-user-form">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -75,6 +75,7 @@
                             <button class="btn btn-success" @click.prevent="createUser">
                                 Create User
                             </button>
+                            <button class="btn" @click.prevent="closeForm">Close</button>
                         </div>
                     </div>
                 </div>
@@ -89,7 +90,11 @@
                                     <td>Name</td>
                                     <td>Email</td>
                                     <td>Role</td>
-                                    <td>New user</td>
+                                    <td>
+                                        <button class="btn btn-warning" @click.prevent="setFormToShow('newUser')">
+                                            New User
+                                        </button>
+                                    </td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,18 +103,16 @@
                                     <td>{{user.name}}</td>
                                     <td>{{user.email}}</td>
                                     <td>{{user.role}}</td>
-                                    <td>edit</td>
+                                    <td>
+                                        <button class="btn btn-primary" @click.prevent="setFormToShow('editUser')">
+                                            Edit
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <!-- <div v-for="user in users" class="au-user-list-row">
-                    <div>{{user.id}}</div>
-                    <div>{{user.name}}</div>
-                    <div>{{user.email}}</div>
-                    <div>{{user.role}}</div>
-                </div> -->
             </div>
         </div>
     </div>
@@ -129,7 +132,13 @@
                 password: '',
                 confirmPassword: '',
                 link: '',
-                users: []
+                users: [],
+                formToShow: ''
+            }
+        },
+        watch: {
+            formToShow: function () {
+                this.clearNewUserForm();
             }
         },
         methods: {
@@ -146,12 +155,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        this.name = '';
-                        this.email = '';
-                        this.role = '';
-                        this.password = '';
-                        this.confirmPassword = '';
-                        this.link = '';
+                        this.clearNewUserForm();
                         alertify.notify('New user successfully created', 'success', 3);
                     } else {
                         alertify.notify(data.message, 'error', 3);
@@ -171,6 +175,20 @@
                     .catch(error => {
                         console.log(error);
                     })
+            },
+            clearNewUserForm: function () {
+                this.name = '';
+                this.email = '';
+                this.role = '';
+                this.password = '';
+                this.confirmPassword = '';
+                this.link = '';
+            },
+            setFormToShow: function (name) {
+                this.formToShow = name;
+            },
+            closeForm: function () {
+                this.formToShow = '';
             }
         },
         mounted: function () {

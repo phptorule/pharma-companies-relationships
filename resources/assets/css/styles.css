@@ -2736,6 +2736,10 @@ ul.tag-list li {
     font-weight: 600;
 }
 
+.admin-users .au-user-list td {
+    vertical-align: middle;
+}
+
 .wrapper {
     /* position: fixed;
     top: 0;
