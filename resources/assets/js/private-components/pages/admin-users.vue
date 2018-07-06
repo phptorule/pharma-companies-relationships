@@ -257,6 +257,7 @@
                         alertify.notify('New user successfully created', 'success', 3);
                     } else {
                         alertify.notify(data.message, 'error', 3);
+                        return;
                     }
                 })
                 .catch(error => {
@@ -329,6 +330,7 @@
                         alertify.notify('User successfully edited', 'success', 3);
                     } else {
                         alertify.notify(data.message, 'error', 3);
+                        return;
                     }
                 })
                 .catch(error => {

@@ -437,7 +437,7 @@ class AddressesController extends Controller
     /**
      * create new Product
      */
-    public function createProduct ()
+    public function createProduct (Address $address)
     {
         $company = trim(request('company'));
         $name = trim(request('name'));
@@ -517,7 +517,21 @@ class AddressesController extends Controller
 
         $products = Product::orderByRaw('company, name')->get();
 
-        return response()->json($products);
+        $addressProduct = new AddressProduct();
+        $addressProduct->address_id = $address->id;
+        $addressProduct->product_id = $product->id;
+        $addressProduct->save();
+
+        $address->load([
+            'products' => function ($query) {
+                $query->orderByRaw('company, name');
+            }
+        ]);
+
+        return response()->json([
+            'products' => $products,
+            'address' => $address
+        ]);
     }
 
     /**

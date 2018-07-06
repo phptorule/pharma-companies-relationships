@@ -99,7 +99,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/products/{address}/update', 'AddressesController@updateProducts')->name('address.updateProducts');
 
-    Route::post('/products/create', 'AddressesController@createProduct');
+    Route::post('/products/create/{address}', 'AddressesController@createProduct');
 
     Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
 
