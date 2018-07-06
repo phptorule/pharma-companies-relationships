@@ -5669,6 +5669,7 @@ ul.tenders-list li.open .item > .tag-list {
     color: #333333;
 }
 
+#personal-modal ul.ul-addresses-to-person a.address-in-list,
 #personal-modal ul.ul-addresses-to-person li:hover a{
     color: #3c8dbc;
 }

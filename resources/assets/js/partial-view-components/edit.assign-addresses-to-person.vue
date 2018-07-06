@@ -51,14 +51,18 @@
                             <div class="col-md-1 text-center">
                                 <div class="grey-checkbox only-people-with-addresses-checkbox">
                                     <label>
-                                        <input type="checkbox">
+                                        <input type="checkbox"
+                                               :checked="isAddressInList(address.id)"
+                                               @click="addAddressToSelectedList(address.id)">
                                         <span class="borders"></span>
                                     </label>
                                 </div>
                             </div>
 
                             <div class="col-md-11">
-                                <a href="javascript:void(0)">
+                                <a href="javascript:void(0)"
+                                   :class="{'address-in-list': isAddressInList(address.id)}"
+                                   @click="addAddressToSelectedList(address.id)">
                                     {{address.name}}
                                     <br>
                                     <small>{{address.address}}</small>
@@ -103,7 +107,8 @@
                 pagination: {
                     currentPage: 1
                 },
-                nameInputTimeoutId: null
+                nameInputTimeoutId: null,
+                selectedAddressIdList: []
             }
         },
 
@@ -125,6 +130,23 @@
         },
 
         methods: {
+
+            addAddressToSelectedList: function(addressId) {
+
+                let index = this.selectedAddressIdList.indexOf(addressId);
+
+                if(index === -1) {
+                    this.selectedAddressIdList.push(addressId);
+                }
+                else {
+                    this.selectedAddressIdList.splice(index,1);
+                }
+            },
+
+            isAddressInList: function(addressId) {
+                return this.selectedAddressIdList.indexOf(addressId) !== -1;
+            },
+
             init: function () {
                 this.loadAvailableAddressesPaginated();
             },
