@@ -178,7 +178,9 @@
                             >
                         </div>
 
-                        <div class="row person-experience" v-if="COUNTRY_FEATURES['employee-modal-career-years']">
+                        <div class="row person-experience"
+                             v-if="COUNTRY_FEATURES['employee-modal-career-years'] && !isEditWorkPlaces"
+                        >
                             <div :class="yearsAtThisJob? 'col-md-4': 'col-md-6'">
                                 <p class="number">{{experienceYears}}</p>
                                 <p class="text">Years Experience</p>
@@ -212,40 +214,63 @@
                             </div>
                         </div>
 
+                        <div class="submit-edit-btns-container" v-if="isEditing || isEditWorkPlaces">
+                            <div v-if="isEditing" class="confirm-employe-edit-block">
+                                <button
+                                        type="button"
+                                        class="btn cancel-employe-btn"
+                                        @click.prevent="toggleEditing"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button
+                                        type="button"
+                                        class="btn btn-success save-employe-btn"
+                                        v-if=" ! saveBtnDisabled && madeChanges"
+                                        @click.prevent="updateEmploye"
+                                >
+                                    <i class="fa fa-check"></i>
+                                    Suggest Edits
+                                </button>
+                                <button
+                                        type="button"
+                                        v-if="saveBtnDisabled || ! madeChanges"
+                                        disabled
+                                        class="btn save-employe-btn-disabled"
+                                >
+                                    <i class="fa fa-check"></i>
+                                    Suggest Edits
+                                </button>
+                            </div>
+
+                            <div v-if="isEditWorkPlaces" class="confirm-employe-edit-block">
+                                <button
+                                        type="button"
+                                        class="btn cancel-employe-btn"
+                                        @click.prevent="isEditWorkPlaces = false"
+                                >
+                                    Cancel Editing
+                                </button>
+                                <button
+                                        type="button"
+                                        class="btn btn-success save-employe-btn save-suggested-places"
+                                        @click.prevent="suggestWorkingPlaces()"
+                                >
+                                    <i class="fa fa-check"></i>
+                                    Suggest working place
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="view-contacts-chain-container" v-if="COUNTRY_FEATURES['employee-modal-view-contact-chain-btn']">
                             <a 
-                                v-show=" ! isEditing"
+                                v-show=" ! isEditing && !isEditWorkPlaces"
                                 href="javascript:void(0)" 
                                 @click="showContactsChain()" 
                                 data-dismiss="modal" 
                                 aria-label="Close">
                                 View Contacts Chain
                             </a>
-                            <div v-if="isEditing" class="confirm-employe-edit-block">
-                                <button
-                                    type="button"
-                                    class="btn cancel-employe-btn"
-                                    @click.prevent="toggleEditing"
-                                >
-                                    Cancel Editing
-                                </button>
-                                <button 
-                                    type="button"
-                                    class="btn save-employe-btn"
-                                    v-if=" ! saveBtnDisabled && madeChanges"
-                                    @click.prevent="updateEmploye"
-                                >
-                                    Suggest Edits
-                                </button>
-                                <button 
-                                    type="button" 
-                                    v-if="saveBtnDisabled || ! madeChanges" 
-                                    disabled 
-                                    class="btn save-employe-btn-disabled"
-                                >
-                                    Suggest Edits
-                                </button>
-                            </div>
                         </div>
                     </div>
                     <div class="modal-body" :class="{'grey-background': !COUNTRY_FEATURES['employee-modal-tab-content']}">
@@ -657,6 +682,10 @@
                 }
             },
 
+            suggestWorkingPlaces: function() {
+                this.$eventGlobal.$emit('onSubmitAssigningAddressesToPerson',{});
+            },
+
             convertNullPropsToEmptyString: function() {
                 for(let prop in this.personData) {
                     if(this.personData[prop] === null) {
@@ -960,6 +989,12 @@
             });
 
             this.openRelationshipTabIfHashDetected('relationships');
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('showModalEmployeeDetails');
+            this.$eventGlobal.$off('personRelationCreated');
+            this.$eventGlobal.$off('personRelationDeleted');
         }
     }
 </script>

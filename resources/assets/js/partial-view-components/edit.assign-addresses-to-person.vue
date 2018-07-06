@@ -2,7 +2,7 @@
     <div class="assign-addresses-to-person-container">
 
         <div class="row preselected-addresses-container">
-            <div class="col-md-11">
+            <div class="col-md-12">
 
                 <p class="empty-data-p"
                    style="text-align: center"
@@ -33,11 +33,11 @@
 
             </div>
 
-            <div class="col-md-1">
+            <!--<div class="col-md-1">
                 <button class="btn btn-success" @click="assignAddresses()" title="Update person's address list">
                     <i class="fa fa-floppy-o"></i>
                 </button>
-            </div>
+            </div>-->
         </div>
 
         <div class="row">
@@ -340,9 +340,17 @@
         props: ['personId', 'personAddresses'],
 
         mounted: function () {
-            console.log('mounted');
+
             this.loadAvailableAddressesPaginated();
             this.addPersonAddressesToSelected();
+
+            this.$eventGlobal.$on('onSubmitAssigningAddressesToPerson', () => {
+                this.assignAddresses();
+            })
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('onSubmitAssigningAddressesToPerson');
         }
     }
 </script>

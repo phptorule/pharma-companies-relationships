@@ -1873,11 +1873,15 @@ ul.tag-list li {
     background: transparent;
     font-family: Montserrat;
     font-size: 13px;
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.modal-employee-details .cancel-employe-btn:hover{
+    background: #e6e6e6;
 }
 
 .modal-employee-details .save-employe-btn {
-    width: 170px;
-    background: #4a90e3;
     color: #fff;
     padding: 10px 15px;
     border-radius: 5px;
@@ -1887,8 +1891,11 @@ ul.tag-list li {
     margin: 0;
 }
 
+.modal-employee-details .save-employe-btn.save-suggested-places{
+    width: auto;
+}
+
 .modal-employee-details .save-employe-btn-disabled {
-    width: 170px;
     color: #fff;
     padding: 10px 15px;
     border-radius: 5px;
@@ -3560,6 +3567,14 @@ ul.staff-list li .personal-info .name a:hover{
     margin-bottom: -35px;
     margin-top: 22px;
 }
+
+#personal-modal .submit-edit-btns-container {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 20px;
+    padding-top: 5px;
+}
+
 
 #personal-modal .view-contacts-chain-container a{
     background: #4a90e3;
