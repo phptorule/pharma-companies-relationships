@@ -52,13 +52,13 @@
 
                             <a href="#" class="edit-addresses"
                                :class="{'active': isEditWorkPlaces}"
-                               @click.prevent="isEditWorkPlaces = !isEditWorkPlaces"><i class="fa fa-pencil"></i></a>
+                               @click.prevent="toggleEditWorkPlaces"><i class="fa fa-pencil"></i></a>
                         </p>
 
                         <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
                             Labscape did not find the current employer of {{personData.name}}.
                             <a href="javascript:void(0)"
-                               @click="isEditWorkPlaces = !isEditWorkPlaces">Let us know</a>
+                               @click="toggleEditWorkPlaces">Let us know</a>
                         </p>
 
                         <assign-addresses-to-person
@@ -247,7 +247,7 @@
                                 <button
                                         type="button"
                                         class="btn cancel-employe-btn"
-                                        @click.prevent="isEditWorkPlaces = false"
+                                        @click.prevent="toggleEditWorkPlaces"
                                 >
                                     Cancel Editing
                                 </button>
@@ -762,6 +762,7 @@
                 this.$root.logData('person_relationship', 'page changed', JSON.stringify(page));
             },
             toggleEditing: function() {
+                this.isEditWorkPlaces = false;
                 this.isEditing = !this.isEditing;
 
                 if ( ! this.isEditing) {
@@ -882,6 +883,21 @@
 
                 return str;
             },
+
+            toggleEditWorkPlaces: function() {
+
+                this.isEditing = false;
+
+                if(this.isEditWorkPlaces) {
+                    $('.assign-addresses-to-person-container').slideUp('fast', ()=>{
+                        this.isEditWorkPlaces = !this.isEditWorkPlaces;
+                    });
+                }
+                else {
+                    this.isEditWorkPlaces = !this.isEditWorkPlaces;
+                }
+            },
+
             getPeopleAutocomplete: _.debounce(function (searchQuery, pageNumber) {
                 let p = pageNumber || 1;
                 if (searchQuery.length >= 3) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="assign-addresses-to-person-container">
+    <div class="assign-addresses-to-person-container" style="display: none">
 
         <div class="row preselected-addresses-container">
             <div class="col-md-12">
@@ -341,7 +341,11 @@
 
         mounted: function () {
 
-            this.loadAvailableAddressesPaginated();
+            this.loadAvailableAddressesPaginated()
+                .then(()=>{
+                    $('.assign-addresses-to-person-container').slideDown('fast');
+                });
+
             this.addPersonAddressesToSelected();
 
             this.$eventGlobal.$on('onSubmitAssigningAddressesToPerson', () => {
