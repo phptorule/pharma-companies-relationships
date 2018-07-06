@@ -4,7 +4,7 @@
 
             <div class="form-group filter-panel">
 
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <div class="person-role-filter-box">
                         <input v-model="appliedFilters.nameInput"
                                @keyup="applyNameFilter"
@@ -30,7 +30,7 @@
                 </div>
 
 
-                <div class="col-md-2">
+                <div class="col-md-1">
 
                     <a href="javascript:void(0)" class="btn btn-default reset-filters" title="Reset Filters" @click="resetFilters()">
                         <i class="fa fa-remove"></i>
@@ -43,8 +43,8 @@
 
         </div>
 
-        <div>
-            <ul>
+        <div class="addresses-to-person-box">
+            <ul class="ul-addresses-to-person">
                 <li v-for="address of addressList">
                     <div>
                         <div class="row">
@@ -58,9 +58,11 @@
                             </div>
 
                             <div class="col-md-11">
-                                {{address.name}}
-                                <br>
-                                <small>{{address.address}}</small>
+                                <a href="javascript:void(0)">
+                                    {{address.name}}
+                                    <br>
+                                    <small>{{address.address}}</small>
+                                </a>
                             </div>
                         </div>
                     </div>

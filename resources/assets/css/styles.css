@@ -5611,8 +5611,12 @@ ul.tenders-list li.open .item > .tag-list {
 }
 
 .assign-addresses-to-person-container {
-    padding-left: 140px;
-    padding-right: 140px;
+    margin-left: 140px;
+    margin-right: 140px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #e6e6e6;
 }
 
 .assign-addresses-to-person-container .type-filter{
@@ -5642,4 +5646,45 @@ ul.tenders-list li.open .item > .tag-list {
     color:#555555;
     border-radius: 6px;
     background: #ffffff;
+}
+
+#personal-modal ul.ul-addresses-to-person {
+    margin: 25px 0;
+    overflow: hidden;
+}
+
+#personal-modal ul.ul-addresses-to-person li {
+    padding: 3px 2px;
+    float: left;
+    width: 48%;
+    margin: 0 0.5%;
+}
+
+#personal-modal ul.ul-addresses-to-person li:hover {
+    background: rgba(0,0,0,.03);
+}
+
+
+#personal-modal ul.ul-addresses-to-person li a{
+    color: #333333;
+}
+
+#personal-modal ul.ul-addresses-to-person li:hover a{
+    color: #3c8dbc;
+}
+
+#personal-modal ul.ul-addresses-to-person li + li{
+    border-top: 1px solid #e6e6e6;
+}
+
+#personal-modal ul.ul-addresses-to-person li:nth-child(2){
+    border-top: 0;
+}
+
+#personal-modal ul.ul-addresses-to-person li .grey-checkbox.only-people-with-addresses-checkbox {
+    padding-top: 7px;
+}
+
+.addresses-to-person-box{
+
 }
