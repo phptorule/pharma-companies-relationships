@@ -33,11 +33,6 @@
 
             </div>
 
-            <!--<div class="col-md-1">
-                <button class="btn btn-success" @click="assignAddresses()" title="Update person's address list">
-                    <i class="fa fa-floppy-o"></i>
-                </button>
-            </div>-->
         </div>
 
         <div class="row">
@@ -157,11 +152,6 @@
             personId: function () {
                 this.init();
             },
-
-            // personAddresses: function (newVal) {
-            //
-            //     this.addPersonAddressesToSelected();
-            // }
         },
 
         computed: {
@@ -218,8 +208,6 @@
                 else {
                     this.pretenderAddressList.splice(index, 1);
                 }
-
-                console.log('pretenderAddressList', this.pretenderAddressList);
             },
 
             isAddressInList: function(addressId) {
