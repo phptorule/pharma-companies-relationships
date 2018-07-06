@@ -3067,6 +3067,10 @@ ul.staff-list li .personal-info .name {
 
 }
 
+ul.staff-list li .personal-info .name:hover{
+    color: #4a90e3;
+}
+
 ul.staff-list li .personal-info .occupation {
     margin-bottom: 0;
 
