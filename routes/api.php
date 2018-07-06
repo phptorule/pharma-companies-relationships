@@ -114,4 +114,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/addresses/pre-process-global-search', 'AddressesController@preProcessGlobalSearch');
 
     Route::get('/people-for-map', 'PeopleController@getDataForMap');
+
+    Route::post('/admin/create-user', 'AdminController@createUser');
 });

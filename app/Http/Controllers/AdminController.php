@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AdminController extends Controller
 {
-    public function createUser () {
+    public function createUser (Request $request) {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:rl_users',
+            'role' => 'required',
+            'password' => 'confirmed|required|min:6',
+            'password_confirmation' => 'required'
+        ]);
+
         $name = request('name');
 
         $email = request('email');
@@ -15,7 +24,7 @@ class AdminController extends Controller
 
         $password = request('password');
 
-        $confirmPassword = request('confirmPassword');
+        $confirmPassword = request('password_confirmation');
 
         $link = request('link');
 

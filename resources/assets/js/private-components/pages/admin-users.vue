@@ -72,7 +72,9 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <button class="btn btn-success">Create User</button>
+                            <button class="btn btn-success" @click.prevent="createUser">
+                                Create User
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -98,6 +100,33 @@
                 password: '',
                 confirmPassword: '',
                 link: ''
+            }
+        },
+        methods: {
+            createUser: function () {
+                let url = '/api/admin/create-user';
+
+                this.httpPost(url, {
+                    name: this.name,
+                    email: this.email,
+                    role: this.role,
+                    password: this.password,
+                    password_confirmation: this.confirmPassword,
+                    link: this.link
+                })
+                .then(data => {
+                    if (data.success) {
+                        // this.currentPassword = '';
+                        // this.newPassword = '';
+                        // this.newPasswordConfirmation = '';
+                        alertify.notify('New user successfully created', 'success', 3);
+                    } else {
+                        alertify.notify(data.message, 'error', 3);
+                    }
+                })
+                .catch(error => {
+                    alertify.notify(error.data.message, 'error', 3);
+                })
             }
         }
     }
