@@ -314,6 +314,7 @@
 
             notifyPersonAddressListUpdated: function() {
                 this.$emit('onPersonAddressListUpdated', {});
+                this.$eventGlobal.$emit('update-people-list',{});
             },
 
             assignAddresses: function () {

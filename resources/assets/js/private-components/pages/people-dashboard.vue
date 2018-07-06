@@ -465,6 +465,9 @@
 
             this.checkLocalStoragePreviousDashboard();
 
+            this.$eventGlobal.$on('update-people-list', ()=>{
+                this.loadPersonsPaginated();
+            })
         },
 
         created: function () {
