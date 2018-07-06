@@ -323,7 +323,7 @@
 
                 return this.httpPost(url, this.selectedAddressIdList)
                     .then(data => {
-                        console.log('response' , data);
+
                         alertify.notify('Person address list has been successfully updated', 'success', 3);
 
                         this.notifyPersonAddressListUpdated();
