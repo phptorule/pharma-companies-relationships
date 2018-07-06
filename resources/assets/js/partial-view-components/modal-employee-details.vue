@@ -50,7 +50,9 @@
                                     {{ address.name }}</router-link><span v-if="++i !== personData.addresses.length">, </span>
                             </span>
 
-                            <a href="#" @click.prevent="isEditWorkPlaces = !isEditWorkPlaces"><i class="fa fa-pencil"></i></a>
+                            <a href="#" class="edit-addresses"
+                               :class="{'active': isEditWorkPlaces}"
+                               @click.prevent="isEditWorkPlaces = !isEditWorkPlaces"><i class="fa fa-pencil"></i></a>
                         </p>
 
                         <p class="place-of-work" v-if="!personData.addresses || !personData.addresses.length">
@@ -668,6 +670,7 @@
                 window.location.hash = 'person-' + personId;
 
                 this.isEditing = false;
+                this.isEditWorkPlaces = false;
 
                 $('#personal-modal').modal('show');
 

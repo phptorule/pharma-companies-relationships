@@ -3420,9 +3420,10 @@ ul.staff-list li .personal-info .name a:hover{
     font-weight: 400;
 }
 
+#personal-modal a.edit-addresses,
 #personal-modal h4.modal-title a{
     display: inline-block;
-    color: #fff;
+    color: #fff !important;
     background: #bbbec2;
     font-size: 16px;
     width: 22px;
@@ -3434,6 +3435,8 @@ ul.staff-list li .personal-info .name a:hover{
     margin-left: 6px;
 }
 
+#personal-modal a.edit-addresses.active,
+#personal-modal a.edit-addresses:hover,
 #personal-modal h4.modal-title a:hover{
     background: #4a90e3;
 }
