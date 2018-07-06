@@ -117,7 +117,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/admin/create-user', 'AdminController@createUser');
     
-    Route::get('/admin/edit-user', 'AdminController@editUser');
+    Route::post('/admin/edit-user', 'AdminController@editUser');
 
     Route::get('/get-users', 'AdminController@getUsersPaginated');
 });

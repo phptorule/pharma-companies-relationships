@@ -12,7 +12,7 @@ class AdminController extends Controller
             'name' => 'required',
             'email' => 'required|unique:rl_users',
             'role' => 'required',
-            'password' => 'confirmed|required|min:6',
+            'password' => 'confirmed|required',
             'password_confirmation' => 'required'
         ]);
 
@@ -44,7 +44,70 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'ok'
+            'message' => 'User successfully created'
+        ]);
+    }
+
+    public function editUser (Request $request) {
+        $arr = [
+            'name' => 'required',
+            'role' => 'required'
+        ];
+        
+        if (request('changePassword')) {
+            $arr['password'] = 'confirmed|required';
+            $arr['password_confirmation'] = 'required';
+        }
+
+        $request->validate($arr);
+
+        $userId = request('userId');
+
+        $name = request('name');
+
+        $email = request('email');
+
+        $role = request('role');
+
+        $password = request('password');
+
+        $confirmPassword = request('password_confirmation');
+
+        $link = request('link');
+
+        $user = User::whereEmail($email)->where('id', '<>', $userId)->first();
+
+        if ($user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This email already exists'
+            ]);
+        }
+
+        $user = User::whereId($userId)->first();
+
+        if ($user) {
+            $user->name = $name;
+            
+            $user->email = $email;
+    
+            $user->role = $role;
+    
+            $user->password = bcrypt($password);
+    
+            $user->link = $link;
+    
+            $user->save();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'User does not exists'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User successfully edited'
         ]);
     }
 

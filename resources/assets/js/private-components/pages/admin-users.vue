@@ -114,7 +114,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group" v-if="changePassword">
                             <label for="au-password">Password*: </label>
                             <input type="password" 
                                 id="au-password" 
@@ -123,7 +123,7 @@
                                 v-model="password"
                             >
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="changePassword">
                             <label for="au-confirm-password">Confirm password*: </label>
                             <input type="password" 
                                 id="au-confirm-password" 
@@ -146,10 +146,14 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <button class="btn btn-success" @click.prevent>
+                            <button class="btn btn-success" @click.prevent="editUser">
                                 Edit User
                             </button>
                             <button class="btn" @click.prevent="closeForm">Close</button>
+                            <label for="au-want-change-password">Change password?</label>
+                            <input type="checkbox" 
+                                id="au-want-change-password" 
+                                v-model="changePassword">
                         </div>
                     </div>
                 </div>
@@ -223,7 +227,8 @@
                 totalUsers: 0,
                 usersPerPage: 10,
                 formToShow: '',
-                editingUserId: ''
+                editingUserId: '',
+                changePassword: false
             }
         },
         watch: {
@@ -234,7 +239,7 @@
             }
         },
         methods: {
-            createUser: function () {
+            createUser: _.debounce(function () {
                 let url = '/api/admin/create-user';
 
                 this.httpPost(url, {
@@ -257,7 +262,7 @@
                 .catch(error => {
                     alertify.notify(error.data.message, 'error', 3);
                 })
-            },
+            }, 400),
             getUsers: function (pageNumber) {
                 let p = pageNumber || 1;
                 let url = '/api/get-users' + '/?page=' + p;
@@ -278,6 +283,7 @@
                 this.password = '';
                 this.confirmPassword = '';
                 this.link = '';
+                this.changePassword = false;
             },
             setFormToShow: function (name, userId) {
                 this.formToShow = name;
@@ -300,13 +306,44 @@
                     this.email = user.email;
                     this.role = user.role;
                     this.link = user.link;
+                    this.editingUserId = user.id;
                 }
-            }
+            },
+            editUser: _.debounce(function () {
+                let url = '/api/admin/edit-user';
+
+                this.httpPost(url, {
+                    name: this.name,
+                    email: this.email,
+                    role: this.role,
+                    password: this.password,
+                    password_confirmation: this.confirmPassword,
+                    link: this.link,
+                    userId: this.editingUserId,
+                    changePassword: this.changePassword
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.closeForm();
+                        this.$eventGlobal.$emit('userEdited');
+                        alertify.notify('User successfully edited', 'success', 3);
+                    } else {
+                        alertify.notify(data.message, 'error', 3);
+                    }
+                })
+                .catch(error => {
+                    alertify.notify(error.data.message, 'error', 3);
+                })
+            }, 400)
         },
         mounted: function () {
             this.getUsers();
 
             this.$eventGlobal.$on('newUserCreated', () => {
+                this.getUsers();
+            });
+           
+            this.$eventGlobal.$on('userEdited', () => {
                 this.getUsers();
             });
         }
