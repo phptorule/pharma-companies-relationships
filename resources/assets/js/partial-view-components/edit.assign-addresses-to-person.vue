@@ -4,6 +4,13 @@
         <div class="row preselected-addresses-container">
             <div class="col-md-11">
 
+                <p class="empty-data-p"
+                   style="text-align: center"
+                   v-if="!pretenderAddressList.length && !personAddresses.length"
+                >
+                    Current person address list is empty
+                </p>
+
                 <span v-for="address of personAddresses"
                       class="label label-primary"
                       :title="address.name"
@@ -14,10 +21,20 @@
                     {{address.name}}
                 </span>
 
+                <span v-for="address of pretenderAddressList"
+                      class="label label-success"
+                      :title="address.name"
+                      :class="{'to-be-removed': !isAddressInList(address.id)}"
+                      @click="removeAddressFromSelectedList(address.id)"
+                >
+                    <i class="fa fa-remove"></i>
+                    {{address.name}}
+                </span>
+
             </div>
 
             <div class="col-md-1">
-                <button class="btn btn-success" @click="assignAddresses()">
+                <button class="btn btn-success" @click="assignAddresses()" title="Update person's address list">
                     <i class="fa fa-floppy-o"></i>
                 </button>
             </div>
@@ -131,7 +148,8 @@
                     currentPage: 1
                 },
                 nameInputTimeoutId: null,
-                selectedAddressIdList: []
+                selectedAddressIdList: [],
+                pretenderAddressList: []
             }
         },
 
@@ -165,10 +183,43 @@
 
                 if(index === -1) {
                     this.selectedAddressIdList.push(addressId);
+                    this.fillPretenderAddressList(addressId);
                 }
                 else {
-                    this.selectedAddressIdList.splice(index,1);
+                    // this.selectedAddressIdList.splice(index,1);
+                    this.removeAddressFromSelectedList(addressId)
                 }
+            },
+
+            removeAddressFromSelectedList: function (addressId) {
+                let index = this.selectedAddressIdList.indexOf(addressId);
+                this.selectedAddressIdList.splice(index,1);
+
+                let i = this.pretenderAddressList.findIndex(a => a.id == addressId);
+
+                if(i !== -1) {
+                    this.pretenderAddressList.splice(i, 1);
+                }
+            },
+
+            fillPretenderAddressList: function(addressId) {
+
+                let indexInPersonAddresses = this.personAddresses.findIndex(a => a.id == addressId);
+
+                let index = this.pretenderAddressList.findIndex(a => a.id == addressId);
+
+                if(index === -1 && indexInPersonAddresses === -1) {
+                    let address = this.addressList.find(address => addressId == address.id);
+
+                    if(address) {
+                        this.pretenderAddressList.push(address);
+                    }
+                }
+                else {
+                    this.pretenderAddressList.splice(index, 1);
+                }
+
+                console.log('pretenderAddressList', this.pretenderAddressList);
             },
 
             isAddressInList: function(addressId) {
@@ -184,6 +235,7 @@
             addPersonAddressesToSelected: function() {
 
                 this.selectedAddressIdList = [];
+                this.pretenderAddressList = [];
 
                 if(!this.personAddresses || !this.personAddresses.length) {
                     return;
@@ -274,6 +326,7 @@
                         alertify.notify('Person address list has been successfully updated', 'success', 3);
 
                         this.notifyPersonAddressListUpdated();
+                        this.pretenderAddressList = [];
 
                         return data;
                     })
