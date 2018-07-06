@@ -146,4 +146,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/get-used-consumables-by-address-and-product', 'ProductsController@getUsedConsumablesByAddressAndProduct');
 
     Route::get('/get-used-consumables-by-address/{addressId}', 'TendersController@getUsedConsumablesByAddressAndTender');
+
+    Route::post('/assign-addresses-to-person/{person}', 'PeopleController@assignAddressesToPerson');
 });

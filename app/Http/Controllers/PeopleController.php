@@ -382,4 +382,31 @@ class PeopleController extends Controller
         return $conditionStr;
     }
 
+
+    function checkIfOnlyIds(array $arr)
+    {
+        foreach ($arr as $a) {
+            if (!is_int($a)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    function assignAddressesToPerson(People $person)
+    {
+        $addressIds = request()->all();
+
+        if (!$this->checkIfOnlyIds($addressIds)) {
+            return response()->json('Invalid request', 403);
+        }
+
+        $person->addresses()->sync($addressIds);
+
+        $person->load('addresses');
+
+        return response()->json($person);
+    }
+
 }

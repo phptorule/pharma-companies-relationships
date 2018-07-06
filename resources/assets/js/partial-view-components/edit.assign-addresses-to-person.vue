@@ -1,5 +1,18 @@
 <template>
     <div class="assign-addresses-to-person-container">
+
+        <div class="row">
+            <div class="col-md-11">
+
+            </div>
+
+            <div class="col-md-1">
+                <button class="btn btn-success" @click="assignAddresses()">
+                    <i class="fa fa-floppy-o"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="row">
 
             <div class="form-group filter-panel">
@@ -220,9 +233,19 @@
 
                 this.applyFilters();
             },
+
+            assignAddresses: function () {
+
+                let url = '/api/assign-addresses-to-person/' + this.personId;
+
+                this.httpPost(url, this.selectedAddressIdList)
+                    .then(data => {
+                        console.log('response' , data);
+                    })
+            }
         },
 
-        props: ['personId'],
+        props: ['personId', 'personAddresses'],
 
         mounted: function () {
             this.loadAvailableAddressesPaginated();

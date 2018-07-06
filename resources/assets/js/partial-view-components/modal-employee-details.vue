@@ -57,7 +57,10 @@
                                @click="isEditWorkPlaces = !isEditWorkPlaces">Let us know</a>
                         </p>
 
-                        <assign-addresses-to-person v-if="isEditWorkPlaces"></assign-addresses-to-person>
+                        <assign-addresses-to-person
+                                :personId="personData.id"
+                                v-if="isEditWorkPlaces"
+                        ></assign-addresses-to-person>
 
 
                         <ul class="social-icons" v-if=" ! isEditing">
