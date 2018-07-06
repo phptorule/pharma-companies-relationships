@@ -198,4 +198,11 @@ class UserController extends Controller
         }
     }
 
+    public function getUsersPaginated (Request $request)
+    {
+        $users = User::paginate(10);
+
+        return response()->json($users);
+    }
+
 }

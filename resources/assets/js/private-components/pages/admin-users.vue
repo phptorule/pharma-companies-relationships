@@ -80,7 +80,36 @@
                 </div>
             </div>
             <div class="au-user-list">
-
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>User ID</td>
+                                    <td>Name</td>
+                                    <td>Email</td>
+                                    <td>Role</td>
+                                    <td>New user</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="user in users">
+                                    <td>{{user.id}}</td>
+                                    <td>{{user.name}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.role}}</td>
+                                    <td>edit</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- <div v-for="user in users" class="au-user-list-row">
+                    <div>{{user.id}}</div>
+                    <div>{{user.name}}</div>
+                    <div>{{user.email}}</div>
+                    <div>{{user.role}}</div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -99,7 +128,8 @@
                 role: '',
                 password: '',
                 confirmPassword: '',
-                link: ''
+                link: '',
+                users: []
             }
         },
         methods: {
@@ -132,8 +162,19 @@
                 })
             },
             getUsers: function () {
+                let url = '/api/get-users';
                 
+                this.httpGet(url)
+                    .then(data => {
+                        this.users = data.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
             }
+        },
+        mounted: function () {
+            this.getUsers();
         }
     }
 </script>

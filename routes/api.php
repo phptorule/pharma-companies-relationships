@@ -116,4 +116,6 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/people-for-map', 'PeopleController@getDataForMap');
 
     Route::post('/admin/create-user', 'AdminController@createUser');
+
+    Route::get('/get-users', 'UserController@getUsersPaginated');
 });
