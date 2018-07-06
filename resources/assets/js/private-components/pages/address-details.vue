@@ -435,9 +435,10 @@
     import getPersonInitials from '../../mixins/get-person-initials';
     import autocompleteSelect from '../../partial-view-components/autocomplete-select';
     import multipleAutocompleteSelect from '../../partial-view-components/multiple-autocomplete-select';
+    import mapHoveringNotified from '../../mixins/notify-map-that-hovering-over-list-item';
 
     export default {
-        mixins: [http, employeeModal, getPersonInitials],
+        mixins: [http, employeeModal, getPersonInitials, mapHoveringNotified],
         components: {
             autocompleteSelect,
             multipleAutocompleteSelect
@@ -480,8 +481,14 @@
 
         watch:{
             $route: function(to, from){
+
+                this.setAddressMouseLeaveListener();
+
                 this.addressId = this.$route.params['id'];
-                this.loadAddressDetails();
+                this.loadAddressDetails()
+                    .then(()=>{
+                        this.setAddressMouseOverListener([this.addressData]);
+                    });
 
                 let hashToPerson = (to.hash.split('&'))[0];
                 let hashFromPerson = (from.hash.split('&'))[0];
@@ -839,7 +846,13 @@
                     console.log(error);
                     alertify.notify('Error occured', 'error', 3);
                 });
-            }, 400)
+            }, 400),
+
+            listenWhenMapLoadedAndReady: function () {
+                this.$eventGlobal.$on('onMapLoadedAndReady', ()=>{
+                    this.setAddressMouseOverListener([this.addressData]);
+                });
+            }
         },
         computed: {
             showHideProducts: function () {
@@ -852,7 +865,9 @@
 
                 this.showSlidedBox(componentToDisplay);
 
-            })
+            });
+
+            this.listenWhenMapLoadedAndReady();
 
             this.addressId = this.$route.params.id;
 
@@ -874,6 +889,9 @@
             }
 
             this.$root.logData('detail', 'open', JSON.stringify(''));
+        },
+        beforeDestroy: function () {
+            this.setAddressMouseLeaveListener();
         }
     }
 </script>

@@ -523,6 +523,10 @@
                 this.setInitialMapViewFromQueryStr();
 
                 this.isFirstLoad = false;
+            },
+
+            notifyMapLoadedAndReady: function () {
+                this.$eventGlobal.$emit('onMapLoadedAndReady', {});
             }
 
         },
@@ -546,7 +550,8 @@
 
                         this.loadAddresses(queryUrl)
                             .then(data => {
-                                this.proceedMapPreparationsForCurrentPage(data)
+                                this.proceedMapPreparationsForCurrentPage(data);
+                                this.notifyMapLoadedAndReady();
                             });
                     }
                     else if(this.$route.path === '/people-dashboard') {
@@ -554,7 +559,8 @@
 
                         this.loadPeople(queryUrl)
                             .then(data => {
-                                this.proceedMapPreparationsForCurrentPage(data)
+                                this.proceedMapPreparationsForCurrentPage(data);
+                                this.notifyMapLoadedAndReady();
                             });
                     }
 
