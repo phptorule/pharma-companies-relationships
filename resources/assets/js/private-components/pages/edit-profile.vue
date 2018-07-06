@@ -292,7 +292,6 @@
                     email: this.email
                 })
                     .then(data => {
-                        console.log(data);
                         if (data.success) {
                             this.user = data.data;
                             alertify.notify('Profile settings updated', 'success', 3);
