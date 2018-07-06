@@ -5689,3 +5689,33 @@ ul.tenders-list li.open .item > .tag-list {
 .addresses-to-person-box{
 
 }
+
+#personal-modal .preselected-addresses-container {
+    margin-bottom: 15px;
+}
+
+#personal-modal .preselected-addresses-container button{
+    padding: 10px 15px
+}
+
+#personal-modal .preselected-addresses-container .label{
+    display: inline-block;
+    cursor: pointer;
+    margin-right: 5px;
+    padding-top: 5px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
+#personal-modal .preselected-addresses-container .label.to-be-removed{
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+#personal-modal .preselected-addresses-container .label.to-be-removed i.fa,
+#personal-modal .preselected-addresses-container .label:hover i.fa{
+    color: red;
+}

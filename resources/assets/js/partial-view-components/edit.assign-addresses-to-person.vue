@@ -1,8 +1,18 @@
 <template>
     <div class="assign-addresses-to-person-container">
 
-        <div class="row">
+        <div class="row preselected-addresses-container">
             <div class="col-md-11">
+
+                <span v-for="address of personAddresses"
+                      class="label label-primary"
+                      :title="address.name"
+                      :class="{'to-be-removed': !isAddressInList(address.id)}"
+                      @click="addAddressToSelectedList(address.id)"
+                >
+                    <i class="fa fa-remove"></i>
+                    {{address.name}}
+                </span>
 
             </div>
 
