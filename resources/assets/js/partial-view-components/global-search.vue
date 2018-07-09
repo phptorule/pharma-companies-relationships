@@ -42,9 +42,9 @@
             "html": "<div>Organisation</div>",
         },
         {
-            "id": 'City',
-            "text": "City",
-            "html": "<div>City</div>"
+            "id": 'Address',
+            "text": "Address",
+            "html": "<div>Address</div>"
         },
     ];
 
@@ -94,13 +94,15 @@
             },
 
             makeGlobalSearchServerRequest: function() {
-                return this.httpGet('/api/count-global-search-results')
+                    return this.httpGet('/api/count-global-search-results?search='+encodeURIComponent(this.globalSearchInput))
                     .then(data => {
 
-                        this.options = this.options.map(opt => {
+                        let newOptions = OPTIONS.filter(opt => data[opt.id]);
+
+                        this.options = newOptions.map(opt => {
                             let newOption = opt;
                             newOption.text = `${opt.id}: ${this.globalSearchInput}`;
-                            newOption.html = `<div>${opt.id}: ${this.globalSearchInput}</div>`;
+                            newOption.html = `<div>${opt.id}: ${this.globalSearchInput} - ${data[opt.id]}</div>`;
                             return newOption;
                         });
 
