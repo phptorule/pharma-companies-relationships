@@ -449,6 +449,7 @@ a{
 }
 
 .navbar.navbar-static-top > div.nav-search{
+    position: relative;
     margin-left: 0;
     float: none;
 }
@@ -5740,4 +5741,14 @@ ul.tenders-list li.open .item > .tag-list {
 #personal-modal .preselected-addresses-container .label.to-be-removed i.fa,
 #personal-modal .preselected-addresses-container .label:hover i.fa{
     color: red;
+}
+
+.nav-search .select2.select2-container {
+    position: absolute;
+    left: 20%;
+    bottom: 0;
+}
+
+.nav-search .select2-selection.select2-selection--single{
+    opacity: 0.1;
 }

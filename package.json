@@ -25,15 +25,15 @@
         "jquery-ui": "^1.12.1",
         "mapbox-gl": "^0.44.2",
         "vue-ctk-tooltip": "^1.0.7",
+        "vue-directive-tooltip": "^1.4.5",
         "vue-for-range": "^1.0.2",
         "vue-json-excel": "^0.2.5",
         "vue-pagination-2": "^1.6.1",
         "vue-range-slider": "^0.6.0",
-        "vue-directive-tooltip": "^1.4.5",
         "vue-router": "^3.0.1",
         "vue-select": "^2.4.0",
-        "vuex": "^2.2.1",
-        "vue-slider-component": "^2.6.2"
+        "vue-slider-component": "^2.6.2",
+        "vuex": "^2.2.1"
     },
     "devDependencies": {
         "autoprefixer": "^6.7.2",

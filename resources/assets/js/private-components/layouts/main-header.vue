@@ -14,7 +14,7 @@
             </div>
 
 
-            <div class="nav-search">
+            <div class="nav-search" v-if="false">
                 <ul class="nav navbar-nav">
                     <li>
                         <img src="/images/ic-search.png" alt="">
@@ -30,6 +30,8 @@
                     </li>
                 </ul>
             </div>
+
+            <global-search></global-search>
 
             <div class="nav-links">
                 <ul>
