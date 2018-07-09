@@ -50,6 +50,7 @@ mix
             'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             'bower_components/jquery-slimscroll/jquery.slimscroll.min.js',
             'bower_components/fastclick/lib/fastclick.js',
+            'bower_components/select2/dist/js/select2.js',
             'node_modules/alertifyjs/build/alertify.js',
             'public/js/graph-1.js'
         ],
