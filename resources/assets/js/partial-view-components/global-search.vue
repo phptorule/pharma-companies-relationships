@@ -1,9 +1,30 @@
 <template>
 
         <div class="nav-search">
+
             <ul class="nav navbar-nav">
                 <li>
                     <img src="/images/ic-search.png" alt="">
+
+
+                    <ul class="search-iteration">
+                        <li v-for="(searchItem, i) of searchIterations"
+                            :title="searchItem.type + ': ' + searchItem.value"
+                        >
+
+                            <i class="fa fa-users" v-if="searchItem.type === 'Person'"></i>
+                            <i class="fa fa-globe" v-if="searchItem.type === 'Address'"></i>
+                            <i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i>
+                            <i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i>
+
+                            : {{searchItem.value}}
+                            <sup @click="searchIterations.splice(i, 1)">
+                                <i class="fa fa-remove"></i>
+                            </sup>
+                        </li>
+                    </ul>
+
+
                     <input
                             v-model="globalSearchInput"
                             @keyup="makeGlobalSearch()"
@@ -56,6 +77,7 @@
             return {
                 select2Element: null,
                 selectedCategory: '',
+                searchIterations: [],
                 globalSearchInput: '',
                 options: JSON.parse(JSON.stringify(OPTIONS))
             }
@@ -119,6 +141,7 @@
             },
 
             initSelect2: function () {
+
                 this.select2Element.select2({
                     data: this.options,
                     minimumResultsForSearch: -1,
@@ -132,13 +155,8 @@
                         return data.text;
                     },
                 })
-                // .val(this.value)
-                // .trigger('change')
-                    .on('select2:select', (e) => {
-                        console.log('e',e.params.data.id);
-
-                        this.selectedCategory = e.params.data.id;
-                    })
+                    .val(null)
+                    .trigger('change')
             },
         },
 
@@ -147,6 +165,18 @@
             this.select2Element = $('#global-search-input');
 
             this.initSelect2();
+
+            this.select2Element
+                .on('select2:select', (e) => {
+
+                    this.selectedCategory = e.params.data.id;
+
+                    this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
+
+                    this.globalSearchInput = '';
+
+                    console.log('this.searchIterations',this.searchIterations);
+                })
 
         }
     }
