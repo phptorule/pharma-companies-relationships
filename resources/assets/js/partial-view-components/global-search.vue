@@ -110,6 +110,15 @@
 
                         this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
 
+                        let hash = this.$route.hash;
+
+                        if(+data.count_addresses === 0 && +data.count_people > 0) {
+                            this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
+                        }
+                        else {
+                            this.$router.push('/dashboard?address-ids=' + data.address_ids.toString() + hash)
+                        }
+
                         return data;
                     })
             },
