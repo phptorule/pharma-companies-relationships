@@ -5788,3 +5788,25 @@ ul.search-iteration .fa-remove{
 ul.search-iteration .fa-remove:hover{
     color: red;
 }
+
+.select2-results__option .circle{
+    float: right;
+    background: #ea2929;
+    color: #fff;
+    font-size: 0.9em;
+    padding: 2px 7px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.select2-results__option {
+    padding: 9px 8px;
+}
+
+.select2.select2-container{
+    width: 500px !important;
+}
+
+.select2-dropdown.select2-dropdown--below {
+    width: 500px !important;
+}

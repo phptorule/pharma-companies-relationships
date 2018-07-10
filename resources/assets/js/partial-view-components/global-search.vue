@@ -154,7 +154,7 @@
                             newOption.html += opt.id === 'Product' ? `<i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i> ` : '';
                             newOption.html += opt.id === 'Organisation' ? `<i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i> ` : '';
 
-                            newOption.html += `${opt.id}: ${this.globalSearchInput} - ${data[opt.id]}`;
+                            newOption.html += `${opt.id}: ${this.globalSearchInput} <span class="circle">${data[opt.id]}</span>`;
                             newOption.html += `</div>`;
 
                             return newOption;
