@@ -180,7 +180,7 @@
                 appliedFilters: {
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
-                    globalSearch: this.$route.query['global-search'] || '',
+                    peopleIds: this.$route.query['people-ids'] || '',
                     addressIds: this.$route.query['address-ids'] || '',
                     personTypes: this.$route.query['person-type-id'] || '',
                     roleInput: null,
@@ -267,7 +267,7 @@
             initFilters: function () {
 
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
-                this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
+                this.appliedFilters.peopleIds = this.$route.query['people-ids'] || '';
                 this.appliedFilters.personTypes = this.$route.query['person-type-id'] || '';
 
             },
@@ -310,8 +310,8 @@
                     queryStr += '&role=' + this.appliedFilters.roleInput;
                 }
 
-                if (this.appliedFilters.globalSearch) {
-                    queryStr += '&global-search=' + this.appliedFilters.globalSearch;
+                if (this.appliedFilters.peopleIds) {
+                    queryStr += '&people-ids=' + this.appliedFilters.peopleIds;
                 }
 
                 if (this.appliedFilters.sortBy) {
@@ -377,14 +377,14 @@
                     type: '',
                     sortBy: '',
                     isOnlySortingChanged: false,
-                    globalSearch: '',
+                    peopleIds: '',
                     addressIds: '',
                     personTypes: ''
                 };
 
                 this.$eventGlobal.$emit('resetedAllFilters');
 
-                if(this.$route.query['global-search'] || this.$route.query['address-ids']) {
+                if(this.$route.query['address-ids']) {
                     this.$router.push('/dashboard');
                 }
 

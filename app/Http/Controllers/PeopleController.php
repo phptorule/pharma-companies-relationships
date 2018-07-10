@@ -319,8 +319,8 @@ class PeopleController extends Controller
             $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
         }
 
-        if(isset($params['global-search'])) {
-            $query->where('rl_people.name', 'like', '%'.$params['global-search'].'%');
+        if(isset($params['people-ids'])) {
+            $query->whereIn('rl_people.id', explode(',',$params['people-ids']));
         }
 
         if(isset($params['only-people-with-addresses'])) {
@@ -375,8 +375,8 @@ class PeopleController extends Controller
             $conditionStr .= " AND p.role LIKE '%".$params['role']."%' ";
         }
 
-        if(isset($params['global-search'])) {
-            $conditionStr .= " AND p.name LIKE '%".$params['global-search']."%' ";
+        if(isset($params['people-ids'])) {
+            $conditionStr .= " AND p.id IN (".$params['people-ids'].") ";
         }
 
         return $conditionStr;
