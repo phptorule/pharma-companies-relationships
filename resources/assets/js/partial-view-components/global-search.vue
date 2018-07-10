@@ -27,7 +27,7 @@
 
                     <input
                             v-model="globalSearchInput"
-                            @keyup="makeGlobalSearch()"
+                            @keyup="makeGlobalSearch"
                             placeholder="Search by laboratory, people or location"
                     >
 
@@ -50,22 +50,22 @@
         {
             "id": 'Person',
             "text": "Person",
-            "html": "<div>Person</div>"
+            "html": "<div><i class='fa fa-users'></i> Person</div>"
         },
         {
             "id": 'Product',
             "text": "Product",
-            "html": "<div>Product</div>",
+            "html": "<div><i class='fa fa-shopping-bag'></i> Product</div>",
         },
         {
             "id": 'Organisation',
             "text": "Organisation",
-            "html": "<div>Organisation</div>",
+            "html": "<div><i class='fa fa-building'></i> Organisation</div>",
         },
         {
             "id": 'Address',
             "text": "Address",
-            "html": "<div>Address</div>"
+            "html": "<div><i class='fa fa-globe'></i> Address</div>"
         },
     ];
 
@@ -76,28 +76,44 @@
         data: function() {
             return {
                 select2Element: null,
-                selectedCategory: '',
                 searchIterations: [],
                 globalSearchInput: '',
-                options: JSON.parse(JSON.stringify(OPTIONS))
+                options: JSON.parse(JSON.stringify(OPTIONS)),
+                firstBackspaceClicked: false
             }
         },
 
         watch: {
-            selectedCategory: function (newCategory) {
-                console.log('newCategory',newCategory);
-            },
 
             options: function (options) {
 
                 $(this.select2Element).empty();
 
                 this.initSelect2();
+            },
+
+            searchIterations: function (newValue, oldValue) {
+
+                if(newValue.length) {
+                    console.log('PERFORM GLOBAL SEARCH', JSON.parse(JSON.stringify(newValue)));
+                }
             }
         },
 
         methods: {
-            makeGlobalSearch: function () {
+            makeGlobalSearch: function (e) {
+
+                if(e.keyCode === 8 && this.globalSearchInput === '') {
+
+                    if(this.firstBackspaceClicked) {
+                        this.searchIterations.splice(this.searchIterations.length-1, 1);
+                        this.firstBackspaceClicked = false;
+                    }
+
+                    this.firstBackspaceClicked = true;
+                    return this.options = JSON.parse(JSON.stringify(OPTIONS));
+                }
+
 
                 if (this.globalSearchIdCount) {
                     clearTimeout(this.globalSearchIdCount)
@@ -106,9 +122,11 @@
 
                 this.globalSearchIdCount = setTimeout(()=>{
 
-                    if(this.globalSearchInput === '') {
-                        return this.options = JSON.parse(JSON.stringify(OPTIONS));
-                    }
+                    this.firstBackspaceClicked = false;
+
+                    // if(this.globalSearchInput === '') {
+                    //     return this.options = JSON.parse(JSON.stringify(OPTIONS));
+                    // }
 
                     this.makeGlobalSearchServerRequest();
 
@@ -116,7 +134,12 @@
             },
 
             makeGlobalSearchServerRequest: function() {
-                    return this.httpGet('/api/count-global-search-results?search='+encodeURIComponent(this.globalSearchInput))
+
+                let url = '/api/count-global-search-results?search='+encodeURIComponent(this.globalSearchInput);
+
+                url += this.addSearchIterationToUrl();
+
+                return this.httpGet(url)
                     .then(data => {
 
                         let newOptions = OPTIONS.filter(opt => data[opt.id]);
@@ -124,7 +147,16 @@
                         this.options = newOptions.map(opt => {
                             let newOption = opt;
                             newOption.text = `${opt.id}: ${this.globalSearchInput}`;
-                            newOption.html = `<div>${opt.id}: ${this.globalSearchInput} - ${data[opt.id]}</div>`;
+                            newOption.html = `<div>`;
+
+                            newOption.html += opt.id === 'Person' ? `<i class="fa fa-users" v-if="searchItem.type === 'Person'"></i> ` : '';
+                            newOption.html += opt.id === 'Address' ? `<i class="fa fa-globe" v-if="searchItem.type === 'Address'"></i> ` : '';
+                            newOption.html += opt.id === 'Product' ? `<i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i> ` : '';
+                            newOption.html += opt.id === 'Organisation' ? `<i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i> ` : '';
+
+                            newOption.html += `${opt.id}: ${this.globalSearchInput} - ${data[opt.id]}`;
+                            newOption.html += `</div>`;
+
                             return newOption;
                         });
 
@@ -132,6 +164,16 @@
                             this.select2Element.select2('open');
                         }, 0)
                     });
+            },
+
+            addSearchIterationToUrl: function() {
+                let str = '';
+
+                this.searchIterations.forEach(iteration => {
+                    str += '&iteration[]=' + iteration.type + '/--/' +iteration.value;
+                });
+
+                return str;
             },
 
             resetGlobalSearch: function () {
@@ -169,13 +211,9 @@
             this.select2Element
                 .on('select2:select', (e) => {
 
-                    this.selectedCategory = e.params.data.id;
-
                     this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
 
                     this.globalSearchInput = '';
-
-                    console.log('this.searchIterations',this.searchIterations);
                 })
 
         }

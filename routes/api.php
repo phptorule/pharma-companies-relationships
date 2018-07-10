@@ -149,5 +149,5 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/assign-addresses-to-person/{person}', 'PeopleController@assignAddressesToPerson');
 
-    Route::get('/count-global-search-results', 'GlobalSearchController@index');
+    Route::get('/count-global-search-results', 'GlobalSearchController@searchForAutoSuggesting');
 });
