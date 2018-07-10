@@ -98,6 +98,14 @@
                 if(newValue.length) {
                     this.performGlobalSearch();
                 }
+                else{
+                    this.notifyGlobalSearchPerformed({
+                        count_addresses: null,
+                        count_people: null,
+                        address_ids: [],
+                        people_ids: []
+                    });
+                }
             }
         },
 
@@ -108,7 +116,7 @@
                     .then(data => {
                         GlobalSearch.resultCounter = data;
 
-                        this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
+                        this.notifyGlobalSearchPerformed(data);
 
                         let hash = this.$route.hash;
 
@@ -121,6 +129,10 @@
 
                         return data;
                     })
+            },
+
+            notifyGlobalSearchPerformed: function(data) {
+                this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             },
 
             makePreliminaryGlobalSearch: function (e) {
