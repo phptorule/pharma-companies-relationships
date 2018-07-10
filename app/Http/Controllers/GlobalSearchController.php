@@ -33,11 +33,12 @@ class GlobalSearchController extends Controller
 
             $countOrganisations = $this->findOrganisationMatches($searchStr, $groupedSearchIterations);
 
-            $countAddresses = $this->findAddressesMatches($searchStr, $groupedSearchIterations);
+            $countAddresses = $this->findAddressMatches($searchStr, $groupedSearchIterations);
 
             $countPeople = People::where('name', 'like', '%'.$searchStr.'%')->count();
 
-            $countProduct = Product::where('company', 'like', '%'.$searchStr.'%')->orWhere('name', 'like', '%'.$searchStr.'%')->count();
+            $countProduct = $this->findProductMatches($searchStr, $groupedSearchIterations);
+
         }
 
 
@@ -110,7 +111,7 @@ class GlobalSearchController extends Controller
     }
 
 
-    function findAddressesMatches($searchStr, $groupedSearchIterations)
+    function findAddressMatches($searchStr, $groupedSearchIterations)
     {
         $query = Address::where('address', 'like', '%'.$searchStr.'%');
 
@@ -153,6 +154,50 @@ class GlobalSearchController extends Controller
         }
 
         return $query;
+    }
+
+
+    function findProductMatches($searchStr, $groupedSearchIterations)
+    {
+        $query = Product::where('company', 'like', '%'.$searchStr.'%')->orWhere('name', 'like', '%'.$searchStr.'%');
+
+        if(!empty($groupedSearchIterations['organisations'])) {
+            foreach ($groupedSearchIterations['organisations'] as $organisation) {
+                $query->whereHas('addresses', function($q) use ($organisation) {
+                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
+                });
+            }
+        }
+
+        if(!empty($groupedSearchIterations['addresses'])) {
+            foreach ($groupedSearchIterations['addresses'] as $address) {
+                $query->whereHas('addresses', function($q) use ($address) {
+                    $q->where('rl_addresses.address', 'like', '%'.$address.'%');
+                });
+            }
+        }
+
+        if(!empty($groupedSearchIterations['people'])) {
+            foreach ($groupedSearchIterations['people'] as $person) {
+                $query->whereHas('addresses', function($q_a) use ($person) {
+
+                    $q_a->whereHas('people', function($q) use ($person) {
+                        $q->where('name', 'like', '%'.$person.'%');
+                    });
+
+                });
+            }
+        }
+
+        if(!empty($groupedSearchIterations['products'])) {
+            foreach ($groupedSearchIterations['products'] as $product) {
+                $query->where('company', 'like', '%'.$product.'%')
+                    ->orWhere('name', 'like', '%'.$product.'%');
+
+            }
+        }
+
+        return $query->count();
     }
 
 
