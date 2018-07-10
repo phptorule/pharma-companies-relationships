@@ -27,7 +27,7 @@
 
                     <input
                             v-model="globalSearchInput"
-                            @keyup="makeGlobalSearch"
+                            @keyup="makePreliminaryGlobalSearch"
                             placeholder="Search by laboratory, people or location"
                     >
 
@@ -45,6 +45,7 @@
 <script>
 
     import http from '../mixins/http';
+    import GlobalSearch from '../services/global-search';
 
     const OPTIONS = [
         {
@@ -96,12 +97,27 @@
 
                 if(newValue.length) {
                     console.log('PERFORM GLOBAL SEARCH', JSON.parse(JSON.stringify(newValue)));
+
+                    this.performGlobalSearch();
                 }
             }
         },
 
         methods: {
-            makeGlobalSearch: function (e) {
+
+            performGlobalSearch: function() {
+                console.log('searchIterations', this.searchIterations);
+                console.log('iterationsToURL', this.addSearchIterationToUrl());
+
+                return this.httpGet('/api/global-search'+this.addSearchIterationToUrl().replace('&','?'))
+                    .then(data => {
+                        GlobalSearch.resultCounter = data;
+
+                        this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
+                    })
+            },
+
+            makePreliminaryGlobalSearch: function (e) {
 
                 if(e.keyCode === 8 && this.globalSearchInput === '') {
 
@@ -124,16 +140,12 @@
 
                     this.firstBackspaceClicked = false;
 
-                    // if(this.globalSearchInput === '') {
-                    //     return this.options = JSON.parse(JSON.stringify(OPTIONS));
-                    // }
-
-                    this.makeGlobalSearchServerRequest();
+                    this.makePreliminaryGlobalSearchServerRequest();
 
                 }, 500);
             },
 
-            makeGlobalSearchServerRequest: function() {
+            makePreliminaryGlobalSearchServerRequest: function() {
 
                 let url = '/api/count-global-search-results?search='+encodeURIComponent(this.globalSearchInput);
 

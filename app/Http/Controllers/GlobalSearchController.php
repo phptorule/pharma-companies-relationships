@@ -11,6 +11,44 @@ use Illuminate\Support\Facades\Log;
 class GlobalSearchController extends Controller
 {
 
+    function index()
+    {
+        $si = request()->get('iteration');
+
+        $groupedSearchIterations = $this->groupSearchIterationsByEntity($si);
+
+        $addressIds = $this->searchForAddressesIds($groupedSearchIterations)->pluck('id');
+
+        $peopleIds =  $this->searchForPeopleIds($groupedSearchIterations)->pluck('id');
+
+        return response()->json([
+            'count_addresses' => count($addressIds),
+            'addresses_ids' => $addressIds,
+            'count_people' => count($peopleIds),
+            'people_ids' => $peopleIds
+        ]);
+    }
+
+
+    function searchForAddressesIds($groupedSearchIterations)
+    {
+        $query = Address::select('rl_addresses.id');
+
+        $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
+
+        return $query->get();
+    }
+
+
+    function searchForPeopleIds($groupedSearchIterations)
+    {
+        $query = People::select('rl_people.id');
+
+        $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+
+        return $query->get();
+    }
+
 
     function searchForAutoSuggesting()
     {
@@ -205,6 +243,14 @@ class GlobalSearchController extends Controller
     {
         $query = People::where('name', 'like', '%'.$searchStr.'%');
 
+        $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+
+        return $query->count();
+    }
+
+
+    private function _subQueryForPeopleEntity($query, $groupedSearchIterations)
+    {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
                 $query->whereHas('addresses', function($q) use ($organisation) {
@@ -240,6 +286,6 @@ class GlobalSearchController extends Controller
             }
         }
 
-        return $query->count();
+        return $query;
     }
 }
