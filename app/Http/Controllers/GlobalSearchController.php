@@ -35,7 +35,7 @@ class GlobalSearchController extends Controller
 
             $countAddresses = $this->findAddressMatches($searchStr, $groupedSearchIterations);
 
-            $countPeople = People::where('name', 'like', '%'.$searchStr.'%')->count();
+            $countPeople = $this->findPeopleMatches($searchStr, $groupedSearchIterations);
 
             $countProduct = $this->findProductMatches($searchStr, $groupedSearchIterations);
 
@@ -201,4 +201,45 @@ class GlobalSearchController extends Controller
     }
 
 
+    function findPeopleMatches($searchStr, $groupedSearchIterations)
+    {
+        $query = People::where('name', 'like', '%'.$searchStr.'%');
+
+        if(!empty($groupedSearchIterations['organisations'])) {
+            foreach ($groupedSearchIterations['organisations'] as $organisation) {
+                $query->whereHas('addresses', function($q) use ($organisation) {
+                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
+                });
+            }
+        }
+
+        if(!empty($groupedSearchIterations['addresses'])) {
+            foreach ($groupedSearchIterations['addresses'] as $address) {
+                $query->whereHas('addresses', function($q) use ($address) {
+                    $q->where('rl_addresses.address', 'like', '%'.$address.'%');
+                });
+            }
+        }
+
+        if(!empty($groupedSearchIterations['people'])) {
+            foreach ($groupedSearchIterations['people'] as $person) {
+                $query->where('rl_people.name', 'like', '%'.$person.'%');
+            }
+        }
+
+        if(!empty($groupedSearchIterations['products'])) {
+            foreach ($groupedSearchIterations['products'] as $product) {
+                $query->whereHas('addresses', function($q_a) use ($product) {
+
+                    $q_a->whereHas('products', function($q) use ($product) {
+                        $q->where('company', 'like', '%'.$product.'%');
+                        $q->orWhere('name', 'like', '%'.$product.'%');
+                    });
+
+                });
+            }
+        }
+
+        return $query->count();
+    }
 }
