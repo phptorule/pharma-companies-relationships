@@ -105,6 +105,8 @@
                         address_ids: [],
                         people_ids: []
                     });
+
+                    this.$router.push(this.$route.path + this.$route.hash);
                 }
             }
         },
