@@ -96,8 +96,6 @@
             searchIterations: function (newValue, oldValue) {
 
                 if(newValue.length) {
-                    console.log('PERFORM GLOBAL SEARCH', JSON.parse(JSON.stringify(newValue)));
-
                     this.performGlobalSearch();
                 }
             }
@@ -106,14 +104,13 @@
         methods: {
 
             performGlobalSearch: function() {
-                console.log('searchIterations', this.searchIterations);
-                console.log('iterationsToURL', this.addSearchIterationToUrl());
-
                 return this.httpGet('/api/global-search'+this.addSearchIterationToUrl().replace('&','?'))
                     .then(data => {
                         GlobalSearch.resultCounter = data;
 
                         this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
+
+                        return data;
                     })
             },
 

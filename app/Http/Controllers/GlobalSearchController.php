@@ -23,7 +23,7 @@ class GlobalSearchController extends Controller
 
         return response()->json([
             'count_addresses' => count($addressIds),
-            'addresses_ids' => $addressIds,
+            'address_ids' => $addressIds,
             'count_people' => count($peopleIds),
             'people_ids' => $peopleIds
         ]);

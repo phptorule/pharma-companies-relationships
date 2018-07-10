@@ -7,7 +7,7 @@
                     {{countAddresses}}
                 </span>
 
-                <router-link :to="globalSearch.globalSearchInput ? '/dashboard?global-search=' + globalSearchQueryStr : '/dashboard'"><i class="fa fa-building"></i> Organisations</router-link>
+                <router-link :to="addressIdsToString ? '/dashboard?address-ids=' + addressIdsToString : '/dashboard'"><i class="fa fa-building"></i> Organisations</router-link>
             </li>
             <li :class="{active: activeTab === 'people-dashboard' }">
 
@@ -15,7 +15,7 @@
                     {{countPeople}}
                 </span>
 
-                <router-link :to="globalSearch.globalSearchInput ? '/people-dashboard?global-search=' + globalSearchQueryStr : '/people-dashboard'"><i class="fa fa-group"></i> People <sup>&beta;</sup></router-link>
+                <router-link :to="peopleIdsToString ? '/people-dashboard?people-ids=' + peopleIdsToString : '/people-dashboard'"><i class="fa fa-group"></i> People <sup>&beta;</sup></router-link>
             </li>
         </ul>
     </div>
@@ -31,7 +31,9 @@
             return {
                 countAddresses: null,
                 countPeople: null,
-                globalSearch: GlobalSearch
+                globalSearch: GlobalSearch,
+                addressIdsToString: '',
+                peopleIdsToString: '',
             }
         },
 
@@ -39,28 +41,24 @@
             activeTab: function () {
                 return this.$route.path.replace('/', '')
             },
-
-            globalSearchQueryStr: function () {
-                return encodeURIComponent(this.globalSearch.globalSearchInput);
-            }
         },
 
         methods: {
             fillCounterProps: function (counterData) {
                 this.countAddresses = counterData.count_addresses;
                 this.countPeople = counterData.count_people;
+                this.addressIdsToString = counterData.address_ids.toString();
+                this.peopleIdsToString = counterData.people_ids.toString();
             }
         },
 
         mounted: function () {
 
+            console.log('GlobalSearch', GlobalSearch);
+
             this.$eventGlobal.$on('notifyGlobalSearchCountResults', data =>{
                 this.fillCounterProps(data);
             });
-
-            if (this.$route.query['global-search']) {
-                this.globalSearch.globalSearchInput = this.$route.query['global-search'];
-            }
 
             this.fillCounterProps(GlobalSearch.resultCounter);
 

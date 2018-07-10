@@ -141,9 +141,9 @@
 
             notifyGlobalSearchPerformed: function (data) {
 
-                GlobalSearch.resultCounter = data;
+                // GlobalSearch.resultCounter = data;
 
-                this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
+                // this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             },
 
             resetGlobalSearch: function () {
