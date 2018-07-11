@@ -29,6 +29,7 @@
                             v-model="globalSearchInput"
                             @keyup="makePreliminaryGlobalSearch"
                             placeholder="Search by laboratory, people or location"
+                            class="global-search-input"
                     >
 
                     <i v-if="globalSearchInput"
@@ -37,7 +38,7 @@
                 </li>
             </ul>
 
-            <select id="global-search-input" style="width: 300px"></select>
+            <select id="global-search-select2" style="width: 300px"></select>
         </div>
 
 </template>
@@ -242,7 +243,7 @@
 
         mounted: function () {
 
-            this.select2Element = $('#global-search-input');
+            this.select2Element = $('#global-search-select2');
 
             this.initSelect2();
 
@@ -252,6 +253,8 @@
                     this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
 
                     this.globalSearchInput = '';
+
+                    $('.global-search-input').focus();
                 })
 
         }
