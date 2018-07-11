@@ -272,6 +272,10 @@
                 this.searchIterations = [];
             });
 
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('resetedAllFilters');
         }
     }
 </script>
