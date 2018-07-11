@@ -196,8 +196,8 @@ class GlobalSearchController extends Controller
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
                 $query->whereHas('products', function($q) use ($product) {
-                    $q->where('company', 'like', '%'.$product.'%');
-                    $q->orWhere('name', 'like', '%'.$product.'%');
+                    $q->where('rl_products.company', 'like', '%'.$product.'%');
+                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
                 });
             }
         }
@@ -234,9 +234,9 @@ class GlobalSearchController extends Controller
                 $query->whereHas('addresses', function($q_a) use ($person) {
 
                     $q_a->whereHas('people', function($q) use ($person) {
-                        $q->orWhere('name', 'like', '%'.$person.'%');
-                        $q->orWhere('role', 'like', '%'.$person.'%');
-                        $q->orWhere('description', 'like', '%'.$person.'%');
+                        $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
+                        $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
+                        $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
                     });
 
                 });
