@@ -16,6 +16,7 @@
                             <i class="fa fa-globe" v-if="searchItem.type === 'Address'"></i>
                             <i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i>
                             <i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i>
+                            <i class="fa fa-question-circle" v-if="searchItem.type === 'Any'"></i>
 
                             : {{searchItem.value}}
                             <sup @click="searchIterations.splice(i, 1)">
@@ -68,6 +69,11 @@
             "id": 'Address',
             "text": "Address",
             "html": "<div><i class='fa fa-globe'></i> Address</div>"
+        },
+        {
+            "id": 'Any',
+            "text": "Any",
+            "html": "<div><i class='fa fa-question-circle'></i> Any</div>"
         },
     ];
 
@@ -203,10 +209,11 @@
                             newOption.text = `${opt.id}: ${this.globalSearchInput}`;
                             newOption.html = `<div>`;
 
-                            newOption.html += opt.id === 'Person' ? `<i class="fa fa-users" v-if="searchItem.type === 'Person'"></i> ` : '';
-                            newOption.html += opt.id === 'Address' ? `<i class="fa fa-globe" v-if="searchItem.type === 'Address'"></i> ` : '';
-                            newOption.html += opt.id === 'Product' ? `<i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i> ` : '';
-                            newOption.html += opt.id === 'Organisation' ? `<i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i> ` : '';
+                            newOption.html += opt.id === 'Person' ? `<i class="fa fa-users"></i> ` : '';
+                            newOption.html += opt.id === 'Address' ? `<i class="fa fa-globe"></i> ` : '';
+                            newOption.html += opt.id === 'Product' ? `<i class="fa fa-shopping-bag"></i> ` : '';
+                            newOption.html += opt.id === 'Organisation' ? `<i class="fa fa-building"></i> ` : '';
+                            newOption.html += opt.id === 'Any' ? `<i class="fa fa-question-circle"></i> ` : '';
 
                             newOption.html += `${opt.id}: ${this.globalSearchInput} <span class="circle">${data[opt.id]}</span>`;
                             newOption.html += `</div>`;

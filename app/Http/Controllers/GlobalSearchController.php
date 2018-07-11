@@ -66,7 +66,7 @@ class GlobalSearchController extends Controller
                                 ->count();
         }
         else {
-            $groupedSearchIterations = $this->groupSearchIterationsByEntity($searchIterations);
+            $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($searchIterations);
 
             $countOrganisations = $this->findOrganisationMatches($searchStr, $groupedSearchIterations);
 
@@ -84,56 +84,10 @@ class GlobalSearchController extends Controller
             'Address' => $countAddresses,
             'Person' => $countPeople,
             'Product' => $countProduct,
+            'Any' => 100,
         ];
 
         return response()->json($responseData);
-    }
-
-
-    function groupSearchIterationsByEntity($searchIterations)
-    {
-        $groups = [
-            'people' => [],
-            'addresses' => [],
-            'products' => [],
-            'organisations' => [],
-        ];
-
-        if(!empty($searchIterations)) {
-
-            $groups['organisations'] = array_filter($searchIterations, function ($element) {
-                return strpos($element, 'Organisation/--/') !== false;
-            });
-            $groups['organisations'] = array_map(function ($el){
-                return str_replace('Organisation/--/', '', $el);
-            }, $groups['organisations']);
-
-
-            $groups['people'] = array_filter($searchIterations, function ($element) {
-                return strpos($element, 'Person/--/') !== false;
-            });
-            $groups['people'] = array_map(function ($el){
-                return str_replace('Person/--/', '', $el);
-            }, $groups['people']);
-
-
-            $groups['addresses'] = array_filter($searchIterations, function ($element) {
-                return strpos($element, 'Address/--/') !== false;
-            });
-            $groups['addresses'] = array_map(function ($el){
-                return str_replace('Address/--/', '', $el);
-            }, $groups['addresses']);
-
-
-            $groups['products'] = array_filter($searchIterations, function ($element) {
-                return strpos($element, 'Product/--/') !== false;
-            });
-            $groups['products'] = array_map(function ($el){
-                return str_replace('Product/--/', '', $el);
-            }, $groups['products']);
-        }
-
-        return $groups;
     }
 
 

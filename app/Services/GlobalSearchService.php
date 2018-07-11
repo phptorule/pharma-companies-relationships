@@ -43,6 +43,7 @@ class GlobalSearchService
             'addresses' => [],
             'products' => [],
             'organisations' => [],
+            'any' => [],
         ];
 
         if(!empty($searchIterations)) {
@@ -77,6 +78,14 @@ class GlobalSearchService
             $groups['products'] = array_map(function ($el){
                 return str_replace('Product/--/', '', $el);
             }, $groups['products']);
+
+
+            $groups['any'] = array_filter($searchIterations, function ($element) {
+                return strpos($element, 'Any/--/') !== false;
+            });
+            $groups['any'] = array_map(function ($el){
+                return str_replace('Any/--/', '', $el);
+            }, $groups['any']);
         }
 
         return $groups;
