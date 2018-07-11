@@ -116,7 +116,6 @@
             performGlobalSearch: function() {
                 return this.httpGet('/api/global-search'+this.addSearchIterationToUrl().replace('&','?'))
                     .then(data => {
-                        GlobalSearch.resultCounter = data;
 
                         this.notifyGlobalSearchPerformed(data);
 
@@ -134,6 +133,9 @@
             },
 
             notifyGlobalSearchPerformed: function(data) {
+
+                GlobalSearch.resultCounter = data;
+
                 this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             },
 
