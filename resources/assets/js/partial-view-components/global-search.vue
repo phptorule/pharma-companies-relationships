@@ -130,11 +130,12 @@
 
                         let hash = this.$route.hash;
 
-                        if(+data.count_people > 0) {
-                            this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
-                        }
-                        else if(+data.count_addresses > 0) {
+
+                        if(+data.count_addresses > 0) {
                             this.$router.push('/dashboard?address-ids=' + data.address_ids.toString() + hash)
+                        }
+                        else if (+data.count_people > 0) {
+                            this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
                         }
                         else {
                             this.$router.push('/dashboard?address-ids=' + '-1' + hash)
