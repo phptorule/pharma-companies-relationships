@@ -171,8 +171,8 @@
                     type:  this.$route.query['type-id'] || '',
                     sortBy: this.$route.query['sort-by'] || '',
                     isOnlySortingChanged: false,
-                    globalSearch: this.$route.query['global-search'] || '',
-                    addressIds: this.$route.query['address-ids'] || ''
+                    globalSearch: this.$route.query['iteration[]'] || [],
+                    addressIds: this.$route.query['address-ids'] || '',
                 },
                 pagination: {
                     currentPage: 1
@@ -289,9 +289,14 @@
                     this.appliedFilters.tags = [this.appliedFilters.tags ];
                 }
 
+                this.appliedFilters.globalSearch = this.$route.query['iteration[]'] || [];
+
+                if(typeof this.appliedFilters.globalSearch === 'string') {
+                    this.appliedFilters.globalSearch = [this.appliedFilters.globalSearch ];
+                }
+
                 this.appliedFilters.type =  this.$route.query['type-id'] || '';
                 this.appliedFilters.sortBy = this.$route.query['sort-by'] || '';
-                this.appliedFilters.globalSearch = this.$route.query['global-search'] || '';
                 this.appliedFilters.addressIds = this.$route.query['address-ids'] || '';
 
             },
@@ -333,8 +338,10 @@
                     queryStr += '&type-id=' + this.appliedFilters.type;
                 }
 
-                if (this.appliedFilters.globalSearch) {
-                    queryStr += '&global-search=' + this.appliedFilters.globalSearch;
+                if (this.appliedFilters.globalSearch.length) {
+                    this.appliedFilters.globalSearch.forEach(id => {
+                        queryStr += '&iteration[]=' + id;
+                    });
                 }
 
                 if (this.appliedFilters.usedProducts.length) {
@@ -421,7 +428,7 @@
                     type: '',
                     sortBy: '',
                     isOnlySortingChanged: false,
-                    globalSearch: '',
+                    globalSearch: [],
                     addressIds: ''
                 };
 
