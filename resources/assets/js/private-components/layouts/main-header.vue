@@ -37,6 +37,11 @@
                     <!--<li><a href="#">Feed</a></li>-->
                     <!-- <li><a href="#" @click.prevent class="without-handler">About</a></li> -->
                     <!--<li><a href="#" @click.prevent class="without-handler">Contact</a></li>-->
+                    <li v-if="user && user.role === 'admin'">
+                        <router-link to="/admin/users">
+                            Admin
+                        </router-link>
+                    </li>
                     <li v-if="user.link"><a :href="user.link" target="_blank"  style="font-size: 2.5em; margin-right: 0"><i class="fa fa-lightbulb-o"></i></a></li>
                 </ul>
             </div>

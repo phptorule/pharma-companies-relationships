@@ -334,12 +334,18 @@ class PeopleController extends Controller
     function getPeopleAutocomplete ($searchQuery, $fromPersonId)
     {
         $people = People::with([
-                        'addresses'
-                    ])
-                    ->where('name', 'like', "%$searchQuery%")
-                    ->where('id', '<>', $fromPersonId)
-                    ->orderBy('name')
-                    ->paginate(5);
+                'addresses'
+            ])
+            ->where('name', 'like', "%$searchQuery%")
+            ->where('id', '<>', $fromPersonId)
+            ->orderBy('name')
+            ->paginate(5);
+
+        $people->each(function ($person, $key) {
+            $str = $person->town;
+            $person->town = str_replace('.0', '', $str);
+        });
+
         return response()->json($people);
     }
 
