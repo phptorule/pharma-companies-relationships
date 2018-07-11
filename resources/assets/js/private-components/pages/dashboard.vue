@@ -67,6 +67,8 @@
                     Found {{addressesTotal}} labs. {{totalPointsInCurrentMap}} in current map display
                 </div>
 
+                <h3 class="empty-data-h" v-if="!addressList.length">No Found Addresses</h3>
+
                 <ul class="sidebar-list" @mouseleave="setAddressMouseLeaveListener()" v-on:scroll="scrollFunction">
                     <li v-for="(address, i) in addressList" @mouseover="setAddressMouseOverListener([address])" class="sidebar-list-item">
                         <div class="item" :class="{'potential-customers':address.customer_status == 1, 'my-customers': address.customer_status == 2}">

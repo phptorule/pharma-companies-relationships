@@ -69,6 +69,8 @@
                     <span v-if="peopleTotal != 1">people</span>.
                 </div>
 
+                <h3 class="empty-data-h" v-if="!people.length">No Person Found</h3>
+
                 <ul class="sidebar-list people-list"
                     @mouseleave="setAddressMouseLeaveListener()"
                     v-on:scroll="scrollFunction"
