@@ -137,6 +137,10 @@ class AddressesController extends Controller
             $query->whereIn('rl_addresses.id', $addressIds);
         }
 
+        if (isset($requestParams['address-ids'])) {
+            $query->whereIn('rl_addresses.id', explode(',',$requestParams['address-ids']));
+        }
+
         return $query;
     }
 
