@@ -5752,8 +5752,8 @@ ul.tenders-list li.open .item > .tag-list {
 
 .nav-search .select2.select2-container {
     position: absolute;
-    /*left: 20%;*/
     bottom: 0;
+    z-index: -1;
 }
 
 .nav-search .select2-selection.select2-selection--single{

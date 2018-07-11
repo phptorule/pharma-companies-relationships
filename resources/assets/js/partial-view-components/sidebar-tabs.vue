@@ -54,8 +54,6 @@
 
         mounted: function () {
 
-            console.log('GlobalSearch', GlobalSearch);
-
             this.$eventGlobal.$on('notifyGlobalSearchCountResults', data =>{
                 this.fillCounterProps(data);
             });
