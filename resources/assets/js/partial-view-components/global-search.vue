@@ -132,10 +132,12 @@
 
 
                         if(+data.count_addresses > 0) {
-                            this.$router.push('/dashboard?address-ids=' + data.address_ids.toString() + hash)
+                            // this.$router.push('/dashboard?address-ids=' + data.address_ids.toString() + hash)
+                            this.$router.push('/dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
                         }
                         else if (+data.count_people > 0) {
-                            this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
+                            // this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
+                            this.$router.push('/people-dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
                         }
                         else {
                             this.$router.push('/dashboard?address-ids=' + '-1' + hash)
@@ -148,6 +150,7 @@
             notifyGlobalSearchPerformed: function(data) {
 
                 GlobalSearch.resultCounter = data;
+                GlobalSearch.iterationsString = this.addSearchIterationToUrl();
 
                 this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
             },

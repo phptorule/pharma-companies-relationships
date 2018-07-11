@@ -7,7 +7,7 @@
                     {{countAddresses}}
                 </span>
 
-                <router-link :to="addressIdsToString ? '/dashboard?address-ids=' + addressIdsToString : '/dashboard'"><i class="fa fa-building"></i> Organisations</router-link>
+                <router-link :to="iterationsString ? '/dashboard' + iterationsString : '/dashboard'"><i class="fa fa-building"></i> Organisations</router-link>
             </li>
             <li :class="{active: activeTab === 'people-dashboard' }">
 
@@ -15,7 +15,7 @@
                     {{countPeople}}
                 </span>
 
-                <router-link :to="peopleIdsToString ? '/people-dashboard?people-ids=' + peopleIdsToString : '/people-dashboard'"><i class="fa fa-group"></i> People <sup>&beta;</sup></router-link>
+                <router-link :to="iterationsString ? '/people-dashboard' + iterationsString : '/people-dashboard'"><i class="fa fa-group"></i> People <sup>&beta;</sup></router-link>
             </li>
         </ul>
     </div>
@@ -34,6 +34,7 @@
                 globalSearch: GlobalSearch,
                 addressIdsToString: '',
                 peopleIdsToString: '',
+                iterationsString: ''
             }
         },
 
@@ -49,6 +50,8 @@
                 this.countPeople = counterData.count_people;
                 this.addressIdsToString = counterData.address_ids.toString();
                 this.peopleIdsToString = counterData.people_ids.toString();
+
+                this.iterationsString = GlobalSearch.iterationsString.replace('&', '?');
             }
         },
 

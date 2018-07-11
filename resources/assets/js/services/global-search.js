@@ -7,7 +7,9 @@ const GlobalSearch = {
         people_ids: []
     },
 
-    globalSearchInput: null
+    globalSearchInput: null,
+
+    iterationsString: ''
 
 };
 
