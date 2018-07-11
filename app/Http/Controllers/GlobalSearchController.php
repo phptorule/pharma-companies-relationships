@@ -62,9 +62,18 @@ class GlobalSearchController extends Controller
 
             $countAddresses = Address::where('address', 'like', '%'.$searchStr.'%')->count();
 
-            $countPeople = People::where('name', 'like', '%'.$searchStr.'%')->count();
+            $countPeople = People::where(function ($q) use ($searchStr) {
+                                    $q->orWhere('name', 'like' , '%'.$searchStr.'%');
+                                    $q->orWhere('role', 'like' , '%'.$searchStr.'%');
+                                    $q->orWhere('description', 'like' , '%'.$searchStr.'%');
+                                })
+                                ->count();
 
-            $countProduct = Product::where('company', 'like', '%'.$searchStr.'%')->orWhere('name', 'like', '%'.$searchStr.'%')->count();
+            $countProduct = Product::where(function ($q) use ($searchStr) {
+                                    $q->orWhere('company', 'like', '%'.$searchStr.'%');
+                                    $q->orWhere('name', 'like', '%'.$searchStr.'%');
+                                })
+                                ->count();
         }
         else {
             $groupedSearchIterations = $this->groupSearchIterationsByEntity($searchIterations);
@@ -177,7 +186,9 @@ class GlobalSearchController extends Controller
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
                 $query->whereHas('people', function($q) use ($person) {
-                    $q->where('name', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
                 });
             }
         }
@@ -197,7 +208,10 @@ class GlobalSearchController extends Controller
 
     function findProductMatches($searchStr, $groupedSearchIterations)
     {
-        $query = Product::where('company', 'like', '%'.$searchStr.'%')->orWhere('name', 'like', '%'.$searchStr.'%');
+        $query = Product::where(function ($q) use ($searchStr) {
+                        $q->orWhere('company', 'like', '%'.$searchStr.'%');
+                        $q->orWhere('name', 'like', '%'.$searchStr.'%');
+                    });
 
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
@@ -220,7 +234,9 @@ class GlobalSearchController extends Controller
                 $query->whereHas('addresses', function($q_a) use ($person) {
 
                     $q_a->whereHas('people', function($q) use ($person) {
-                        $q->where('name', 'like', '%'.$person.'%');
+                        $q->orWhere('name', 'like', '%'.$person.'%');
+                        $q->orWhere('role', 'like', '%'.$person.'%');
+                        $q->orWhere('description', 'like', '%'.$person.'%');
                     });
 
                 });
@@ -241,7 +257,11 @@ class GlobalSearchController extends Controller
 
     function findPeopleMatches($searchStr, $groupedSearchIterations)
     {
-        $query = People::where('name', 'like', '%'.$searchStr.'%');
+        $query = People::where(function ($q) use ($searchStr) {
+            $q->orWhere('name', 'like' , '%'.$searchStr.'%');
+            $q->orWhere('role', 'like' , '%'.$searchStr.'%');
+            $q->orWhere('description', 'like' , '%'.$searchStr.'%');
+        });
 
         $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
 
@@ -269,7 +289,11 @@ class GlobalSearchController extends Controller
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
-                $query->where('rl_people.name', 'like', '%'.$person.'%');
+                $query->where(function ($q) use ($person){
+                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
+                });
             }
         }
 
