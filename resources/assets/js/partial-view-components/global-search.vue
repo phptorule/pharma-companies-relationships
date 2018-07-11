@@ -160,6 +160,10 @@
 
                     this.firstBackspaceClicked = false;
 
+                    if (this.globalSearchInput === '') {
+                        return;
+                    }
+
                     this.makePreliminaryGlobalSearchServerRequest();
 
                 }, 500);
