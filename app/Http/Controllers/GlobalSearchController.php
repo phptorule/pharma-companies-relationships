@@ -5,21 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\People;
 use App\Models\Product;
+use App\Services\GlobalSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class GlobalSearchController extends Controller
 {
 
+    public $GSS;
+
+
+    function __construct()
+    {
+        $this->GSS = new GlobalSearchService();
+    }
+
+
     function index()
     {
         $si = request()->get('iteration');
 
-        $groupedSearchIterations = $this->groupSearchIterationsByEntity($si);
+        $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($si);
 
-        $addressIds = $this->searchForAddressesIds($groupedSearchIterations)->pluck('id');
+        $addressIds = $this->GSS->searchForAddressesIds($groupedSearchIterations)->pluck('id');
 
-        $peopleIds =  $this->searchForPeopleIds($groupedSearchIterations)->pluck('id');
+        $peopleIds =  $this->GSS->searchForPeopleIds($groupedSearchIterations)->pluck('id');
 
         return response()->json([
             'count_addresses' => count($addressIds),
@@ -27,26 +37,6 @@ class GlobalSearchController extends Controller
             'count_people' => count($peopleIds),
             'people_ids' => $peopleIds
         ]);
-    }
-
-
-    function searchForAddressesIds($groupedSearchIterations)
-    {
-        $query = Address::select('rl_addresses.id');
-
-        $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
-
-        return $query->get();
-    }
-
-
-    function searchForPeopleIds($groupedSearchIterations)
-    {
-        $query = People::select('rl_people.id');
-
-        $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
-
-        return $query->get();
     }
 
 
@@ -152,7 +142,7 @@ class GlobalSearchController extends Controller
 
         $query = Address::where('name', 'like', '%'.$searchStr.'%');
 
-        $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
         return $query->count();
     }
@@ -162,47 +152,9 @@ class GlobalSearchController extends Controller
     {
         $query = Address::where('address', 'like', '%'.$searchStr.'%');
 
-        $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
         return $query->count();
-    }
-
-
-    private function _subQueryForAddressEntity($query, $groupedSearchIterations)
-    {
-
-        if(!empty($groupedSearchIterations['organisations'])) {
-            foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['addresses'])) {
-            foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['people'])) {
-            foreach ($groupedSearchIterations['people'] as $person) {
-                $query->whereHas('people', function($q) use ($person) {
-                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['products'])) {
-            foreach ($groupedSearchIterations['products'] as $product) {
-                $query->whereHas('products', function($q) use ($product) {
-                    $q->where('rl_products.company', 'like', '%'.$product.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
-                });
-            }
-        }
-
-        return $query;
     }
 
 
@@ -263,53 +215,8 @@ class GlobalSearchController extends Controller
             $q->orWhere('description', 'like' , '%'.$searchStr.'%');
         });
 
-        $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+        $this->GSS->_subQueryForPeopleEntity($query, $groupedSearchIterations);
 
         return $query->count();
-    }
-
-
-    private function _subQueryForPeopleEntity($query, $groupedSearchIterations)
-    {
-        if(!empty($groupedSearchIterations['organisations'])) {
-            foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->whereHas('addresses', function($q) use ($organisation) {
-                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['addresses'])) {
-            foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->whereHas('addresses', function($q) use ($address) {
-                    $q->where('rl_addresses.address', 'like', '%'.$address.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['people'])) {
-            foreach ($groupedSearchIterations['people'] as $person) {
-                $query->where(function ($q) use ($person){
-                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['products'])) {
-            foreach ($groupedSearchIterations['products'] as $product) {
-                $query->whereHas('addresses', function($q_a) use ($product) {
-
-                    $q_a->whereHas('products', function($q) use ($product) {
-                        $q->where('company', 'like', '%'.$product.'%');
-                        $q->orWhere('name', 'like', '%'.$product.'%');
-                    });
-
-                });
-            }
-        }
-
-        return $query;
     }
 }

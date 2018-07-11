@@ -12,6 +12,7 @@ use App\Models\People;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\Tender;
+use App\Services\GlobalSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -127,8 +128,13 @@ class AddressesController extends Controller
             $query->where('rl_addresses.name', 'LIKE', '%'.$requestParams['name'].'%');
         }
 
-        if (isset($requestParams['address-ids'])) {
-            $query->whereIn('rl_addresses.id', explode(',',$requestParams['address-ids']));
+        if (isset($requestParams['iteration'])) {
+
+            $GSS = new GlobalSearchService();
+            $groupedSearchIterations = $GSS->groupSearchIterationsByEntity($requestParams['iteration']);
+            $addressIds = $GSS->searchForAddressesIds($groupedSearchIterations)->pluck('id');
+
+            $query->whereIn('rl_addresses.id', $addressIds);
         }
 
         return $query;
