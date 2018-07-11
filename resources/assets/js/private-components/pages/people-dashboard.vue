@@ -185,6 +185,7 @@
                     peopleIds: this.$route.query['people-ids'] || '',
                     addressIds: this.$route.query['address-ids'] || '',
                     personTypes: this.$route.query['person-type-id'] || '',
+                    globalSearch: this.$route.query['iteration[]'] || [],
                     roleInput: null,
                     onlyPeopleWithAddresses: this.$route.query['only-people-with-addresses'] || false
                 },
@@ -272,6 +273,12 @@
                 this.appliedFilters.peopleIds = this.$route.query['people-ids'] || '';
                 this.appliedFilters.personTypes = this.$route.query['person-type-id'] || '';
 
+                this.appliedFilters.globalSearch = this.$route.query['iteration[]'] || [];
+
+                if(typeof this.appliedFilters.globalSearch === 'string') {
+                    this.appliedFilters.globalSearch = [this.appliedFilters.globalSearch ];
+                }
+
             },
 
             applyPersonTypeFilter: function (data) {
@@ -322,6 +329,12 @@
 
                 if (this.appliedFilters.onlyPeopleWithAddresses) {
                     queryStr += '&only-people-with-addresses=' + this.appliedFilters.onlyPeopleWithAddresses;
+                }
+
+                if (this.appliedFilters.globalSearch.length) {
+                    this.appliedFilters.globalSearch.forEach(id => {
+                        queryStr += '&iteration[]=' + id;
+                    });
                 }
 
                 this.queryUrl = queryStr;
@@ -379,6 +392,7 @@
                     type: '',
                     sortBy: '',
                     isOnlySortingChanged: false,
+                    globalSearch: [],
                     peopleIds: '',
                     addressIds: '',
                     personTypes: ''

@@ -7,6 +7,7 @@ use App\Models\ConnectionTypes;
 use App\Models\People;
 use App\Models\Publication;
 use App\Models\PeopleType;
+use App\Services\GlobalSearchService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -319,8 +320,13 @@ class PeopleController extends Controller
             $query->where('rl_people.role', 'like', '%'.$params['role'].'%');
         }
 
-        if(isset($params['people-ids'])) {
-            $query->whereIn('rl_people.id', explode(',',$params['people-ids']));
+        if(isset($params['iteration'])) {
+
+            $GSS = new GlobalSearchService();
+            $groupedSearchIterations = $GSS->groupSearchIterationsByEntity($params['iteration']);
+            $peopleIds = $GSS->searchForPeopleIds($groupedSearchIterations)->pluck('id');
+
+            $query->whereIn('rl_people.id', $peopleIds);
         }
 
         if(isset($params['only-people-with-addresses'])) {
@@ -375,8 +381,13 @@ class PeopleController extends Controller
             $conditionStr .= " AND p.role LIKE '%".$params['role']."%' ";
         }
 
-        if(isset($params['people-ids'])) {
-            $conditionStr .= " AND p.id IN (".$params['people-ids'].") ";
+        if(isset($params['iteration'])) {
+
+            $GSS = new GlobalSearchService();
+            $groupedSearchIterations = $GSS->groupSearchIterationsByEntity($params['iteration']);
+            $peopleIds = $GSS->searchForPeopleIds($groupedSearchIterations)->pluck('id')->toArray();
+
+            $conditionStr .= " AND p.id IN (".implode(',', $peopleIds).") ";
         }
 
         return $conditionStr;
