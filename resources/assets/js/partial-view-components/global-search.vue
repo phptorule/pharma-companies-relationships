@@ -266,7 +266,11 @@
                     this.globalSearchInput = '';
 
                     $('.global-search-input').focus();
-                })
+                });
+
+            this.$eventGlobal.$on('resetedAllFilters', ()=>{
+                this.searchIterations = [];
+            });
 
         }
     }

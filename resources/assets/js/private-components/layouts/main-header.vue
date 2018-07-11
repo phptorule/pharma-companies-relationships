@@ -13,24 +13,6 @@
                 </div>
             </div>
 
-
-            <div class="nav-search" v-if="false">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <img src="/images/ic-search.png" alt="">
-                        <input
-                            v-model="globalSearchInput"
-                            @keyup="makeGlobalSearch()"
-                            placeholder="Search by laboratory, people or location"
-                        >
-
-                        <i v-if="globalSearchInput"
-                           @click="resetGlobalSearch()"
-                           class="fa fa-remove clear-global-search-input"></i>
-                    </li>
-                </ul>
-            </div>
-
             <global-search></global-search>
 
             <div class="nav-links">
@@ -144,11 +126,6 @@
                 // GlobalSearch.resultCounter = data;
 
                 // this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
-            },
-
-            resetGlobalSearch: function () {
-                this.globalSearchInput = '';
-                this.makeGlobalSearch();
             },
 
             getUser: function () {
