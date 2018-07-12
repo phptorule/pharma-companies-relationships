@@ -26,7 +26,7 @@ class GlobalSearchService
             ->leftJoin('rl_people', 'rl_address_people.person_id', '=', 'rl_people.id')
 
             ->leftJoin('rl_address_products', 'rl_addresses.id', '=', 'rl_address_products.address_id')
-            ->leftJoin('rl_products', 'rl_address_products.address_id', '=', 'rl_products.id');
+            ->leftJoin('rl_products', 'rl_address_products.product_id', '=', 'rl_products.id');
     }
 
 
@@ -38,7 +38,7 @@ class GlobalSearchService
             ->leftJoin('rl_addresses', 'rl_address_people.address_id', '=', 'rl_addresses.id')
 
             ->leftJoin('rl_address_products', 'rl_addresses.id', '=', 'rl_address_products.address_id')
-            ->leftJoin('rl_products', 'rl_address_products.address_id', '=', 'rl_products.id');
+            ->leftJoin('rl_products', 'rl_address_products.product_id', '=', 'rl_products.id');
     }
 
 
