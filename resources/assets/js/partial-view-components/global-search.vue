@@ -177,6 +177,10 @@
 
             makePreliminaryGlobalSearch: function (e) {
 
+                if(e.keyCode === 13) {
+                    return this.addSearchIteration();
+                }
+
                 if(this.isServiceKeyPressed(e)) {
                     this.checkIfTheSelect2ShouldBeOpened(e);
                     return;
@@ -288,6 +292,20 @@
                     this.select2Element.focus();
                     this.select2Element.select2('open');
                 }
+            },
+
+            addSearchIteration: function (e) {
+
+                if(e) {
+                    this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
+                }
+                else {
+                    this.searchIterations.push({type: 'Any', value: this.globalSearchInput});
+                }
+
+                this.globalSearchInput = '';
+
+                $('.global-search-input').focus();
             }
         },
 
@@ -300,11 +318,8 @@
             this.select2Element
                 .on('select2:select', (e) => {
 
-                    this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
+                    this.addSearchIteration(e);
 
-                    this.globalSearchInput = '';
-
-                    $('.global-search-input').focus();
                 });
 
             this.$eventGlobal.$on('resetedAllFilters', ()=>{
