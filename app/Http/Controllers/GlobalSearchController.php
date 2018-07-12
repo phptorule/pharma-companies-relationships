@@ -47,37 +47,18 @@ class GlobalSearchController extends Controller
 
         $searchIterations = request()->get('iteration');
 
-        if(empty($searchIterations)) {
+        $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($searchIterations);
 
-            $countOrganisations = Address::where('name', 'like', '%'.$searchStr.'%')->count();
 
-            $countAddresses = Address::where('address', 'like', '%'.$searchStr.'%')->count();
+        $countOrganisations = $this->findOrganisationMatches($searchStr, $groupedSearchIterations);
 
-            $countPeople = People::where(function ($q) use ($searchStr) {
-                                    $q->orWhere('name', 'like' , '%'.$searchStr.'%');
-                                    $q->orWhere('role', 'like' , '%'.$searchStr.'%');
-                                    $q->orWhere('description', 'like' , '%'.$searchStr.'%');
-                                })
-                                ->count();
+        $countAddresses = $this->findAddressMatches($searchStr, $groupedSearchIterations);
 
-            $countProduct = Product::where(function ($q) use ($searchStr) {
-                                    $q->orWhere('company', 'like', '%'.$searchStr.'%');
-                                    $q->orWhere('name', 'like', '%'.$searchStr.'%');
-                                })
-                                ->count();
-        }
-        else {
-            $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($searchIterations);
+        $countPeople = $this->findPeopleMatches($searchStr, $groupedSearchIterations);
 
-            $countOrganisations = $this->findOrganisationMatches($searchStr, $groupedSearchIterations);
+        $countProduct = $this->findProductMatches($searchStr, $groupedSearchIterations);
 
-            $countAddresses = $this->findAddressMatches($searchStr, $groupedSearchIterations);
-
-            $countPeople = $this->findPeopleMatches($searchStr, $groupedSearchIterations);
-
-            $countProduct = $this->findProductMatches($searchStr, $groupedSearchIterations);
-
-        }
+        $countAny = $countOrganisations + $countAddresses + $countPeople + $countProduct;
 
 
         $responseData = [
@@ -85,7 +66,7 @@ class GlobalSearchController extends Controller
             'Address' => $countAddresses,
             'Person' => $countPeople,
             'Product' => $countProduct,
-            'Any' => 100,
+            'Any' => $countAny,
         ];
 
         return response()->json($responseData);

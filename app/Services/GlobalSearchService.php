@@ -166,6 +166,23 @@ class GlobalSearchService
             }
         }
 
+        if(!empty($groupedSearchIterations['any'])) {
+            foreach ($groupedSearchIterations['any'] as $any) {
+                $query->where(function($q) use ($any) {
+
+                    $q->where('rl_addresses.name', 'like', '%'.$any.'%');
+                    $q->orWhere('rl_addresses.address', 'like', '%'.$any.'%');
+
+                    $q->orWhere('rl_people.name', 'like', '%'.$any.'%');
+                    $q->orWhere('rl_people.role', 'like', '%'.$any.'%');
+                    $q->orWhere('rl_people.description', 'like', '%'.$any.'%');
+
+                    $q->orWhere('rl_products.company', 'like', '%'.$any.'%');
+                    $q->orWhere('rl_products.name', 'like', '%'.$any.'%');
+                });
+            }
+        }
+
         return $query;
     }
 }
