@@ -43,7 +43,7 @@ class GlobalSearchController extends Controller
 
     function searchForAutoSuggesting()
     {
-        $searchStr = request()->get('search');
+        $searchStr = trim(request()->get('search'));
 
         $searchIterations = request()->get('iteration');
 
@@ -77,7 +77,10 @@ class GlobalSearchController extends Controller
     {
 
         $query =  $this->GSS->setAddressJoins()
-                            ->where('rl_addresses.name', 'like', '%'.$searchStr.'%');
+                            ->where(function($q) use ($searchStr){
+                                $q->where('rl_addresses.name', 'like', '%'.$searchStr.'%');
+                                $q->orWhere('rl_clusters.name', 'like', '%'.$searchStr.'%');
+                            });
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 

@@ -22,6 +22,8 @@ class GlobalSearchService
     {
         return DB::table('rl_addresses')
 
+            ->leftJoin('rl_clusters', 'rl_addresses.cluster_id', '=', 'rl_clusters.id')
+
             ->leftJoin('rl_address_people', 'rl_addresses.id', '=', 'rl_address_people.address_id')
             ->leftJoin('rl_people', 'rl_address_people.person_id', '=', 'rl_people.id')
 
@@ -37,6 +39,8 @@ class GlobalSearchService
             ->leftJoin('rl_address_people', 'rl_people.id', '=', 'rl_address_people.person_id')
             ->leftJoin('rl_addresses', 'rl_address_people.address_id', '=', 'rl_addresses.id')
 
+            ->leftJoin('rl_clusters', 'rl_addresses.cluster_id', '=', 'rl_clusters.id')
+
             ->leftJoin('rl_address_products', 'rl_addresses.id', '=', 'rl_address_products.address_id')
             ->leftJoin('rl_products', 'rl_address_products.product_id', '=', 'rl_products.id');
     }
@@ -48,6 +52,8 @@ class GlobalSearchService
 
             ->leftJoin('rl_address_products', 'rl_products.id', '=', 'rl_address_products.product_id')
             ->leftJoin('rl_addresses', 'rl_address_products.address_id', '=', 'rl_addresses.id')
+
+            ->leftJoin('rl_clusters', 'rl_addresses.cluster_id', '=', 'rl_clusters.id')
 
             ->leftJoin('rl_address_people', 'rl_addresses.id', '=', 'rl_address_people.address_id')
             ->leftJoin('rl_people', 'rl_address_people.person_id', '=', 'rl_people.id');
@@ -137,7 +143,10 @@ class GlobalSearchService
     {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
+                $query->where(function ($q) use ($organisation) {
+                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
+                    $q->orWhere('rl_clusters.name', 'like', '%'.$organisation.'%');
+                });
             }
         }
 
@@ -172,6 +181,7 @@ class GlobalSearchService
 
                     $q->where('rl_addresses.name', 'like', '%'.$any.'%');
                     $q->orWhere('rl_addresses.address', 'like', '%'.$any.'%');
+                    $q->orWhere('rl_clusters.name', 'like', '%'.$any.'%');
 
                     $q->orWhere('rl_people.name', 'like', '%'.$any.'%');
                     $q->orWhere('rl_people.role', 'like', '%'.$any.'%');
