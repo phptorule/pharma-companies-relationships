@@ -39,6 +39,10 @@ const helpers = {
             }
             return false;
 
+        },
+
+        isServiceKeyPressed: function (e) {
+            return e.keyCode === 18 || e.keyCode === 27 || e.keyCode === 37||e.keyCode === 38|| e.keyCode === 39||e.keyCode === 40
         }
     }
 

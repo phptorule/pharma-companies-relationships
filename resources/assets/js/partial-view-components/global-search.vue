@@ -47,6 +47,7 @@
 <script>
 
     import http from '../mixins/http';
+    import helpers from '../mixins/helpers';
     import GlobalSearch from '../services/global-search';
 
     const OPTIONS = [
@@ -79,7 +80,7 @@
 
     export default {
 
-        mixins: [http],
+        mixins: [http, helpers],
 
         data: function() {
             return {
@@ -163,6 +164,13 @@
 
             makePreliminaryGlobalSearch: function (e) {
 
+                if(this.isServiceKeyPressed(e)) {
+                    if(e.keyCode === 40) {
+                        console.log('arrow down pressed ', e.keyCode);
+                    }
+                    return;
+                }
+
                 if(e.keyCode === 8 && this.globalSearchInput === '') {
 
                     if(this.firstBackspaceClicked) {
@@ -184,7 +192,7 @@
 
                     this.firstBackspaceClicked = false;
 
-                    if (this.globalSearchInput === '') {
+                    if (this.globalSearchInput.replace(/\s/g, '') === '') {
                         return;
                     }
 
