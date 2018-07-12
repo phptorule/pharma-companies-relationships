@@ -5757,7 +5757,7 @@ ul.tenders-list li.open .item > .tag-list {
 }
 
 .nav-search .select2-selection.select2-selection--single{
-    opacity: 0;
+    opacity: 0.5;
 }
 
 ul.search-iteration {

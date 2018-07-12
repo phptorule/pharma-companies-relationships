@@ -165,9 +165,7 @@
             makePreliminaryGlobalSearch: function (e) {
 
                 if(this.isServiceKeyPressed(e)) {
-                    if(e.keyCode === 40) {
-                        console.log('arrow down pressed ', e.keyCode);
-                    }
+                    this.checkIfTheSelect2ShouldBeOpened(e);
                     return;
                 }
 
@@ -231,6 +229,7 @@
 
                         setTimeout(()=>{
                             this.select2Element.select2('open');
+                            $('.select2-results__option--highlighted').removeClass('select2-results__option--highlighted');
                         }, 0)
                     });
             },
@@ -269,6 +268,14 @@
                     .val(null)
                     .trigger('change')
             },
+
+            checkIfTheSelect2ShouldBeOpened: function (e) {
+                if(e.keyCode === 40) {
+                    this.select2Element.select2('close');
+                    this.select2Element.focus();
+                    this.select2Element.select2('open');
+                }
+            }
         },
 
         mounted: function () {
