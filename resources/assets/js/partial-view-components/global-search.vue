@@ -208,6 +208,7 @@
                     }
 
                     if(e.keyCode === 13) {
+                        this.select2Element.select2('close');
                         return this.addSearchIteration();
                     }
 
