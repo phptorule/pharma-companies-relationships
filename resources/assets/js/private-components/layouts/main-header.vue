@@ -6,9 +6,9 @@
             <div class="box-for-logo">
                 <div class="header-logo">
                     <span class="logo-lg">
-                        <router-link to="/dashboard">
+                        <a href="javascript:void(0)" @click.prevent="resetAllFilters()">
                             <img src="/images/labscape.png" alt="">
-                        </router-link>
+                        </a>
                     </span>
                 </div>
             </div>
@@ -159,6 +159,11 @@
                     .catch(error => {
                         console.log(error);
                     })
+            },
+
+            resetAllFilters: function () {
+                this.$eventGlobal.$emit('resetedAllFilters', {});
+                this.$router.push('/dashboard')
             }
         },
 
