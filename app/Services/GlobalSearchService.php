@@ -42,6 +42,19 @@ class GlobalSearchService
     }
 
 
+    function setProductJoins()
+    {
+        return DB::table('rl_products')
+
+            ->leftJoin('rl_address_products', 'rl_products.id', '=', 'rl_address_products.product_id')
+            ->leftJoin('rl_addresses', 'rl_address_products.address_id', '=', 'rl_addresses.id')
+
+            ->leftJoin('rl_address_people', 'rl_addresses.id', '=', 'rl_address_people.address_id')
+            ->leftJoin('rl_people', 'rl_address_people.person_id', '=', 'rl_people.id');
+
+    }
+
+
     function searchForAddressesIds($groupedSearchIterations)
     {
         $query = $this->setAddressJoins()

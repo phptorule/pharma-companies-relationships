@@ -117,50 +117,45 @@ class GlobalSearchController extends Controller
 
     function findProductMatches($searchStr, $groupedSearchIterations)
     {
-        $query = Product::where(function ($q) use ($searchStr) {
-                        $q->orWhere('company', 'like', '%'.$searchStr.'%');
-                        $q->orWhere('name', 'like', '%'.$searchStr.'%');
-                    });
+
+        $query =  $this->GSS->setProductJoins()
+                            ->where(function($q) use ($searchStr) {
+                                $q->where('rl_products.company', 'like', '%'.$searchStr.'%');
+                                $q->orWhere('rl_products.name', 'like', '%'.$searchStr.'%');
+                            });
 
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->whereHas('addresses', function($q) use ($organisation) {
-                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-                });
+                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
             }
         }
 
         if(!empty($groupedSearchIterations['addresses'])) {
             foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->whereHas('addresses', function($q) use ($address) {
-                    $q->where('rl_addresses.address', 'like', '%'.$address.'%');
-                });
+                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
             }
         }
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
-                $query->whereHas('addresses', function($q_a) use ($person) {
-
-                    $q_a->whereHas('people', function($q) use ($person) {
-                        $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
-                        $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                        $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
-                    });
-
+                $query->where(function($q) use ($person) {
+                    $q->where('rl_people.name', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
+                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
-                $query->where('company', 'like', '%'.$product.'%')
-                    ->orWhere('name', 'like', '%'.$product.'%');
-
+                $query->where(function($q) use ($product) {
+                    $q->where('rl_products.company', 'like', '%'.$product.'%');
+                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
+                });
             }
         }
 
-        return $query->count();
+        return $query->count(DB::raw('DISTINCT(rl_products.id)'));
     }
 
 
