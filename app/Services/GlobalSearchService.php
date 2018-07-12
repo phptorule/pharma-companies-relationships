@@ -11,16 +11,31 @@ namespace App\Services;
 
 use App\Models\Address;
 use App\Models\People;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class GlobalSearchService
 {
 
+
+    function setAddressJoins()
+    {
+        return DB::table('rl_addresses')
+
+            ->leftJoin('rl_address_people', 'rl_addresses.id', '=', 'rl_address_people.address_id')
+            ->leftJoin('rl_people', 'rl_address_people.person_id', '=', 'rl_people.id')
+
+            ->leftJoin('rl_address_products', 'rl_addresses.id', '=', 'rl_address_products.address_id')
+            ->leftJoin('rl_products', 'rl_address_products.address_id', '=', 'rl_products.id');
+    }
+
+
     function searchForAddressesIds($groupedSearchIterations)
     {
-        $query = Address::select('rl_addresses.id');
+        $query = $this->setAddressJoins()
+                    ->selectRaw('DISTINCT(rl_addresses.id)');
 
-        $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $query = $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
         return $query->get();
     }
@@ -94,7 +109,6 @@ class GlobalSearchService
 
     function _subQueryForAddressEntity($query, $groupedSearchIterations)
     {
-
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
                 $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
@@ -109,8 +123,8 @@ class GlobalSearchService
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
-                $query->whereHas('people', function($q) use ($person) {
-                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
+                $query->where(function($q) use ($person) {
+                    $q->where('rl_people.name', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
                 });
@@ -119,7 +133,7 @@ class GlobalSearchService
 
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
-                $query->whereHas('products', function($q) use ($product) {
+                $query->where(function($q) use ($product) {
                     $q->where('rl_products.company', 'like', '%'.$product.'%');
                     $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
                 });

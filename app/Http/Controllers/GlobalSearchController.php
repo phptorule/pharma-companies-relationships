@@ -7,6 +7,7 @@ use App\Models\People;
 use App\Models\Product;
 use App\Services\GlobalSearchService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class GlobalSearchController extends Controller
@@ -27,7 +28,7 @@ class GlobalSearchController extends Controller
 
         $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($si);
 
-        $addressIds = $this->GSS->searchForAddressesIds($groupedSearchIterations)->pluck('id');
+        $addressIds = $this->GSS->searchForAddressesIds($groupedSearchIterations);
 
         $peopleIds =  $this->GSS->searchForPeopleIds($groupedSearchIterations)->pluck('id');
 
@@ -94,7 +95,8 @@ class GlobalSearchController extends Controller
     function findOrganisationMatches($searchStr, $groupedSearchIterations)
     {
 
-        $query = Address::where('name', 'like', '%'.$searchStr.'%');
+        $query =  $this->GSS->setAddressJoins()
+                            ->where('rl_addresses.name', 'like', '%'.$searchStr.'%');
 
         $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
@@ -104,7 +106,8 @@ class GlobalSearchController extends Controller
 
     function findAddressMatches($searchStr, $groupedSearchIterations)
     {
-        $query = Address::where('address', 'like', '%'.$searchStr.'%');
+        $query =  $this->GSS->setAddressJoins()
+                            ->where('address', 'like', '%'.$searchStr.'%');
 
         $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
