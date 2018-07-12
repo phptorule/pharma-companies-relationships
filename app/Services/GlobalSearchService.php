@@ -30,6 +30,18 @@ class GlobalSearchService
     }
 
 
+    function setPeopleJoins()
+    {
+        return DB::table('rl_people')
+
+            ->leftJoin('rl_address_people', 'rl_people.id', '=', 'rl_address_people.person_id')
+            ->leftJoin('rl_addresses', 'rl_address_people.address_id', '=', 'rl_addresses.id')
+
+            ->leftJoin('rl_address_products', 'rl_addresses.id', '=', 'rl_address_products.address_id')
+            ->leftJoin('rl_products', 'rl_address_products.address_id', '=', 'rl_products.id');
+    }
+
+
     function searchForAddressesIds($groupedSearchIterations)
     {
         $query = $this->setAddressJoins()
@@ -43,9 +55,10 @@ class GlobalSearchService
 
     function searchForPeopleIds($groupedSearchIterations)
     {
-        $query = People::select('rl_people.id');
+        $query = $this->setPeopleJoins()
+                    ->selectRaw('DISTINCT(rl_people.id)');
 
-        $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+        $query = $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
 
         return $query->get();
     }
@@ -148,24 +161,20 @@ class GlobalSearchService
     {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->whereHas('addresses', function($q) use ($organisation) {
-                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-                });
+                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
             }
         }
 
         if(!empty($groupedSearchIterations['addresses'])) {
             foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->whereHas('addresses', function($q) use ($address) {
-                    $q->where('rl_addresses.address', 'like', '%'.$address.'%');
-                });
+                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
             }
         }
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
                 $query->where(function ($q) use ($person){
-                    $q->orWhere('rl_people.name', 'like', '%'.$person.'%');
+                    $q->where('rl_people.name', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
                 });
@@ -174,13 +183,9 @@ class GlobalSearchService
 
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
-                $query->whereHas('addresses', function($q_a) use ($product) {
-
-                    $q_a->whereHas('products', function($q) use ($product) {
-                        $q->where('company', 'like', '%'.$product.'%');
-                        $q->orWhere('name', 'like', '%'.$product.'%');
-                    });
-
+                $query->where(function($q) use ($product) {
+                    $q->where('rl_products.company', 'like', '%'.$product.'%');
+                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
                 });
             }
         }

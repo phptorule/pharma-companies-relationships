@@ -100,18 +100,18 @@ class GlobalSearchController extends Controller
 
         $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
-        return $query->count();
+        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
 
 
     function findAddressMatches($searchStr, $groupedSearchIterations)
     {
         $query =  $this->GSS->setAddressJoins()
-                            ->where('address', 'like', '%'.$searchStr.'%');
+                            ->where('rl_addresses.address', 'like', '%'.$searchStr.'%');
 
         $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
 
-        return $query->count();
+        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
 
 
@@ -166,14 +166,16 @@ class GlobalSearchController extends Controller
 
     function findPeopleMatches($searchStr, $groupedSearchIterations)
     {
-        $query = People::where(function ($q) use ($searchStr) {
-            $q->orWhere('name', 'like' , '%'.$searchStr.'%');
-            $q->orWhere('role', 'like' , '%'.$searchStr.'%');
-            $q->orWhere('description', 'like' , '%'.$searchStr.'%');
-        });
+        $query =  $this->GSS->setPeopleJoins()
+                            ->where(function($q) use ($searchStr) {
+                                $q->where('rl_people.name', 'like' , '%'.$searchStr.'%')
+                                    ->orWhere('rl_people.role', 'like' , '%'.$searchStr.'%')
+                                    ->orWhere('rl_people.description', 'like' , '%'.$searchStr.'%');
+                            });
 
-        $this->GSS->_subQueryForPeopleEntity($query, $groupedSearchIterations);
 
-        return $query->count();
+        $query = $this->GSS->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+
+        return $query->count(DB::raw('DISTINCT(rl_people.id)'));
     }
 }
