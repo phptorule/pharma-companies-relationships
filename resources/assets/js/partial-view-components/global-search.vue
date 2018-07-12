@@ -135,23 +135,36 @@
 
                         this.notifyGlobalSearchPerformed(data);
 
-                        let hash = this.$route.hash;
-
-
-                        if(+data.count_addresses > 0) {
-                            // this.$router.push('/dashboard?address-ids=' + data.address_ids.toString() + hash)
-                            this.$router.push('/dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
-                        }
-                        else if (+data.count_people > 0) {
-                            // this.$router.push('/people-dashboard?people-ids=' + data.people_ids.toString() + hash)
-                            this.$router.push('/people-dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
-                        }
-                        else {
-                            this.$router.push('/dashboard?address-ids=' + '-1' + hash)
-                        }
+                        this.navigateToAppropriatePage(data);
 
                         return data;
                     })
+            },
+
+            navigateToAppropriatePage: function(data) {
+                let hash = this.$route.hash;
+
+                let isAnyDashboardActive = this.$route.path === '/dashboard' || this.$route.path === '/people-dashboard';
+
+                if(+data.count_addresses > 0 && +data.count_people > 0 && isAnyDashboardActive) {
+                    this.$router.push(this.$route.path + this.addSearchIterationToUrl().replace('&','?') + hash)
+                }
+
+                else if(+data.count_addresses > 0 && +data.count_people > 0) {
+                    this.$router.push('/dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
+                }
+
+                else if(+data.count_addresses > 0 && +data.count_people === 0) {
+                    this.$router.push('/dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
+                }
+
+                else if (+data.count_people > 0 && +data.count_addresses === 0) {
+                    this.$router.push('/people-dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
+                }
+
+                else {
+                    this.$router.push('/dashboard?address-ids=' + '-1' + hash)
+                }
             },
 
             notifyGlobalSearchPerformed: function(data) {
