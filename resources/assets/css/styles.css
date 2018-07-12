@@ -2730,6 +2730,43 @@ ul.tag-list li {
     border: none;
 }
 
+.admin-users {
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 122px);
+    overflow-y: auto;
+    font-family: Montserrat;
+}
+
+.admin-users .au-container {
+    width: 80%;
+}
+
+.admin-users .au-breadcrumbs {
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.admin-users .au-breadcrumbs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-users .au-breadcrumbs-list li {
+    display: inline-block;
+    margin-right: 7px;
+}
+
+.admin-users .au-breadcrumbs-list li.active {
+    font-weight: 600;
+}
+
+.admin-users .au-user-list td {
+    vertical-align: middle;
+}
+
 .wrapper {
     /* position: fixed;
     top: 0;

@@ -781,12 +781,16 @@
                 formData.append('name', newItem.name);
                 formData.append('description', newItem.description);
                 formData.append('image', newItem.image);
-                return this.httpPost('/api/products/create', formData)
+                return this.httpPost('/api/products/create/' + this.addressId,
+                    formData
+                )
                 .then(data => {
                     if (data.status) {
                         alertify.notify(data.message, 'error', 3);
                         return data;
                     }
+                    this.addressData.products = [];
+                    this.addressData.products = data.address.products;
                     this.closeProducts();
                     alertify.notify('New product has been added.', 'success', 3);
 

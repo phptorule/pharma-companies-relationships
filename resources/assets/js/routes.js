@@ -53,6 +53,12 @@ let privateRoutes = [
         component: require('./private-components/pages/edit-profile'),
         meta: { requiresAuth: true},
         name: 'Edit Profile'
+    },
+    {
+        path: '/admin/users',
+        component: require('./private-components/pages/admin-users'),
+        meta: { requiresAuth: true, adminAuth: true},
+        name: 'AdminUsers'
     }
 
 
@@ -70,6 +76,15 @@ router.beforeEach((to, from, next) => {
     }
     else if (to.path == '/login' && AuthService.isLoggedIn){
         next({ path: '/dashboard'});
+    }
+    else if (to.meta.adminAuth) {
+        const authUser = JSON.parse(window.localStorage.getItem('logged-user'));
+
+        if (authUser.role === 'admin') {
+            next();
+        } else {
+            next({ path: '/dashboard' });
+        }
     }
     else {
         next();

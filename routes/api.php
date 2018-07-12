@@ -119,7 +119,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/products/{address}/update', 'AddressesController@updateProducts')->name('address.updateProducts');
 
-    Route::post('/products/create', 'AddressesController@createProduct');
+    Route::post('/products/create/{address}', 'AddressesController@createProduct');
 
     Route::post('/clusters/create/{address}', 'AddressesController@createCluster');
 
@@ -148,6 +148,12 @@ Route::group(['middleware'=>['jwt.auth']],function () {
     Route::get('/get-used-consumables-by-address/{addressId}', 'TendersController@getUsedConsumablesByAddressAndTender');
 
     Route::post('/assign-addresses-to-person/{person}', 'PeopleController@assignAddressesToPerson');
+
+    Route::post('/admin/create-user', 'AdminController@createUser');
+
+    Route::post('/admin/edit-user', 'AdminController@editUser');
+
+    Route::get('/get-users', 'AdminController@getUsersPaginated');
 
     Route::get('/count-global-search-results', 'GlobalSearchController@searchForAutoSuggesting');
 
