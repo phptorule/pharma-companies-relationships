@@ -98,7 +98,7 @@ class GlobalSearchController extends Controller
         $query =  $this->GSS->setAddressJoins()
                             ->where('rl_addresses.name', 'like', '%'.$searchStr.'%');
 
-        $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
@@ -109,7 +109,7 @@ class GlobalSearchController extends Controller
         $query =  $this->GSS->setAddressJoins()
                             ->where('rl_addresses.address', 'like', '%'.$searchStr.'%');
 
-        $this->GSS->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
@@ -124,36 +124,7 @@ class GlobalSearchController extends Controller
                                 $q->orWhere('rl_products.name', 'like', '%'.$searchStr.'%');
                             });
 
-        if(!empty($groupedSearchIterations['organisations'])) {
-            foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['addresses'])) {
-            foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['people'])) {
-            foreach ($groupedSearchIterations['people'] as $person) {
-                $query->where(function($q) use ($person) {
-                    $q->where('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['products'])) {
-            foreach ($groupedSearchIterations['products'] as $product) {
-                $query->where(function($q) use ($product) {
-                    $q->where('rl_products.company', 'like', '%'.$product.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
-                });
-            }
-        }
+        $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->count(DB::raw('DISTINCT(rl_products.id)'));
     }
@@ -169,7 +140,7 @@ class GlobalSearchController extends Controller
                             });
 
 
-        $query = $this->GSS->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+        $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->count(DB::raw('DISTINCT(rl_people.id)'));
     }

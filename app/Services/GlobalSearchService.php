@@ -60,7 +60,7 @@ class GlobalSearchService
         $query = $this->setAddressJoins()
                     ->selectRaw('DISTINCT(rl_addresses.id)');
 
-        $query = $this->_subQueryForAddressEntity($query, $groupedSearchIterations);
+        $query = $this->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->get();
     }
@@ -71,7 +71,7 @@ class GlobalSearchService
         $query = $this->setPeopleJoins()
                     ->selectRaw('DISTINCT(rl_people.id)');
 
-        $query = $this->_subQueryForPeopleEntity($query, $groupedSearchIterations);
+        $query = $this->_subQueryForIterations($query, $groupedSearchIterations);
 
         return $query->get();
     }
@@ -133,7 +133,7 @@ class GlobalSearchService
     }
 
 
-    function _subQueryForAddressEntity($query, $groupedSearchIterations)
+    function _subQueryForIterations($query, $groupedSearchIterations)
     {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
@@ -150,43 +150,6 @@ class GlobalSearchService
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
                 $query->where(function($q) use ($person) {
-                    $q->where('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
-                });
-            }
-        }
-
-        if(!empty($groupedSearchIterations['products'])) {
-            foreach ($groupedSearchIterations['products'] as $product) {
-                $query->where(function($q) use ($product) {
-                    $q->where('rl_products.company', 'like', '%'.$product.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
-                });
-            }
-        }
-
-        return $query;
-    }
-
-
-    function _subQueryForPeopleEntity($query, $groupedSearchIterations)
-    {
-        if(!empty($groupedSearchIterations['organisations'])) {
-            foreach ($groupedSearchIterations['organisations'] as $organisation) {
-                $query->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['addresses'])) {
-            foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
-            }
-        }
-
-        if(!empty($groupedSearchIterations['people'])) {
-            foreach ($groupedSearchIterations['people'] as $person) {
-                $query->where(function ($q) use ($person){
                     $q->where('rl_people.name', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
                     $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
