@@ -177,10 +177,6 @@
 
             makePreliminaryGlobalSearch: function (e) {
 
-                if(e.keyCode === 13) {
-                    return this.addSearchIteration();
-                }
-
                 if(this.isServiceKeyPressed(e)) {
                     this.checkIfTheSelect2ShouldBeOpened(e);
                     return;
@@ -209,6 +205,10 @@
 
                     if (this.globalSearchInput.replace(/\s/g, '') === '') {
                         return;
+                    }
+
+                    if(e.keyCode === 13) {
+                        return this.addSearchIteration();
                     }
 
                     this.makePreliminaryGlobalSearchServerRequest();
