@@ -7,7 +7,7 @@
                     <img src="/images/ic-search.png" alt="">
 
 
-                    <ul class="search-iteration">
+                    <ul class="search-iteration" :class="{'ready-for-deletion': firstBackspaceClicked}">
                         <li v-for="(searchItem, i) of searchIterations"
                             :title="searchItem.type + ': ' + searchItem.value"
                         >
