@@ -319,14 +319,31 @@ class AddressesController extends Controller
 
 
     function getClusterStaffPaginated(Address $address) {
-        $clusterStaff = People::with('addresses')
+        $query = People::with('addresses')
             ->whereHas('addresses', function ($q) use ($address) {
                 $q->where('cluster_id', $address->cluster_id);
-            })
-            ->orderByRaw('name')
+            });
+
+        $query = $this->composeClusterStuffConditions($query, request()->all());
+
+        $clusterStaff = $query->orderByRaw('name')
             ->paginate(10);
 
         return response()->json($clusterStaff);
+    }
+
+
+    function composeClusterStuffConditions($query, $params)
+    {
+        if (isset($params['name'])) {
+            $query->where('rl_people.name', 'like', '%'.$params['name'].'%');
+        }
+
+        if (isset($params['type'])) {
+            $query->where('rl_people.type_id', $params['type']);
+        }
+
+        return $query;
     }
 
 

@@ -122,7 +122,7 @@
 
             
 
-            <ul class="staff-list" v-if=" ! canSearch && ! canSearchByRole && isShowLabChainStaffCollapsed">
+            <ul class="staff-list" v-if="isShowLabChainStaffCollapsed">
                 <li v-if="i < 3" v-for="(person, i) in clusterStaff.data">
                     <div class="image">
                         <a href="javascript:void(0)" 
@@ -142,7 +142,7 @@
                                 {{ person.name }}
                             </a>
                         </p>
-                        <p class="occupation" v-if="person.addresses.length">
+                        <div class="occupation" v-if="person.addresses.length">
                             at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
                                                                     v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
@@ -152,13 +152,13 @@
                                     {{ address.name }}
                                 </p>
                             </div>
-                        </p>
+                        </div>
                         <p class="occupation">{{ person.description }}</p>
                     </div>
                 </li>
             </ul>
             
-            <ul class="staff-list" v-if=" ! canSearch && ! canSearchByRole && ! isShowLabChainStaffCollapsed ">
+            <ul class="staff-list" v-if="!isShowLabChainStaffCollapsed ">
                 <li v-for="(person, i) in clusterStaff.data">
                     <div class="image">
                         <a href="javascript:void(0)" 
@@ -176,7 +176,7 @@
                                 {{ person.name }}
                             </a>
                         </p>
-                        <p class="occupation" v-if="person.addresses.length">
+                        <div class="occupation" v-if="person.addresses.length">
                             at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
                                                                     v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
                                                                     v-if="person.addresses.length > 1"
@@ -186,62 +186,29 @@
                                     {{ address.name }}
                                 </p>
                             </div>
-                        </p>
+                        </div>
                         <p class="occupation">{{person.description}}</p>
                     </div>
                 </li>
             </ul>
 
-            <ul class="staff-list" v-if="canSearch || canSearchByRole">
-                <li v-for="(person, i) in filtered">
-                    <div class="image">
-                        <a href="javascript:void(0)" 
-                            @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                        >
-                            <span class="person-initials">
-                                {{ getPersonInitials(person.name) }}
-                            </span>
-                            <img :src="'/images/mask-'+i+'.png'" alt="">
-                        </a>
-                    </div>
-                    <div class="personal-info">
-                        <p class="name">
-                            <a href="javascript:void(0)" 
-                                @click="showEmployeeDetailsModal(person.id, addressData.id, addressData)"
-                            >
-                                {{ person.name }}
-                            </a>
-                        </p>
-                        <p class="occupation" v-if="person.addresses.length">
-                            at <a class="product-at-link" :href="'/address-details/' + person.addresses[0].id">{{ person.addresses[0].name }}</a> <span class="worked-at-other" 
-                                                                    v-tooltip.bottom="{ html: 'tooltipContent' + i }" 
-                                                                    v-if="person.addresses.length > 1"
-                                                                >and <strong>{{ person.addresses.length - 1 }}</strong> other</span> 
-                            <div class="product-tooltip" v-if="person.addresses.length > 1" :id="'tooltipContent' + i">
-                                <p v-if="k > 0" v-for="(address, k) in person.addresses">
-                                    {{ address.name }}
-                                </p>
-                            </div>
-                        </p>
-                        <p class="occupation">{{ person.description }}</p>
-                    </div>
-                </li>
-            </ul>
-
-            <div v-if="(canSearch || canSearchByRole) && filtered.length < 1">No matches</div>
+            <div v-if="!clusterStaff.data || !clusterStaff.data.length"
+                 class="empty-data-p"
+                 style="text-align: center"
+            >No staff was found</div>
 
             <div style="clear: both"></div>
 
-            <a v-show="clusterStaff.data.length > 3 && isShowLabChainStaffCollapsed && ! canSearch && ! canSearchByRole" 
+            <a v-show="clusterStaff.data.length > 3 && isShowLabChainStaffCollapsed"
                 href="javascript:void(0)" @click="showLabChainStaffPaginated()" 
                 class="address-box-show-more-link">Show all Employees</a>
 
-            <div class="show-less-btn" v-show=" ! isShowLabChainStaffCollapsed && ! canSearch && ! canSearchByRole">
+            <div class="show-less-btn" v-show="!isShowLabChainStaffCollapsed">
                 <a @click="isShowLabChainStaffCollapsed = true" 
                 href="javascript:void(0)">Show Less</a>
             </div>
 
-            <div class="pagination-box" v-show="! canSearch && ! canSearchByRole" v-if=" ! isShowLabChainStaffCollapsed">
+            <div class="pagination-box" v-if="!isShowLabChainStaffCollapsed">
                 <pagination :records="clusterStaff.total" 
                     :class="'pagination pagination-sm no-margin pull-right'" 
                     :per-page="10" @paginate="staffPageChanged"
@@ -285,7 +252,6 @@
                             </div>
                         </span>
                     </div>
-
 
                 </li>
             </ul>
@@ -406,6 +372,7 @@
                 if (this.selectedRole == null) {
                     this.selectedRole = this.defaultRole
                 }
+
                 this.handleSearch()
             },
             "addressData.cluster.name": function () {
@@ -452,10 +419,26 @@
             loadClusterStaffPaginated: function (page) {
                 let p = page || 1;
 
-                this.httpGet('/api/address-details/'+this.addressData.id+'/get-cluster-staff-paginated?page='+p)
+                let url = '/api/address-details/'+this.addressData.id+'/get-cluster-staff-paginated?page='+p + this.composeStaffQueryUrl();
+
+                this.httpGet(url)
                     .then(data => {
                         this.clusterStaff = data;
                     })
+            },
+
+            composeStaffQueryUrl: function() {
+                let queryUrl = '';
+
+                if(this.selectedRole.id !== -1) {
+                    queryUrl += '&type=' + this.selectedRole.id;
+                }
+
+                if(this.query) {
+                    queryUrl += '&name=' + this.query;
+                }
+
+                return queryUrl;
             },
 
             productsPageChanged: function(pageNumber) {
@@ -512,17 +495,11 @@
                     searchQuery: this.query,
                     selectedRole: this.selectedRole
                 }));
-                this.filtered = this.empList.filter((item) => {
-                    if (this.canSearch && this.canSearchByRole) {
-                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1 &&
-                            item.type_id == this.selectedRole.id
-                    } else if (this.canSearch && ! this.canSearchByRole) {
-                        return item.name.toLowerCase().indexOf(this.query.toLowerCase().trim()) + 1
-                    } else if ( ! this.canSearch && this.canSearchByRole) {
-                        return item.type_id == this.selectedRole.id
-                    }
-                });
-            }, 400),
+
+                this.loadClusterStaffPaginated();
+
+            }, 500),
+
             toggleClusterEdit: function () {
                 this.isClusterEdit = !this.isClusterEdit;
                 if ( ! this.isClusterEdit) {
@@ -532,6 +509,7 @@
                 }
                 this.$root.logData('labchain', 'toggle cluster edit', JSON.stringify(this.isClusterEdit));
             },
+
             updateCluster: function () {
                 if (this.madeChanges && ! this.saveBtnDisabled) {
                     this.$root.logData('labchain', 'update labchain name', JSON.stringify(this.addressData.cluster.name));
@@ -567,7 +545,6 @@
             this.loadClusterProductsPaginated();
 
             this.getRoles();
-            this.getAllClusterStuff();
 
             this.$eventGlobal.$on('addressClusterUpdated', () => {
                 this.isShowLabChainMembersCollapsed = true;
