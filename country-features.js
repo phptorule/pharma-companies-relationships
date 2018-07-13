@@ -9,7 +9,7 @@ const COUNTRY_FEATURES = {
         'employee-modal-career-years': true,
         'employee-modal-view-contact-chain-btn': true,
         'employee-modal-tab-content': true,
-
+        'view-address-relationship-graph': true,
     },
 
     Russia: {

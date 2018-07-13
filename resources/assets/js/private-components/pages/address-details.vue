@@ -232,7 +232,7 @@
                         <a href="javascript:void(0)" 
                             @click="showContactsChain(addressData)" 
                             class="view-contacts-chain"
-                           v-if="false"
+                           v-if="COUNTRY_FEATURES['view-address-relationship-graph']"
                         >
                             View Relationship Graph
                         </a>
