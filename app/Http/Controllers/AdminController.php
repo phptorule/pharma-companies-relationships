@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\GlobalHelper;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -125,6 +126,36 @@ class AdminController extends Controller
 
     function getUsersActivities()
     {
+        $rawChartData = $this->queryChartDataForUserActivity();
+
+        $topUserNames = array_unique($rawChartData->pluck('name')->toArray());
+
+        Log::info('$topUserNames ---> ' . print_r($topUserNames,1));
+
+        $preData = [];
+
+        foreach ($rawChartData as $i => $result) {
+
+            $preData[$result->date] = array_fill(0, count($topUserNames) + 1, 0);
+
+            if(($index = array_search($result->name, $topUserNames)) !== false) {
+
+                $indexPlus1 = $index + 1;
+
+                $preData[$result->date][$indexPlus1] = $result->activity;
+            }
+
+        }
+
+        return response()->json([
+            'rawChartData' => $rawChartData,
+            'preData' => $preData
+        ]);
+    }
+
+
+    function queryChartDataForUserActivity ()
+    {
         $selectSql = "
             DATE_FORMAT(ua.created_at, '%d-%m-%Y') as date,
             COUNT(ua.id) as activity,
@@ -133,12 +164,13 @@ class AdminController extends Controller
         ";
 
         $activities = DB::table('rl_user_activity AS ua')
-                        ->selectRaw($selectSql)
-                        ->join('rl_user_activity_type AS uat', 'ua.activity_type_id', '=', 'uat.id')
-                        ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
-                        ->groupBy(['date', 'u.id'])
-                        ->orderBy('date');
+            ->selectRaw($selectSql)
+            ->join('rl_user_activity_type AS uat', 'ua.activity_type_id', '=', 'uat.id')
+            ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
+            ->groupBy(['date', 'u.id'])
+            ->orderBy('date')
+            ->get();
 
-        return response()->json($activities->get());
+        return $activities;
     }
 }
