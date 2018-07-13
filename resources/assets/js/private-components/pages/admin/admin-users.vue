@@ -210,7 +210,7 @@
 </template>
 
 <script>
-    import http from '../../mixins/http';
+    import http from '../../../mixins/http';
 
     export default {
         mixins: [http],

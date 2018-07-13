@@ -56,7 +56,13 @@ let privateRoutes = [
     },
     {
         path: '/admin/users',
-        component: require('./private-components/pages/admin-users'),
+        component: require('./private-components/pages/admin/admin-users'),
+        meta: { requiresAuth: true, adminAuth: true},
+        name: 'AdminUsers'
+    },
+    {
+        path: '/admin/activity',
+        component: require('./private-components/pages/admin/admin-activities'),
         meta: { requiresAuth: true, adminAuth: true},
         name: 'AdminUsers'
     }

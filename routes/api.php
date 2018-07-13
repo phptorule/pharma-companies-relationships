@@ -149,13 +149,23 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::post('/assign-addresses-to-person/{person}', 'PeopleController@assignAddressesToPerson');
 
-    Route::post('/admin/create-user', 'AdminController@createUser');
-
-    Route::post('/admin/edit-user', 'AdminController@editUser');
-
-    Route::get('/get-users', 'AdminController@getUsersPaginated');
-
     Route::get('/count-global-search-results', 'GlobalSearchController@searchForAutoSuggesting');
 
     Route::get('/global-search', 'GlobalSearchController@index');
+
+
+
+    /*
+     *  Admin Routes
+     */
+
+    Route::group(['prefix' => 'admin'], function (){
+
+        Route::get('/get-users', 'AdminController@getUsersPaginated');
+
+        Route::post('/create-user', 'AdminController@createUser');
+
+        Route::post('/edit-user', 'AdminController@editUser');
+
+    });
 });
