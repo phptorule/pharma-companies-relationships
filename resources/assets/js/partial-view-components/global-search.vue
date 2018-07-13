@@ -146,7 +146,13 @@
 
                 let isAnyDashboardActive = this.$route.path === '/dashboard' || this.$route.path === '/people-dashboard';
 
-                if(+data.count_addresses > 0 && +data.count_people > 0 && isAnyDashboardActive) {
+                let isOnlyPeopleIterations = !(this.searchIterations.filter(el => el.id === 'Person')).length;
+
+                if(+data.count_people > 0 && isOnlyPeopleIterations) {
+                    this.$router.push('/people-dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)
+                }
+
+                else if(+data.count_addresses > 0 && +data.count_people > 0 && isAnyDashboardActive) {
                     this.$router.push(this.$route.path + this.addSearchIterationToUrl().replace('&','?') + hash)
                 }
 
