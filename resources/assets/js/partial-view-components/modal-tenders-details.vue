@@ -101,10 +101,11 @@
 
     import http from '../mixins/http';
     import helpers from '../mixins/helpers';
+    import googleCharts from '../mixins/google-charts';
 
     export default {
 
-        mixins: [http, helpers],
+        mixins: [http, helpers, googleCharts],
 
         data: function () {
             return {
@@ -119,7 +120,6 @@
 
                 queryUrl: '',
                 isOthersIncluded: true,
-                isGoogleChartCoreLoaded: false,
                 isGraphLoading: true,
                 isFilterEmpty: false,
                 chartWidth: null,
@@ -244,13 +244,6 @@
                         }
 
                     });
-            },
-
-            loadGoogleChartCore: function () {
-                return google.charts.load('current', {'packages': ['corechart']})
-                    .then(() => {
-                        this.isGoogleChartCoreLoaded = true;
-                    })
             },
 
             defineChartColors: function(chartData) {

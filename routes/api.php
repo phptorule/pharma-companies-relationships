@@ -167,5 +167,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
         Route::post('/edit-user', 'AdminController@editUser');
 
+        Route::get('/get-user-activities', 'AdminController@getUsersActivities');
+
     });
 });

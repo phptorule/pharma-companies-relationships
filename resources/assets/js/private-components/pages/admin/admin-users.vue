@@ -266,7 +266,7 @@
             }, 400),
             getUsers: function (pageNumber) {
                 let p = pageNumber || 1;
-                let url = '/api/get-users' + '/?page=' + p;
+                let url = '/api/admin/get-users' + '/?page=' + p;
                 
                 this.httpGet(url)
                     .then(data => {

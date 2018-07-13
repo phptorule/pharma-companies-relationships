@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -47,6 +49,7 @@ class AdminController extends Controller
             'message' => 'User successfully created'
         ]);
     }
+
 
     public function editUser (Request $request) {
         $arr = [
@@ -111,10 +114,31 @@ class AdminController extends Controller
         ]);
     }
 
+
     public function getUsersPaginated (Request $request)
     {
         $users = User::paginate(10);
 
         return response()->json($users);
+    }
+
+
+    function getUsersActivities()
+    {
+        $selectSql = "
+            DATE_FORMAT(ua.created_at, '%d-%m-%Y') as date,
+            COUNT(ua.id) as activity,
+            u.id,  
+            u.name
+        ";
+
+        $activities = DB::table('rl_user_activity AS ua')
+                        ->selectRaw($selectSql)
+                        ->join('rl_user_activity_type AS uat', 'ua.activity_type_id', '=', 'uat.id')
+                        ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
+                        ->groupBy(['date', 'u.id'])
+                        ->orderBy('date');
+
+        return response()->json($activities->get());
     }
 }
