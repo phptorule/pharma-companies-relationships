@@ -220,39 +220,32 @@ class AddressesController extends Controller
 
         $mainLabId = $address->id;
 
-        $sql = "
-        SELECT * from
-        (
-            SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a  
-            JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
-            JOIN rl_address_connections ac ON ac.from_person_id = ap.person_id -- people who know people on main hospital
-            JOIN rl_address_people ap2 ON ap2.person_id = ac.to_person_id -- workplaces of people who know people on main hospital
-            JOIN rl_addresses a2 ON ap2.address_id = a2.id 
-            WHERE a.id = :mainLabId1
-            UNION 
-            SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a  
-            JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
-            JOIN rl_address_connections ac ON ac.to_person_id = ap.person_id -- people who know people on main hospital 
-            JOIN rl_address_people ap2 ON ap2.person_id = ac.from_person_id -- workplaces of people who know people on main hospital
-            JOIN rl_addresses a2 ON ap2.address_id = a2.id 
-            WHERE a.id = :mainLabId2
-            UNION
-            SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a 
-            JOIN rl_addresses a2 ON a.cluster_id = a2.cluster_id 
-            WHERE a.id != a2.id AND a.cluster_id IS NOT NULL AND a.id = :mainLabId3 
-            UNION 
-            SELECT a.id, a.name, a.cluster_id FROM rl_addresses a WHERE a.id = :mainLabId4
-        ) related_labs ";
+        $sqlQuery = "SELECT a2.id, a2.name, a2.cluster_id FROM rl_addresses a JOIN rl_addresses a2 WHERE (a.cluster_id = a2.cluster_id OR a2.id = ? ) AND a.id = ?";
 
-        $related_labs = DB::select(
-            DB::raw($sql),
-            [
-                'mainLabId1' => $mainLabId,
-                'mainLabId2' => $mainLabId,
-                'mainLabId3' => $mainLabId,
-                'mainLabId4' => $mainLabId
-            ]
-        );
+        $cluster_labs = array_pluck(DB::select(DB::raw($sqlQuery), [$mainLabId, $mainLabId]), 'id');
+        $cluster_labs_ids = implode(',', $cluster_labs);
+
+        $sql = "SELECT * from
+                (SELECT a.id, a.name, a.cluster_id, a.address FROM rl_addresses a WHERE a.id IN (" . $cluster_labs_ids . ") 
+                UNION
+                SELECT a2.id, a2.name, a2.cluster_id, a2.address FROM rl_addresses a  
+                JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
+                JOIN rl_address_connections ac ON ac.from_person_id = ap.person_id -- people who know people on main hospital
+                JOIN rl_address_people ap2 ON ap2.person_id = ac.to_person_id -- workplaces of people who know people on main hospital
+                JOIN rl_addresses a2 ON ap2.address_id = a2.id 
+                WHERE a.id IN (" . $cluster_labs_ids . ") 
+                UNION 
+                SELECT a2.id, a2.name, a2.cluster_id, a2.address FROM rl_addresses a  
+                JOIN rl_address_people ap ON a.id = ap.address_id -- workers of main hospital
+                JOIN rl_address_connections ac ON ac.to_person_id = ap.person_id -- people who know people on main hospital 
+                JOIN rl_address_people ap2 ON ap2.person_id = ac.from_person_id -- workplaces of people who know people on main hospital
+                JOIN rl_addresses a2 ON ap2.address_id = a2.id 
+                WHERE a.id IN(" . $cluster_labs_ids . ")              
+                ) related_labs ";
+
+        Log::info('$sql ---> ' . $sql);
+
+        $related_labs = DB::select(DB::raw($sql));
 
         $related_labs_ids = "";
         $first = true;

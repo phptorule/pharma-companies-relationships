@@ -78,6 +78,9 @@ var SNEAK_PEAK_ALPHA = 0.3;
 var canvas;
 var hasStabilization = true;
 var PHYSICS_TIMEOUT = 3000;
+var disableFading = false;
+var FADING_DISABLE_THRESHOLD = 15;
+
 
 var fitScale = 0;
 var mousePosition = { x : -10000, y : -10000 };
@@ -148,6 +151,15 @@ function GraphItem(){
 }
 
 GraphItem.prototype.changeState = function(state, elapsedTime, nextState){
+
+    if (disableFading){
+        if (state == NodeStateEnum.APPEARING)
+            state = NodeStateEnum.VISIBLE;
+        if (state == NodeStateEnum.DISSAPEARING)
+            state = NodeStateEnum.HIDDEN;
+    }
+
+
     switch (state){
         case NodeStateEnum.VISIBLE:
             this.alpha = 1;
@@ -1001,7 +1013,7 @@ function start(result){
         var lab = result.related_labs[i];
         var labId = getLabId(lab.id);
         var isMainLab = (mainNodeType == NodeTypeEnum.HOSPITTAL && lab.id == mainNodeId);
-        var hospitalNode = new GraphNode(lab.id, labId, NodeTypeEnum.HOSPITAL, lab.name, isMainLab, lab.cluster_id, (lab.cluster_id == mainLabCluster));
+        var hospitalNode = new GraphNode(lab.id, labId, NodeTypeEnum.HOSPITAL, generateLabName(lab.name, lab.address), isMainLab, lab.cluster_id, (lab.cluster_id == mainLabCluster));
 
         // fill hashmap and basic structure for vis
         nodesMap[labId] = hospitalNode;
@@ -1126,6 +1138,10 @@ function start(result){
     }
     datasetNodes = new vis.DataSet(datasetToAddNodes);
 
+    if (datasetToAddNodes.length >= FADING_DISABLE_THRESHOLD){
+        disableFading = true;
+    }
+
     var datasetToAddEdges = [];
     for (var i = 0; i < mergedEdges.length; i++){
         if (mergedEdges[i].shouldBeAddedToGraph()){
@@ -1196,6 +1212,23 @@ function start(result){
 
     requestAnimationFrame(mainLoop);
 }
+
+
+// generates the label for the lab, with it's name and the city where the lab is from
+function generateLabName(name, address){
+    var labName = name;
+    if (address){
+        var addressTokens = address.split(",");
+        if (addressTokens.length > 0){
+            var lastToken = addressTokens[addressTokens.length - 1].trim();
+            if (labName.indexOf(lastToken) == -1){
+                labName += ", " + lastToken;
+            }
+        }
+    }
+    return labName;
+}
+
 
 function existsRelationship(array, id1, id2){
     for (var i = 0; i < array.length; i++){
