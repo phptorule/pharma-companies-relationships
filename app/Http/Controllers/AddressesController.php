@@ -243,8 +243,6 @@ class AddressesController extends Controller
                 WHERE a.id IN(" . $cluster_labs_ids . ")              
                 ) related_labs ";
 
-        Log::info('$sql ---> ' . $sql);
-
         $related_labs = DB::select(DB::raw($sql));
 
         $related_labs_ids = "";
