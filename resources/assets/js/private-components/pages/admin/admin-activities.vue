@@ -9,6 +9,50 @@
                 </ul>
             </div>
 
+            <h2 class="text-center">User Activity</h2>
+
+            <div class="filter-container">
+                <div class="row">
+
+                    <form class="form-horizontal">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label class="col-sm-4 col-md-2 control-label">Period: </label>
+
+                                <div class="col-sm-2 col-md-2">
+                                    <select v-model="interval" class="form-control" @change="applyFilter()">
+                                        <option value="5">5 days</option>
+                                        <option value="10">10 days</option>
+                                        <option value="20">20 days</option>
+                                        <option value="30">30 days</option>
+                                        <option value="60">2 month</option>
+                                        <option value="182">6 month</option>
+                                        <option value="365">1 year</option>
+                                    </select>
+                                </div>
+
+
+
+                                <label class="col-sm-4 col-md-2 control-label">Number of most active users:</label>
+
+                                <div class="col-sm-2 col-md-2">
+                                    <select v-model="userNumber" class="form-control" @change="applyFilter()">
+                                        <option value="1">1</option>
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                        <option value="60">60</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
             <div id="activity-chart"></div>
         </div>
     </div>
@@ -22,14 +66,27 @@
         mixins: [http, googleCharts],
 
         data: function () {
-            return {}
+            return {
+                interval: 5,
+                userNumber: 5,
+            }
         },
         watch: {
 
         },
         methods: {
+
+            applyFilter: function() {
+                this.loadTopUserActivities()
+                    .then(data => {
+                        this.drawChart(data);
+                    });
+            },
+
             loadTopUserActivities: function () {
-                return this.httpGet('/api/admin/get-user-activities')
+                let url = '/api/admin/get-user-activities?interval='+this.interval+'&user_number='+this.userNumber;
+
+                return this.httpGet(url)
             },
 
             drawChart: function (data) {
@@ -37,6 +94,7 @@
                 let options = {
                     width: $('#activity-chart').width(),
                     height: 400,
+                    colors: this.GOOGLE_CHART_DEFAULT_COLORS,
                     hAxis: {
                         direction: '-1'
                     },

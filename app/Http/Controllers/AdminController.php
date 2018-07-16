@@ -126,7 +126,12 @@ class AdminController extends Controller
 
     function getUsersActivities()
     {
-        $rawChartData = $this->queryChartDataForUserActivity();
+        $interval = request()->get('interval') ?? 30;
+        $userNumber = request()->get('user_number') ?? 5;
+
+        $mostActiveUserIds = $this->getMostActiveUsers($interval, $userNumber);
+
+        $rawChartData = $this->queryChartDataForUserActivity($interval, $mostActiveUserIds);
 
         $topUserNames = array_values(array_unique($rawChartData->pluck('name')->toArray()));
 
@@ -157,7 +162,27 @@ class AdminController extends Controller
     }
 
 
-    function queryChartDataForUserActivity ()
+    function getMostActiveUsers($interval, $limit = 5)
+    {
+        $selectSql = "
+            u.id,  
+            u.name,
+            COUNT(ua.id) as activity
+        ";
+
+        $users = DB::table('rl_user_activity AS ua')
+            ->selectRaw($selectSql)
+            ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
+            ->whereRaw('ua.created_at BETWEEN (NOW() - INTERVAL ? DAY) AND NOW()', [$interval])
+            ->groupBy(['u.id'])
+            ->orderBy('activity', 'desc')
+            ->limit($limit);
+
+        return $users->get()->pluck('id');
+    }
+
+
+    function queryChartDataForUserActivity ($interval, $mostActiveUserIds)
     {
         $selectSql = "
             DATE_FORMAT(ua.created_at, '%d-%m-%Y') as date,
@@ -168,12 +193,11 @@ class AdminController extends Controller
 
         $activities = DB::table('rl_user_activity AS ua')
             ->selectRaw($selectSql)
-            ->join('rl_user_activity_type AS uat', 'ua.activity_type_id', '=', 'uat.id')
             ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
+            ->whereRaw('ua.created_at BETWEEN (NOW() - INTERVAL ? DAY) AND NOW()', [$interval])
+            ->whereIn('ua.user_id', $mostActiveUserIds)
             ->groupBy(['date', 'u.id'])
             ->orderBy('ua.created_at');
-
-        Log::info('$activities ---> '. print_r($activities->toSql(),1));
 
         $activities = $activities->get();
 
