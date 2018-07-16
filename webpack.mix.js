@@ -36,7 +36,8 @@ mix
     ], 'public/js/graph-1.js')
 
     .scripts([
-            'node_modules/supercluster/build/supercluster.js',
+            'resources/assets/libs/supercluster.min.js',
+            'resources/assets/libs/google-chart-loader.js',
             'bower_components/jquery/dist/jquery.min.js',
             'resources/assets/graph-js/vis.js',
             'resources/assets/graph-js/materialize.min.js',
