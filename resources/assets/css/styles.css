@@ -1564,12 +1564,12 @@ ul.tag-list li {
 }
 
 .autocomplete-select .selects::-webkit-scrollbar-thumb {
-    background: #f1f1f1; 
+    background: #f1f1f1;
     border-radius: 10px;
 }
 
 .autocomplete-select .selects::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #555;
 }
 
 .autocomplete-select .confirm-block .left-block {
@@ -1768,7 +1768,7 @@ ul.tag-list li {
 .lab-chain-details .product-tooltip {
     height: 100%;
     width: 100%;
-    max-height: 100px; 
+    max-height: 100px;
     overflow-y: auto;
     overflow-x: auto;
 }
@@ -2237,12 +2237,12 @@ ul.tag-list li {
 }
 
 .multiple-autocomplete-select .list-block::-webkit-scrollbar-thumb {
-    background: #f1f1f1; 
+    background: #f1f1f1;
     border-radius: 10px;
 }
 
 .multiple-autocomplete-select .list-block::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #555;
 }
 
 .multiple-autocomplete-select .left-block {
@@ -2488,7 +2488,7 @@ ul.tag-list li {
     transition: all 0.1s linear;
     color: #dde3e8;
     background: transparent;
-    
+
 }
 
 .address-details .show-all-products-link:hover {
@@ -5860,4 +5860,48 @@ ul.search-iteration .fa-remove:hover{
     color: #3a444f;
     text-align: center;
     font-size: 1.5em;
+}
+
+li.admin-menu-li {
+
+}
+
+li.admin-menu-li.open > a {
+    opacity: 1;
+    border-bottom: 2px solid #fff;
+}
+
+li.admin-menu-li > ul > li > a.active{
+    border-color: transparent;
+    color: #3e7fdf;
+    background: #fff;
+}
+
+li.admin-menu-li > ul {
+    right: 0;
+    left: auto;
+}
+
+li.admin-menu-li > ul > li {
+    width: 100%;
+}
+
+li.admin-menu-li > ul > li a{
+    width: 100%;
+    margin: 0;
+    color: #999999;
+    opacity: 1;
+    padding: 10px 15px;
+    line-height: 1.5em;
+    height: auto;
+}
+
+li.admin-menu-li > ul > li a:hover{
+    color: #3e7fdf;
+    background: #eaeff4;
+}
+
+.nav-links > ul > li > a.active{
+    border-bottom: 2px solid #fff;
+    opacity: 1;
 }
