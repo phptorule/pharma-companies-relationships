@@ -17,14 +17,29 @@
 
             <div class="nav-links">
                 <ul>
-                    <li><a href="#" @click.prevent class="active without-handler">Lab Map</a></li>
+                    <li><a href="#" @click.prevent class="without-handler">Lab Map</a></li>
                     <!--<li><a href="#">Feed</a></li>-->
                     <!-- <li><a href="#" @click.prevent class="without-handler">About</a></li> -->
                     <!--<li><a href="#" @click.prevent class="without-handler">Contact</a></li>-->
-                    <li v-if="user && user.role === 'admin'">
-                        <router-link to="/admin/users">
-                            Admin
-                        </router-link>
+                    <li v-if="user && user.role === 'admin'"
+                        class="dropdown admin-menu-li"
+                        @click="toggleAdminDropdown()"
+                    >
+                        <a href="javascript:void(0)"
+                           :class="{active: isRouteActive('/admin/')}"
+                        >Admin</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <router-link
+                                        to="/admin/users"
+                                >User list</router-link>
+                            </li>
+                            <li>
+                                <router-link
+                                        to="/admin/activity"
+                                >User activities</router-link>
+                            </li>
+                        </ul>
                     </li>
                     <li v-if="user.link"><a :href="user.link" target="_blank"  style="font-size: 2.5em; margin-right: 0"><i class="fa fa-lightbulb-o"></i></a></li>
                 </ul>
@@ -83,6 +98,23 @@
         },
 
         methods: {
+
+            isRouteActive: function (path) {
+                return this.$route.path.indexOf(path) !== -1;
+            },
+
+            toggleAdminDropdown: function() {
+
+                let element = $('.admin-menu-li');
+
+                if(element.hasClass('open')){
+                    element.removeClass('open')
+                }
+                else {
+                    element.addClass('open')
+                }
+            },
+
             makeGlobalSearch: function () {
 
                 if(this.timeOutId){
