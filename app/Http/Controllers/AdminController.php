@@ -138,8 +138,10 @@ class AdminController extends Controller
         $preData = [];
 
         foreach ($rawChartData as $i => $result) {
-
             $preData[$result->date] = array_fill(0, count($topUserNames) + 1, 0);
+        }
+
+        foreach ($rawChartData as $i => $result) {
 
             $preData[$result->date][0] = $result->date;
 

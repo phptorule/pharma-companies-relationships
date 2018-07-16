@@ -100,11 +100,28 @@
                     },
                 };
 
+                data = this.setReadableDate(data);
+
                 let visualizationData = google.visualization.arrayToDataTable(data, false);
 
                 let chart = new google.visualization.LineChart(document.getElementById('activity-chart'));
 
                 chart.draw(visualizationData, options);
+            },
+
+            setReadableDate: function (data) {
+
+                return data.map((el, i) => {
+                    if(moment().format('DD-MM-YYYY') == el[0]) {
+                        el[0] = 'Today';
+                    }
+                    else if(moment().subtract(1, 'days').format('DD-MM-YYYY') == el[0]) {
+                        el[0] = 'Yesterday';
+                    }
+
+                    return el;
+                })
+
             }
         },
         mounted: function () {
