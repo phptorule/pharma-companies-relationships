@@ -34,24 +34,15 @@
 
             drawChart: function (data) {
 
-                let testDATA = [
-                    ['Date', 'User 1', 'User 2'],
-                    ['02-07-2018', 22500, 20000],
-                    ['03-07-2018', 35000, 30500],
-                    ['04-07-2018', 44000, 40500],
-                    ['05-07-2018', 27000, 20500],
-                    ['06-07-2018', 92000, 80000],
-                    ['07-07-2018', 18500, 10000]
-                ];
-
-
-
                 let options = {
-                    width: 800,
+                    width: $('#activity-chart').width(),
                     height: 400,
+                    hAxis: {
+                        direction: '-1'
+                    },
                 };
 
-                let visualizationData = google.visualization.arrayToDataTable(testDATA, false);
+                let visualizationData = google.visualization.arrayToDataTable(data, false);
 
                 let chart = new google.visualization.LineChart(document.getElementById('activity-chart'));
 

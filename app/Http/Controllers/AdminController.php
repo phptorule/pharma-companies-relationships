@@ -128,15 +128,15 @@ class AdminController extends Controller
     {
         $rawChartData = $this->queryChartDataForUserActivity();
 
-        $topUserNames = array_unique($rawChartData->pluck('name')->toArray());
-
-        Log::info('$topUserNames ---> ' . print_r($topUserNames,1));
+        $topUserNames = array_values(array_unique($rawChartData->pluck('name')->toArray()));
 
         $preData = [];
 
         foreach ($rawChartData as $i => $result) {
 
             $preData[$result->date] = array_fill(0, count($topUserNames) + 1, 0);
+
+            $preData[$result->date][0] = $result->date;
 
             if(($index = array_search($result->name, $topUserNames)) !== false) {
 
@@ -147,10 +147,13 @@ class AdminController extends Controller
 
         }
 
-        return response()->json([
-            'rawChartData' => $rawChartData,
-            'preData' => $preData
-        ]);
+        $titles = array_merge(['Date'],$topUserNames);
+
+        array_unshift($preData, $titles);
+
+        $graphData =  array_values($preData);
+
+        return response()->json($graphData);
     }
 
 
@@ -168,8 +171,11 @@ class AdminController extends Controller
             ->join('rl_user_activity_type AS uat', 'ua.activity_type_id', '=', 'uat.id')
             ->join('rl_users as u', 'ua.user_id', '=', 'u.id')
             ->groupBy(['date', 'u.id'])
-            ->orderBy('date')
-            ->get();
+            ->orderBy('ua.created_at');
+
+        Log::info('$activities ---> '. print_r($activities->toSql(),1));
+
+        $activities = $activities->get();
 
         return $activities;
     }
