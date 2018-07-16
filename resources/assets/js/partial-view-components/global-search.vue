@@ -133,6 +133,8 @@
                             data.people_ids = [-1];
                         }
 
+                        this.$root.logData('global_search', 'search', JSON.stringify(this.searchIterations));
+
                         this.notifyGlobalSearchPerformed(data);
 
                         this.navigateToAppropriatePage(data);
