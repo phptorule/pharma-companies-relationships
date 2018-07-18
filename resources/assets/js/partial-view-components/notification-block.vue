@@ -39,6 +39,8 @@
                     .then(data => {
                         this.notifications = data;
                         this.$eventGlobal.$emit('first-time-notifications-were-shown', {});
+
+                        this.checkForNotificationDeployment();
                     })
             },
 
@@ -54,7 +56,7 @@
 
                             this.$eventGlobal.$emit('notifications-were-shown', {});
 
-                            this.checkForNotificationDeployment()
+                            this.checkForNotificationDeployment();
                         });
 
                     setTimeout(checkNotification, 1000 * 5);
