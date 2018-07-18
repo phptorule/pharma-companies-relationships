@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class WebsiteNotification extends Model
 {
@@ -15,8 +16,16 @@ class WebsiteNotification extends Model
     protected $fillable = ['key', 'title', 'body', 'expired_at'];
 
 
-    function scopeActiveNotifications($q) {
+    function scopeActiveNotifications($q)
+    {
         return $q->whereDate('expired_at', '>', Carbon::now());
     }
+
+
+    function setExpiredAtAttribute($value)
+    {
+        $this->attributes['expired_at'] = $value ? Carbon::parse($value)->toDateTimeString() : null;
+    }
+
 
 }

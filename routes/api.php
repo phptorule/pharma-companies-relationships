@@ -175,5 +175,12 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
         Route::put('/configurations/{configuration}', 'ConfigurationsController@update');
 
+
+        Route::get('/website-notifications', 'WebsiteNotificationsController@index');
+
+        Route::post('/website-notifications', 'WebsiteNotificationsController@store');
+
+        Route::put('/website-notifications/{websiteNotification}', 'WebsiteNotificationsController@update');
+
     });
 });

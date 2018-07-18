@@ -75,6 +75,12 @@ let adminRoutes = [
         meta: { requiresAuth: true, adminAuth: true},
         name: 'AdminUsers'
     },
+    {
+        path: '/admin/website-notifications',
+        component: require('./private-components/pages/admin/website-notifications'),
+        meta: { requiresAuth: true, adminAuth: true},
+        name: 'AdminUsers'
+    },
 ];
 
 const router = new VueRouter({
