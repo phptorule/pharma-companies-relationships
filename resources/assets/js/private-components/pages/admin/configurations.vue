@@ -29,6 +29,35 @@
                             </tr>
                             </thead>
                             <tbody>
+
+                            <tr v-if="editedConfig.id === 'new-config'">
+                                <td>New</td>
+
+                                <td>
+                                    <input v-model="editedConfig.key">
+                                </td>
+
+                                <td>
+                                    <input v-model="editedConfig.value">
+                                </td>
+
+                                <td></td>
+
+                                <td>
+                                    <button class="btn btn-success"
+                                            @click="saveNewConfig()"
+                                    >
+                                        <i class="fa fa-floppy-o"></i>
+                                    </button>
+
+                                    <button class="btn btn-warning"
+                                            @click="editedConfig = setEditedConfigInitValues()"
+                                    >
+                                        <i class="fa fa-remove"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
                             <tr v-for="(config, i)  of configList">
                                 <td>{{config.id}}</td>
 
@@ -150,6 +179,19 @@
                         this.editedConfig = this.setEditedConfigInitValues();
 
                         return data;
+                    })
+            },
+
+            addNew: function () {
+                this.editedConfig = this.setEditedConfigInitValues();
+                this.editedConfig.id = 'new-config';
+            },
+
+            saveNewConfig: function () {
+                return this.httpPost('/api/admin/configurations', this.editedConfig)
+                    .then(data => {
+                        this.loadConfigList();
+                        this.editedConfig = this.setEditedConfigInitValues();
                     })
             }
         },
