@@ -14,7 +14,7 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <table class="table">
+                        <table class="table admin-configurations-table">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -34,11 +34,11 @@
                                 <td>New</td>
 
                                 <td>
-                                    <input v-model="editedConfig.key">
+                                    <input v-model="editedConfig.key" class="form-control" :class="{'has-error': editedConfig.key == ''}">
                                 </td>
 
                                 <td>
-                                    <input v-model="editedConfig.value">
+                                    <input v-model="editedConfig.value" class="form-control">
                                 </td>
 
                                 <td></td>
@@ -46,6 +46,7 @@
                                 <td>
                                     <button class="btn btn-success"
                                             @click="saveNewConfig()"
+                                            :disabled="editedConfig.key === null || editedConfig.key == ''"
                                     >
                                         <i class="fa fa-floppy-o"></i>
                                     </button>
@@ -68,8 +69,10 @@
 
                                     <input type="text"
                                            v-if="isShownWhileEditing(config, i)"
-                                           :value="config.key"
+                                           :value="editedConfig.key"
                                            @keyup="editKey"
+                                           class="form-control"
+                                           :class="{'has-error': editedConfig.key == ''}"
                                     >
                                 </td>
 
@@ -80,7 +83,8 @@
 
                                     <input type="text"
                                            v-if="isShownWhileEditing(config, i)"
-                                           :value="config.value"
+                                           :value="editedConfig.value"
+                                           class="form-control"
                                            @keyup="editValue"
                                     >
                                 </td>
@@ -96,6 +100,7 @@
 
                                     <button class="btn btn-success"
                                             v-if="isShownWhileEditing(config, i)"
+                                            :disabled="editedConfig.key === null || editedConfig.key == ''"
                                             @click="updateConfig()"
                                     >
                                         <i class="fa fa-floppy-o"></i>
