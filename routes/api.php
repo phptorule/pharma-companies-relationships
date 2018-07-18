@@ -171,5 +171,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
         Route::get('/configurations', 'ConfigurationsController@index');
 
+        Route::put('/configurations/{configuration}', 'ConfigurationsController@update');
+
     });
 });

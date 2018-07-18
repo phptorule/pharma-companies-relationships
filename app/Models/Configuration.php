@@ -10,5 +10,6 @@ class Configuration extends Model
 
     protected $table = 'rl_configurations';
 
+    protected $fillable = ['key', 'value'];
 
 }
