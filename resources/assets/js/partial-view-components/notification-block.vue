@@ -1,7 +1,8 @@
 <template>
     <div class="callout-notification-container">
         <div v-for="(notification, i) of notifications"
-             class="callout callout-danger callout-notification"
+             class="callout callout-notification"
+             :class="'callout-'+notification.type"
         >
             <p>
                 <strong>{{notification.title}}</strong>

@@ -21,6 +21,7 @@
                                 <th>Key</th>
                                 <th>Title</th>
                                 <th>Body</th>
+                                <th>Type</th>
                                 <th>Expired at</th>
                                 <th>Last Update</th>
                                 <th >
@@ -45,6 +46,12 @@
 
                                 <td>
                                     <input v-model="editedNotification.body" class="form-control">
+                                </td>
+
+                                <td>
+                                    <select v-model="editedNotification.type" class="form-control">
+                                        <option :value="type" :selected="type == 'default'" v-for="type of notificationTypes">{{type}}</option>
+                                    </select>
                                 </td>
 
                                 <td>
@@ -113,6 +120,20 @@
                                 </td>
 
                                 <td>
+                                    <span v-if="isHiddenWhileEditing(notification, i)" :class="'text-'+notification.type">
+                                        {{notification.type}}
+                                    </span>
+
+                                    <select @change="editType"
+                                            v-if="isShownWhileEditing(notification, i)"
+                                            class="form-control"
+                                    >
+                                        <option :value="type" :selected="type == notification.type" v-for="type of notificationTypes">{{type}}</option>
+                                    </select>
+                                </td>
+
+
+                                <td>
                                     <span v-if="isHiddenWhileEditing(notification, i)">
                                         {{notification.expired_at === null ? 'NULL' : notification.expired_at}}
                                     </span>
@@ -177,7 +198,13 @@
         data: function() {
             return {
                 notificationList: [],
-                editedNotification: this.setEditedNotificationInitValues()
+                editedNotification: this.setEditedNotificationInitValues(),
+                notificationTypes: [
+                    'default',
+                    'success',
+                    'warning',
+                    'danger'
+                ]
             }
         },
 
@@ -194,6 +221,7 @@
                     key: null,
                     title: null,
                     body: null,
+                    type: 'default',
                     expired_at: null,
                 }
             },
@@ -213,6 +241,10 @@
 
             editBody: function (e) {
                 this.editedNotification.body = e.target.value;
+            },
+
+            editType: function(e) {
+                this.editedNotification.type = e.target.value;
             },
 
             editExpiredAt: function (e) {

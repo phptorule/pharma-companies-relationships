@@ -13,7 +13,7 @@ class WebsiteNotification extends Model
 
     protected $dates = ['expired_at'];
 
-    protected $fillable = ['key', 'title', 'body', 'expired_at'];
+    protected $fillable = ['key', 'title', 'body', 'type', 'expired_at'];
 
 
     function scopeActiveNotifications($q)

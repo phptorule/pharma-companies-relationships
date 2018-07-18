@@ -13,6 +13,7 @@ class WebsiteNotificationsController extends Controller
         'key' => 'required|max:255',
         'title' => 'max:1024',
         'body' => 'max:1024',
+        'type' => 'required',
         'expired_at' => 'max:1024',
     ];
 
@@ -26,7 +27,7 @@ class WebsiteNotificationsController extends Controller
     {
         request()->validate($this->validatorRules);
 
-        $params = request()->only(['key', 'title', 'body', 'expired_at']);
+        $params = request()->only(['key', 'title', 'body', 'type', 'expired_at']);
 
         $config = WebsiteNotification::create($params);
 
@@ -38,7 +39,7 @@ class WebsiteNotificationsController extends Controller
     {
         request()->validate($this->validatorRules);
 
-        $params = request()->only(['key', 'title', 'body', 'expired_at']);
+        $params = request()->only(['key', 'title', 'body', 'type', 'expired_at']);
 
         $websiteNotification->update($params);
 
