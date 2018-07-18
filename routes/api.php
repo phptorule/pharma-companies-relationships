@@ -169,5 +169,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
         Route::get('/get-user-activities', 'AdminController@getUsersActivities');
 
+        Route::get('/configurations', 'ConfigurationsController@index');
+
     });
 });
