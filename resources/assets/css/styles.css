@@ -5909,3 +5909,8 @@ li.admin-menu-li > ul > li a:hover{
 table.admin-configurations-table input.has-error {
     border: 1px solid red;
 }
+
+.callout-notification {
+    margin: 0;
+    border-radius: 0;
+}

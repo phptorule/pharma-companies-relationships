@@ -28,6 +28,8 @@
 
                 <modal-contacts-chain></modal-contacts-chain>
 
+                <notification-block></notification-block>
+
                 <map-main></map-main>
 
             </section>
