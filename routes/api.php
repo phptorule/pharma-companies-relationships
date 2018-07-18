@@ -182,5 +182,7 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
         Route::put('/website-notifications/{websiteNotification}', 'WebsiteNotificationsController@update');
 
+        Route::delete('/website-notifications/{websiteNotification}', 'WebsiteNotificationsController@deleteNotifications');
+
     });
 });

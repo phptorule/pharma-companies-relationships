@@ -142,6 +142,14 @@
                                         <i class="fa fa-floppy-o"></i>
                                     </button>
 
+                                    <button class="btn btn-danger"
+                                            v-if="isShownWhileEditing(notification, i)"
+                                            :disabled="editedNotification.key === null || editedNotification.key == ''"
+                                            @click="requestDeleteConfirmation()"
+                                    >
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+
                                     <button class="btn btn-warning"
                                             v-if="isShownWhileEditing(notification, i)"
                                             @click="editedNotification = setEditedNotificationInitValues()"
@@ -238,6 +246,22 @@
 
             saveNewConfig: function () {
                 return this.httpPost('/api/admin/website-notifications', this.editedNotification)
+                    .then(data => {
+                        this.loadNotificationList();
+                        this.editedNotification = this.setEditedNotificationInitValues();
+                    })
+            },
+
+            requestDeleteConfirmation: function() {
+                alertify.confirm('Please confirm deletion.',
+                    'Are you sure to delete <strong>' + this.editedNotification.key +'</strong> notification?',
+                    () => { this.deleteNotification() },
+                    () => { }
+                );
+            },
+
+            deleteNotification: function () {
+                return this.httpDelete('/api/admin/website-notifications/' + this.editedNotification.id)
                     .then(data => {
                         this.loadNotificationList();
                         this.editedNotification = this.setEditedNotificationInitValues();

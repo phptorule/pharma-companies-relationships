@@ -45,4 +45,11 @@ class WebsiteNotificationsController extends Controller
         return response()->json($websiteNotification);
     }
 
+
+    function deleteNotifications(WebsiteNotification $websiteNotification)
+    {
+        $websiteNotification->delete();
+
+        return response()->json('ok');
+    }
 }
