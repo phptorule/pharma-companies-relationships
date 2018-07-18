@@ -39,6 +39,11 @@
                                         to="/admin/activity"
                                 >User activities</router-link>
                             </li>
+                            <li>
+                                <router-link
+                                        to="/admin/configurations"
+                                >Configurations</router-link>
+                            </li>
                         </ul>
                     </li>
                     <li v-if="user.link"><a :href="user.link" target="_blank"  style="font-size: 2.5em; margin-right: 0"><i class="fa fa-lightbulb-o"></i></a></li>
