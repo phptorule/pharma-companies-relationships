@@ -26,9 +26,16 @@ const http = {
             },300)
         },
 
-        httpGet: function (url) {
+        httpGet: function (url, options) {
             this.addAuthHeader();
-            this.showLoader();
+
+            if(options && options.doNotShowLoader){
+                this.hideLoader();
+            }
+            else {
+                this.showLoader();
+            }
+
             return axios.get(url)
                 .then(data => {
                     this.hideLoader();

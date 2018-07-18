@@ -52,4 +52,12 @@ class WebsiteNotificationsController extends Controller
 
         return response()->json('ok');
     }
+
+
+    function checkForActiveNotifications()
+    {
+        $notifications = WebsiteNotification::activeNotifications()->orderBy('expired_at', 'asc')->get();
+
+        return response()->json($notifications);
+    }
 }

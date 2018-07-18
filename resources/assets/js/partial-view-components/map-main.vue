@@ -35,6 +35,7 @@
                 moveendId: null,
                 isMapMovedBecauseOfSearch: true,
                 isMapMovedBecauseOfFitMapContent: true,
+                oldNotificationBlockHeight: 0
             }
         },
 
@@ -243,7 +244,7 @@
                                 uniqueClusterIds.push(clusteredFeatures[i].properties.cluster_id);
                             }
                         }
-                        
+
                         this.notifyTotalPointsDisplayedOnMapChanged(totalPointsDisplayed)
 
                     }, 500)
@@ -527,14 +528,10 @@
 
             notifyMapLoadedAndReady: function () {
                 this.$eventGlobal.$emit('onMapLoadedAndReady', {});
-            }
+            },
 
-        },
-
-        mounted: function () {
-
-            setTimeout(() => {
-                $('#map-element').height(window.innerHeight - 70 - 51);
+            fullMapInit: function() {
+                $('#map-element').height(window.innerHeight - 70 - 51 - this.oldNotificationBlockHeight);
                 this.initMap();
 
                 this.initSuperCluster();
@@ -565,6 +562,19 @@
                     }
 
                 });
+            }
+        },
+
+        mounted: function () {
+
+            this.$eventGlobal.$on('first-time-notifications-were-shown', () => {
+                setTimeout(()=>{
+                    this.oldNotificationBlockHeight = $('.callout-notification-container').height();
+                },0);
+            });
+
+            setTimeout(() => {
+                this.fullMapInit();
 
                 this.$eventGlobal.$on('filtersHaveBeenApplied', (queryStr) => {
 
@@ -591,7 +601,32 @@
                     this.updateMapLayers(data);
                 });
 
+
+                this.$eventGlobal.$on('notifications-were-shown', () => {
+
+                    let height = $('.callout-notification-container').height();
+
+                    if(this.oldNotificationBlockHeight !== height) {
+
+                        setTimeout(() => {
+
+                            $('#map-element').html('');
+
+                            this.fullMapInit();
+                        }, 0);
+
+                        this.oldNotificationBlockHeight = height;
+                    }
+                });
+
             }, 1000);
+        },
+
+        beforeDestroy: function () {
+            this.$eventGlobal.$off('notifications-were-shown');
+            this.$eventGlobal.$off('first-time-notifications-were-shown');
+            this.$eventGlobal.$off('filtersHaveBeenApplied');
+            this.$eventGlobal.$off('showSpecificItem');
         }
 
     }

@@ -144,7 +144,6 @@
 
                                     <button class="btn btn-danger"
                                             v-if="isShownWhileEditing(notification, i)"
-                                            :disabled="editedNotification.key === null || editedNotification.key == ''"
                                             @click="requestDeleteConfirmation()"
                                     >
                                         <i class="fa fa-trash-o"></i>

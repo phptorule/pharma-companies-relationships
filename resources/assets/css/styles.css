@@ -5914,3 +5914,7 @@ table.admin-configurations-table input.has-error {
     margin: 0;
     border-radius: 0;
 }
+
+.callout-notification-container .callout-notification + .callout-notification {
+    border-top: 1px solid rgba(255,255,255,.3);
+}

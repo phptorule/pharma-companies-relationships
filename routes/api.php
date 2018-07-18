@@ -153,6 +153,8 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/global-search', 'GlobalSearchController@index');
 
+    Route::get('/check-website-notifications', 'WebsiteNotificationsController@checkForActiveNotifications');
+
 
 
     /*
