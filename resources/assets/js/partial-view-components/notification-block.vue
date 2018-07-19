@@ -67,8 +67,7 @@
             checkForNotificationDeployment: function() {
                 let nextDeploymentNotification = this.notifications.filter(el => el.key === 'NEXT_DEPLOYMENT_AT');
 
-                if(nextDeploymentNotification) {
-
+                if(nextDeploymentNotification.length) {
                     this.countDownTimer(nextDeploymentNotification[0].expired_at);
                 }
             },
