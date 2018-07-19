@@ -5,9 +5,11 @@
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">
-            <p v-if="!errorText" class="login-box-msg">Sign in to start your session</p>
+            <p v-if="!errorText && !isSuccessfulLogin" class="login-box-msg">Sign in to start your session</p>
 
             <p v-if="errorText" class="login-box-msg text-danger"><i class="fa fa-exclamation-circle"></i> {{errorText}}</p>
+
+            <p v-if="isSuccessfulLogin" class="login-box-msg text-success"><i class="fa fa-check"></i> Logged in successfully. Please wait...</p>
 
             <!--<form>-->
                 <div class="form-group has-feedback">
@@ -55,7 +57,8 @@
                 email: '',
                 password: '',
                 remember_me: false,
-                errorText: ''
+                errorText: '',
+                isSuccessfulLogin: false
             }
         },
         created: function () {
@@ -77,6 +80,7 @@
                         }
 
                         AuthService.isLoggedIn = true;
+                        this.isSuccessfulLogin = true;
 
                         localStorage.setItem('auth-token', data.data.token);
                         localStorage.setItem('logged-user', JSON.stringify(data.data.user));
