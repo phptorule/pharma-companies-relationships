@@ -5,15 +5,17 @@
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">
-            <p class="login-box-msg">Sign in to start your session</p>
+            <p v-if="!errorText" class="login-box-msg">Sign in to start your session</p>
+
+            <p v-if="errorText" class="login-box-msg text-danger"><i class="fa fa-exclamation-circle"></i> {{errorText}}</p>
 
             <!--<form>-->
                 <div class="form-group has-feedback">
-                    <input @keydown.enter.prevent="doLogin" type="email" class="form-control" v-model="email" placeholder="Email">
+                    <input @keyup.enter.prevent="doLogin" @keyup="errorText=''" type="email" class="form-control" v-model="email" placeholder="Email">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
-                    <input @keydown.enter.prevent="doLogin" type="password" class="form-control" v-model="password" placeholder="Password">
+                    <input @keyup.enter.prevent="doLogin" @keyup="errorText=''" type="password" class="form-control" v-model="password" placeholder="Password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
                 <div class="row">
@@ -52,7 +54,8 @@
             return {
                 email: '',
                 password: '',
-                remember_me: false
+                remember_me: false,
+                errorText: ''
             }
         },
         created: function () {
@@ -83,7 +86,8 @@
                         window.location.assign('/dashboard')
                     })
                     .catch(err => {
-                        console.log('err', err);
+                        console.log('err.data.message', err.data.message);
+                        this.errorText = err.data.message;
                     })
             },
         }
