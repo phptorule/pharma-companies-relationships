@@ -86,27 +86,27 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label for="au-name">Name*: </label>
+                            <label for="au-name-edit">Name*: </label>
                             <input type="text" 
-                                id="au-name" 
+                                id="au-name-edit"
                                 class="form-control" 
                                 placeholder="Name"
                                 v-model="name"
                             >
                         </div>
                         <div class="form-group">
-                            <label for="au-email">Email*: </label>
+                            <label for="au-email-edit">Email*: </label>
                             <input type="email" 
-                                id="au-email" 
+                                id="au-email-edit"
                                 class="form-control" 
                                 placeholder="Email"
                                 v-model="email"
                             >
                         </div>
                         <div class="form-group">
-                            <label for="au-role">Role*: </label>
+                            <label for="au-role-edit">Role*: </label>
                             <input type="text" 
-                                id="au-role" 
+                                id="au-role-edit"
                                 class="form-control" 
                                 placeholder="Role (admin, user)"
                                 v-model="role"
@@ -115,27 +115,27 @@
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group" v-if="changePassword">
-                            <label for="au-password">Password*: </label>
+                            <label for="au-password-edit">Password*: </label>
                             <input type="password" 
-                                id="au-password" 
+                                id="au-password-edit"
                                 class="form-control" 
                                 placeholder="Password"
                                 v-model="password"
                             >
                         </div>
                         <div class="form-group" v-if="changePassword">
-                            <label for="au-confirm-password">Confirm password*: </label>
+                            <label for="au-confirm-password-edit">Confirm password*: </label>
                             <input type="password" 
-                                id="au-confirm-password" 
+                                id="au-confirm-password-edit"
                                 class="form-control" 
                                 placeholder="Confirm password"
                                 v-model="confirmPassword"
                             >
                         </div>
                         <div class="form-group">
-                            <label for="au-link">Link: </label>
+                            <label for="au-link-edit">Link: </label>
                             <input type="text" 
-                                id="au-link" 
+                                id="au-link-edit"
                                 class="form-control" 
                                 placeholder="Link"
                                 v-model="link"
@@ -289,6 +289,10 @@
             setFormToShow: function (name, userId) {
                 this.formToShow = name;
 
+                setTimeout(()=>{
+                    $(name == 'newUser' ? '#au-name' : '#au-name-edit').focus()
+                },0);
+
                 if (userId) {
                     this.setUserForEdit(userId);
                 }
@@ -313,16 +317,21 @@
             editUser: _.debounce(function () {
                 let url = '/api/admin/edit-user';
 
-                this.httpPost(url, {
+                let data = {
                     name: this.name,
                     email: this.email,
                     role: this.role,
-                    password: this.password,
-                    password_confirmation: this.confirmPassword,
                     link: this.link,
                     userId: this.editingUserId,
                     changePassword: this.changePassword
-                })
+                };
+
+                if(this.password && this.password === this.confirmPassword) {
+                    data['password'] = this.password;
+                    data['password_confirmation'] = this.confirmPassword;
+                }
+
+                this.httpPost(url, data)
                 .then(data => {
                     if (data.success) {
                         this.closeForm();

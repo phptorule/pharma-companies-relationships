@@ -73,9 +73,11 @@ class AdminController extends Controller
 
         $role = request('role');
 
-        $password = request('password');
 
-        $confirmPassword = request('password_confirmation');
+        if(request('password') && request('password') === request('password_confirmation')) {
+            $password = request('password');
+        }
+
 
         $link = request('link');
 
@@ -96,8 +98,10 @@ class AdminController extends Controller
             $user->email = $email;
     
             $user->role = $role;
-    
-            $user->password = bcrypt($password);
+
+            if(isset($password)) {
+                $user->password = bcrypt($password);
+            }
     
             $user->link = $link;
     
