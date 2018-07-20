@@ -230,7 +230,9 @@ class GlobalSearchService
         $arr = explode(' ', $strQuery);
 
         foreach ($arr as $word) {
-            $string .= '+'.$word.'* ';
+            if(!empty($word)){
+                $string .= '+'.$word.'* ';
+            }
         }
 
         return trim($string);
