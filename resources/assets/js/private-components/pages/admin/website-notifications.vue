@@ -25,7 +25,7 @@
                                 <th>Expired at</th>
                                 <th>Last Update</th>
                                 <th >
-                                    <button class="btn btn-success" @click.prevent="addNew()">
+                                    <button class="btn btn-success" title="Add new notification" @click.prevent="addNew()">
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </th>
@@ -61,15 +61,17 @@
                                 <td></td>
 
                                 <td>
-                                    <button class="btn btn-success"
+                                    <button class="btn btn-success btn-xs"
                                             @click="saveNewConfig()"
                                             :disabled="editedNotification.key === null || editedNotification.key == ''"
+                                            title="Save new notification"
                                     >
                                         <i class="fa fa-floppy-o"></i>
                                     </button>
 
-                                    <button class="btn btn-warning"
+                                    <button class="btn btn-warning btn-xs"
                                             @click="editedNotification = setEditedNotificationInitValues()"
+                                            title="Cancel"
                                     >
                                         <i class="fa fa-remove"></i>
                                     </button>
@@ -149,30 +151,35 @@
 
                                 <td>{{notification.updated_at}}</td>
                                 <td>
-                                    <button class="btn btn-primary"
+                                    <button class="btn btn-primary btn-xs"
                                             v-if="isHiddenWhileEditing(notification, i)"
-                                            @click.prevent="startEdit(notification, i)">
+                                            @click.prevent="startEdit(notification, i)"
+                                            title="Edit notification"
+                                    >
                                         <i class="fa fa-pencil"></i>
                                     </button>
 
-                                    <button class="btn btn-success"
+                                    <button class="btn btn-success btn-xs"
                                             v-if="isShownWhileEditing(notification, i)"
                                             :disabled="editedNotification.key === null || editedNotification.key == ''"
                                             @click="updateConfig()"
+                                            title="Save changes"
                                     >
                                         <i class="fa fa-floppy-o"></i>
                                     </button>
 
-                                    <button class="btn btn-danger"
+                                    <button class="btn btn-danger btn-xs"
                                             v-if="isShownWhileEditing(notification, i)"
                                             @click="requestDeleteConfirmation()"
+                                            title="Delete notification"
                                     >
                                         <i class="fa fa-trash-o"></i>
                                     </button>
 
-                                    <button class="btn btn-warning"
+                                    <button class="btn btn-warning btn-xs"
                                             v-if="isShownWhileEditing(notification, i)"
                                             @click="editedNotification = setEditedNotificationInitValues()"
+                                            title="Cancel editing"
                                     >
                                         <i class="fa fa-remove"></i>
                                     </button>
