@@ -158,19 +158,29 @@ class GlobalSearchService
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
+
+                $person = $this->composeSearchStrForFulltextSearch($person);
+
                 $query->where(function($q) use ($person) {
-                    $q->where('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
+                                )", [$person,$person,$person]);
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
+
+                $product = $this->composeSearchStrForFulltextSearch($product);
+
                 $query->where(function($q) use ($product) {
-                    $q->where('rl_products.company', 'like', '%'.$product.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE) 
+                                )", [$product,$product]);
                 });
             }
         }
@@ -194,5 +204,18 @@ class GlobalSearchService
         }
 
         return $query;
+    }
+
+    function composeSearchStrForFulltextSearch($strQuery)
+    {
+        $string = '';
+
+        $arr = explode(' ', $strQuery);
+
+        foreach ($arr as $word) {
+            $string .= '+'.$word.'* ';
+        }
+
+        return trim($string);
     }
 }
