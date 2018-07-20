@@ -143,16 +143,26 @@ class GlobalSearchService
     {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
+
+                $organisation = $this->composeSearchStrForFulltextSearch($organisation);
+
                 $query->where(function ($q) use ($organisation) {
-                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-                    $q->orWhere('rl_clusters.name', 'like', '%'.$organisation.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
+                                )", [$organisation, $organisation]);
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['addresses'])) {
             foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
+
+                $address = $this->composeSearchStrForFulltextSearch($address);
+
+                $query->where(function ($q) use ($address) {
+                    $q->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$address]);
+                });
             }
         }
 
