@@ -5905,3 +5905,16 @@ li.admin-menu-li > ul > li a:hover{
     border-bottom: 2px solid #fff;
     opacity: 1;
 }
+
+table.admin-configurations-table input.has-error {
+    border: 1px solid red;
+}
+
+.callout-notification {
+    margin: 0;
+    border-radius: 0;
+}
+
+.callout-notification-container .callout-notification + .callout-notification {
+    border-top: 1px solid rgba(255,255,255,.3);
+}

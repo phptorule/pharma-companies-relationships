@@ -153,6 +153,8 @@ Route::group(['middleware'=>['jwt.auth']],function () {
 
     Route::get('/global-search', 'GlobalSearchController@index');
 
+    Route::get('/check-website-notifications', 'WebsiteNotificationsController@checkForActiveNotifications');
+
 
 
     /*
@@ -168,6 +170,21 @@ Route::group(['middleware'=>['jwt.auth']],function () {
         Route::post('/edit-user', 'AdminController@editUser');
 
         Route::get('/get-user-activities', 'AdminController@getUsersActivities');
+
+        Route::get('/configurations', 'ConfigurationsController@index');
+
+        Route::post('/configurations', 'ConfigurationsController@store');
+
+        Route::put('/configurations/{configuration}', 'ConfigurationsController@update');
+
+
+        Route::get('/website-notifications', 'WebsiteNotificationsController@index');
+
+        Route::post('/website-notifications', 'WebsiteNotificationsController@store');
+
+        Route::put('/website-notifications/{websiteNotification}', 'WebsiteNotificationsController@update');
+
+        Route::delete('/website-notifications/{websiteNotification}', 'WebsiteNotificationsController@deleteNotifications');
 
     });
 });

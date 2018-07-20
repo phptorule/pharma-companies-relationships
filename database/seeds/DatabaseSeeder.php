@@ -13,7 +13,10 @@ class DatabaseSeeder extends Seeder
     {
          $this->call([
              UsersTableSeeder::class,
-             ChangeZeroIdAtTablePeopleTypes::class
+             ChangeZeroIdAtTablePeopleTypes::class,
+             ChangeZeroIdAtTablePeopleTypes::class,
+             add_NEXT_DEPLOYMENT_AT_configuration::class,
+             add_NEXT_DEPLOYMENT_AT_website_notification::class,
          ]);
     }
 }

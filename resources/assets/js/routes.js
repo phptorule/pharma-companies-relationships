@@ -53,7 +53,10 @@ let privateRoutes = [
         component: require('./private-components/pages/edit-profile'),
         meta: { requiresAuth: true},
         name: 'Edit Profile'
-    },
+    }
+];
+
+let adminRoutes = [
     {
         path: '/admin/users',
         component: require('./private-components/pages/admin/admin-users'),
@@ -65,13 +68,23 @@ let privateRoutes = [
         component: require('./private-components/pages/admin/admin-activities'),
         meta: { requiresAuth: true, adminAuth: true},
         name: 'AdminUsers'
-    }
-
-
+    },
+    {
+        path: '/admin/configurations',
+        component: require('./private-components/pages/admin/configurations'),
+        meta: { requiresAuth: true, adminAuth: true},
+        name: 'AdminUsers'
+    },
+    {
+        path: '/admin/website-notifications',
+        component: require('./private-components/pages/admin/website-notifications'),
+        meta: { requiresAuth: true, adminAuth: true},
+        name: 'AdminUsers'
+    },
 ];
 
 const router = new VueRouter({
-    routes: publicRoutes.concat(privateRoutes),
+    routes: publicRoutes.concat(privateRoutes, adminRoutes),
     mode: 'history',
     linkActiveClass: 'active'
 });

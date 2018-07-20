@@ -54,6 +54,7 @@ Vue.component('purchase-list-of-tender', require('./partial-view-components/purc
 Vue.component('company-and-other-with-tooltip', require('./partial-view-components/company-and-other-with-tooltip'));
 Vue.component('assign-addresses-to-person', require('./partial-view-components/edit.assign-addresses-to-person'));
 Vue.component('global-search', require('./partial-view-components/global-search'));
+Vue.component('notification-block', require('./partial-view-components/notification-block'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 Vue.prototype.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content]; //
