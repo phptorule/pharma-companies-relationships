@@ -32,22 +32,25 @@
                             <li>
                                 <router-link
                                         to="/admin/users"
-                                >User list</router-link>
+                                ><i class="fa fa-users"></i>
+                                    User list</router-link>
                             </li>
                             <li>
                                 <router-link
                                         to="/admin/activity"
-                                >User activities</router-link>
+                                ><i class="fa fa-area-chart"></i>
+                                    User activities</router-link>
                             </li>
                             <li>
                                 <router-link
                                         to="/admin/configurations"
-                                >Configurations</router-link>
+                                ><i class="fa fa-gears"></i>
+                                    Configurations</router-link>
                             </li>
                             <li>
                                 <router-link
                                         to="/admin/website-notifications"
-                                >Website Notifications</router-link>
+                                ><i class="fa fa-commenting-o"></i>Website Notifications</router-link>
                             </li>
                         </ul>
                     </li>
