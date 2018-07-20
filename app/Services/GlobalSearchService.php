@@ -197,18 +197,25 @@ class GlobalSearchService
 
         if(!empty($groupedSearchIterations['any'])) {
             foreach ($groupedSearchIterations['any'] as $any) {
+
+                $any = $this->composeSearchStrForFulltextSearch($any);
+
                 $query->where(function($q) use ($any) {
 
-                    $q->where('rl_addresses.name', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_addresses.address', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_clusters.name', 'like', '%'.$any.'%');
-
-                    $q->orWhere('rl_people.name', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$any.'%');
-
-                    $q->orWhere('rl_products.company', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$any.'%');
+                    $q->whereRaw("(
+                                       (MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE))
+                                   OR                                
+                                       (MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE))
+                                   OR
+                                       (MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE))
+                                   OR
+                                       (MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE))
+                                )
+                    ", [$any, $any, $any, $any, $any, $any, $any, $any]);
                 });
             }
         }

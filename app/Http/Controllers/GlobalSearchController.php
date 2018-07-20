@@ -92,9 +92,7 @@ class GlobalSearchController extends Controller
     function findAddressMatches($searchStr, $groupedSearchIterations)
     {
         $query =  $this->GSS->setAddressJoins()
-                            ->whereRaw("(
-                                   MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)
-                                )", [$searchStr]);
+                            ->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$searchStr]);
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
