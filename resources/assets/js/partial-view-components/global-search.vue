@@ -150,7 +150,7 @@
 
                 let isAnyDashboardActive = this.$route.path === '/dashboard' || this.$route.path === '/people-dashboard';
 
-                let isOnlyPeopleIterations = !(this.searchIterations.filter(el => el.id === 'Person')).length;
+                let isOnlyPeopleIterations = !(this.searchIterations.filter(el => el.type !== 'Person')).length;
 
                 if(+data.count_people > 0 && isOnlyPeopleIterations) {
                     this.$router.push('/people-dashboard' + this.addSearchIterationToUrl().replace('&','?') + hash)

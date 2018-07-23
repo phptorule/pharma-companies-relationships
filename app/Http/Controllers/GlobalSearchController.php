@@ -45,10 +45,11 @@ class GlobalSearchController extends Controller
     {
         $searchStr = trim(request()->get('search'));
 
+        $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
         $searchIterations = request()->get('iteration');
 
         $groupedSearchIterations = $this->GSS->groupSearchIterationsByEntity($searchIterations);
-
 
         $countOrganisations = $this->findOrganisationMatches($searchStr, $groupedSearchIterations);
 
@@ -77,10 +78,10 @@ class GlobalSearchController extends Controller
     {
 
         $query =  $this->GSS->setAddressJoins()
-                            ->where(function($q) use ($searchStr){
-                                $q->where('rl_addresses.name', 'like', '%'.$searchStr.'%');
-                                $q->orWhere('rl_clusters.name', 'like', '%'.$searchStr.'%');
-                            });
+                            ->whereRaw("(
+                                   MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
+                                )", [$searchStr, $searchStr]);
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
@@ -91,7 +92,7 @@ class GlobalSearchController extends Controller
     function findAddressMatches($searchStr, $groupedSearchIterations)
     {
         $query =  $this->GSS->setAddressJoins()
-                            ->where('rl_addresses.address', 'like', '%'.$searchStr.'%');
+                            ->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$searchStr]);
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
@@ -103,10 +104,10 @@ class GlobalSearchController extends Controller
     {
 
         $query =  $this->GSS->setProductJoins()
-                            ->where(function($q) use ($searchStr) {
-                                $q->where('rl_products.company', 'like', '%'.$searchStr.'%');
-                                $q->orWhere('rl_products.name', 'like', '%'.$searchStr.'%');
-                            });
+                            ->whereRaw("(
+                                   MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE)
+                                )", [$searchStr, $searchStr]);
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
@@ -117,11 +118,12 @@ class GlobalSearchController extends Controller
     function findPeopleMatches($searchStr, $groupedSearchIterations)
     {
         $query =  $this->GSS->setPeopleJoins()
-                            ->where(function($q) use ($searchStr) {
-                                $q->where('rl_people.name', 'like' , '%'.$searchStr.'%')
-                                    ->orWhere('rl_people.role', 'like' , '%'.$searchStr.'%')
-                                    ->orWhere('rl_people.description', 'like' , '%'.$searchStr.'%');
-                            });
+                            ->whereRaw("(
+                                   MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
+                                )",
+                            [$searchStr, $searchStr, $searchStr]);
 
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);

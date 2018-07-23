@@ -143,56 +143,98 @@ class GlobalSearchService
     {
         if(!empty($groupedSearchIterations['organisations'])) {
             foreach ($groupedSearchIterations['organisations'] as $organisation) {
+
+                $organisation = $this->composeSearchStrForFulltextSearch($organisation);
+
                 $query->where(function ($q) use ($organisation) {
-                    $q->where('rl_addresses.name', 'like', '%'.$organisation.'%');
-                    $q->orWhere('rl_clusters.name', 'like', '%'.$organisation.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
+                                )", [$organisation, $organisation]);
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['addresses'])) {
             foreach ($groupedSearchIterations['addresses'] as $address) {
-                $query->where('rl_addresses.address', 'like', '%'.$address.'%');
+
+                $address = $this->composeSearchStrForFulltextSearch($address);
+
+                $query->where(function ($q) use ($address) {
+                    $q->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$address]);
+                });
             }
         }
 
         if(!empty($groupedSearchIterations['people'])) {
             foreach ($groupedSearchIterations['people'] as $person) {
+
+                $person = $this->composeSearchStrForFulltextSearch($person);
+
                 $query->where(function($q) use ($person) {
-                    $q->where('rl_people.name', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$person.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$person.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
+                                )", [$person,$person,$person]);
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['products'])) {
             foreach ($groupedSearchIterations['products'] as $product) {
+
+                $product = $this->composeSearchStrForFulltextSearch($product);
+
                 $query->where(function($q) use ($product) {
-                    $q->where('rl_products.company', 'like', '%'.$product.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$product.'%');
+                    $q->whereRaw("(
+                                   MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                   or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE) 
+                                )", [$product,$product]);
                 });
             }
         }
 
         if(!empty($groupedSearchIterations['any'])) {
             foreach ($groupedSearchIterations['any'] as $any) {
+
+                $any = $this->composeSearchStrForFulltextSearch($any);
+
                 $query->where(function($q) use ($any) {
 
-                    $q->where('rl_addresses.name', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_addresses.address', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_clusters.name', 'like', '%'.$any.'%');
-
-                    $q->orWhere('rl_people.name', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_people.role', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_people.description', 'like', '%'.$any.'%');
-
-                    $q->orWhere('rl_products.company', 'like', '%'.$any.'%');
-                    $q->orWhere('rl_products.name', 'like', '%'.$any.'%');
+                    $q->whereRaw("(
+                                       (MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE))
+                                   OR                                
+                                       (MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE))
+                                   OR
+                                       (MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE))
+                                   OR
+                                       (MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE))
+                                )
+                    ", [$any, $any, $any, $any, $any, $any, $any, $any]);
                 });
             }
         }
 
         return $query;
+    }
+
+    function composeSearchStrForFulltextSearch($strQuery)
+    {
+        $string = '';
+
+        $arr = explode(' ', $strQuery);
+
+        foreach ($arr as $word) {
+            if(!empty($word)){
+                $string .= '+'.$word.'* ';
+            }
+        }
+
+        return trim($string);
     }
 }
