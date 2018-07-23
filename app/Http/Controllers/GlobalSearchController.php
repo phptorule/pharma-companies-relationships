@@ -124,12 +124,22 @@ class GlobalSearchController extends Controller
 
     function findProductMatches($searchStr, $groupedSearchIterations)
     {
+        $query =  $this->GSS->setProductJoins();
 
-        $query =  $this->GSS->setProductJoins()
-                            ->whereRaw("(
+        if($this->isExtended) {
+
+            $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_products.company', 'rl_products.name']);
+
+            $query->whereRaw($levenshteinSql);
+        }
+        else {
+            $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
+            $query->whereRaw("(
                                    MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
                                    or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE)
                                 )", [$searchStr, $searchStr]);
+        }
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
@@ -148,7 +158,6 @@ class GlobalSearchController extends Controller
             $query->whereRaw($levenshteinSql);
         }
         else {
-
             $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
 
             $query->whereRaw("(
@@ -158,7 +167,6 @@ class GlobalSearchController extends Controller
                 )",
                 [$searchStr, $searchStr, $searchStr]);
         }
-
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
