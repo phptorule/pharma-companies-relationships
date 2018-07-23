@@ -81,9 +81,7 @@ class GlobalSearchController extends Controller
 
         if($this->isExtended) {
 
-            $levenshteinConditions = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.name', 'rl_clusters.name']);
-
-            $levenshteinSql = $levenshteinConditions['sql'];
+            $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.name', 'rl_clusters.name']);
 
             $query->whereRaw($levenshteinSql);
         }
@@ -102,8 +100,19 @@ class GlobalSearchController extends Controller
 
     function findAddressMatches($searchStr, $groupedSearchIterations)
     {
-        $query =  $this->GSS->setAddressJoins()
-                            ->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$searchStr]);
+        $query =  $this->GSS->setAddressJoins();
+
+        if($this->isExtended) {
+
+            $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.address']);
+
+            $query->whereRaw($levenshteinSql);
+        }
+        else {
+            $query->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$searchStr]);
+        }
+
+        Log::info('$query --- >>> ' . print_r($query->toSql(), 1));
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 

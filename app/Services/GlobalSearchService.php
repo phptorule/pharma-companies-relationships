@@ -266,8 +266,6 @@ class GlobalSearchService
             $bindings = array_merge($bindings, $words);
         }
 
-        Log::info('$searchWordsArr ---> ' . print_r($searchWordsArr,1) );
-
         foreach ($fields as $i => $field) {
 
             $sql .= '(';
@@ -300,16 +298,12 @@ class GlobalSearchService
             if($i+1 != count($fields) && count($fields) > 1) {
                 $sql .= ') OR ';
             }
-            else {
+            else if(count($fields) > 1) {
                 $sql .= ')';
             }
 
         }
 
-        Log::info('$sql ---> ' . print_r($sql,1) );
-
-        return [
-            'sql' => $sql
-        ];
+        return $sql;
     }
 }
