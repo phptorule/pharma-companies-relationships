@@ -14,6 +14,7 @@ class GlobalSearchController extends Controller
 {
 
     public $GSS;
+    public $isExtended;
 
 
     function __construct()
@@ -45,7 +46,7 @@ class GlobalSearchController extends Controller
     {
         $searchStr = trim(request()->get('search'));
 
-        $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+        $this->isExtended = request()->get('extended') ?? false;
 
         $searchIterations = request()->get('iteration');
 
@@ -76,12 +77,22 @@ class GlobalSearchController extends Controller
 
     function findOrganisationMatches($searchStr, $groupedSearchIterations)
     {
+        $query =  $this->GSS->setAddressJoins();
 
-        $query =  $this->GSS->setAddressJoins()
-                            ->whereRaw("(
-                                   MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
-                                   or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
-                                )", [$searchStr, $searchStr]);
+        if($this->isExtended) {
+
+            $levenshteinConditions = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.name', 'rl_clusters.name']);
+
+            $levenshteinSql = $levenshteinConditions['sql'];
+
+            $query->whereRaw($levenshteinSql);
+        }
+        else {
+            $query->whereRaw("(
+               MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+               or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
+            )", [$searchStr, $searchStr]);
+        }
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 

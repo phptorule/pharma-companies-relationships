@@ -223,6 +223,7 @@ class GlobalSearchService
         return $query;
     }
 
+
     function composeSearchStrForFulltextSearch($strQuery)
     {
         $string = '';
@@ -236,5 +237,79 @@ class GlobalSearchService
         }
 
         return trim($string);
+    }
+
+
+    function composeConditionsForLevenshteinQuery($strQuery, array $fields)
+    {
+        $searchWordsArr = [];
+
+        $bindings = [];
+
+        $sql = '';
+
+        foreach (explode(' ', $strQuery) as $word) {
+            $words = [];
+            for ($i = 0; $i < strlen($word); $i++) {
+                // insertions
+                $words[] = substr($word, 0, $i) . '_' . substr($word, $i);
+                // deletions
+                $words[] = substr($word, 0, $i) . substr($word, $i + 1);
+                // substitutions
+                $words[] = substr($word, 0, $i) . '_' . substr($word, $i + 1);
+            }
+            // last insertion
+            $words[] = $word . '_';
+
+            $searchWordsArr[] = $words;
+
+            $bindings = array_merge($bindings, $words);
+        }
+
+        Log::info('$searchWordsArr ---> ' . print_r($searchWordsArr,1) );
+
+        foreach ($fields as $i => $field) {
+
+            $sql .= '(';
+
+            if(count($fields) > 1) {
+                $sql .= '(';
+            }
+
+            foreach ($searchWordsArr as $j => $wordVarieties) {
+
+                foreach ($wordVarieties as $k => $variety) {
+
+                    $sql .= "$field LIKE '%$variety%' ";
+
+                    if($k+1 != count($wordVarieties)) {
+                        $sql .= "OR ";
+                    }
+
+                }
+
+                if($j+1 != count($searchWordsArr)) {
+                    $sql .= ') AND (';
+                }
+                else {
+                    $sql .= ')';
+                }
+
+            }
+
+            if($i+1 != count($fields) && count($fields) > 1) {
+                $sql .= ') OR ';
+            }
+            else {
+                $sql .= ')';
+            }
+
+        }
+
+        Log::info('$sql ---> ' . print_r($sql,1) );
+
+        return [
+            'sql' => $sql
+        ];
     }
 }
