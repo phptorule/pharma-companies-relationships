@@ -17,6 +17,7 @@
                             <i class="fa fa-shopping-bag" v-if="searchItem.type === 'Product'"></i>
                             <i class="fa fa-building" v-if="searchItem.type === 'Organisation'"></i>
                             <i class="fa fa-question-circle" v-if="searchItem.type === 'Any'"></i>
+                            <i class="fa fa-search-plus" v-if="searchItem.type === 'Extended'"></i>
 
                             : {{searchItem.value}}
                             <sup @click="searchIterations.splice(i, 1)">
@@ -88,7 +89,8 @@
                 searchIterations: [],
                 globalSearchInput: '',
                 options: JSON.parse(JSON.stringify(OPTIONS)),
-                firstBackspaceClicked: false
+                firstBackspaceClicked: false,
+                isExtendedSearch: false
             }
         },
 
@@ -185,12 +187,12 @@
 
             makePreliminaryGlobalSearch: function (e) {
 
-                if(this.isServiceKeyPressed(e)) {
+                if(e && this.isServiceKeyPressed(e)) {
                     this.checkIfTheSelect2ShouldBeOpened(e);
                     return;
                 }
 
-                if(e.keyCode === 8 && this.globalSearchInput === '') {
+                if(e && e.keyCode === 8 && this.globalSearchInput === '') {
 
                     if(this.firstBackspaceClicked) {
                         this.searchIterations.splice(this.searchIterations.length-1, 1);
@@ -215,7 +217,7 @@
                         return;
                     }
 
-                    if(e.keyCode === 13) {
+                    if(e && e.keyCode === 13) {
                         this.select2Element.select2('close');
                         return this.addSearchIteration();
                     }
@@ -228,6 +230,8 @@
             makePreliminaryGlobalSearchServerRequest: function() {
 
                 let url = '/api/count-global-search-results?search='+encodeURIComponent(this.globalSearchInput);
+
+                url += this.isExtendedSearch ? '&extended=1' : '';
 
                 url += this.addSearchIterationToUrl();
 
@@ -253,11 +257,37 @@
                             return newOption;
                         });
 
+                        if (!this.options.length) {
+                            this.fillOptionsWithNoDataFoundItems();
+                        }
+
                         setTimeout(()=>{
                             this.select2Element.select2('open');
                             $('.select2-results__option--highlighted').removeClass('select2-results__option--highlighted');
                         }, 0)
                     });
+            },
+
+            fillOptionsWithNoDataFoundItems: function() {
+
+                this.options = [
+                    {
+                        id: 'Empty',
+                        text: 'No results found',
+                        html: '<div>No results found</div>'
+                    },
+                    {
+                        id: 'Extended',
+                        text: 'Try extended search',
+                        html: `<div title="Search will be performed in fuzzy-matching mode">
+                                <span class="text-warning">
+                                    <i class="fa fa-search-plus"></i>
+                                    Try extended search:
+                                </span>
+                                ${this.globalSearchInput}
+                               </div>`
+                    }
+                ];
             },
 
             addSearchIterationToUrl: function() {
@@ -303,9 +333,25 @@
                 }
             },
 
+            performPreliminarySearchInExtendedMode: function() {
+                this.isExtendedSearch = true;
+
+                $('.global-search-input').focus();
+
+                this.makePreliminaryGlobalSearch();
+            },
+
             addSearchIteration: function (e) {
 
                 if(e) {
+
+                    if(e.params.data.id === 'Extended') {
+
+                        this.performPreliminarySearchInExtendedMode();
+
+                        return;
+                    }
+
                     this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
                 }
                 else {
