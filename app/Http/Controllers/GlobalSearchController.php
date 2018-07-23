@@ -86,6 +86,8 @@ class GlobalSearchController extends Controller
             $query->whereRaw($levenshteinSql);
         }
         else {
+            $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
             $query->whereRaw("(
                MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
                or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
@@ -109,10 +111,10 @@ class GlobalSearchController extends Controller
             $query->whereRaw($levenshteinSql);
         }
         else {
+            $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
             $query->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)", [$searchStr]);
         }
-
-        Log::info('$query --- >>> ' . print_r($query->toSql(), 1));
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
@@ -137,13 +139,25 @@ class GlobalSearchController extends Controller
 
     function findPeopleMatches($searchStr, $groupedSearchIterations)
     {
-        $query =  $this->GSS->setPeopleJoins()
-                            ->whereRaw("(
-                                   MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
-                                   or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
-                                   or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
-                                )",
-                            [$searchStr, $searchStr, $searchStr]);
+        $query =  $this->GSS->setPeopleJoins();
+
+        if($this->isExtended) {
+
+            $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_people.name', 'rl_people.role', 'rl_people.description']);
+
+            $query->whereRaw($levenshteinSql);
+        }
+        else {
+
+            $searchStr = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
+            $query->whereRaw("(
+                   MATCH (rl_people.name) AGAINST (? IN BOOLEAN MODE) 
+                   or MATCH (rl_people.role) AGAINST (? IN BOOLEAN MODE) 
+                   or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
+                )",
+                [$searchStr, $searchStr, $searchStr]);
+        }
 
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
