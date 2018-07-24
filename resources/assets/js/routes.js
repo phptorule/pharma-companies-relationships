@@ -51,7 +51,10 @@ let privateRoutes = [
     {
         path: '/user/edit-profile',
         component: require('./private-components/pages/edit-profile'),
-        meta: { requiresAuth: true},
+        meta: {
+            requiresAuth: true,
+            isWithoutMap: true
+        },
         name: 'Edit Profile'
     }
 ];
@@ -60,25 +63,41 @@ let adminRoutes = [
     {
         path: '/admin/users',
         component: require('./private-components/pages/admin/admin-users'),
-        meta: { requiresAuth: true, adminAuth: true},
+        meta: {
+            requiresAuth: true,
+            adminAuth: true,
+            isWithoutMap: true
+        },
         name: 'AdminUsers'
     },
     {
         path: '/admin/activity',
         component: require('./private-components/pages/admin/admin-activities'),
-        meta: { requiresAuth: true, adminAuth: true},
+        meta: {
+            requiresAuth: true,
+            adminAuth: true,
+            isWithoutMap: true
+        },
         name: 'AdminActivity'
     },
     {
         path: '/admin/configurations',
         component: require('./private-components/pages/admin/configurations'),
-        meta: { requiresAuth: true, adminAuth: true},
+        meta: {
+            requiresAuth: true,
+            adminAuth: true,
+            isWithoutMap: true
+        },
         name: 'AdminConfigurations'
     },
     {
         path: '/admin/website-notifications',
         component: require('./private-components/pages/admin/website-notifications'),
-        meta: { requiresAuth: true, adminAuth: true},
+        meta: {
+            requiresAuth: true,
+            adminAuth: true,
+            isWithoutMap: true
+        },
         name: 'AdminNotifications'
     },
 ];

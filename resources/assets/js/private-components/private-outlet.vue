@@ -1,12 +1,15 @@
 <template>
-    <div class="wrapper profile-wrapper" 
-        v-if="['Edit Profile', 'AdminUsers'].indexOf($route.name) > -1">
+
+    <div v-if="$route.meta && $route.meta.isWithoutMap" class="wrapper profile-wrapper">
+
         <main-header></main-header>
 
         <router-view></router-view>
 
         <main-footer></main-footer>
+
     </div>
+
 
     <div class="wrapper" v-else>
 
