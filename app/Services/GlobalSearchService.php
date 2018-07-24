@@ -322,7 +322,7 @@ class GlobalSearchService
 
                 foreach ($wordVarieties as $k => $variety) {
 
-                    $sql .= "$field LIKE '%$variety%' ";
+                    $sql .= "$field LIKE '%".mb_convert_encoding($variety, 'UTF-8')."%' ";
 
                     if($k+1 != count($wordVarieties)) {
                         $sql .= "OR ";
