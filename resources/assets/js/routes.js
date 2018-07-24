@@ -67,19 +67,19 @@ let adminRoutes = [
         path: '/admin/activity',
         component: require('./private-components/pages/admin/admin-activities'),
         meta: { requiresAuth: true, adminAuth: true},
-        name: 'AdminUsers'
+        name: 'AdminActivity'
     },
     {
         path: '/admin/configurations',
         component: require('./private-components/pages/admin/configurations'),
         meta: { requiresAuth: true, adminAuth: true},
-        name: 'AdminUsers'
+        name: 'AdminConfigurations'
     },
     {
         path: '/admin/website-notifications',
         component: require('./private-components/pages/admin/website-notifications'),
         meta: { requiresAuth: true, adminAuth: true},
-        name: 'AdminUsers'
+        name: 'AdminNotifications'
     },
 ];
 

@@ -257,37 +257,11 @@
                             return newOption;
                         });
 
-                        if (!this.options.length) {
-                            this.fillOptionsWithNoDataFoundItems();
-                        }
-
                         setTimeout(()=>{
                             this.select2Element.select2('open');
                             $('.select2-results__option--highlighted').removeClass('select2-results__option--highlighted');
                         }, 0)
                     });
-            },
-
-            fillOptionsWithNoDataFoundItems: function() {
-
-                this.options = [
-                    {
-                        id: 'Empty',
-                        text: 'No results found',
-                        html: '<div>No results found</div>'
-                    },
-                    {
-                        id: 'Extended',
-                        text: 'Try extended search',
-                        html: `<div title="Search will be performed in fuzzy-matching mode">
-                                <span class="text-warning">
-                                    <i class="fa fa-search-plus"></i>
-                                    Try extended search:
-                                </span>
-                                ${this.globalSearchInput}
-                               </div>`
-                    }
-                ];
             },
 
             addSearchIterationToUrl: function() {
@@ -344,13 +318,6 @@
             addSearchIteration: function (e) {
 
                 if(e) {
-
-                    if(e.params.data.id === 'Extended') {
-
-                        this.performPreliminarySearchInExtendedMode();
-
-                        return;
-                    }
 
                     this.searchIterations.push({type: e.params.data.id, value: this.globalSearchInput});
                 }
