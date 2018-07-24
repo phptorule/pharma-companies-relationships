@@ -89,10 +89,6 @@ class GlobalSearchController extends Controller
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
         $fullTextResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
-
-        if($fullTextResult != 0) {
-            return $fullTextResult;
-        }
         
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.name', 'rl_clusters.name']);
 
@@ -100,7 +96,9 @@ class GlobalSearchController extends Controller
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
+        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
+
+        return $fullTextResult + $levenshteinResult;
     }
 
 
@@ -117,9 +115,6 @@ class GlobalSearchController extends Controller
 
         $fullTextResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
 
-        if($fullTextResult != 0) {
-            return $fullTextResult;
-        }
 
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.address']);
 
@@ -127,7 +122,9 @@ class GlobalSearchController extends Controller
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
+        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
+
+        return $fullTextResult + $levenshteinResult;
     }
 
 
@@ -148,9 +145,6 @@ class GlobalSearchController extends Controller
 
         $fullTextResult = $query->count(DB::raw('DISTINCT(rl_products.id)'));
 
-        if($fullTextResult != 0) {
-            return $fullTextResult;
-        }
 
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_products.company', 'rl_products.name']);
 
@@ -158,7 +152,9 @@ class GlobalSearchController extends Controller
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        return $query->count(DB::raw('DISTINCT(rl_products.id)'));
+        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_products.id)'));
+
+        return $fullTextResult + $levenshteinResult;
     }
 
 
@@ -180,9 +176,6 @@ class GlobalSearchController extends Controller
 
         $fullTextResult = $query->count(DB::raw('DISTINCT(rl_people.id)'));
 
-        if($fullTextResult != 0) {
-            return $fullTextResult;
-        }
 
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_people.name', 'rl_people.role', 'rl_people.description']);
 
@@ -190,6 +183,8 @@ class GlobalSearchController extends Controller
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        return $query->count(DB::raw('DISTINCT(rl_people.id)'));
+        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_people.id)'));
+
+        return $fullTextResult + $levenshteinResult;
     }
 }
