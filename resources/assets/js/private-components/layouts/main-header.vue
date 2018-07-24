@@ -89,24 +89,13 @@
         data: function () {
             return {
                 user: {},
-                globalSearchInput: this.$route.query['global-search'],
+
                 timeOutId: null,
                 isUserLoaded: false
             }
         },
 
         watch: {
-
-            globalSearchInput: function (newVal) {
-                GlobalSearch.globalSearchInput = newVal;
-            },
-
-            $route: function (to, from) {
-                if (!to.query['global-search']) {
-                    this.globalSearchInput = '';
-                    this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
-                }
-            }
 
         },
 
@@ -128,56 +117,6 @@
                 }
             },
 
-            makeGlobalSearch: function () {
-
-                if(this.timeOutId){
-                    clearTimeout(this.timeOutId)
-                }
-
-                this.timeOutId = setTimeout(()=>{
-
-                    if(this.globalSearchInput == '') {
-
-                        this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
-                        this.$router.push(this.$route.path);
-
-                        return;
-                    }
-
-                    this.preProcessGlobalSearchQuery()
-                        .then(data => {
-
-                            let hash = this.$route.hash;
-
-                            if(+data.count_addresses === 0 && +data.count_people > 0) {
-                                this.$router.push('/people-dashboard?global-search=' + encodeURIComponent(this.globalSearchInput) + hash)
-                            }
-                            else {
-                                this.$router.push('/dashboard?global-search=' + encodeURIComponent(this.globalSearchInput) + hash)
-                            }
-                        });
-
-                    this.$root.logData('global_search', 'search', JSON.stringify(this.globalSearchInput));
-
-                },1000);
-            },
-
-            preProcessGlobalSearchQuery: function () {
-                return this.httpGet('/api/addresses/pre-process-global-search?global-search='+ encodeURIComponent(this.globalSearchInput))
-                    .then(data => {
-
-                        this.notifyGlobalSearchPerformed(data);
-
-                        return data;
-                    })
-            },
-
-            notifyGlobalSearchPerformed: function (data) {
-
-                // GlobalSearch.resultCounter = data;
-
-                // this.$eventGlobal.$emit('notifyGlobalSearchCountResults', data);
-            },
 
             getUser: function () {
                 let url = '/api/logged-user';
@@ -217,14 +156,6 @@
         },
         mounted: function () {
             this.getUser();
-            this.$eventGlobal.$on('resetedAllFilters', () => {
-                this.globalSearchInput = '';
-                this.notifyGlobalSearchPerformed({count_addresses: null, count_people: null});
-            });
-
-            if(this.globalSearchInput) {
-                this.makeGlobalSearch();
-            }
 
             this.$eventGlobal.$on('userProfileUpdated', (user) => {
                 this.user = user;
