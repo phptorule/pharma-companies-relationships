@@ -7,7 +7,7 @@
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
                         <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
                         <img
-                                v-if="product.image"
+                                v-if="product.image && product.image !== '/storage'"
                                 class="image"
                                 :src="'/storage' + product.image"
                                 alt=""
