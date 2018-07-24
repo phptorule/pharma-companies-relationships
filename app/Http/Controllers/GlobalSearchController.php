@@ -78,27 +78,23 @@ class GlobalSearchController extends Controller
     {
         $paramsForFullTextSearch = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
 
-        $query = $this->GSS->setAddressJoins()->where(function($q) use($paramsForFullTextSearch){
-                                                    $q->whereRaw("(
-                                                                   MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
-                                                                   or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
-                                                                )", [$paramsForFullTextSearch, $paramsForFullTextSearch]
-                                                    );
-                                                });
-
-        $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
-
-        $fullTextResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
-        
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.name', 'rl_clusters.name']);
 
-        $query = $this->GSS->setAddressJoins()->whereRaw($levenshteinSql);
+        $query = $this->GSS->setAddressJoins()
+                            ->where(function($q) use($paramsForFullTextSearch){
+                                $q->whereRaw("(
+                                       MATCH (rl_addresses.name) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_clusters.name) AGAINST (? IN BOOLEAN MODE)
+                                    )", [$paramsForFullTextSearch, $paramsForFullTextSearch]
+                                );
+                            })
+                            ->orWhere(function($q) use ($levenshteinSql) {
+                                $q->whereRaw($levenshteinSql);
+                            });
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
-
-        return $fullTextResult + $levenshteinResult;
+        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
 
 
@@ -106,25 +102,20 @@ class GlobalSearchController extends Controller
     {
         $paramsForFullTextSearch = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
 
-        $query = $this->GSS->setAddressJoins()->where(function($q) use($paramsForFullTextSearch){
-                                                    $q->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)",
-                                                        [$paramsForFullTextSearch]);
-                                                });
-
-        $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
-
-        $fullTextResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
-
-
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_addresses.address']);
 
-        $query = $this->GSS->setAddressJoins()->whereRaw($levenshteinSql);
+        $query = $this->GSS->setAddressJoins()
+                            ->where(function($q) use($paramsForFullTextSearch){
+                                $q->whereRaw("MATCH (rl_addresses.address) AGAINST (? IN BOOLEAN MODE)",
+                                    [$paramsForFullTextSearch]);
+                            })
+                            ->orWhere(function($q) use ($levenshteinSql) {
+                                $q->whereRaw($levenshteinSql);
+                            });
 
         $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
-
-        return $fullTextResult + $levenshteinResult;
+        return $query->count(DB::raw('DISTINCT(rl_addresses.id)'));
     }
 
 
@@ -132,35 +123,31 @@ class GlobalSearchController extends Controller
     {
         $paramsForFullTextSearch = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
 
-        $query = $this->GSS->setProductJoins()->where(function($q) use($paramsForFullTextSearch){
-                                                    $q->whereRaw("(
-                                                           MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
-                                                           or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE)
-                                                        )", [$paramsForFullTextSearch, $paramsForFullTextSearch]
-                                                    );
-                                                });
-
-
-        $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
-
-        $fullTextResult = $query->count(DB::raw('DISTINCT(rl_products.id)'));
-
-
         $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_products.company', 'rl_products.name']);
 
-        $query = $this->GSS->setProductJoins()->whereRaw($levenshteinSql);
+        $query = $this->GSS->setProductJoins()
+                            ->where(function($q) use($paramsForFullTextSearch){
+                                $q->whereRaw("(
+                                       MATCH (rl_products.company) AGAINST (? IN BOOLEAN MODE) 
+                                       or MATCH (rl_products.name) AGAINST (? IN BOOLEAN MODE)
+                                    )", [$paramsForFullTextSearch, $paramsForFullTextSearch]
+                                );
+                            })
+                            ->orWhere(function($q) use ($levenshteinSql) {
+                                $q->whereRaw($levenshteinSql);
+                            });
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_products.id)'));
-
-        return $fullTextResult + $levenshteinResult;
+        return $query->count(DB::raw('DISTINCT(rl_products.id)'));
     }
 
 
     function findPeopleMatches($searchStr, $groupedSearchIterations)
     {
         $paramsForFullTextSearch = $this->GSS->composeSearchStrForFulltextSearch($searchStr);
+
+        $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_people.name', 'rl_people.role', 'rl_people.description']);
 
         $query = $this->GSS->setPeopleJoins()
                             ->where(function($q) use($paramsForFullTextSearch){
@@ -170,21 +157,13 @@ class GlobalSearchController extends Controller
                                                or MATCH (rl_people.description) AGAINST (? IN BOOLEAN MODE)
                                             )",
                                     [$paramsForFullTextSearch, $paramsForFullTextSearch, $paramsForFullTextSearch]);
+                            })
+                            ->orWhere(function($q) use ($levenshteinSql) {
+                                $q->whereRaw($levenshteinSql);
                             });
 
         $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
 
-        $fullTextResult = $query->count(DB::raw('DISTINCT(rl_people.id)'));
-
-
-        $levenshteinSql = $this->GSS->composeConditionsForLevenshteinQuery($searchStr, ['rl_people.name', 'rl_people.role', 'rl_people.description']);
-
-        $query = $this->GSS->setPeopleJoins()->whereRaw($levenshteinSql);
-
-        $query = $this->GSS->_subQueryForIterations($query, $groupedSearchIterations);
-
-        $levenshteinResult = $query->count(DB::raw('DISTINCT(rl_people.id)'));
-
-        return $fullTextResult + $levenshteinResult;
+        return $query->count(DB::raw('DISTINCT(rl_people.id)'));
     }
 }
