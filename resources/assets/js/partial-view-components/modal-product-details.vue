@@ -7,7 +7,7 @@
 
                         <div class="person-profile-picture">
                             <span class="person-initials">{{productsData.image ? "":getProductName(productsData.name? productsData.name : productsData.company)}}</span>
-                            <img :src="productsData.image ? productsData.image : '/images/mask-0.png'" alt="">
+                            <img :src="productsData.image && productsData.image !== '/storage' ? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
                         <h4 class="modal-title">
                             {{productsData.name? productsData.name : "unspecified "+productsData.company+"-product"}}
