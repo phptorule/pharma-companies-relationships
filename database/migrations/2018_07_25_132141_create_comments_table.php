@@ -18,6 +18,8 @@ class CreateCommentsTable extends Migration
             $table->integer('thread_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->text('content')->nullable();
+            $table->string('related_table');
+            $table->integer('related_record_id')->unsigned();
             $table->boolean('is_hidden');
             $table->timestamps();
         });
