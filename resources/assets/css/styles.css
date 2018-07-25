@@ -5918,3 +5918,14 @@ table.admin-configurations-table input.has-error {
 .callout-notification-container .callout-notification + .callout-notification {
     border-top: 1px solid rgba(255,255,255,.3);
 }
+
+.feed-sidebar {
+    float: left;
+    width: 350px;
+    height: calc(100vh - 70px);
+    background: #ccc;
+}
+
+.feed-content{
+    margin-left: 365px;
+}
