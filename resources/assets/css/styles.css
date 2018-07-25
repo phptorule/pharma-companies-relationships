@@ -456,7 +456,7 @@ a{
     position: relative;
     margin-left: 0;
     float: none;
-    width: 62%;
+    width: 57%;
     justify-content: center;
 }
 
@@ -470,7 +470,7 @@ a{
 }
 
 .navbar.navbar-static-top > div.nav-links{
-    width: 12%;
+    width: 17%;
     float: none;
 }
 

@@ -56,6 +56,15 @@ let privateRoutes = [
             isWithoutMap: true
         },
         name: 'Edit Profile'
+    },
+    {
+        path: '/feed',
+        component: require('./private-components/pages/feed'),
+        meta: {
+            requiresAuth: true,
+            isWithoutMap: true
+        },
+        name: 'Edit Profile'
     }
 ];
 

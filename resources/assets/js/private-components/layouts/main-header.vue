@@ -17,10 +17,13 @@
 
             <div class="nav-links">
                 <ul>
-                    <li><a href="#" @click.prevent class="without-handler">Lab Map</a></li>
+
+                    <li><router-link to="/feed">Feed</router-link></li>
+
+                    <li><router-link to="/dashboard">Lab Map</router-link></li>
                     <!--<li><a href="#">Feed</a></li>-->
                     <!-- <li><a href="#" @click.prevent class="without-handler">About</a></li> -->
-                    <!--<li><a href="#" @click.prevent class="without-handler">Contact</a></li>-->
+
                     <li v-if="user && user.role === 'admin'"
                         class="dropdown admin-menu-li"
                         @click="toggleAdminDropdown()"
