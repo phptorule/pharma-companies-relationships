@@ -5,7 +5,11 @@
             <li v-if="i < 3" v-for="(product, i) in topProducts">
                 <div class="image">
                     <a href="javascript:void(0)" @click="showProductDetailsModal(addressId, product.id, addressData)">
-                        <span class="person-initials">{{getProductName(product.name? product.name : product.company)}}</span>
+
+                        <span v-if="!product.image" class="person-initials">
+                            {{getProductName(product.name? product.name : product.company)}}
+                        </span>
+
                         <img
                                 v-if="product.image && product.image !== '/storage'"
                                 class="image"

@@ -344,9 +344,9 @@
                             >
                                 <img class="image" :src="product.image" v-if="product.image">
                                 <div class="image" v-else></div>
-                                <span class="prod-name">
-                                {{ productName(product.company, product.name) }}
-                            </span>
+                                <span class="prod-name" style="z-index: 100">
+                                    {{ productName(product.company, product.name) }}
+                                </span>
                             </li>
 
                             <li v-if="showAllProducts"
@@ -356,9 +356,6 @@
                             >
                                 <img class="image" :src="product.image" v-if="product.image">
                                 <div class="image" v-else></div>
-                                <span class="prod-name">
-                                {{ productName(product.company, product.name) }}
-                            </span>
                             </li>
 
                             <li v-if="addressData.products.length > 3">

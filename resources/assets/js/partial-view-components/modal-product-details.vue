@@ -6,7 +6,7 @@
                     <div class="modal-header">
 
                         <div class="person-profile-picture">
-                            <span class="person-initials">{{productsData.image && productsData.image !== '/storage' ? "":getProductName(productsData.name? productsData.name : productsData.company)}}</span>
+                            <span v-if="!productsData.image" class="person-initials">{{productsData.image && productsData.image !== '/storage' ? "":getProductName(productsData.name? productsData.name : productsData.company)}}</span>
                             <img :src="productsData.image && productsData.image !== '/storage' ? productsData.image : '/images/mask-0.png'" alt="">
                         </div>
                         <h4 class="modal-title">
