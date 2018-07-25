@@ -22,6 +22,6 @@ class Product extends Model
 
 
 	function getImageAttribute($value) {
-        return '/storage' . $value;
+        return !empty($value) ? '/storage' . $value : '';
     }
 }
