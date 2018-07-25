@@ -5927,5 +5927,17 @@ table.admin-configurations-table input.has-error {
 }
 
 .feed-content{
+    background: #eaeff4;
     margin-left: 365px;
+}
+
+.date-separated-feed-item {
+    background: #eaeff4;
+}
+
+.date-title h2 {
+    padding: 20px 0;
+    border-bottom: 1px solid #d3d8df;
+    font-size: 25px;
+    margin-bottom: 15px;
 }
