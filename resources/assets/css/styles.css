@@ -6079,3 +6079,42 @@ table.admin-configurations-table input.has-error {
     font-weight: 500;
     color: #3a444f;
 }
+
+.feed-sidebar-tabs{
+    padding-top: 10px;
+}
+
+ul.ul-feed-sidebar-tabs {
+    margin: 0;
+    padding: 0;
+}
+
+ul.ul-feed-sidebar-tabs li {
+    list-style-type: none;
+    display: inline-block;
+}
+
+ul.ul-feed-sidebar-tabs li + li{
+    margin-left: 15px;
+}
+
+ul.ul-feed-sidebar-tabs li a {
+    line-height: 1em;
+    display: block;
+    padding: 15px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid transparent;
+    font-weight: 600;
+    color: #adb4bf;
+}
+
+/*#3c8dbc*/
+
+ul.ul-feed-sidebar-tabs li a:hover {
+    color: #555d67;
+}
+
+ul.ul-feed-sidebar-tabs li a.active {
+    color: #555d67;
+    border-color: #3c7dc8;
+}

@@ -12,9 +12,9 @@
         </div>
 
         <div class="feed-sidebar-tabs">
-            <ul>
+            <ul class="ul-feed-sidebar-tabs">
                 <li>
-                    <a href="javascript:void(0)">
+                    <a href="javascript:void(0)" class="active">
                         All
                     </a>
                 </li>
