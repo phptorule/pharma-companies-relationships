@@ -43,7 +43,7 @@
 
                     <ul class="ul-sort-by">
                         <li>
-                            <a href="javascript:void(0)">
+                            <a href="javascript:void(0)" :class="{active: true}">
                                 <span class="sort-by-icon">
                                     <img src="/images/organisation.svg" class="home">
                                 </span>

@@ -6211,3 +6211,12 @@ span.sort-by-icon img.home {
 .feed-sidebar .ul-sort-by li a:hover{
     opacity: 1;
 }
+
+ul.ul-type .grey-checkbox span.remember_text {
+    margin-left: 14px;
+    padding-top: 9px;
+}
+
+.feed-sidebar .ul-type.ul-sort-by li{
+    padding-top: 5px;
+}
