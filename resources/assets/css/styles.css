@@ -5934,7 +5934,8 @@ table.admin-configurations-table input.has-error {
 
 .feed-content{
     background: #eaeff4;
-    margin-left: 365px;
+    margin-left: 350px;
+    padding-left: 30px;
 }
 
 .date-separated-feed-item {
@@ -6030,4 +6031,51 @@ table.admin-configurations-table input.has-error {
 
 .feed-content p.image-box img{
     width: 100%;
+}
+
+.feed-sidebar{
+    box-shadow: 0 0 30px 0 rgba(35, 40, 72, 0.13);
+}
+
+.search-input-container {
+    background: #eaeff4;
+    padding-left: 30px;
+    padding-right: 15px;
+    padding-top: 20px;
+}
+
+.feed-sidebar-tabs {
+    background: #eaeff4;
+    padding-left: 30px;
+    padding-right: 15px;
+}
+
+.feed-sidebar .search-input-box{
+    /*outline: 1px solid red;*/
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 3px;
+}
+
+.feed-sidebar .search-input-box i {
+    width: 15%;
+    font-size: 18px;
+    font-weight: 100;
+    text-align: center;
+    float: left;
+    line-height: 40px;
+}
+
+.feed-sidebar .search-input-box input {
+    float: left;
+    width: 85%;
+    margin: 0;
+    border: 0;
+    font-size: 14px;
+    line-height: 40px;
+    height: 40px;
+    font-family: Montserrat;
+    outline: none;
+    font-weight: 500;
+    color: #3a444f;
 }
