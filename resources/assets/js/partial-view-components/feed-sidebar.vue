@@ -40,7 +40,27 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    The body of the box
+
+                    <ul class="ul-sort-by">
+                        <li>
+                            <a href="javascript:void(0)">
+                                <span class="sort-by-icon">
+                                    <img src="/images/organisation.svg" class="home">
+                                </span>
+                                Organisations
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0)">
+                                <span class="sort-by-icon">
+                                    <img src="/images/man.svg" alt="">
+                                </span>
+                                People
+                            </a>
+                        </li>
+                    </ul>
+
                 </div>
                 <!-- /.box-body -->
             </div>

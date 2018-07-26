@@ -6140,7 +6140,7 @@ ul.ul-feed-sidebar-tabs li a.active {
 }
 
 .feed-sidebar .filter-container .box-header{
-    padding-top: 25px;
+    padding: 25px 0 0;
 }
 
 .feed-sidebar .filter-container .box-header>.box-tools{
@@ -6154,4 +6154,52 @@ ul.ul-feed-sidebar-tabs li a.active {
 
 .feed-sidebar .filter-container .btn-box-tool:hover {
     color: #72afd2;
+}
+
+.feed-sidebar .filter-container .box-body{
+    padding: 0;
+}
+
+span.sort-by-icon {
+    display: inline-block;
+    width: 20px;
+    margin-right: 15px;
+    text-align: center;
+}
+
+span.sort-by-icon img {
+    width: 15px;
+}
+
+span.sort-by-icon img.home {
+    width: 19px;
+}
+
+.feed-sidebar .ul-sort-by {
+    padding: 0;
+    margin: 0;
+}
+
+.feed-sidebar .ul-sort-by li {
+    list-style-type: none;
+    padding: 25px 0 0;
+}
+
+.feed-sidebar .ul-sort-by li + li {
+
+}
+
+.feed-sidebar .ul-sort-by li a {
+    font-size: 14px;
+    font-weight: 500;
+    height: 22px;
+    line-height: 22px;
+    display: block;
+    opacity: 0.6;
+    transition: opacity 0.1s ease;
+}
+
+.feed-sidebar .ul-sort-by li a.active,
+.feed-sidebar .ul-sort-by li a:hover{
+    opacity: 1;
 }
