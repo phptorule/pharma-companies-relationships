@@ -37,15 +37,33 @@
 
     var TEST_ITEMS = [
         {
-            type: 'text'
+            type: 'text',
+            icon: 'people'
         },
         {
             type: 'text',
-            tags: ['medical laboratory']
+            tags: ['medical laboratory'],
+            icon: 'organisation'
         },
         {
             type: 'image',
-            tags: ['medical SBO', 'CEO']
+            tags: ['medical SBO', 'CEO'],
+            icon: 'people'
+        },
+        {
+            type: 'image',
+            tags: ['medical SBO', 'CEO'],
+            icon: 'people'
+        },
+        {
+            type: 'image',
+            tags: ['medical SBO', 'CEO'],
+            icon: 'people'
+        },
+        {
+            type: 'image',
+            tags: ['medical SBO', 'CEO'],
+            icon: 'people'
         },
 
     ];

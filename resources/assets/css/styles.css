@@ -5953,6 +5953,7 @@ table.admin-configurations-table input.has-error {
     border-radius: 5px;
     border-top: 0;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
 }
 
 .feed-content h3.box-title {
@@ -5970,6 +5971,10 @@ table.admin-configurations-table input.has-error {
 
 .news-icon-type img{
     width: 12px;
+}
+
+.news-icon-type img.home{
+    width: 16px;
 }
 
 .feed-content .box-header {

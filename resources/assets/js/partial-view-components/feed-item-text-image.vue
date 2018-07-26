@@ -2,9 +2,7 @@
     <div class="box feed-item-simple-text">
         <div class="box-header with-border">
 
-            <div class="news-icon-type pull-right">
-                <img src="/images/man.svg" alt="">
-            </div>
+            <news-icons :feed="feed"></news-icons>
 
             <h3 class="box-title">
                 Found on <strong>30 Jun 2018</strong>
@@ -73,7 +71,12 @@
 </template>
 
 <script>
+
+    import newsIcons from './_news-icons';
+
     export default {
+        components: {'news-icons': newsIcons},
+
         props: ['feed']
     }
 </script>
