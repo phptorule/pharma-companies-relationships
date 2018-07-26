@@ -27,8 +27,9 @@
         </div>
 
         <div class="filter-container">
+
             <div class="box box-default">
-                <div class="box-header with-border">
+                <div class="box-header ">
                     <h3 class="box-title">Sort by</h3>
 
                     <div class="box-tools pull-right">
@@ -45,7 +46,7 @@
             </div>
 
             <div class="box box-default">
-                <div class="box-header with-border">
+                <div class="box-header ">
                     <h3 class="box-title">Type</h3>
 
                     <div class="box-tools pull-right">
@@ -62,7 +63,7 @@
             </div>
 
             <div class="box box-default">
-                <div class="box-header with-border">
+                <div class="box-header ">
                     <h3 class="box-title">Range</h3>
 
                     <div class="box-tools pull-right">

@@ -5929,7 +5929,7 @@ table.admin-configurations-table input.has-error {
     float: left;
     width: 350px;
     height: calc(100vh - 70px);
-    background: #ccc;
+    background: #ffffff;
 }
 
 .feed-content{
@@ -6117,4 +6117,41 @@ ul.ul-feed-sidebar-tabs li a:hover {
 ul.ul-feed-sidebar-tabs li a.active {
     color: #555d67;
     border-color: #3c7dc8;
+}
+
+.feed-sidebar .filter-container {
+    padding-left: 30px;
+    padding-right: 15px;
+    padding-top: 0px;
+}
+
+.feed-sidebar .filter-container .box {
+    border: 0;
+    box-shadow: none;
+}
+
+.feed-sidebar .filter-container .box + .box{
+    border-top: 1px solid #e5e7eb;
+}
+
+.feed-sidebar .filter-container .box-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.feed-sidebar .filter-container .box-header{
+    padding-top: 25px;
+}
+
+.feed-sidebar .filter-container .box-header>.box-tools{
+    top: 20px;
+}
+
+.feed-sidebar .filter-container .btn-box-tool {
+    color: #3c8dbc;
+    transition: color 0.1s ease;
+}
+
+.feed-sidebar .filter-container .btn-box-tool:hover {
+    color: #72afd2;
 }
