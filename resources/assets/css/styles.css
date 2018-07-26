@@ -989,6 +989,7 @@ ul.tag-list li:last-child{
     margin-right: 0px;
 }
 
+ul.tag-list li a,
 .sidebar ul.tag-list li a{
     display: block;
     padding: 4px 11px;
@@ -1001,6 +1002,7 @@ ul.tag-list li:last-child{
     transition: background-color 100ms linear;
 }
 
+ul.tag-list li a:hover,
 .sidebar ul.tag-list li a:hover{
     background-color: #eaeff4;
 }
@@ -5990,7 +5992,12 @@ table.admin-configurations-table input.has-error {
 }
 
 .feed-content .box-body p + p {
-    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.feed-content .box-footer{
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
 .feed-content .box-footer .col-md-4 {
@@ -6010,4 +6017,12 @@ table.admin-configurations-table input.has-error {
 .feed-content .box-footer a:hover,
 .feed-content .box-footer a:hover i {
     color: #3c8dbc;
+}
+
+.feed-content p.image-box{
+
+}
+
+.feed-content p.image-box img{
+    width: 100%;
 }

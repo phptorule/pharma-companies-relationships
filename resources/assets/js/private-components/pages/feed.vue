@@ -12,8 +12,18 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <feed-item-simple-text></feed-item-simple-text>
+                <div class="col-md-4" v-for="feed of feeds">
+
+                    <feed-item-simple-text
+                            v-if="feed.type === 'text'"
+                            :feed="feed"
+                    ></feed-item-simple-text>
+
+                    <feed-item-text-image
+                            v-if="feed.type === 'image'"
+                            :feed="feed"
+                    ></feed-item-text-image>
+
                 </div>
 
 
@@ -24,8 +34,28 @@
 </template>
 
 <script>
+
+    var TEST_ITEMS = [
+        {
+            type: 'text'
+        },
+        {
+            type: 'text',
+            tags: ['medical laboratory']
+        },
+        {
+            type: 'image',
+            tags: ['medical SBO', 'CEO']
+        },
+
+    ];
+
     export default {
-        name: "feed"
+        data: function () {
+            return {
+                feeds: TEST_ITEMS
+            }
+        }
     }
 </script>
 

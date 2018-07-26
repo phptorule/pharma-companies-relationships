@@ -14,9 +14,26 @@
 
         <div class="box-body">
 
-            <h3>Viollier AG</h3>
+            <h3>Dr. Michael Feldman</h3>
 
-            <p>Hired new employee</p>
+            <p>
+                Published a new article with
+                <a href="javascript:void(0)">Patrick de Boer</a>
+                and
+                <a href="javascript:void(0)">3 others</a>
+            </p>
+
+            <p class="image-box">
+                <a href="javascript:void(0)">
+                    <img src="/images/test-research.jpg" alt="">
+                </a>
+            </p>
+
+            <p>
+                <a href="javascript:void(0)">
+                    Detecting d-waves super driller hemo-waves in [...]
+                </a>
+            </p>
 
             <div v-if="feed && feed.tags && feed.tags.length"
                  style=" margin-top: 10px;"
