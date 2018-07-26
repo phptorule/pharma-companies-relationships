@@ -215,6 +215,10 @@ a{
     transition: color 0.1s linear;
 }
 
+body h1, body h2, body h3, body h4, body h5{
+    font-family: Montserrat;
+}
+
 .grey-checkbox span.remember_text {
     border: none;
     color: #aaafb5;
@@ -5939,5 +5943,71 @@ table.admin-configurations-table input.has-error {
     padding: 20px 0;
     border-bottom: 1px solid #d3d8df;
     font-size: 25px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.feed-content .box {
+    border-radius: 5px;
+    border-top: 0;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+}
+
+.feed-content h3.box-title {
+    font-size: 14px;
+    font-weight: 100;
+}
+
+.feed-content h3.box-title strong{
+    font-weight: 400;
+}
+
+.news-icon-type {
+    display: inline-block;
+}
+
+.news-icon-type img{
+    width: 12px;
+}
+
+.feed-content .box-header {
+    padding: 14px 20px;
+}
+
+.feed-content .box-body {
+    padding: 14px 20px;
+}
+
+.feed-content .box-body h3{
+    margin-top: 0;
+    line-height: 1em;
+    font-weight: 700;
+}
+
+.feed-content .box-body p{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.feed-content .box-body p + p {
+    margin-bottom: 10px;
+}
+
+.feed-content .box-footer .col-md-4 {
+    text-align: center;
+}
+
+.feed-content .box-footer a{
+    color: #555d67;
+    font-size: 13px;
+}
+
+.feed-content .box-footer a i {
+    color: #adb4bf;
+    transition: color 0.1s ease;
+}
+
+.feed-content .box-footer a:hover,
+.feed-content .box-footer a:hover i {
+    color: #3c8dbc;
 }
