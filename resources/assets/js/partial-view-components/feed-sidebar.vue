@@ -77,7 +77,68 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    The body of the box
+                    <ul class="ul-sort-by ul-type">
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="signatories">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">Signatories</span>
+                                </label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="platform-activity">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">Platform activity</span>
+                                </label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="remember-me">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">Paper publications</span>
+                                </label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="address-change">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">Address Change</span>
+                                </label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="new-organisations">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">New organisations</span>
+                                </label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="grey-checkbox checkbox-margin-top">
+                                <label>
+                                    <input type="checkbox" id="new-hires">
+                                    <span class="borders"></span>
+                                    <span class="remember_text">New hires</span>
+                                </label>
+                            </div>
+                        </li>
+
+                    </ul>
                 </div>
                 <!-- /.box-body -->
             </div>
