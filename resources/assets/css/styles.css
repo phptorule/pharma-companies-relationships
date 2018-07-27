@@ -6253,3 +6253,95 @@ ul.ul-type .grey-checkbox span.remember_text {
     font-size: 20px;
     color: #adb4bf;
 }
+
+#feed-details-pop-up .modal-dialog{
+
+}
+
+#feed-details-pop-up .modal-content{
+    width: 670px;
+    border-radius: 5px;
+}
+
+#feed-details-pop-up .close {
+    font-size: 36px;
+    padding: 4px 11px;
+    line-height: 1em;
+    border: 1px solid #e4e7eb;
+    opacity: 1;
+    color: #ccc;
+    border-radius: 5px;
+    transition: all 0.1s ease;
+}
+
+#feed-details-pop-up .close:hover {
+    background-color: #e4e7eb;
+    color: #fff;
+}
+
+#feed-details-pop-up .modal-header{
+    border-bottom: 0;
+}
+
+#feed-details-pop-up .modal-header h3{
+    margin: 0;
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 45px;
+}
+
+#feed-details-pop-up .modal-header h3 strong{
+    font-weight: 400;
+}
+
+#feed-details-pop-up h2.feed-title {
+    padding: 0;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+#feed-details-pop-up .feed-text {
+    margin-top: 18px;
+}
+
+#feed-details-pop-up .buttons-block{
+    margin-top: 22px;
+    border-top: 1px solid #e3e9f0;
+    border-bottom: 1px solid #e3e9f0;
+    padding: 10px 15px 11px;
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+#feed-details-pop-up .buttons-block a{
+    color: #555d67;
+    font-size: 12px;
+}
+
+#feed-details-pop-up .buttons-block a i{
+    color: #adb4bf;
+    transition: color 0.1s ease;
+}
+
+#feed-details-pop-up .buttons-block a:hover i,
+#feed-details-pop-up .buttons-block a:hover {
+    color: #3c8dbc;
+}
+
+.with-right-border {
+    border-right: 1px solid #e3e9f0;
+}
+
+.commented-by {
+    font-size: 12px;
+    margin-bottom: 0;
+}
+
+#feed-details-pop-up .commented-by a{
+    color: #3c8dbc;
+}
+
+#feed-details-pop-up .commented-by a:hover{
+    color: #72afd2;
+}
