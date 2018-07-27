@@ -6220,3 +6220,36 @@ ul.ul-type .grey-checkbox span.remember_text {
 .feed-sidebar .ul-type.ul-sort-by li{
     padding-top: 5px;
 }
+
+.feed-sidebar .date-picker-label {
+    font-size: 13px;
+    padding: 11px 0px;
+    font-weight: 500;
+}
+
+.feed-sidebar input.date-range {
+    padding: 10px 12px;
+    border: solid 1px #e4e7eb;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a444f;
+    width: 100%;
+}
+
+.feed-sidebar .date-range-picker-container .form-group{
+    margin-bottom: 0;
+    margin-top: 15px;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.feed-sidebar .date-range-picker-container .form-group .fa-calendar {
+    position: absolute;
+    right: 26px;
+    top: 9px;
+    font-size: 20px;
+    color: #adb4bf;
+}

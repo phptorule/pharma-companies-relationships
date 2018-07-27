@@ -1,9 +1,22 @@
 <template>
-    <div>
+    <div class="form-horizontal date-range-picker-container">
 
-        <input type="text" class="date-range date-start">
 
-        <input type="text" class="date-range date-end">
+        <div class="form-group">
+            <label class="col-sm-2 date-picker-label control-label">From</label>
+            <div class="col-sm-6 position-relative">
+                <i class="fa fa-calendar"></i>
+                <input type="text" class="date-range date-start">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 date-picker-label control-label">To</label>
+            <div class="col-sm-6 position-relative">
+                <i class="fa fa-calendar"></i>
+                <input type="text" class="date-range date-end">
+            </div>
+        </div>
 
     </div>
 </template>
