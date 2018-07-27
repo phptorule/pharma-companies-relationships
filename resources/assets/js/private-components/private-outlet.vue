@@ -47,7 +47,6 @@
 <script>
 
     require('../../../../node_modules/admin-lte/dist/js/adminlte.min');
-    require('../../../../node_modules/admin-lte/dist/js/demo.js');
 
     export default {
         created: function (){

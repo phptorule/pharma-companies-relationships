@@ -170,15 +170,19 @@
 
     import dateRangePicker from './date-range-picker';
 
+    import helpers from '../mixins/helpers'
+
     export default {
 
         components : {
             'date-range-picker': dateRangePicker
         },
 
+        mixins: [helpers],
+
         mounted: function () {
 
-
+            this.enableBoxCollapsing();
         }
 
     }
