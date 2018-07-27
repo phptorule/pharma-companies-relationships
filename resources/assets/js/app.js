@@ -56,8 +56,6 @@ Vue.component('assign-addresses-to-person', require('./partial-view-components/e
 Vue.component('global-search', require('./partial-view-components/global-search'));
 Vue.component('notification-block', require('./partial-view-components/notification-block'));
 Vue.component('feed-sidebar', require('./partial-view-components/feed-sidebar'));
-Vue.component('feed-item-simple-text', require('./partial-view-components/feed-item-simple-text'));
-Vue.component('feed-item-text-image', require('./partial-view-components/feed-item-text-image'));
 Vue.component('tag-list', require('./partial-view-components/tag-list'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus

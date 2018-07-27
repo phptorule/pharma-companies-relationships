@@ -12,7 +12,16 @@
 
         <div class="box-body">
 
-            <h3>Dr. Michael Feldman</h3>
+            <h3>
+                Dr. Michael Feldman
+                <small>
+                    <a href="javascript:void(0)"
+                       @click.prevent="showFeedDetailsPopUp(feed.id)"
+                    >
+                        <i class="fa fa-link"></i>
+                    </a>
+                </small>
+            </h3>
 
             <p>
                 Published a new article with
@@ -73,9 +82,12 @@
 <script>
 
     import newsIcons from './_news-icons';
+    import feedFeatures from '../mixins/feed-item-common-features';
 
     export default {
         components: {'news-icons': newsIcons},
+
+        mixins: [feedFeatures],
 
         props: ['feed']
     }
