@@ -21,10 +21,10 @@ mix
         'node_modules/mapbox-gl/dist/mapbox-gl.css',
         'node_modules/alertifyjs/build/css/alertify.css',
         'node_modules/alertifyjs/build/css/themes/bootstrap.css',
+        'node_modules/daterangepicker/daterangepicker.css',
         'resources/assets/css/font-awesome.min.css',
         'resources/assets/css/AdminLTE.min.css',
         'resources/assets/css/_all-skins.css',
-        // 'resources/assets/css/materialize.css',
         'bower_components/select2/dist/css/select2.css',
         'resources/assets/css/styles.css',
         'resources/assets/css/responsive.css',
@@ -36,9 +36,10 @@ mix
     ], 'public/js/graph-1.js')
 
     .scripts([
+            'bower_components/jquery/dist/jquery.min.js',
+            'node_modules/daterangepicker/daterangepicker.js',
             'resources/assets/libs/supercluster.min.js',
             'resources/assets/libs/google-chart-loader.js',
-            'bower_components/jquery/dist/jquery.min.js',
             'resources/assets/graph-js/vis.js',
             'resources/assets/graph-js/materialize.min.js',
             'resources/assets/graph-js/init.js',

@@ -155,7 +155,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    The body of the box
+                    <input type="text" class="feed-date-range">
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -166,6 +166,14 @@
 
 <script>
     export default {
+
+        mounted: function () {
+
+            setTimeout(()=>{
+                $('input.feed-date-range').daterangepicker();
+            }, 1000);
+
+        }
 
     }
 </script>
