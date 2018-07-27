@@ -32,6 +32,10 @@
             </div>
 
         </div>
+
+        <feed-details-pop-up
+                :feedId="selectedFeedId"
+        ></feed-details-pop-up>
     </div>
 </template>
 
@@ -86,18 +90,22 @@
 
         components: {
             'feed-item-simple-text': require('../../partial-view-components/feed-item-simple-text'),
-            'feed-item-text-image': require('../../partial-view-components/feed-item-text-image')
+            'feed-item-text-image': require('../../partial-view-components/feed-item-text-image'),
+            'feed-details-pop-up': require('../../partial-view-components/feed-details-pop-up')
         },
 
         data: function () {
             return {
-                feeds: TEST_ITEMS
+                feeds: TEST_ITEMS,
+                selectedFeedId: null,
             }
         },
 
         methods: {
             showFeedDetailsPopUp: function (feedId) {
-                console.log('handled - showFeedDetailsPopUp', feedId);
+                this.selectedFeedId = feedId;
+
+                $('#feed-details-pop-up').modal('show');
             }
         }
     }
