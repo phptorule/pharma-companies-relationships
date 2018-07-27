@@ -37,7 +37,6 @@ mix
 
     .scripts([
             'bower_components/jquery/dist/jquery.min.js',
-            'node_modules/daterangepicker/daterangepicker.js',
             'resources/assets/libs/supercluster.min.js',
             'resources/assets/libs/google-chart-loader.js',
             'resources/assets/graph-js/vis.js',
