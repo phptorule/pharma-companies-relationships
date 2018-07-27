@@ -13,14 +13,11 @@
         <div class="box-body">
 
             <h3>
-                Viollier AG
-                <small>
-                    <a href="javascript:void(0)"
-                       @click.prevent="showFeedDetailsPopUp(feed.id)"
-                    >
-                        <i class="fa fa-link"></i>
-                    </a>
-                </small>
+                <a href="javascript:void(0)"
+                   @click.prevent="showFeedDetailsPopUp(feed.id)"
+                >
+                    Viollier AG
+                </a>
             </h3>
 
             <p>Hired new employee</p>

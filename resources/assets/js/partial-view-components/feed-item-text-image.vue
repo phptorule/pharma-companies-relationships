@@ -13,14 +13,11 @@
         <div class="box-body">
 
             <h3>
-                Dr. Michael Feldman
-                <small>
-                    <a href="javascript:void(0)"
-                       @click.prevent="showFeedDetailsPopUp(feed.id)"
-                    >
-                        <i class="fa fa-link"></i>
-                    </a>
-                </small>
+                <a href="javascript:void(0)"
+                   @click.prevent="showFeedDetailsPopUp(feed.id)"
+                >
+                    Dr. Michael Feldman
+                </a>
             </h3>
 
             <p>

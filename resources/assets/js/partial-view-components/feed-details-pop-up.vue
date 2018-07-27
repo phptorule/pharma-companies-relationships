@@ -55,6 +55,12 @@
                         </div>
                     </div>
 
+                    <div class="comments-block">
+
+                        <h3 class="pre-title">Comments</h3>
+
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
