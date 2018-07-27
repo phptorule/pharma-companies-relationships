@@ -155,7 +155,9 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <input type="text" class="feed-date-range">
+
+                    <date-range-picker></date-range-picker>
+
                 </div>
                 <!-- /.box-body -->
             </div>
@@ -165,13 +167,17 @@
 </template>
 
 <script>
+
+    import dateRangePicker from './date-range-picker';
+
     export default {
+
+        components : {
+            'date-range-picker': dateRangePicker
+        },
 
         mounted: function () {
 
-            setTimeout(()=>{
-                $('input.feed-date-range').daterangepicker();
-            }, 1000);
 
         }
 
