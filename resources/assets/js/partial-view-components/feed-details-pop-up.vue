@@ -65,7 +65,7 @@
                                 <li>
                                     <div class="image">
                                         <a href="javascript:void(0)">
-                                            <span class="person-initials">A K</span>
+                                            <span class="person-initials">{{getPersonInitials('Altwegg Kurt')}}</span>
                                             <img src="/images/mask-0.png" alt="">
                                         </a>
                                     </div>
@@ -75,8 +75,42 @@
                                                 Altwegg Kurt
                                             </a>
                                         </p>
-                                        <p class="occupation"></p>
-                                        <p class="occupation">Kollektivprokura zu zweien</p>
+                                        <p class="occupation comment-left-at">9 hrs ago</p>
+                                        <p class="occupation">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem cupiditate dolorum id ipsum itaque libero nemo quam repudiandae saepe. Accusamus aliquam at facilis illum in optio reiciendis similique voluptate!</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image">
+                                        <a href="javascript:void(0)">
+                                            <span class="person-initials">{{getPersonInitials('Altwegg Kurt')}}</span>
+                                            <img src="/images/mask-0.png" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="personal-info">
+                                        <p class="name">
+                                            <a href="javascript:void(0)">
+                                                Altwegg Kurt
+                                            </a>
+                                        </p>
+                                        <p class="occupation comment-left-at">9 hrs ago</p>
+                                        <p class="occupation">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem cupiditate dolorum id ipsum itaque libero nemo quam repudiandae saepe. Accusamus aliquam at facilis illum in optio reiciendis similique voluptate!</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="image">
+                                        <a href="javascript:void(0)">
+                                            <span class="person-initials">{{getPersonInitials('Altwegg Kurt')}}</span>
+                                            <img src="/images/mask-0.png" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="personal-info">
+                                        <p class="name">
+                                            <a href="javascript:void(0)">
+                                                Altwegg Kurt
+                                            </a>
+                                        </p>
+                                        <p class="occupation comment-left-at">9 hrs ago</p>
+                                        <p class="occupation">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam autem cupiditate dolorum id ipsum itaque libero nemo quam repudiandae saepe. Accusamus aliquam at facilis illum in optio reiciendis similique voluptate!</p>
                                     </div>
                                 </li>
                             </ul>
@@ -95,8 +129,12 @@
 </template>
 
 <script>
+
+    import getPersonInitials from '../mixins/get-person-initials'
+
     export default {
-        name: "feed-details-pop-up",
+
+        mixins: [getPersonInitials],
 
         methods: {
 
