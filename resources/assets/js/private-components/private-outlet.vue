@@ -8,6 +8,8 @@
 
         <main-footer></main-footer>
 
+        <feed-details-pop-up></feed-details-pop-up>
+
     </div>
 
 
@@ -32,6 +34,8 @@
                 <modal-contacts-chain></modal-contacts-chain>
 
                 <notification-block></notification-block>
+
+                <feed-details-pop-up></feed-details-pop-up>
 
                 <map-main></map-main>
 

@@ -57,6 +57,7 @@ Vue.component('global-search', require('./partial-view-components/global-search'
 Vue.component('notification-block', require('./partial-view-components/notification-block'));
 Vue.component('feed-sidebar', require('./partial-view-components/feed-sidebar'));
 Vue.component('tag-list', require('./partial-view-components/tag-list'));
+Vue.component('feed-details-pop-up', require('./partial-view-components/feed-details-pop-up'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 Vue.prototype.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content]; //

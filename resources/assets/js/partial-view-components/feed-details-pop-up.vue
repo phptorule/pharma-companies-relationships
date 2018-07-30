@@ -59,6 +59,29 @@
 
                         <h3 class="pre-title">Comments</h3>
 
+
+                        <div>
+                            <ul class="staff-list">
+                                <li>
+                                    <div class="image">
+                                        <a href="javascript:void(0)">
+                                            <span class="person-initials">A K</span>
+                                            <img src="/images/mask-0.png" alt="">
+                                        </a>
+                                    </div>
+                                    <div class="personal-info">
+                                        <p class="name">
+                                            <a href="javascript:void(0)">
+                                                Altwegg Kurt
+                                            </a>
+                                        </p>
+                                        <p class="occupation"></p>
+                                        <p class="occupation">Kollektivprokura zu zweien</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
                     </div>
 
                 </div>
@@ -73,7 +96,30 @@
 
 <script>
     export default {
-        name: "feed-details-pop-up"
+        name: "feed-details-pop-up",
+
+        methods: {
+
+            init: function (feedId) {
+                console.log('feedId', feedId);
+
+                return Promise.resolve();
+            }
+
+        },
+
+        mounted: function () {
+            this.$eventGlobal.$on('show-feed-details-pop-up', (feedId) => {
+                this.init(feedId)
+                    .then(()=> {
+                        $('#feed-details-pop-up').modal('show');
+                    })
+            })
+        },
+
+        beforeDestroy: function () {
+
+        }
     }
 </script>
 
