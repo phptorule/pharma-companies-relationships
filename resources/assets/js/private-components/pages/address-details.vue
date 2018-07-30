@@ -396,32 +396,8 @@
                     <a href="javascript:void(0)" @click="showSlidedBox('lab-chain-details')" v-if="addressData.cluster.addresses.length > 1" class="address-box-show-more-link">Lab Chain Details</a>
                 </div>
 
-                <div class="lab-news-overview address-box" v-if="true"> <!--TODO: remove v-if="false" when staring to work on Lab News feature-->
-                    <div class="header">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <h3>Lab News
-                                    <a href="#" @click.prevent class="without-handler">
-                                        <i class="fa fa-plus"></i>
-                                    </a>
-                                </h3>
-                            </div>
-                            <div class="col-md-8">
-                                <ul class="news-links">
-                                    <li><a href="javascript:void(0)" class="active">All news</a></li>
-                                    <li><a href="javascript:void(0)">Saved</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <quick-feed-box></quick-feed-box>
 
-                    <div class="row">
-                        <div class="col-md-7"></div>
-                        <div class="col-md-5"></div>
-                    </div>
-
-                    <a href="#" @click.prevent class="address-box-show-more-link without-handler">Go to Lab News</a>
-                </div>
             </div>
 
         </div>

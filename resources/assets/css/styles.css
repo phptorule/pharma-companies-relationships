@@ -1433,7 +1433,7 @@ ul.tag-list li {
 }
 
 .address-details-fixed-height, .slided-box {
-    height: calc(100vh - 152px);
+    height: calc(100vh - 102px);
 }
 
 #personal-modal .search-sort ul.type-filter {
@@ -6499,4 +6499,40 @@ ul.ul-type .grey-checkbox span.remember_text {
 
 .lab-news-overview.address-box .header .row {
     border-bottom: 1px solid #e5e7eb;
+}
+
+.quick-news-box h3.box-title{
+    font-size: 14px;
+    font-weight: 100;
+}
+
+.quick-news-box h3.box-title strong{
+    font-weight: 500;
+}
+
+.quick-news-box .box-body h3{
+    margin-top: 0;
+    line-height: 1em;
+    font-weight: 700;
+}
+
+.quick-news-box .box-body h3 a{
+    color: #444444;
+}
+
+.quick-news-box .box{
+    border-top: 0;
+    margin-top: 30px;
+}
+
+.quick-news-box .box-body h3 a:hover{
+    color: #4a90e2;
+}
+
+.image-box img{
+    max-width: 100%;
+}
+
+.quick-news-box .box-footer {
+    display: none;
 }

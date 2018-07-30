@@ -58,6 +58,7 @@ Vue.component('notification-block', require('./partial-view-components/notificat
 Vue.component('feed-sidebar', require('./partial-view-components/feed-sidebar'));
 Vue.component('tag-list', require('./partial-view-components/tag-list'));
 Vue.component('feed-details-pop-up', require('./partial-view-components/feed-details-pop-up'));
+Vue.component('quick-feed-box', require('./partial-view-components/quick-feed-box'));
 
 Vue.prototype.$eventGlobal = new Vue(); // Global event bus
 Vue.prototype.COUNTRY_FEATURES = COUNTRY_FEATURES[document.head.querySelector('meta[name="default-country"]').content]; //
