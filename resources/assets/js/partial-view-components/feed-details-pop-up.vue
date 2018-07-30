@@ -120,8 +120,22 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+
+                    <ul class="staff-list">
+                        <li>
+                            <div class="image">
+                                <a href="javascript:void(0)">
+                                    <span class="person-initials">{{getPersonInitials('Altwegg Kurt')}}</span>
+                                    <img src="/images/mask-0.png" alt="">
+                                </a>
+                            </div>
+                            <div class="personal-info">
+                                <textarea class="form-control write-comment" placeholder="Write comment..."></textarea>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <button type="button" class="btn btn-primary send-comment-btn">Save changes</button>
                 </div>
             </div>
         </div>
@@ -156,7 +170,7 @@
         },
 
         beforeDestroy: function () {
-
+            this.$eventGlobal.$off('show-feed-details-pop-up');
         }
     }
 </script>
