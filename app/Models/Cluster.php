@@ -16,4 +16,18 @@ class Cluster extends Model
         return $this->hasMany(Address::class);
     }
 
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::updating(function($model){
+            UserEdit::log($model);
+        });
+
+        self::created(function($model){
+            UserEdit::log($model, 'created');
+        });
+    }
+
 }
