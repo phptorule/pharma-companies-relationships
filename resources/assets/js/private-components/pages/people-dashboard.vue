@@ -87,7 +87,7 @@
                                 </span>
 
                                 <div class="main-image">
-                                    <a href="javascript:void(0)">
+                                    <a href="javascript:void(0)" @click="proceedToEmployeeDetailsModal(person)">
                                         <div class="box-p">
                                             <span class="people-count person-initials">
                                                 {{getPersonInitials(person.name)}}
