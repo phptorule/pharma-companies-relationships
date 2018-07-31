@@ -12,6 +12,7 @@ use App\Models\People;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\Tender;
+use App\Models\UserEdit;
 use App\Services\GlobalSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -359,11 +360,7 @@ class AddressesController extends Controller
      */
     public function updateAddressDetails(Address $address)
     {
-        $address->name = request()->get('name');
-        $address->address = request()->get('address');
-        $address->url = request()->get('url');
-        $address->phone = request()->get('phone');
-        $address->save();
+        $address->update(request()->only(['name', 'address', 'url', 'phone']));
 
         $tags = request()->get('tags');
 

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Address extends Model
 {
 
     protected $table = 'rl_addresses';
 
-    protected $fillable = ['customer_status', 'created_at', 'updated_at'];
+    protected $fillable = ['customer_status', 'created_at', 'updated_at', 'name', 'address', 'url', 'phone'];
 
 
     function tags()
@@ -61,6 +62,35 @@ class Address extends Model
         }
 
         return $related_labs_ids;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model){
+            // ... code here
+        });
+
+        self::created(function($model){
+            // ... code here
+        });
+
+        self::updating(function($model){
+            UserEdit::log($model);
+        });
+
+        self::updated(function($model){
+
+        });
+
+        self::deleting(function($model){
+            // ... code here
+        });
+
+        self::deleted(function($model){
+            // ... code here
+        });
     }
 
 }
