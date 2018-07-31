@@ -22,11 +22,15 @@ class UserEdit extends Model
     }
 
 
-    static function log(Model $model)
+    static function log(Model $model, $event = null)
     {
         $oldState = $model->getOriginal();
 
         $newState = json_decode($model->toJSON());
+
+        if($event === 'created') {
+            return self::logCreatedEvent($model);
+        }
 
         foreach ($newState as $prop => $value) {
 
@@ -67,6 +71,24 @@ class UserEdit extends Model
         ];
 
         self::create($params);
+    }
+
+    static function logCreatedEvent (Model $model)
+    {
+        foreach ($model->toArray() as $prop => $value) {
+            $params = [
+                'user_id' => Auth::user()->id,
+                'entity_id' => Entity::where('table_name', $model->getTable())->first()->id,
+                'entity_row_key' => $model->id,
+                'field' => $prop,
+                'new_value' => $model->$prop,
+                'old_value' => null,
+                'url_formatter' => null,
+                'batch_uuid' => self::$UUID
+            ];
+
+            self::create($params);
+        }
     }
 
 }

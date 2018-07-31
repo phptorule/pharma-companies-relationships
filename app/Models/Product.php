@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Product extends Model
 {
@@ -23,5 +24,18 @@ class Product extends Model
 
 	function getImageAttribute($value) {
         return !empty($value) ? '/storage' . $value : '';
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::updating(function($model){
+            UserEdit::log($model);
+        });
+
+        self::created(function($model){
+            UserEdit::log($model, 'created');
+        });
     }
 }
