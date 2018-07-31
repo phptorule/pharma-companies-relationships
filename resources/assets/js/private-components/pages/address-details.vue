@@ -396,7 +396,7 @@
                     <a href="javascript:void(0)" @click="showSlidedBox('lab-chain-details')" v-if="addressData.cluster.addresses.length > 1" class="address-box-show-more-link">Lab Chain Details</a>
                 </div>
 
-                <quick-feed-box></quick-feed-box>
+                <quick-feed-box v-if="false"></quick-feed-box>
 
             </div>
 

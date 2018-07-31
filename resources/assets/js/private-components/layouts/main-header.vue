@@ -18,7 +18,7 @@
             <div class="nav-links">
                 <ul>
 
-                    <li><router-link to="/feed">Feed</router-link></li>
+                    <li v-if="false"><router-link to="/feed">Feed</router-link></li>
 
                     <li><router-link to="/dashboard">Lab Map</router-link></li>
                     <!--<li><a href="#">Feed</a></li>-->
