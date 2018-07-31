@@ -7,6 +7,7 @@ use App\Models\ConnectionTypes;
 use App\Models\People;
 use App\Models\Publication;
 use App\Models\PeopleType;
+use App\Models\UserEdit;
 use App\Services\GlobalSearchService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -418,6 +419,8 @@ class PeopleController extends Controller
         if (!$this->checkIfOnlyIds($addressIds)) {
             return response()->json('Invalid request', 403);
         }
+
+        UserEdit::logManyToMany($person, $person->addresses()->first()->getTable(), $addressIds, $person->addresses()->pluck('id')->toArray());
 
         $person->addresses()->sync($addressIds);
 
