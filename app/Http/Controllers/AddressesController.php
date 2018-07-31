@@ -450,16 +450,9 @@ class AddressesController extends Controller
     {
         $selectedProducts = request('selectedProducts');
 
-        AddressProduct::where('address_id', $address->id)->delete();
+        UserEdit::logManyToMany($address, 'rl_products', $selectedProducts, $address->products()->pluck('id')->toArray());
 
-        if ( ! empty($selectedProducts)) {
-            foreach ($selectedProducts as $productId) {
-                $addressProduct = new AddressProduct();
-                $addressProduct->address_id = $address->id;
-                $addressProduct->product_id = $productId;
-                $addressProduct->save();
-            }
-        }
+        $address->products()->sync($selectedProducts);
 
         $address->load([
             'products' => function ($query) {

@@ -51,13 +51,17 @@ class UserEdit extends Model
 
     static function logManyToMany(Model $model, $relatedPropTable, $newIds, $oldIds)
     {
+        $oldValues = is_array($oldIds) ? implode(', ', $oldIds) : $oldIds;
+
+        $newValues = is_array($newIds) ? implode(', ', $newIds) : $newIds;
+
         $params = [
             'user_id' => Auth::user()->id,
             'entity_id' => Entity::where('table_name', $model->getTable())->first()->id,
             'entity_row_key' => $model->id,
             'field' => $relatedPropTable,
-            'new_value' => is_array($newIds) ? implode(', ', $newIds) : $newIds,
-            'old_value' => is_array($oldIds) ? implode(', ', $oldIds) : $oldIds,
+            'new_value' => $newValues ? $newValues : null,
+            'old_value' => $oldValues ? $oldValues : null,
             'url_formatter' => null,
             'batch_uuid' => self::$UUID
         ];
