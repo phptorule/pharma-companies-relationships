@@ -377,14 +377,9 @@ class AddressesController extends Controller
             }
         }
 
-        AddressTag::where('address_id', '=', $address->id)->delete();
+        UserEdit::logManyToMany($address, $address->tags()->first()->getTable(), $ids, $address->tags()->pluck('id')->toArray());
 
-        foreach ($ids as $tagId) {
-            $addressTag = new AddressTag();
-            $addressTag->address_id = $address->id;
-            $addressTag->tag_id = $tagId;
-            $addressTag->save();
-        }
+        $address->tags()->sync($ids);
 
         return response()->json($address);
     }

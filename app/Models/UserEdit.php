@@ -14,10 +14,11 @@ class UserEdit extends Model
 
     protected $fillable = ['user_id', 'entity_id', 'entity_row_key', 'field', 'new_value', 'old_value', 'url_formatter', 'batch_uuid'];
 
+    protected static $UUID;
 
-    static function UUID ()
-    {
-        return md5(Carbon::now());
+
+    static function setUUID() {
+        self::$UUID = md5(Carbon::now());
     }
 
 
@@ -27,14 +28,9 @@ class UserEdit extends Model
 
         $newState = json_decode($model->toJSON());
 
-        $uuid = self::UUID();
-
         foreach ($newState as $prop => $value) {
 
             if($newState->$prop != $oldState[$prop]) {
-                Log::info("OLD value of $prop: " . $oldState[$prop]);
-                Log::info("NEW value of $prop: " . $newState->$prop);
-
                 $params = [
                     'user_id' => Auth::user()->id,
                     'entity_id' => Entity::where('table_name', $model->getTable())->first()->id,
@@ -43,13 +39,30 @@ class UserEdit extends Model
                     'new_value' => $newState->$prop,
                     'old_value' => $oldState[$prop],
                     'url_formatter' => null,
-                    'batch_uuid' => $uuid
+                    'batch_uuid' => self::$UUID
                 ];
 
                 self::create($params);
             }
 
         }
+    }
+
+
+    static function logManyToMany(Model $model, $relatedPropTable, $newIds, $oldIds)
+    {
+        $params = [
+            'user_id' => Auth::user()->id,
+            'entity_id' => Entity::where('table_name', $model->getTable())->first()->id,
+            'entity_row_key' => $model->id,
+            'field' => $relatedPropTable,
+            'new_value' => is_array($newIds) ? implode(', ', $newIds) : $newIds,
+            'old_value' => is_array($oldIds) ? implode(', ', $oldIds) : $oldIds,
+            'url_formatter' => null,
+            'batch_uuid' => self::$UUID
+        ];
+
+        self::create($params);
     }
 
 }
