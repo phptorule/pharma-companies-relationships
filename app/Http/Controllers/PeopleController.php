@@ -31,7 +31,9 @@ class PeopleController extends Controller
             return $q->orderBy('id', 'desc');
         }]);
 
-        $person->load('publications');
+        $person->load(['publications' => function ($q) {
+            return $q->orderBy('year', 'desc');
+        }]);
 
         $person->relationships = DB::table('rl_address_connections AS rl1')
             ->select(DB::raw("from_person_id, to_person_id, SUM(edge_weight) as edge_weight, edge_type, from_address_id, to_address_id,
