@@ -37,15 +37,18 @@ class Address extends Model
         return $this->belongsTo(CustomerType::class, 'customer_status');
     }
 
+
     function people()
     {
         return $this->belongsToMany(People::class, 'rl_address_people', 'address_id','person_id');
     }
 
+
 	public function tenders()
 	{
 		return $this->hasMany(Tender::class, 'address_id');
 	}
+
 
     static function createRelatedLabsIds($related_labs)
     {
@@ -64,32 +67,13 @@ class Address extends Model
         return $related_labs_ids;
     }
 
+
     public static function boot()
     {
         parent::boot();
 
-        self::creating(function($model){
-            // ... code here
-        });
-
-        self::created(function($model){
-            // ... code here
-        });
-
         self::updating(function($model){
             UserEdit::log($model);
-        });
-
-        self::updated(function($model){
-
-        });
-
-        self::deleting(function($model){
-            // ... code here
-        });
-
-        self::deleted(function($model){
-            // ... code here
         });
     }
 

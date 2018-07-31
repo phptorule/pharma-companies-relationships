@@ -92,4 +92,14 @@ class People extends Model
     static function getAllPersonRelatedAddresses($personId) {
         return self::where('id', $personId)->with('addresses')->first()->addresses;
     }
+
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::updating(function($model){
+            UserEdit::log($model);
+        });
+    }
 }
