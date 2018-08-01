@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Tender extends Model
+class Tender extends CountryDependantBaseModel
 {
 	protected $table = 'rl_address_tenders';
 

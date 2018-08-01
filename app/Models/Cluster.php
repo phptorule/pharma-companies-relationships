@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cluster extends Model
+class Cluster extends CountryDependantBaseModel
 {
 
     protected $table = 'rl_clusters';

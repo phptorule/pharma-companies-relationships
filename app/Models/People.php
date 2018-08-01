@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class People extends Model
+class People extends CountryDependantBaseModel
 {
 
     protected $table = 'rl_people';

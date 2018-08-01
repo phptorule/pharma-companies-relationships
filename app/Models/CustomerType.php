@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CustomerType extends Model
+class CustomerType extends CountryDependantBaseModel
 {
 
     protected $table = 'rl_addresses_customerstatus_types';

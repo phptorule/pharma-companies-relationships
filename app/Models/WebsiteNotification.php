@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
-class WebsiteNotification extends Model
+class WebsiteNotification extends CountryDependantBaseModel
 {
 
     protected $table = 'rl_website_notifications';

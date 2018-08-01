@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AddressTag extends Model
+class AddressTag extends CountryDependantBaseModel
 {
     protected $table = "rl_address_tags";
 

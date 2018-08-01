@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Publication extends Model
+class Publication extends CountryDependantBaseModel
 {
 
     protected $table = 'rl_publications';
