@@ -13,7 +13,8 @@
         "jadjoubran/laravel-angular": "^0.4.0",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
-        "tymon/jwt-auth": "^1.0@dev"
+        "tymon/jwt-auth": "^1.0@dev",
+        "zizaco/entrust": "5.2.x-dev"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
