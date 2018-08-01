@@ -10,6 +10,7 @@
                     <ul class="search-iteration" :class="{'ready-for-deletion': firstBackspaceClicked}">
                         <li v-for="(searchItem, i) of searchIterations"
                             :title="searchItem.type + ': ' + searchItem.value"
+                            @dblclick="editSearchItem(searchItem, i)"
                         >
 
                             <i class="fa fa-users" v-if="searchItem.type === 'Person'"></i>
@@ -307,14 +308,6 @@
                 }
             },
 
-            performPreliminarySearchInExtendedMode: function() {
-                this.isExtendedSearch = true;
-
-                $('.global-search-input').focus();
-
-                this.makePreliminaryGlobalSearch();
-            },
-
             addSearchIteration: function (e) {
 
                 if(e) {
@@ -328,6 +321,18 @@
                 this.globalSearchInput = '';
 
                 $('.global-search-input').focus();
+            },
+
+            editSearchItem: function (searchItem, i) {
+
+                this.searchIterations.splice(i, 1);
+
+                this.globalSearchInput = searchItem.value;
+
+                setTimeout(()=>{
+                    this.makePreliminaryGlobalSearch();
+                    $('.global-search-input').focus();
+                }, 0)
             }
         },
 
