@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
              ChangeZeroIdAtTablePeopleTypes::class,
              add_NEXT_DEPLOYMENT_AT_configuration::class,
              add_NEXT_DEPLOYMENT_AT_website_notification::class,
+             CreateBaseRolesAndPermissions::class,
+             CreateBasePermissions::class,
+             AddPermissionsToSwitchCountry::class,
+             AddOnlyOneCountryUserRole::class
          ]);
     }
 }
