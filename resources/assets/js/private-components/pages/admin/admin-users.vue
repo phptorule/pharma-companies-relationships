@@ -41,6 +41,15 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
+
+                        <div class="form-group">
+                            <label for="au-password">Default Country: </label>
+                            <select v-model="defaultCountry" class="form-control">
+                                <option value="switzerland">Switzerland</option>
+                                <option value="russia">Russia</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label for="au-password">Password*: </label>
                             <input type="password" 
@@ -228,7 +237,8 @@
                 usersPerPage: 10,
                 formToShow: '',
                 editingUserId: '',
-                changePassword: false
+                changePassword: false,
+                defaultCountry: 'switzerland'
             }
         },
         watch: {
@@ -248,7 +258,8 @@
                     role: this.role,
                     password: this.password,
                     password_confirmation: this.confirmPassword,
-                    link: this.link
+                    link: this.link,
+                    default_country: this.defaultCountry
                 })
                 .then(data => {
                     if (data.success) {

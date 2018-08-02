@@ -16,36 +16,19 @@ class AdminController extends Controller
             'email' => 'required|unique:rl_users',
             'role' => 'required',
             'password' => 'confirmed|required',
-            'password_confirmation' => 'required'
+            'password_confirmation' => 'required',
+            'default_country' => 'required'
         ]);
 
-        $name = request('name');
 
-        $email = request('email');
+        $params = $request->only(['name','email','role','password','default_country','link']);
 
-        $role = request('role');
+        $params['password'] = bcrypt($params['password']);
 
-        $password = request('password');
-
-        $confirmPassword = request('password_confirmation');
-
-        $link = request('link');
-
-        $user = new User();
-
-        $user->name = $name;
-        
-        $user->email = $email;
-
-        $user->role = $role;
-
-        $user->password = bcrypt($password);
-
-        $user->link = $link;
-
-        $user->save();
+        $user = User::create($params);
 
         return response()->json([
+            'user' => $user,
             'success' => true,
             'message' => 'User successfully created'
         ]);
