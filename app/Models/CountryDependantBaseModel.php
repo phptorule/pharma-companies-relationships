@@ -15,6 +15,15 @@ class CountryDependantBaseModel extends Model
     {
         parent::__construct($attributes);
 
-//        $this->connection = Auth::user()->role == 'admin' ? 'mysql_ru' : 'mysql';
+        switch (Auth::user()->default_country) {
+
+            case 'switzerland':
+                $this->connection = 'mysql_ch';
+                break;
+
+            case 'russia':
+                $this->connection = 'mysql_ru';
+                break;
+        }
     }
 }
