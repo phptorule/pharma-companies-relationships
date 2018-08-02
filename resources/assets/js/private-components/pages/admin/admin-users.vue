@@ -123,6 +123,15 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
+
+                        <div class="form-group">
+                            <label for="au-password">Default Country: </label>
+                            <select v-model="defaultCountry" class="form-control">
+                                <option value="switzerland">Switzerland</option>
+                                <option value="russia">Russia</option>
+                            </select>
+                        </div>
+
                         <div class="form-group" v-if="changePassword">
                             <label for="au-password-edit">Password*: </label>
                             <input type="password" 
@@ -178,6 +187,7 @@
                                     <td>Name</td>
                                     <td>Email</td>
                                     <td>Role</td>
+                                    <td>Default Country</td>
                                     <td>Link</td>
                                     <td>
                                         <button class="btn btn-warning" @click.prevent="setFormToShow('newUser')">
@@ -192,6 +202,7 @@
                                     <td>{{user.name}}</td>
                                     <td>{{user.email}}</td>
                                     <td>{{user.role}}</td>
+                                    <td>{{user.default_country | capitalize}}</td>
                                     <td>{{user.link ? user.link : '-'}}</td>
                                     <td>
                                         <button class="btn btn-primary" 
@@ -220,9 +231,10 @@
 
 <script>
     import http from '../../../mixins/http';
+    import labscapeFilters from '../../../filters/labscape-filters';
 
     export default {
-        mixins: [http],
+        mixins: [http, labscapeFilters],
 
         data: function () {
             return {
@@ -295,6 +307,7 @@
                 this.password = '';
                 this.confirmPassword = '';
                 this.link = '';
+                this.defaultCountry= 'switzerland';
                 this.changePassword = false;
             },
             setFormToShow: function (name, userId) {
@@ -323,6 +336,7 @@
                     this.role = user.role;
                     this.link = user.link;
                     this.editingUserId = user.id;
+                    this.defaultCountry = user.default_country;
                 }
             },
             editUser: _.debounce(function () {
@@ -334,7 +348,8 @@
                     role: this.role,
                     link: this.link,
                     userId: this.editingUserId,
-                    changePassword: this.changePassword
+                    changePassword: this.changePassword,
+                    default_country: this.defaultCountry
                 };
 
                 if(this.password && this.password === this.confirmPassword) {

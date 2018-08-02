@@ -56,6 +56,8 @@ class AdminController extends Controller
 
         $role = request('role');
 
+        $defaultCountry = request('default_country');
+
 
         if(request('password') && request('password') === request('password_confirmation')) {
             $password = request('password');
@@ -87,7 +89,9 @@ class AdminController extends Controller
             }
     
             $user->link = $link;
-    
+
+            $user->default_country = $defaultCountry;
+
             $user->save();
         } else {
             return response()->json([
